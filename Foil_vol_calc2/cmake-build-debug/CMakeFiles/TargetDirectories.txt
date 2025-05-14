@@ -1,0 +1,3 @@
+/Users/alon/Projects/Foil_vol_calc2/cmake-build-debug/CMakeFiles/Foil_vol_calc2.dir
+/Users/alon/Projects/Foil_vol_calc2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/alon/Projects/Foil_vol_calc2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
