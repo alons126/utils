@@ -67,14 +67,14 @@ void HipoLooper() {
     bool Is4GeV = (basic_tools::FindSubstring(InputFiles, "4029MeV") || basic_tools::FindSubstring(InputFiles, "4gev"));
     bool Is6GeV = (basic_tools::FindSubstring(InputFiles, "5986MeV") || basic_tools::FindSubstring(InputFiles, "6gev"));
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // int Limiter = 10000000;  // 10M events (fo the data)
     int Limiter = 1000000;  // 100 files
     // int Limiter = 100000;  // 10 files
     // int Limiter = 10000; // 1 file
 
-    std::string OutFolderName_prefix = "01_HipoLooper";
-    std::string OutFolderName_ver_status = "_v2_";
+    std::string OutFolderName_prefix = "03_HipoLooper";
+    std::string OutFolderName_ver_status = "_v3_";
     std::string target_status = (basic_tools::FindSubstring(InputFiles, "/C12/") || basic_tools::FindSubstring(InputFiles, "/C/"))     ? "C12"
                                 : (basic_tools::FindSubstring(InputFiles, "/Ar40/") || basic_tools::FindSubstring(InputFiles, "/Ar/")) ? "Ar40"
                                                                                                                                        : "_Unknown";
@@ -403,6 +403,7 @@ void HipoLooper() {
 
             target_location = new TLine(spec_target_location, 0., spec_target_location, gPad->GetFrame()->GetY2());
             target_location->SetLineColor(kBlue);
+            target_location->SetLineWidth(2);
             target_location->Draw("same");
 
             auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.3);
