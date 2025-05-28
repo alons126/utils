@@ -219,7 +219,7 @@ void HipoLooper() {
         // // electrons[0]->par()->getVz() > 0.);
         // if (!bad_Vz_e_CutCond) { h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight); }
 
-        fillDCdebug(electrons[0], h_dc_electron_hit_map_BC_1e_cut, weight);
+        // fillDCdebug(electrons[0], h_dc_electron_hit_map_BC_1e_cut, weight);
         // bool bad_DC_edge_CutCond = (!DCEdgeCuts(electrons[0]));
         // if (!bad_DC_edge_CutCond) { fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight); }
 
@@ -320,18 +320,6 @@ void HipoLooper() {
     } else if (basic_tools::FindSubstring(InputFiles, "5986MeV")) {
         text.DrawLatex(0.2, 0.8, "Beam energy: 5986MeV");
     }
-
-    if (ConstrainedE) {
-        text.DrawLatex(0.05, 0.7, "ConstrainedE = yes");
-    } else {
-        text.DrawLatex(0.05, 0.7, "ConstrainedE = no");
-    }
-
-    text.DrawLatex(0.05, 0.6, ("apply_ECAL_veto = " + BoolToString(apply_ECAL_veto)).c_str());
-    text.DrawLatex(0.05, 0.55, ("cPart_veto_radius = " + ToStringWithPrecision(cPart_veto_radius, 0)).c_str());
-
-    text.DrawLatex(0.05, 0.45, ("apply_PCAL_neutral_veto = " + BoolToString(apply_PCAL_neutral_veto)).c_str());
-    text.DrawLatex(0.05, 0.4, ("nPart_veto_radius = " + ToStringWithPrecision(nPart_veto_radius, 0)).c_str());
 
     myText->Print(fileName_electron_cuts, "pdf");
     myText->Clear();
