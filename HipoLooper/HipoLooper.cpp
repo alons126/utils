@@ -50,16 +50,18 @@ void HipoLooper() {
     // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
     // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo";
 
-    double Ebeam = basic_tools::FindSubstring(InputFiles, "2070MeV")   ? 2.07052
-                   : basic_tools::FindSubstring(InputFiles, "4029MeV") ? 4.02962
-                   : basic_tools::FindSubstring(InputFiles, "5986MeV") ? 5.98636
-                                                                       : 0.0;
+    double Ebeam = (basic_tools::FindSubstring(InputFiles, "2070MeV") || basic_tools::FindSubstring(InputFiles, "2gev"))   ? 2.07052
+                   : (basic_tools::FindSubstring(InputFiles, "4029MeV") || basic_tools::FindSubstring(InputFiles, "4gev")) ? 4.02962
+                   : (basic_tools::FindSubstring(InputFiles, "5986MeV") || basic_tools::FindSubstring(InputFiles, "6gev")) ? 5.98636
+                                                                                                                           : 0.0;
     if (Ebeam == 0.0) {
         std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
         exit(1);
     }
 
-    bool Is2GeV = basic_tools::FindSubstring(InputFiles, "2070MeV"), Is4GeV = basic_tools::FindSubstring(InputFiles, "4029MeV"), Is6GeV = basic_tools::FindSubstring(InputFiles, "5986MeV");
+    bool Is2GeV = (basic_tools::FindSubstring(InputFiles, "2070MeV") || basic_tools::FindSubstring(InputFiles, "2gev"));
+    bool Is4GeV = (basic_tools::FindSubstring(InputFiles, "4029MeV") || basic_tools::FindSubstring(InputFiles, "4gev"));
+    bool Is6GeV = (basic_tools::FindSubstring(InputFiles, "5986MeV") || basic_tools::FindSubstring(InputFiles, "6gev"));
 
     bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
@@ -72,9 +74,21 @@ void HipoLooper() {
     std::string target_status = (basic_tools::FindSubstring(InputFiles, "/C12/") || basic_tools::FindSubstring(InputFiles, "/C/"))     ? "C12"
                                 : (basic_tools::FindSubstring(InputFiles, "/Ar40/") || basic_tools::FindSubstring(InputFiles, "/Ar/")) ? "Ar40"
                                                                                                                                        : "_Unknown";
+
+    if (target_status == "_Unknown") {
+        std::cerr << "\n\nError! Target not found in InputFiles string! Aborting...\n\n";
+        exit(1);
+    }
+
     std::string sample_type_status = (basic_tools::FindSubstring(InputFiles, "cache")) ? "_data" : "_sim";
     std::string genie_tune_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "_G18_" : "_";
     std::string Ebeam_status = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
+
+    if (Ebeam_status == "_Unknown") {
+        std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
+        exit(1);
+    }
+
     std::string Run_status = basic_tools::FindSubstring(InputFiles, "015664")   ? "_run_015664"
                              : basic_tools::FindSubstring(InputFiles, "015778") ? "_run_0015778"
                              : basic_tools::FindSubstring(InputFiles, "015672") ? "_run_0015672"
