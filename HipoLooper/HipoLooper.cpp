@@ -11,9 +11,9 @@
 #include <TH2.h>
 #include <TLatex.h>
 #include <TLorentzVector.h>
+#include <TString.h>
 #include <TStyle.h>
 #include <TTree.h>
-#include <TString.h>
 
 #include <chrono>
 #include <cstdlib>
@@ -82,7 +82,6 @@ void HipoLooper() {
     auto config_c12 = chain.GetC12Reader();
     const std::unique_ptr<clas12::clas12reader> &c12 = chain.C12ref();
 
-#pragma region /* Prepare histograms */
     /////////////////////////////////////
     // Prepare histograms
     /////////////////////////////////////
@@ -97,9 +96,6 @@ void HipoLooper() {
     char temp_name[100];
     char temp_title[100];
 
-#pragma region /* RAW */
-
-#pragma region /* Electron pre-selection */
     TH1D *h_Vz_e_BC_1e_cut = new TH1D("Vz_e_BC_1e_cut", "V_{z}^{e} in 1e cut (before cut);V_{z}^{e} [cm];Counts", 50, -8, 8);
     HistoList_electron_cuts.push_back(h_Vz_e_BC_1e_cut);
     TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", "V_{z}^{e} in 1e cut (after cut);V_{z}^{e} [cm];Counts", 50, -8, 8);
@@ -116,9 +112,6 @@ void HipoLooper() {
         HistoList_electron_cuts.push_back(h_dc_electron_hit_map_AC_1e_cut[i]);
     }
 
-#pragma endregion
-
-#pragma region /* Electron PID */
     TH1D *h_nphe_BC_1e_cut = new TH1D("nphe_BC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut);Number of photo-electrons;Counts", 20, 0, 20);
     HistoList_electron_cuts.push_back(h_nphe_BC_1e_cut);
     TH1D *h_nphe_AC_1e_cut = new TH1D("nphe_AC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut);Number of photo-electrons;Counts", 20, 0, 20);
@@ -162,11 +155,16 @@ void HipoLooper() {
         new TH2D("E_PCALoP_e_VS_E_PCALoP_e_AC", "E_{dep}^{PCAL}/P_{e} vs. E_{dep}^{ECIN}/P_{e} in 1e cut (after cut);E_{dep}^{PCAL}/P_{e};E_{dep}^{ECIN}/P_{e}", 100, 0, 0.3, 100, 0, 0.35);
     HistoList_electron_cuts.push_back(h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut);
 
-#pragma endregion
-
-#pragma endregion
+    int counter = 0;
 
     while (chain.Next() == true) {
+        // Display completed
+        ++counter;
+        if ((counter % 1000000) == 0) { std::cerr << "\n" << counter / 1000000 << " million completed"; }
+        if ((counter % 100000) == 0) { std::cerr << "."; }
+
+        if (counter > Limiter) { break; }
+
         // get particles by type
         auto allParticles = c12->getDetParticles();
         auto electrons = c12->getByID(11);
@@ -206,12 +204,8 @@ void HipoLooper() {
         //  1e cut (reco)
         //  =======================================================================================================================================================================
 
-#pragma region /* 1e cut (reco) */
-
         //  Electron PID cuts
         //  -----------------------------------------------------------------------------------------------------------------------------------------------------
-
-#pragma region /* Electron PID cuts */
 
         h_Vz_e_BC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
         // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
@@ -262,10 +256,7 @@ void HipoLooper() {
         // h_reco_theta_e_1e_cut->Fill(reco_P_e.Theta() * 180 / M_PI, weight);
         // h_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, weight);
         // h_reco_theta_e_VS_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, reco_P_e.Theta() * 180 / M_PI, weight);
-#pragma endregion
     }
-
-#pragma region /* Organize histograms */
 
     /////////////////////////////////////////////////////
     // Organize histograms
@@ -295,9 +286,6 @@ void HipoLooper() {
 
     gStyle->SetOptStat("ourmen");
 
-#pragma region /* General histograms */
-
-#pragma region /* Print electron cuts plots */
     TCanvas *myCanvas_electron_cuts = new TCanvas("myPage_electron_cuts", "myPage_electron_cuts", pixelx, pixely);
 
     std::string electron_cuts_PDF_fileName = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/electron_cuts.pdf";
