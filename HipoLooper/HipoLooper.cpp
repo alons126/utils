@@ -391,6 +391,7 @@ void HipoLooper() {
         if (HistoList_electron_cuts[i]->InheritsFrom("TH1D")) {
             HistoList_electron_cuts[i]->Draw();
 
+            gPad->Update();
             TLine *target_location;
 
             if (target_status == "C12") {
