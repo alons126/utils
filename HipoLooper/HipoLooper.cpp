@@ -325,21 +325,6 @@ void HipoLooper() {
     myText->Clear();
 
     for (int i = 0; i < HistoList_electron_cuts.size(); i++) {
-        for (int j = 0; j < HistSubjects.size(); j++) {
-            if (FirstPrint.at(j) && basic_tools::FindSubstring(HistoList_electron_cuts[i]->GetTitle(), HistSubjects.at(j))) {
-                myText->cd();
-                titles.DrawLatex(0.3, 0.5, HistSubjects2.at(j).c_str());
-                myText->Print(fileName_electron_cuts, "pdf");
-                myText->Clear();
-
-                myCanvas_electron_cuts->cd(1);
-                FirstPrint.at(j) = false;
-                break;
-            }
-        }
-
-        // electron_cuts_PDF_fileName->Divide(2,1);
-
         myCanvas_electron_cuts->cd();
 
         myCanvas_electron_cuts->cd()->SetGrid();
