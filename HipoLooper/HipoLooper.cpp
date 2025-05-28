@@ -393,15 +393,22 @@ void HipoLooper() {
 
             gPad->Update();
             TLine *target_location;
+            double spec_target_location = 0.0;
 
             if (target_status == "C12") {
-                target_location = new TLine((2.5 - 3.0), 0., (2.5 - 3.0), gPad->GetFrame()->GetY2());
+                spec_target_location = (2.5 - 3.0);
             } else if (target_status == "Ar40") {
-                target_location = new TLine((-2.5 - 3.0), 0., (-2.5 - 3.0), gPad->GetFrame()->GetY2());
+                spec_target_location = (-2.5 - 3.0);
             }
 
+            target_location = new TLine(spec_target_location, 0., spec_target_location, gPad->GetFrame()->GetY2());
             target_location->SetLineColor(kBlue);
             target_location->Draw("same");
+
+            auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.2, gStyle->GetStatX() - 0.2, gStyle->GetStatY() - 0.3);
+            TLegendEntry *target_location_entry = Legend->AddEntry(target_location, ("Spec target location = " + ToStringWithPrecision(spec_target_location,2) + " cm").c_str(), "l");
+
+            Legend->Draw("same");
         } else if (HistoList_electron_cuts[i]->InheritsFrom("TH2D")) {
             HistoList_electron_cuts[i]->Draw("colz");
 
