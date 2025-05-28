@@ -34,7 +34,7 @@ void HipoLooper() {
 
     // Data samples:
 
-    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo";
+    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo";
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo";
 
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo";
@@ -48,7 +48,7 @@ void HipoLooper() {
 
     // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
     // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
-    std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo";
+    // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo";
 
     double Ebeam = basic_tools::FindSubstring(InputFiles, "2070MeV")   ? 2.07052
                    : basic_tools::FindSubstring(InputFiles, "4029MeV") ? 4.02962
@@ -75,7 +75,7 @@ void HipoLooper() {
     std::string sample_type_status = (basic_tools::FindSubstring(InputFiles, "cache")) ? "_data" : "_sim";
     std::string genie_tune_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "_G18_" : "_";
     std::string Ebeam_status = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
-    std::string General_status = "";
+    std::string General_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "" : "015664";
 
     std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status + target_status + sample_type_status + genie_tune_status + Ebeam_status + General_status;
     std::string OutFileName = OutFolderName;
