@@ -142,6 +142,22 @@ void HipoLooper() {
         new TH1D("Vz_e_AC_1e_cut",
                  ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
     HistoList_electron_cuts.push_back(h_Vz_e_AC_1e_cut);
+    TH1D *h_Vx_e_BC_1e_cut =
+        new TH1D("Vx_e_BC_1e_cut",
+                 ("V_{x}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{x}^{e} [cm];Counts").c_str(), 50, -10, 5);
+    HistoList_electron_cuts.push_back(h_Vx_e_BC_1e_cut);
+    TH1D *h_Vx_e_AC_1e_cut =
+        new TH1D("Vx_e_AC_1e_cut",
+                 ("V_{x}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{x}^{e} [cm];Counts").c_str(), 50, -10, 5);
+    HistoList_electron_cuts.push_back(h_Vx_e_AC_1e_cut);
+    TH1D *h_Vy_e_BC_1e_cut =
+        new TH1D("Vy_e_BC_1e_cut",
+                 ("V_{y}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{y}^{e} [cm];Counts").c_str(), 50, -10, 5);
+    HistoList_electron_cuts.push_back(h_Vy_e_BC_1e_cut);
+    TH1D *h_Vy_e_AC_1e_cut =
+        new TH1D("Vy_e_AC_1e_cut",
+                 ("V_{y}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{y}^{e} [cm];Counts").c_str(), 50, -10, 5);
+    HistoList_electron_cuts.push_back(h_Vy_e_AC_1e_cut);
 
     TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
     TH2D *h_dc_electron_hit_map_AC_1e_cut[4];  // 3 regions
@@ -249,11 +265,17 @@ void HipoLooper() {
         //  Electron PID cuts
         //  -----------------------------------------------------------------------------------------------------------------------------------------------------
 
+        h_Vx_e_BC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
+        h_Vy_e_BC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
         h_Vz_e_BC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
         // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
         // // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -6. ||
         // // electrons[0]->par()->getVz() > 0.);
-        // if (!bad_Vz_e_CutCond) { h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight); }
+        // if (!bad_Vz_e_CutCond) {
+        //     h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
+        //     h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
+        //     h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+        // }
 
         // fillDCdebug(electrons[0], h_dc_electron_hit_map_BC_1e_cut, weight);
         // bool bad_DC_edge_CutCond = (!DCEdgeCuts(electrons[0]));
@@ -346,10 +368,10 @@ void HipoLooper() {
     titles.DrawLatex(0.05, 0.9, ("#splitline(Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
 
     if (IsData) {
-        text.DrawLatex(0.2, 0.7, ("InputFiles: " + InputFiles).c_str());
+        text.DrawLatex(0.05, 0.7, ("InputFiles: " + InputFiles).c_str());
     } else {
-        text.DrawLatex(0.2, 0.7, ("BaseDir: " + BaseDir).c_str());
-        text.DrawLatex(0.2, 0.65, ("InputFiles: BaseDir + " + InputFiles.substr(BaseDir.length())).c_str());
+        text.DrawLatex(0.05, 0.7, ("BaseDir: " + BaseDir).c_str());
+        text.DrawLatex(0.05, 0.65, ("InputFiles: BaseDir + " + InputFiles.substr(BaseDir.length())).c_str());
     }
 
     myText->Print(fileName_electron_cuts, "pdf");
