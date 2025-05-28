@@ -69,8 +69,10 @@ void HipoLooper() {
 
     std::string OutFolderName_prefix = "01_HipoLooper";
     std::string OutFolderName_ver_status = "_v1_";
-    std::string target_status = (basic_tools::FindSubstring(InputFiles, "/C12/")) ? "C12" : (basic_tools::FindSubstring(InputFiles, "/Ar40/")) ? "Ar40" : "_Unknown";
-    std::string sample_type_status = (basic_tools::FindSubstring(InputFiles, "cache")) ? "_data" : "_simulation";
+    std::string target_status = (basic_tools::FindSubstring(InputFiles, "/C12/") || basic_tools::FindSubstring(InputFiles, "/C/"))     ? "C12"
+                                : (basic_tools::FindSubstring(InputFiles, "/Ar40/") || basic_tools::FindSubstring(InputFiles, "/Ar/")) ? "Ar40"
+                                                                                                                                       : "_Unknown";
+    std::string sample_type_status = (basic_tools::FindSubstring(InputFiles, "cache")) ? "_data" : "_sim";
     std::string genie_tune_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "_G18_" : "_";
     std::string Ebeam_status = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
     std::string General_status = "";
