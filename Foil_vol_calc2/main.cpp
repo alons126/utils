@@ -38,7 +38,6 @@ int main() {
 
     double V0 = BoxVolume(t, h, w), V1 = 2 * PrismVolume(t, a1, b1), V2 = 2 * PrismVolume(t, a2, b2);
 
-    // double V = 0.065 - V1 - 0.006;
     double V = V0 - V1 - V2;
 
     std::cout << "\nSize = " << Size << std::endl;
