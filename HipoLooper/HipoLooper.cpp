@@ -61,8 +61,8 @@ void HipoLooper() {
 
     bool Is2GeV = basic_tools::FindSubstring(InputFiles, "2070MeV"), Is4GeV = basic_tools::FindSubstring(InputFiles, "4029MeV"), Is6GeV = basic_tools::FindSubstring(InputFiles, "5986MeV");
 
-    bool ApplyLimiter = false;
-    int Limiter = 2000000;  // 100 files
+    bool ApplyLimiter = true;
+    int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files
     // int Limiter = 100000;  // 10 files
     // int Limiter = 10000; // 1 file
@@ -75,9 +75,15 @@ void HipoLooper() {
     std::string sample_type_status = (basic_tools::FindSubstring(InputFiles, "cache")) ? "_data" : "_sim";
     std::string genie_tune_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "_G18_" : "_";
     std::string Ebeam_status = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
-    std::string General_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "" : "015664";
+    std::string Run_status = basic_tools::FindSubstring(InputFiles, "015664")   ? "_run_015664"
+                             : basic_tools::FindSubstring(InputFiles, "015778") ? "_run_0015778"
+                             : basic_tools::FindSubstring(InputFiles, "015672") ? "_run_0015672"
+                             : basic_tools::FindSubstring(InputFiles, "015743") ? "_run_0015743"
+                             : basic_tools::FindSubstring(InputFiles, "015792") ? "_run_0015792"
+                                                                                : "";
+    std::string General_status = "";
 
-    std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status + target_status + sample_type_status + genie_tune_status + Ebeam_status + General_status;
+    std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + General_status;
     std::string OutFileName = OutFolderName;
 
     const std::string OutputDir = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName;
@@ -110,11 +116,13 @@ void HipoLooper() {
     char temp_name[100];
     char temp_title[100];
 
-    TH1D *h_Vz_e_BC_1e_cut = new TH1D(
-        "Vz_e_BC_1e_cut", ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + " (before cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
+    TH1D *h_Vz_e_BC_1e_cut =
+        new TH1D("Vz_e_BC_1e_cut",
+                 ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
     HistoList_electron_cuts.push_back(h_Vz_e_BC_1e_cut);
-    TH1D *h_Vz_e_AC_1e_cut = new TH1D(
-        "Vz_e_AC_1e_cut", ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + " (after cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
+    TH1D *h_Vz_e_AC_1e_cut =
+        new TH1D("Vz_e_AC_1e_cut",
+                 ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
     HistoList_electron_cuts.push_back(h_Vz_e_AC_1e_cut);
 
     TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
