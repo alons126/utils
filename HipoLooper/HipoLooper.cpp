@@ -74,7 +74,7 @@ void HipoLooper() {
     // int Limiter = 10000; // 1 file
 
     std::string OutFolderName_prefix = "01_HipoLooper";
-    std::string OutFolderName_ver_status = "_v1_";
+    std::string OutFolderName_ver_status = "_v2_";
     std::string target_status = (basic_tools::FindSubstring(InputFiles, "/C12/") || basic_tools::FindSubstring(InputFiles, "/C/"))     ? "C12"
                                 : (basic_tools::FindSubstring(InputFiles, "/Ar40/") || basic_tools::FindSubstring(InputFiles, "/Ar/")) ? "Ar40"
                                                                                                                                        : "_Unknown";
@@ -136,27 +136,27 @@ void HipoLooper() {
 
     TH1D *h_Vz_e_BC_1e_cut =
         new TH1D("Vz_e_BC_1e_cut",
-                 ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
+                 ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{z}^{e} [cm];Counts").c_str(), 75, -10, 5);
     HistoList_electron_cuts.push_back(h_Vz_e_BC_1e_cut);
     TH1D *h_Vz_e_AC_1e_cut =
         new TH1D("Vz_e_AC_1e_cut",
-                 ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{z}^{e} [cm];Counts").c_str(), 50, -10, 5);
+                 ("V_{z}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{z}^{e} [cm];Counts").c_str(), 75, -10, 5);
     HistoList_electron_cuts.push_back(h_Vz_e_AC_1e_cut);
     TH1D *h_Vx_e_BC_1e_cut =
         new TH1D("Vx_e_BC_1e_cut",
-                 ("V_{x}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{x}^{e} [cm];Counts").c_str(), 50, -10, 5);
+                 ("V_{x}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{x}^{e} [cm];Counts").c_str(), 75, -10, 5);
     HistoList_electron_cuts.push_back(h_Vx_e_BC_1e_cut);
     TH1D *h_Vx_e_AC_1e_cut =
         new TH1D("Vx_e_AC_1e_cut",
-                 ("V_{x}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{x}^{e} [cm];Counts").c_str(), 50, -10, 5);
+                 ("V_{x}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{x}^{e} [cm];Counts").c_str(), 75, -10, 5);
     HistoList_electron_cuts.push_back(h_Vx_e_AC_1e_cut);
     TH1D *h_Vy_e_BC_1e_cut =
         new TH1D("Vy_e_BC_1e_cut",
-                 ("V_{y}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{y}^{e} [cm];Counts").c_str(), 50, -10, 5);
+                 ("V_{y}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (before cut);V_{y}^{e} [cm];Counts").c_str(), 75, -10, 5);
     HistoList_electron_cuts.push_back(h_Vy_e_BC_1e_cut);
     TH1D *h_Vy_e_AC_1e_cut =
         new TH1D("Vy_e_AC_1e_cut",
-                 ("V_{y}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{y}^{e} [cm];Counts").c_str(), 50, -10, 5);
+                 ("V_{y}^{e} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + " (after cut);V_{y}^{e} [cm];Counts").c_str(), 75, -10, 5);
     HistoList_electron_cuts.push_back(h_Vy_e_AC_1e_cut);
 
     TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
@@ -348,7 +348,7 @@ void HipoLooper() {
     TLatex titles;
     TLatex text;
     titles.SetTextSize(0.1);
-    text.SetTextSize(0.05);
+    text.SetTextSize(0.025);
 
     gStyle->SetOptStat("ourmen");
 
@@ -365,7 +365,7 @@ void HipoLooper() {
     /////////////////////////////////////
     myText->cd();
 
-    titles.DrawLatex(0.05, 0.9, ("#splitline(Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
+    titles.DrawLatex(0.05, 0.9, ("#splitline{Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
 
     if (IsData) {
         text.DrawLatex(0.05, 0.7, ("InputFiles: " + InputFiles).c_str());
