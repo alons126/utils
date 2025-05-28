@@ -406,7 +406,7 @@ void HipoLooper() {
             target_location->Draw("same");
 
             auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.2, gStyle->GetStatX() - 0.2, gStyle->GetStatY() - 0.3);
-            TLegendEntry *target_location_entry = Legend->AddEntry(target_location, ("Spec target location = " + ToStringWithPrecision(spec_target_location,2) + " cm").c_str(), "l");
+            TLegendEntry *target_location_entry = Legend->AddEntry(target_location, ("Spec target location = " + basic_tools::ToStringWithPrecision(spec_target_location,2) + " cm").c_str(), "l");
 
             Legend->Draw("same");
         } else if (HistoList_electron_cuts[i]->InheritsFrom("TH2D")) {
