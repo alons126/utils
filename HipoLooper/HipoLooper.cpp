@@ -67,9 +67,9 @@ void HipoLooper() {
     bool Is4GeV = (basic_tools::FindSubstring(InputFiles, "4029MeV") || basic_tools::FindSubstring(InputFiles, "4gev"));
     bool Is6GeV = (basic_tools::FindSubstring(InputFiles, "5986MeV") || basic_tools::FindSubstring(InputFiles, "6gev"));
 
-    bool ApplyLimiter = false;
-    int Limiter = 10000000;  // 10M events (fo the data)
-    // int Limiter = 1000000;  // 100 files
+    bool ApplyLimiter = true;
+    // int Limiter = 10000000;  // 10M events (fo the data)
+    int Limiter = 1000000;  // 100 files
     // int Limiter = 100000;  // 10 files
     // int Limiter = 10000; // 1 file
 
