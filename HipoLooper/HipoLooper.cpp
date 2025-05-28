@@ -95,9 +95,9 @@ void HipoLooper() {
     char temp_name[100];
     char temp_title[100];
 
-    TH1D *h_Vz_e_BC_1e_cut = new TH1D("Vz_e_BC_1e_cut", "V_{z}^{e} in 1e cut (before cut);V_{z}^{e} [cm];Counts", 100, -20, 20);
+    TH1D *h_Vz_e_BC_1e_cut = new TH1D("Vz_e_BC_1e_cut", "V_{z}^{e} in 1e cut (before cut);V_{z}^{e} [cm];Counts", 50, -20, 20);
     HistoList_electron_cuts.push_back(h_Vz_e_BC_1e_cut);
-    TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", "V_{z}^{e} in 1e cut (after cut);V_{z}^{e} [cm];Counts", 100, -20, 20);
+    TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", "V_{z}^{e} in 1e cut (after cut);V_{z}^{e} [cm];Counts", 50, -20, 20);
     HistoList_electron_cuts.push_back(h_Vz_e_AC_1e_cut);
 
     TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
