@@ -27,6 +27,8 @@
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
 
+using namespace constants;
+
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
@@ -165,13 +167,6 @@ void HipoLooper() {
 #pragma endregion
 
     while (chain.Next() == true) {
-        // Display completed
-        ++counter;
-        if ((counter % 1000000) == 0) { std::cerr << "\n" << counter / 1000000 << " million completed"; }
-        if ((counter % 100000) == 0) { std::cerr << "."; }
-
-        if (counter > Limiter) { break; }
-
         // get particles by type
         auto allParticles = c12->getDetParticles();
         auto electrons = c12->getByID(11);
