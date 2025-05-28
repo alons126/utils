@@ -258,10 +258,10 @@ void HipoLooper() {
         // if (bad_PCAL_edge_CutCond) { continue; }
         // if (bad_diag_CutCond) { continue; }
 
-        h_reco_P_e_1e_cut->Fill(reco_P_e.Mag(), weight);
-        h_reco_theta_e_1e_cut->Fill(reco_P_e.Theta() * 180 / M_PI, weight);
-        h_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, weight);
-        h_reco_theta_e_VS_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, reco_P_e.Theta() * 180 / M_PI, weight);
+        // h_reco_P_e_1e_cut->Fill(reco_P_e.Mag(), weight);
+        // h_reco_theta_e_1e_cut->Fill(reco_P_e.Theta() * 180 / M_PI, weight);
+        // h_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, weight);
+        // h_reco_theta_e_VS_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, reco_P_e.Theta() * 180 / M_PI, weight);
 #pragma endregion
     }
 
@@ -313,11 +313,11 @@ void HipoLooper() {
 
     text.DrawLatex(0.05, 0.9, "Uniform sample of (e,e'n) events (truth-level)");
 
-    if (FindSubstring(InputFiles, "2070MeV")) {
+    if (basic_tools::FindSubstring(InputFiles, "2070MeV")) {
         text.DrawLatex(0.2, 0.8, "Beam energy: 2070MeV");
-    } else if (FindSubstring(InputFiles, "4029MeV")) {
+    } else if (basic_tools::FindSubstring(InputFiles, "4029MeV")) {
         text.DrawLatex(0.2, 0.8, "Beam energy: 4029MeV");
-    } else if (FindSubstring(InputFiles, "5986MeV")) {
+    } else if (basic_tools::FindSubstring(InputFiles, "5986MeV")) {
         text.DrawLatex(0.2, 0.8, "Beam energy: 5986MeV");
     }
 
@@ -338,7 +338,7 @@ void HipoLooper() {
 
     for (int i = 0; i < HistoList_electron_cuts.size(); i++) {
         for (int j = 0; j < HistSubjects.size(); j++) {
-            if (FirstPrint.at(j) && FindSubstring(HistoList_electron_cuts[i]->GetTitle(), HistSubjects.at(j))) {
+            if (FirstPrint.at(j) && basic_tools::FindSubstring(HistoList_electron_cuts[i]->GetTitle(), HistSubjects.at(j))) {
                 myText->cd();
                 titles.DrawLatex(0.3, 0.5, HistSubjects2.at(j).c_str());
                 myText->Print(fileName_electron_cuts, "pdf");
