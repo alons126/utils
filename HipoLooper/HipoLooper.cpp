@@ -35,9 +35,9 @@ void HipoLooper() {
     // Data samples:
 
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo";
-    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo";
+    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo";
 
-    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo";
+    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo";
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo";
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
 
@@ -90,10 +90,10 @@ void HipoLooper() {
     }
 
     std::string Run_status = basic_tools::FindSubstring(InputFiles, "015664")   ? "_run_015664"
-                             : basic_tools::FindSubstring(InputFiles, "015778") ? "_run_0015778"
-                             : basic_tools::FindSubstring(InputFiles, "015672") ? "_run_0015672"
-                             : basic_tools::FindSubstring(InputFiles, "015743") ? "_run_0015743"
-                             : basic_tools::FindSubstring(InputFiles, "015792") ? "_run_0015792"
+                             : basic_tools::FindSubstring(InputFiles, "015778") ? "_run_015778"
+                             : basic_tools::FindSubstring(InputFiles, "015672") ? "_run_015672"
+                             : basic_tools::FindSubstring(InputFiles, "015743") ? "_run_015743"
+                             : basic_tools::FindSubstring(InputFiles, "015792") ? "_run_015792"
                                                                                 : "";
     std::string General_status = "";
 
