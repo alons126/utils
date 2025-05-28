@@ -274,6 +274,8 @@ void HipoLooper() {
         // h_reco_theta_e_VS_reco_phi_e_1e_cut->Fill(reco_P_e.Phi() * 180 / M_PI, reco_P_e.Theta() * 180 / M_PI, weight);
     }
 
+    std::cout << "\n\nPlotting and saving histograms..." << "\n\n";
+
     /////////////////////////////////////////////////////
     // Organize histograms
     /////////////////////////////////////////////////////
