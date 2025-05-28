@@ -214,49 +214,49 @@ void HipoLooper() {
 #pragma region /* Electron PID cuts */
 
         h_Vz_e_BC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-        bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
-        // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -6. ||
-        // electrons[0]->par()->getVz() > 0.);
-        if (!bad_Vz_e_CutCond) { h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight); }
+        // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
+        // // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -6. ||
+        // // electrons[0]->par()->getVz() > 0.);
+        // if (!bad_Vz_e_CutCond) { h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight); }
 
         fillDCdebug(electrons[0], h_dc_electron_hit_map_BC_1e_cut, weight);
-        bool bad_DC_edge_CutCond = (!DCEdgeCuts(electrons[0]));
-        if (!bad_DC_edge_CutCond) { fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight); }
+        // bool bad_DC_edge_CutCond = (!DCEdgeCuts(electrons[0]));
+        // if (!bad_DC_edge_CutCond) { fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight); }
 
         h_nphe_BC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
-        bool bad_nphe_CutCond = (electrons[0]->che(clas12::HTCC)->getNphe() <= 2);
-        if (!bad_nphe_CutCond) { h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight); }
+        // bool bad_nphe_CutCond = (electrons[0]->che(clas12::HTCC)->getNphe() <= 2);
+        // if (!bad_nphe_CutCond) { h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight); }
 
         h_Edep_PCAL_VS_EC_BC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
-        bool bad_Edep_PCAL_CutCond = (Edep_PCAL <= 0.06);
-        if (!bad_Edep_PCAL_CutCond) { h_Edep_PCAL_VS_EC_AC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight); }
+        // bool bad_Edep_PCAL_CutCond = (Edep_PCAL <= 0.06);
+        // if (!bad_Edep_PCAL_CutCond) { h_Edep_PCAL_VS_EC_AC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight); }
 
         h_SF_VS_P_e_BC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
-        bool bad_SF_CutCond = (EoP_e < 0.2 || EoP_e > 0.28);
-        if (!bad_SF_CutCond) { h_SF_VS_P_e_AC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight); }
+        // bool bad_SF_CutCond = (EoP_e < 0.2 || EoP_e > 0.28);
+        // if (!bad_SF_CutCond) { h_SF_VS_P_e_AC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight); }
 
         h_SF_VS_Lv_BC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
         h_SF_VS_Lw_BC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
         h_SF_VS_Lu_BC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
-        bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
-        if (!bad_PCAL_edge_CutCond) {
-            h_SF_VS_Lv_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-            h_SF_VS_Lw_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-            h_SF_VS_Lu_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
-        }
+        // bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
+        // if (!bad_PCAL_edge_CutCond) {
+        //     h_SF_VS_Lv_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+        //     h_SF_VS_Lw_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+        //     h_SF_VS_Lu_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+        // }
 
         h_E_PCALoP_e_VS_E_PCALoP_e_BC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-        bool bad_diag_CutCond = (!checkEcalDiagCuts(electrons[0]));
-        if (!bad_diag_CutCond) { h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight); }
+        // bool bad_diag_CutCond = (!checkEcalDiagCuts(electrons[0]));
+        // if (!bad_diag_CutCond) { h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight); }
 
-        if (bad_Vz_e_CutCond) { continue; }
-        if (bad_DC_edge_CutCond) { continue; }
+        // if (bad_Vz_e_CutCond) { continue; }
+        // if (bad_DC_edge_CutCond) { continue; }
 
-        if (bad_nphe_CutCond) { continue; }
-        if (bad_Edep_PCAL_CutCond) { continue; }
-        if (bad_SF_CutCond) { continue; }
-        if (bad_PCAL_edge_CutCond) { continue; }
-        if (bad_diag_CutCond) { continue; }
+        // if (bad_nphe_CutCond) { continue; }
+        // if (bad_Edep_PCAL_CutCond) { continue; }
+        // if (bad_SF_CutCond) { continue; }
+        // if (bad_PCAL_edge_CutCond) { continue; }
+        // if (bad_diag_CutCond) { continue; }
 
         h_reco_P_e_1e_cut->Fill(reco_P_e.Mag(), weight);
         h_reco_theta_e_1e_cut->Fill(reco_P_e.Theta() * 180 / M_PI, weight);
