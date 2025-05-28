@@ -61,6 +61,7 @@ void HipoLooper() {
 
     bool Is2GeV = basic_tools::FindSubstring(InputFiles, "2070MeV"), Is4GeV = basic_tools::FindSubstring(InputFiles, "4029MeV"), Is6GeV = basic_tools::FindSubstring(InputFiles, "5986MeV");
 
+    bool ApplyLimiter = false;
     int Limiter = 2000000;  // 100 files
     // int Limiter = 1000000;  // 100 files
     // int Limiter = 100000;  // 10 files
@@ -176,7 +177,7 @@ void HipoLooper() {
         if ((counter % 1000000) == 0) { std::cerr << "\n" << counter / 1000000 << " million completed"; }
         if ((counter % 100000) == 0) { std::cerr << "."; }
 
-        if (counter > Limiter) { break; }
+        if ((ApplyLimiter && counter > Limiter)) { break; }
 
         // get particles by type
         auto allParticles = c12->getDetParticles();
