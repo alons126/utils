@@ -32,6 +32,8 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
+    std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
+
     // Data samples:
 
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo";
@@ -39,16 +41,18 @@ void HipoLooper() {
 
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo";
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo";
-    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
+    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
 
     // Simulation samples:
 
-    // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
-    // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
+    std::string InputFiles = BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
+    // std::string InputFiles = BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
 
-    // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
-    // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
-    // std::string InputFiles = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo";
+    // std::string InputFiles = BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
+    // std::string InputFiles = BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
+    // std::string InputFiles = BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo";
+
+    bool IsData = basic_tools::FindSubstring(InputFiles, "cache");
 
     double Ebeam = (basic_tools::FindSubstring(InputFiles, "2070MeV") || basic_tools::FindSubstring(InputFiles, "2gev"))   ? 2.07052
                    : (basic_tools::FindSubstring(InputFiles, "4029MeV") || basic_tools::FindSubstring(InputFiles, "4gev")) ? 4.02962
@@ -63,7 +67,7 @@ void HipoLooper() {
     bool Is4GeV = (basic_tools::FindSubstring(InputFiles, "4029MeV") || basic_tools::FindSubstring(InputFiles, "4gev"));
     bool Is6GeV = (basic_tools::FindSubstring(InputFiles, "5986MeV") || basic_tools::FindSubstring(InputFiles, "6gev"));
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files
     // int Limiter = 100000;  // 10 files
@@ -80,8 +84,8 @@ void HipoLooper() {
         exit(1);
     }
 
-    std::string sample_type_status = (basic_tools::FindSubstring(InputFiles, "cache")) ? "_data" : "_sim";
-    std::string genie_tune_status = !basic_tools::FindSubstring(InputFiles, "cache") ? "_G18_" : "_";
+    std::string sample_type_status = IsData ? "_data" : "_sim";
+    std::string genie_tune_status = !IsData ? "_G18_" : "_";
     std::string Ebeam_status = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
 
     if (Ebeam_status == "_Unknown") {
@@ -339,14 +343,13 @@ void HipoLooper() {
     /////////////////////////////////////
     myText->cd();
 
-    text.DrawLatex(0.05, 0.9, "Uniform sample of (e,e'n) events (truth-level)");
+    titles.DrawLatex(0.05, 0.9, ("#splitline(Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
 
-    if (basic_tools::FindSubstring(InputFiles, "2070MeV")) {
-        text.DrawLatex(0.2, 0.8, "Beam energy: 2070MeV");
-    } else if (basic_tools::FindSubstring(InputFiles, "4029MeV")) {
-        text.DrawLatex(0.2, 0.8, "Beam energy: 4029MeV");
-    } else if (basic_tools::FindSubstring(InputFiles, "5986MeV")) {
-        text.DrawLatex(0.2, 0.8, "Beam energy: 5986MeV");
+    if (IsData) {
+        text.DrawLatex(0.2, 0.7, ("InputFiles: " + InputFiles).c_str());
+    } else {
+        text.DrawLatex(0.2, 0.7, ("BaseDir: " +).c_str());
+        text.DrawLatex(0.2, 0.65, ("InputFiles: BaseDir + " + InputFiles.substr(BaseDir.length());).c_str());
     }
 
     myText->Print(fileName_electron_cuts, "pdf");
