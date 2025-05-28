@@ -405,7 +405,7 @@ void HipoLooper() {
             target_location->SetLineColor(kBlue);
             target_location->Draw("same");
 
-            auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.35, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.4);
+            auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.3, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.35);
             TLegendEntry *target_location_entry = Legend->AddEntry(target_location, ("Spec target pos. = " + basic_tools::ToStringWithPrecision(spec_target_location,2) + " cm").c_str(), "l");
 
             Legend->Draw("same");
