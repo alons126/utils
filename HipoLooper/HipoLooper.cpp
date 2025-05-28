@@ -348,7 +348,7 @@ void HipoLooper() {
     if (IsData) {
         text.DrawLatex(0.2, 0.7, ("InputFiles: " + InputFiles).c_str());
     } else {
-        text.DrawLatex(0.2, 0.7, ("BaseDir: " +).c_str());
+        text.DrawLatex(0.2, 0.7, ("BaseDir: " + BaseDir).c_str());
         text.DrawLatex(0.2, 0.65, ("InputFiles: BaseDir + " + InputFiles.substr(BaseDir.length());).c_str());
     }
 
