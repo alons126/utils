@@ -390,6 +390,12 @@ void HipoLooper() {
 
         if (HistoList_electron_cuts[i]->InheritsFrom("TH1D")) {
             HistoList_electron_cuts[i]->Draw();
+
+            if (target_status == "C12") {
+                TLine *target_location = new TLine((2.5 - 3.0), 0., (2.5 - 3.0), gPad->GetFrame()->GetY2());
+            } else if (target_status == "Ar40") {
+                TLine *target_location = new TLine((-2.5 - 3.0), 0., (-2.5 - 3.0), gPad->GetFrame()->GetY2());
+            }
         } else if (HistoList_electron_cuts[i]->InheritsFrom("TH2D")) {
             HistoList_electron_cuts[i]->Draw("colz");
 
