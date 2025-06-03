@@ -3596,13 +3596,13 @@ void HipoLooper() {
 
     gStyle->SetOptStat("ourmen");
 
-    TCanvas *myCanvas = new TCanvas("myPage_electron_cuts", "myPage_electron_cuts", pixelx, pixely);
+    TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
 
-    std::string electron_cuts_PDF_fileName = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/electron_cuts.pdf";
-    char fileName[electron_cuts_PDF_fileName.length()];
-    sprintf(fileName, "%s[", electron_cuts_PDF_fileName.c_str());
+    std::string PDF_fileName = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/HipoLooperPlots.pdf";
+    char fileName[PDF_fileName.length()];
+    sprintf(fileName, "%s[", PDF_fileName.c_str());
     myText->SaveAs(fileName);
-    sprintf(fileName, "%s", electron_cuts_PDF_fileName.c_str());
+    sprintf(fileName, "%s", PDF_fileName.c_str());
 
     /////////////////////////////////////
     // CND Neutron Information
@@ -3658,12 +3658,14 @@ void HipoLooper() {
 
         if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
             if (first_electron && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
-                myText->cd();
+                // myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
+                // myText->Print(fileName, "pdf");
+                // myText->Clear();
 
-                myCanvas->cd(1);
+                // myCanvas->cd(1);
                 first_electron = false;
             } else if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
                 myText->cd();
@@ -3883,7 +3885,7 @@ void HipoLooper() {
         myCanvas->Clear();
     }
 
-    sprintf(fileName, "%s]", electron_cuts_PDF_fileName.c_str());
+    sprintf(fileName, "%s]", PDF_fileName.c_str());
     myCanvas->Print(fileName, "pdf");
 
     outFile->cd();
