@@ -3613,7 +3613,7 @@ void HipoLooper() {
     text.DrawLatex(0.05, 0.75, ("Plots from (e,e') events in: #font[42]{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
 
     if (IsData) {
-        text.DrawLatex(0.05, 0.7, ("InputFiles:  #font[42]{" + InputFiles + "}").c_str());
+        text.DrawLatex(0.05, 0.7, ("InputFiles: #font[42]{" + InputFiles + "}").c_str());
     } else {
         text.DrawLatex(0.05, 0.7, ("BaseDir: #font[42]{" + BaseDir + "}").c_str());
         text.DrawLatex(0.05, 0.65, ("InputFiles: #font[42]{BaseDir + " + InputFiles.substr(BaseDir.length()) + "}").c_str());
@@ -3633,6 +3633,51 @@ void HipoLooper() {
     bool first_piminus_sector1 = true, first_piminus_sector2 = true, first_piminus_sector3 = true, first_piminus_sector4 = true, first_piminus_sector5 = true, first_piminus_sector6 = true;
 
     for (int i = 0; i < HistoList.size(); i++) {
+        // Maps to hold first-time flags
+        std::map<std::string, bool *> first_flags = {{"{e}", &first_electron}, {"{#pi^{+}}", &first_piplus}, {"{#pi^{-}}", &first_piminus}};
+
+        std::map<std::string, std::string> particle_labels = {{"{e}", "e^{-}"}, {"{#pi^{+}}", "#pi^{+}"}, {"{#pi^{-}}", "#pi^{-}"}};
+
+        // Maps of sector flags (assumes these variables already exist)
+        std::map<std::string, std::map<int, bool *>> sector_flags = {
+            {"{e}",
+             {{1, &first_electron_sector1},
+              {2, &first_electron_sector2},
+              {3, &first_electron_sector3},
+              {4, &first_electron_sector4},
+              {5, &first_electron_sector5},
+              {6, &first_electron_sector6}}},
+            {"{#pi^{+}}",
+             {{1, &first_piplus_sector1}, {2, &first_piplus_sector2}, {3, &first_piplus_sector3}, {4, &first_piplus_sector4}, {5, &first_piplus_sector5}, {6, &first_piplus_sector6}}},
+            {"{#pi^{-}}",
+             {{1, &first_piminus_sector1}, {2, &first_piminus_sector2}, {3, &first_piminus_sector3}, {4, &first_piminus_sector4}, {5, &first_piminus_sector5}, {6, &first_piminus_sector6}}}};
+
+        std::string title = HistoList[i]->GetTitle();
+
+        for (const auto &[particle_key, label] : particle_labels) {
+            if (basic_tools::FindSubstring(title, particle_key)) {
+                if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
+                    myText->cd();
+                    titles.DrawLatex(0.3, 0.5, (label + " plots").c_str());
+                    myText->Print(fileName, "pdf");
+                    myText->Clear();
+                    *first_flags[particle_key] = false;
+                } else {
+                    for (int sector = 1; sector <= 6; ++sector) {
+                        std::string sector_str = "sector" + std::to_string(sector);
+                        if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
+                            myText->cd();
+                            titles.DrawLatex(0.3, 0.5, (label + " plots - " + sector_str).c_str());
+                            myText->Print(fileName, "pdf");
+                            myText->Clear();
+                            *sector_flags[particle_key][sector] = false;
+                            break;
+                        }
+                    }
+                }
+                break;  // once matched with a particle type, no need to check others
+            }
+        }
         if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
             if (first_electron && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
                 myText->cd();
