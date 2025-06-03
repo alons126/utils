@@ -807,50 +807,50 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_1e_cut = new TH1D("nphe_BC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_1e_cut);
-    TH1D *h_nphe_AC_1e_cut = new TH1D("nphe_AC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_1e_cut);
+    // TH1D *h_nphe_BC_1e_cut = new TH1D("nphe_BC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_1e_cut);
+    // TH1D *h_nphe_AC_1e_cut = new TH1D("nphe_AC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0,
-                 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2,
-                 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0,
+    //              0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2,
+    //              100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_1e_cut = new TH2D("SF_VS_P_pip_BC_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100,
-                                             0, Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_1e_cut = new TH2D("SF_VS_P_pip_AC_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                                             Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_1e_cut = new TH2D("SF_VS_P_pip_BC_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100,
+    //                                          0, Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_1e_cut = new TH2D("SF_VS_P_pip_AC_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //                                          Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_1e_cut = new TH2D("SF_VS_Lv_BC_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_1e_cut = new TH2D("SF_VS_Lv_AC_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_1e_cut = new TH2D("SF_VS_Lv_BC_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_1e_cut = new TH2D("SF_VS_Lv_AC_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_1e_cut = new TH2D("SF_VS_Lw_BC_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_1e_cut = new TH2D("SF_VS_Lw_AC_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_1e_cut = new TH2D("SF_VS_Lw_BC_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_1e_cut = new TH2D("SF_VS_Lw_AC_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_1e_cut = new TH2D("SF_VS_Lu_BC_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_1e_cut = new TH2D("SF_VS_Lu_AC_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_1e_cut = new TH2D("SF_VS_Lu_BC_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_1e_cut = new TH2D("SF_VS_Lu_AC_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-                 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-                 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //              100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //              100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_1e_cut);
 
 #pragma endregion
 
@@ -899,58 +899,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_sector1_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector1_1e_cut = new TH1D("nphe_BC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector1_1e_cut);
-    TH1D *h_nphe_AC_sector1_1e_cut = new TH1D("nphe_AC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector1_1e_cut);
+    // TH1D *h_nphe_BC_sector1_1e_cut = new TH1D("nphe_BC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector1_1e_cut);
+    // TH1D *h_nphe_AC_sector1_1e_cut = new TH1D("nphe_AC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector1_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector1_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector1_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector1_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector1_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector1_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector1_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector1_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector1_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector1_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector1_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector1_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_sector1_1e_cut =
-        new TH2D("SF_VS_P_pip_BC_sector1_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector1);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_sector1_1e_cut =
-        new TH2D("SF_VS_P_pip_AC_sector1_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector1);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_P_pip_BC_sector1_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector1);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_P_pip_AC_sector1_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector1);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector1_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector1_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector1);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector1_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector1_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector1);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector1_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector1);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector1_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector1);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector1_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector1_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector1);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector1_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector1_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector1);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector1_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector1);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector1_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector1);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector1_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector1_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector1);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector1_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector1_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector1);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector1_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector1);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector1_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector1);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector1_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector1_1e_cut = new TH2D(
-        "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector1);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector1_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector1_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector1);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector1_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector1_1e_cut = new TH2D(
+    //     "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector1);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector1_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector1_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector1);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector1_1e_cut);
 
 #pragma endregion
 
@@ -999,58 +999,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_sector2_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector2_1e_cut = new TH1D("nphe_BC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector2_1e_cut);
-    TH1D *h_nphe_AC_sector2_1e_cut = new TH1D("nphe_AC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector2_1e_cut);
+    // TH1D *h_nphe_BC_sector2_1e_cut = new TH1D("nphe_BC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector2_1e_cut);
+    // TH1D *h_nphe_AC_sector2_1e_cut = new TH1D("nphe_AC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector2_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector2_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector2_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector2_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector2_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector2_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector2_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector2_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector2_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector2_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector2_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector2_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_sector2_1e_cut =
-        new TH2D("SF_VS_P_pip_BC_sector2_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector2);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_sector2_1e_cut =
-        new TH2D("SF_VS_P_pip_AC_sector2_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector2);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_P_pip_BC_sector2_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector2);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_P_pip_AC_sector2_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector2);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector2_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector2_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector2);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector2_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector2_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector2);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector2_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector2);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector2_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector2);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector2_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector2_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector2);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector2_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector2_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector2);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector2_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector2);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector2_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector2);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector2_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector2_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector2);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector2_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector2_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector2);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector2_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector2);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector2_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector2);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector2_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector2_1e_cut = new TH2D(
-        "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector2);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector2_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector2_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector2);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector2_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector2_1e_cut = new TH2D(
+    //     "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector2);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector2_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector2_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector2);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector2_1e_cut);
 
 #pragma endregion
 
@@ -1099,58 +1099,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_sector3_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector3_1e_cut = new TH1D("nphe_BC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector3_1e_cut);
-    TH1D *h_nphe_AC_sector3_1e_cut = new TH1D("nphe_AC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector3_1e_cut);
+    // TH1D *h_nphe_BC_sector3_1e_cut = new TH1D("nphe_BC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector3_1e_cut);
+    // TH1D *h_nphe_AC_sector3_1e_cut = new TH1D("nphe_AC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector3_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector3_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector3_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector3_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector3_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector3_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector3_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector3_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector3_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector3_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector3_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector3_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_sector3_1e_cut =
-        new TH2D("SF_VS_P_pip_BC_sector3_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector3);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_sector3_1e_cut =
-        new TH2D("SF_VS_P_pip_AC_sector3_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector3);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_P_pip_BC_sector3_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector3);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_P_pip_AC_sector3_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector3);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector3_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector3_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector3);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector3_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector3_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector3);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector3_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector3);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector3_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector3);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector3_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector3_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector3);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector3_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector3_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector3);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector3_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector3);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector3_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector3);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector3_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector3_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector3);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector3_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector3_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector3);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector3_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector3);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector3_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector3);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector3_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector3_1e_cut = new TH2D(
-        "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector3);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector3_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector3_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector3);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector3_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector3_1e_cut = new TH2D(
+    //     "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector3);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector3_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector3_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector3);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector3_1e_cut);
 
 #pragma endregion
 
@@ -1199,58 +1199,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_sector4_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector4_1e_cut = new TH1D("nphe_BC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector4_1e_cut);
-    TH1D *h_nphe_AC_sector4_1e_cut = new TH1D("nphe_AC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector4_1e_cut);
+    // TH1D *h_nphe_BC_sector4_1e_cut = new TH1D("nphe_BC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector4_1e_cut);
+    // TH1D *h_nphe_AC_sector4_1e_cut = new TH1D("nphe_AC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector4_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector4_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector4_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector4_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector4_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector4_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector4_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector4_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector4_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector4_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector4_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector4_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_sector4_1e_cut =
-        new TH2D("SF_VS_P_pip_BC_sector4_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector4);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_sector4_1e_cut =
-        new TH2D("SF_VS_P_pip_AC_sector4_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector4);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_P_pip_BC_sector4_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector4);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_P_pip_AC_sector4_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector4);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector4_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector4_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector4);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector4_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector4_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector4);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector4_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector4);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector4_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector4);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector4_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector4_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector4);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector4_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector4_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector4);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector4_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector4);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector4_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector4);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector4_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector4_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector4);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector4_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector4_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector4);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector4_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector4);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector4_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector4);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector4_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector4_1e_cut = new TH2D(
-        "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector4);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector4_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector4_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector4);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector4_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector4_1e_cut = new TH2D(
+    //     "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector4);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector4_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector4_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector4);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector4_1e_cut);
 
 #pragma endregion
 
@@ -1299,58 +1299,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_sector5_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector5_1e_cut = new TH1D("nphe_BC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector5_1e_cut);
-    TH1D *h_nphe_AC_sector5_1e_cut = new TH1D("nphe_AC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector5_1e_cut);
+    // TH1D *h_nphe_BC_sector5_1e_cut = new TH1D("nphe_BC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector5_1e_cut);
+    // TH1D *h_nphe_AC_sector5_1e_cut = new TH1D("nphe_AC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector5_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector5_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector5_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector5_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector5_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector5_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector5_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector5_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector5_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector5_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector5_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector5_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_sector5_1e_cut =
-        new TH2D("SF_VS_P_pip_BC_sector5_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector5);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_sector5_1e_cut =
-        new TH2D("SF_VS_P_pip_AC_sector5_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector5);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_P_pip_BC_sector5_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector5);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_P_pip_AC_sector5_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector5);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector5_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector5_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector5);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector5_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector5_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector5);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector5_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector5);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector5_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector5);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector5_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector5_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector5);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector5_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector5_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector5);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector5_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector5);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector5_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector5);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector5_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector5_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector5);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector5_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector5_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector5);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector5_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector5);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector5_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector5);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector5_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector5_1e_cut = new TH2D(
-        "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector5);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector5_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector5_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector5);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector5_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector5_1e_cut = new TH2D(
+    //     "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector5);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector5_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector5_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector5);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector5_1e_cut);
 
 #pragma endregion
 
@@ -1399,58 +1399,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_sector6_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector6_1e_cut = new TH1D("nphe_BC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector6_1e_cut);
-    TH1D *h_nphe_AC_sector6_1e_cut = new TH1D("nphe_AC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector6_1e_cut);
+    // TH1D *h_nphe_BC_sector6_1e_cut = new TH1D("nphe_BC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector6_1e_cut);
+    // TH1D *h_nphe_AC_sector6_1e_cut = new TH1D("nphe_AC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector6_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector6_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector6_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector6_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector6_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector6_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector6_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector6_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector6_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector6_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector6_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector6_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_P_pip_BC_sector6_1e_cut =
-        new TH2D("SF_VS_P_pip_BC_sector6_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector6);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_P_pip_AC_sector6_1e_cut =
-        new TH2D("SF_VS_P_pip_AC_sector6_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector6);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pip_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_P_pip_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_P_pip_BC_sector6_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (before cut, sector6);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_P_pip_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_P_pip_AC_sector6_1e_cut", "#pi^{+} sampling fraction vs. P_{#pi^{+}} in 1e cut (after cut, sector6);P_{#pi^{+}} [GeV/c];#pi^{+} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pip_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector6_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector6_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector6);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector6_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector6_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector6);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector6_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (before cut, sector6);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector6_1e_cut", "#pi^{+} SF vs. PCAL V coor. in 1e cut (after cut, sector6);PCAL V coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector6_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector6_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector6);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector6_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector6_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector6);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector6_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (before cut, sector6);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector6_1e_cut", "#pi^{+} SF vs. PCAL W coor. in 1e cut (after cut, sector6);PCAL W coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector6_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector6_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector6);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector6_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector6_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector6);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector6_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (before cut, sector6);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector6_1e_cut", "#pi^{+} SF vs. PCAL U coor. in 1e cut (after cut, sector6);PCAL U coor. [cm];#pi^{+} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector6_1e_cut);
 
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector6_1e_cut = new TH2D(
-        "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector6);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector6_1e_cut);
-    TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector6_1e_cut =
-        new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector6);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector6_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector6_1e_cut = new TH2D(
+    //     "E_PCALoP_pip_VS_E_PCALoP_pip_BC", "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (before cut, sector6);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_BC_sector6_1e_cut);
+    // TH2D *h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector6_1e_cut =
+    //     new TH2D("E_PCALoP_pip_VS_E_PCALoP_pip_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{+}} vs. E_{dep}^{ECIN}/P_{#pi^{+}} in 1e cut (after cut, sector6);E_{dep}^{PCAL}/P_{#pi^{+}};E_{dep}^{ECIN}/P_{#pi^{+}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pip_VS_E_PCALoP_pip_AC_sector6_1e_cut);
 
 #pragma endregion
 
@@ -1497,50 +1497,50 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_1e_cut = new TH1D("nphe_BC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_1e_cut);
-    TH1D *h_nphe_AC_1e_cut = new TH1D("nphe_AC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_1e_cut);
+    // TH1D *h_nphe_BC_1e_cut = new TH1D("nphe_BC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_1e_cut);
+    // TH1D *h_nphe_AC_1e_cut = new TH1D("nphe_AC_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0,
-                 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2,
-                 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0,
+    //              0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_1e_cut", "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2,
+    //              100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_1e_cut = new TH2D("SF_VS_P_pim_BC_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100,
-                                             0, Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_1e_cut = new TH2D("SF_VS_P_pim_AC_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                                             Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_1e_cut = new TH2D("SF_VS_P_pim_BC_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100,
+    //                                          0, Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_1e_cut = new TH2D("SF_VS_P_pim_AC_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //                                          Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_1e_cut = new TH2D("SF_VS_Lv_BC_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_1e_cut = new TH2D("SF_VS_Lv_AC_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_1e_cut = new TH2D("SF_VS_Lv_BC_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_1e_cut = new TH2D("SF_VS_Lv_AC_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_1e_cut = new TH2D("SF_VS_Lw_BC_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_1e_cut = new TH2D("SF_VS_Lw_AC_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_1e_cut = new TH2D("SF_VS_Lw_BC_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_1e_cut = new TH2D("SF_VS_Lw_AC_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_1e_cut = new TH2D("SF_VS_Lu_BC_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_1e_cut = new TH2D("SF_VS_Lu_AC_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_1e_cut = new TH2D("SF_VS_Lu_BC_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_1e_cut = new TH2D("SF_VS_Lu_AC_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-                 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-                 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //              100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //              100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_1e_cut);
 
 #pragma endregion
 
@@ -1589,58 +1589,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_sector1_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector1_1e_cut = new TH1D("nphe_BC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector1_1e_cut);
-    TH1D *h_nphe_AC_sector1_1e_cut = new TH1D("nphe_AC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector1_1e_cut);
+    // TH1D *h_nphe_BC_sector1_1e_cut = new TH1D("nphe_BC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector1_1e_cut);
+    // TH1D *h_nphe_AC_sector1_1e_cut = new TH1D("nphe_AC_sector1_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector1);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector1_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector1_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector1_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector1_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector1_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector1_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector1_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector1_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector1_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector1_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector1_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector1_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector1);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_sector1_1e_cut =
-        new TH2D("SF_VS_P_pim_BC_sector1_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector1);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_sector1_1e_cut =
-        new TH2D("SF_VS_P_pim_AC_sector1_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector1);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_P_pim_BC_sector1_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector1);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_P_pim_AC_sector1_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector1);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector1_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector1_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector1);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector1_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector1_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector1);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector1_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector1);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector1_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector1);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector1_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector1_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector1);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector1_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector1_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector1);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector1_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector1);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector1_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector1);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector1_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector1_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector1_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector1);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector1_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector1_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector1_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector1);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector1_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector1);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector1_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector1_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector1_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector1);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector1_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector1_1e_cut = new TH2D(
-        "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector1);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector1_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector1_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector1);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector1_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector1_1e_cut = new TH2D(
+    //     "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector1);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector1_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector1_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector1);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector1_1e_cut);
 
 #pragma endregion
 
@@ -1689,58 +1689,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_sector2_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector2_1e_cut = new TH1D("nphe_BC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector2_1e_cut);
-    TH1D *h_nphe_AC_sector2_1e_cut = new TH1D("nphe_AC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector2_1e_cut);
+    // TH1D *h_nphe_BC_sector2_1e_cut = new TH1D("nphe_BC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector2_1e_cut);
+    // TH1D *h_nphe_AC_sector2_1e_cut = new TH1D("nphe_AC_sector2_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector2);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector2_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector2_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector2_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector2_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector2_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector2_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector2_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector2_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector2_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector2_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector2_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector2_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector2);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_sector2_1e_cut =
-        new TH2D("SF_VS_P_pim_BC_sector2_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector2);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_sector2_1e_cut =
-        new TH2D("SF_VS_P_pim_AC_sector2_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector2);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_P_pim_BC_sector2_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector2);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_P_pim_AC_sector2_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector2);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector2_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector2_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector2);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector2_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector2_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector2);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector2_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector2);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector2_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector2);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector2_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector2_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector2);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector2_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector2_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector2);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector2_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector2);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector2_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector2);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector2_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector2_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector2_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector2);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector2_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector2_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector2_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector2);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector2_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector2);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector2_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector2_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector2_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector2);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector2_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector2_1e_cut = new TH2D(
-        "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector2);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector2_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector2_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector2);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector2_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector2_1e_cut = new TH2D(
+    //     "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector2);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector2_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector2_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector2);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector2_1e_cut);
 
 #pragma endregion
 
@@ -1789,58 +1789,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_sector3_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector3_1e_cut = new TH1D("nphe_BC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector3_1e_cut);
-    TH1D *h_nphe_AC_sector3_1e_cut = new TH1D("nphe_AC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector3_1e_cut);
+    // TH1D *h_nphe_BC_sector3_1e_cut = new TH1D("nphe_BC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector3_1e_cut);
+    // TH1D *h_nphe_AC_sector3_1e_cut = new TH1D("nphe_AC_sector3_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector3);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector3_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector3_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector3_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector3_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector3_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector3_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector3_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector3_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector3_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector3_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector3_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector3_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector3);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_sector3_1e_cut =
-        new TH2D("SF_VS_P_pim_BC_sector3_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector3);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_sector3_1e_cut =
-        new TH2D("SF_VS_P_pim_AC_sector3_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector3);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_P_pim_BC_sector3_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector3);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_P_pim_AC_sector3_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector3);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector3_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector3_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector3);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector3_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector3_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector3);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector3_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector3);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector3_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector3);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector3_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector3_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector3);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector3_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector3_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector3);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector3_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector3);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector3_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector3);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector3_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector3_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector3_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector3);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector3_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector3_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector3_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector3);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector3_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector3);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector3_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector3_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector3_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector3);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector3_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector3_1e_cut = new TH2D(
-        "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector3);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector3_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector3_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector3);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector3_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector3_1e_cut = new TH2D(
+    //     "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector3);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector3_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector3_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector3);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector3_1e_cut);
 
 #pragma endregion
 
@@ -1889,58 +1889,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_sector4_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector4_1e_cut = new TH1D("nphe_BC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector4_1e_cut);
-    TH1D *h_nphe_AC_sector4_1e_cut = new TH1D("nphe_AC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector4_1e_cut);
+    // TH1D *h_nphe_BC_sector4_1e_cut = new TH1D("nphe_BC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector4_1e_cut);
+    // TH1D *h_nphe_AC_sector4_1e_cut = new TH1D("nphe_AC_sector4_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector4);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector4_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector4_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector4_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector4_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector4_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector4_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector4_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector4_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector4_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector4_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector4_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector4_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector4);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_sector4_1e_cut =
-        new TH2D("SF_VS_P_pim_BC_sector4_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector4);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_sector4_1e_cut =
-        new TH2D("SF_VS_P_pim_AC_sector4_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector4);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_P_pim_BC_sector4_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector4);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_P_pim_AC_sector4_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector4);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector4_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector4_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector4);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector4_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector4_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector4);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector4_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector4);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector4_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector4);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector4_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector4_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector4);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector4_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector4_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector4);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector4_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector4);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector4_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector4);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector4_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector4_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector4_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector4);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector4_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector4_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector4_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector4);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector4_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector4);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector4_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector4_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector4_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector4);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector4_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector4_1e_cut = new TH2D(
-        "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector4);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector4_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector4_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector4);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector4_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector4_1e_cut = new TH2D(
+    //     "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector4);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector4_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector4_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector4);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector4_1e_cut);
 
 #pragma endregion
 
@@ -1989,58 +1989,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_sector5_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector5_1e_cut = new TH1D("nphe_BC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector5_1e_cut);
-    TH1D *h_nphe_AC_sector5_1e_cut = new TH1D("nphe_AC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector5_1e_cut);
+    // TH1D *h_nphe_BC_sector5_1e_cut = new TH1D("nphe_BC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector5_1e_cut);
+    // TH1D *h_nphe_AC_sector5_1e_cut = new TH1D("nphe_AC_sector5_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector5);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector5_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector5_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector5_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector5_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector5_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector5_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector5_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector5_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector5_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector5_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector5_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector5_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector5);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_sector5_1e_cut =
-        new TH2D("SF_VS_P_pim_BC_sector5_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector5);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_sector5_1e_cut =
-        new TH2D("SF_VS_P_pim_AC_sector5_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector5);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_P_pim_BC_sector5_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector5);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_P_pim_AC_sector5_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector5);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector5_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector5_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector5);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector5_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector5_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector5);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector5_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector5);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector5_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector5);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector5_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector5_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector5);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector5_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector5_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector5);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector5_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector5);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector5_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector5);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector5_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector5_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector5_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector5);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector5_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector5_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector5_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector5);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector5_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector5);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector5_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector5_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector5_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector5);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector5_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector5_1e_cut = new TH2D(
-        "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector5);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector5_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector5_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector5);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector5_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector5_1e_cut = new TH2D(
+    //     "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector5);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector5_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector5_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector5);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector5_1e_cut);
 
 #pragma endregion
 
@@ -2089,58 +2089,58 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_sector6_1e_cut[i]);
     }
 
-    TH1D *h_nphe_BC_sector6_1e_cut = new TH1D("nphe_BC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_BC_sector6_1e_cut);
-    TH1D *h_nphe_AC_sector6_1e_cut = new TH1D("nphe_AC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
-    HistoList.push_back(h_nphe_AC_sector6_1e_cut);
+    // TH1D *h_nphe_BC_sector6_1e_cut = new TH1D("nphe_BC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (before cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_BC_sector6_1e_cut);
+    // TH1D *h_nphe_AC_sector6_1e_cut = new TH1D("nphe_AC_sector6_1e_cut", "Number of photo-electrons in HTCC in 1e cut (after cut, sector6);Number of photo-electrons;Counts", 20, 0, 20);
+    // HistoList.push_back(h_nphe_AC_sector6_1e_cut);
 
-    TH2D *h_Edep_PCAL_VS_EC_BC_sector6_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_BC_sector6_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector6_1e_cut);
-    TH2D *h_Edep_PCAL_VS_EC_AC_sector6_1e_cut =
-        new TH2D("Edep_PCAL_VS_EC_AC_sector6_1e_cut",
-                 "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
-    HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector6_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_BC_sector6_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_BC_sector6_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (before cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_BC_sector6_1e_cut);
+    // TH2D *h_Edep_PCAL_VS_EC_AC_sector6_1e_cut =
+    //     new TH2D("Edep_PCAL_VS_EC_AC_sector6_1e_cut",
+    //              "E_{dep}^{PCAL} vs. E_{dep}^{EC} in 1e cut (after cut, sector6);E_{dep}^{PCAL} [GeV];E_{dep}^{EC} = E_{dep}^{ECIN} + E_{dep}^{ECOUT} [GeV]", 100, 0, 0.2, 100, 0, 0.3);
+    // HistoList.push_back(h_Edep_PCAL_VS_EC_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_P_pim_BC_sector6_1e_cut =
-        new TH2D("SF_VS_P_pim_BC_sector6_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector6);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_P_pim_AC_sector6_1e_cut =
-        new TH2D("SF_VS_P_pim_AC_sector6_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector6);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
-                 Ebeam * 1.1, 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_P_pim_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_P_pim_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_P_pim_BC_sector6_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (before cut, sector6);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_P_pim_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_P_pim_AC_sector6_1e_cut", "#pi^{-} sampling fraction vs. P_{#pi^{-}} in 1e cut (after cut, sector6);P_{#pi^{-}} [GeV/c];#pi^{-} sampling fraction", 100, 0,
+    //              Ebeam * 1.1, 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_P_pim_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_Lv_BC_sector6_1e_cut =
-        new TH2D("SF_VS_Lv_BC_sector6_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector6);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_Lv_AC_sector6_1e_cut =
-        new TH2D("SF_VS_Lv_AC_sector6_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector6);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lv_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lv_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lv_BC_sector6_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (before cut, sector6);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lv_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lv_AC_sector6_1e_cut", "#pi^{-} SF vs. PCAL V coor. in 1e cut (after cut, sector6);PCAL V coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lv_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_Lw_BC_sector6_1e_cut =
-        new TH2D("SF_VS_Lw_BC_sector6_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector6);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_Lw_AC_sector6_1e_cut =
-        new TH2D("SF_VS_Lw_AC_sector6_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector6);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lw_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lw_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lw_BC_sector6_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (before cut, sector6);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lw_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lw_AC_sector6_1e_cut", "#pi^{-} SF vs. PCAL W coor. in 1e cut (after cut, sector6);PCAL W coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lw_AC_sector6_1e_cut);
 
-    TH2D *h_SF_VS_Lu_BC_sector6_1e_cut =
-        new TH2D("SF_VS_Lu_BC_sector6_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector6);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_BC_sector6_1e_cut);
-    TH2D *h_SF_VS_Lu_AC_sector6_1e_cut =
-        new TH2D("SF_VS_Lu_AC_sector6_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector6);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
-    HistoList.push_back(h_SF_VS_Lu_AC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lu_BC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lu_BC_sector6_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (before cut, sector6);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_BC_sector6_1e_cut);
+    // TH2D *h_SF_VS_Lu_AC_sector6_1e_cut =
+    //     new TH2D("SF_VS_Lu_AC_sector6_1e_cut", "#pi^{-} SF vs. PCAL U coor. in 1e cut (after cut, sector6);PCAL U coor. [cm];#pi^{-} SF", 100, 0, 60., 100, 0.16, 0.3);
+    // HistoList.push_back(h_SF_VS_Lu_AC_sector6_1e_cut);
 
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector6_1e_cut = new TH2D(
-        "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector6);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
-        100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector6_1e_cut);
-    TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector6_1e_cut =
-        new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
-                 "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector6);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
-    HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector6_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector6_1e_cut = new TH2D(
+    //     "E_PCALoP_pim_VS_E_PCALoP_pim_BC", "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (before cut, sector6);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}",
+    //     100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_BC_sector6_1e_cut);
+    // TH2D *h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector6_1e_cut =
+    //     new TH2D("E_PCALoP_pim_VS_E_PCALoP_pim_AC",
+    //              "E_{dep}^{PCAL}/P_{#pi^{-}} vs. E_{dep}^{ECIN}/P_{#pi^{-}} in 1e cut (after cut, sector6);E_{dep}^{PCAL}/P_{#pi^{-}};E_{dep}^{ECIN}/P_{#pi^{-}}", 100, 0, 0.3, 100, 0, 0.35);
+    // HistoList.push_back(h_E_PCALoP_pim_VS_E_PCALoP_pim_AC_sector6_1e_cut);
 
 #pragma endregion
 
