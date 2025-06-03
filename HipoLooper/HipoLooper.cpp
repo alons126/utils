@@ -3726,7 +3726,6 @@ void HipoLooper() {
 
                 first_piplus_sector3 = false;
             } else if (first_piplus_sector4 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector4")) {
-                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector4");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
@@ -3740,12 +3739,10 @@ void HipoLooper() {
 
                 first_piplus_sector5 = false;
             } else if (first_piplus_sector6 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector6")) {
-                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector6");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piplus_sector6 = false;
             }
         } else if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{#pi^{-}}")) {
@@ -3756,7 +3753,6 @@ void HipoLooper() {
 
                 first_piminus = false;
             } else if (first_piminus_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
-                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector1");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
@@ -3764,12 +3760,10 @@ void HipoLooper() {
                 myCanvas->cd(1);
                 first_piminus_sector1 = false;
             } else if (first_piminus_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
-                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector2");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piminus_sector2 = false;
             } else if (first_piminus_sector3 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector3")) {
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector3");
