@@ -3697,12 +3697,13 @@ void HipoLooper() {
             speac_target_location_TLine->SetLineWidth(2);
             speac_target_location_TLine->Draw("same");
 
-            TLine *speac_target_location_TLine;
-            double measured_target_location_value = GetBinCenter(HistoList[i]->GetMaximumBin());
+            TLine *measured_target_location_TLine;
+            double measured_target_location_value = HistoList[i]->GetBinCenter(HistoList[i]->GetMaximumBin());
 
             measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
             measured_target_location_TLine->SetLineColor(kGreen);
-            measured_target_location_TLine->SetLineWidth(2);
+            measured_target_location_TLine->SetLineWidth(4);
+            measured_target_location_TLine->SetLineStyle(2);
             measured_target_location_TLine->Draw("same");
 
             auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.35);
