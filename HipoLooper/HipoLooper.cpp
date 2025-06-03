@@ -3656,9 +3656,11 @@ void HipoLooper() {
 
         for (const auto &[particle_key, label] : particle_labels) {
             if (basic_tools::FindSubstring(title, particle_key)) {
+                myText->cd();
+                titles.SetTextAlign(22);  // Center text both horizontally and vertically
+
                 if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
-                    myText->cd();
-                    titles.DrawLatex(0.3, 0.5, (label + " plots").c_str());
+                    titles.DrawLatex(0.5, 0.5, (label + " plots").c_str());
                     myText->Print(fileName, "pdf");
                     myText->Clear();
                     *first_flags[particle_key] = false;
@@ -3666,8 +3668,7 @@ void HipoLooper() {
                     for (int sector = 1; sector <= 6; ++sector) {
                         std::string sector_str = "sector" + std::to_string(sector);
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
-                            myText->cd();
-                            titles.DrawLatex(0.3, 0.5, (label + " plots - " + sector_str).c_str());
+                            titles.DrawLatex(0.5, 0.5, (label + " plots - " + sector_str).c_str());
                             myText->Print(fileName, "pdf");
                             myText->Clear();
                             *sector_flags[particle_key][sector] = false;
@@ -3675,7 +3676,7 @@ void HipoLooper() {
                         }
                     }
                 }
-                break;  // once matched with a particle type, no need to check others
+                break;  // Stop checking other particles after match
             }
         }
         // if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
@@ -3848,38 +3849,72 @@ void HipoLooper() {
         if (HistoList[i]->InheritsFrom("TH1D")) {
             HistoList[i]->Draw();
 
-            gPad->Update();
-            TLine *speac_target_location_TLine;
-            double speac_target_location_value = 0.0;
+            if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "V_{z}^{")) {
+                gPad->Update();
+                TLine *speac_target_location_TLine;
+                double speac_target_location_value = 0.0;
 
-            if (target_status == "C12") {
-                speac_target_location_value = (2.5 - 3.0);
-            } else if (target_status == "Ar40") {
-                speac_target_location_value = (-2.5 - 3.0);
+                if (target_status == "C12") {
+                    speac_target_location_value = (2.5 - 3.0);
+                } else if (target_status == "Ar40") {
+                    speac_target_location_value = (-2.5 - 3.0);
+                }
+
+                speac_target_location_TLine = new TLine(speac_target_location_value, 0., speac_target_location_value, gPad->GetFrame()->GetY2());
+                speac_target_location_TLine->SetLineColor(kRed);
+                speac_target_location_TLine->SetLineWidth(2);
+                speac_target_location_TLine->Draw("same");
+
+                TLine *measured_target_location_TLine;
+                double measured_target_location_value = HistoList[i]->GetBinCenter(HistoList[i]->GetMaximumBin());
+
+                measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
+                measured_target_location_TLine->SetLineColor(kGreen);
+                measured_target_location_TLine->SetLineWidth(4);
+                measured_target_location_TLine->SetLineStyle(2);
+                measured_target_location_TLine->Draw("same");
+
+                auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.35);
+                // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.3);
+                TLegendEntry *speac_target_location_TLine_entry =
+                    Legend->AddEntry(speac_target_location_TLine, ("Spec target pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
+                TLegendEntry *measured_target_location_TLine_entry =
+                    Legend->AddEntry(measured_target_location_TLine, ("Meas. target pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+
+                Legend->Draw("same");
             }
+            // gPad->Update();
+            // TLine *speac_target_location_TLine;
+            // double speac_target_location_value = 0.0;
 
-            speac_target_location_TLine = new TLine(speac_target_location_value, 0., speac_target_location_value, gPad->GetFrame()->GetY2());
-            speac_target_location_TLine->SetLineColor(kRed);
-            speac_target_location_TLine->SetLineWidth(2);
-            speac_target_location_TLine->Draw("same");
+            // if (target_status == "C12") {
+            //     speac_target_location_value = (2.5 - 3.0);
+            // } else if (target_status == "Ar40") {
+            //     speac_target_location_value = (-2.5 - 3.0);
+            // }
 
-            TLine *measured_target_location_TLine;
-            double measured_target_location_value = HistoList[i]->GetBinCenter(HistoList[i]->GetMaximumBin());
+            // speac_target_location_TLine = new TLine(speac_target_location_value, 0., speac_target_location_value, gPad->GetFrame()->GetY2());
+            // speac_target_location_TLine->SetLineColor(kRed);
+            // speac_target_location_TLine->SetLineWidth(2);
+            // speac_target_location_TLine->Draw("same");
 
-            measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
-            measured_target_location_TLine->SetLineColor(kGreen);
-            measured_target_location_TLine->SetLineWidth(4);
-            measured_target_location_TLine->SetLineStyle(2);
-            measured_target_location_TLine->Draw("same");
+            // TLine *measured_target_location_TLine;
+            // double measured_target_location_value = HistoList[i]->GetBinCenter(HistoList[i]->GetMaximumBin());
 
-            auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.35);
-            // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.3);
-            TLegendEntry *speac_target_location_TLine_entry =
-                Legend->AddEntry(speac_target_location_TLine, ("Spec target pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
-            TLegendEntry *measured_target_location_TLine_entry =
-                Legend->AddEntry(measured_target_location_TLine, ("Meas. target pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+            // measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
+            // measured_target_location_TLine->SetLineColor(kGreen);
+            // measured_target_location_TLine->SetLineWidth(4);
+            // measured_target_location_TLine->SetLineStyle(2);
+            // measured_target_location_TLine->Draw("same");
 
-            Legend->Draw("same");
+            // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.35);
+            // // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.3);
+            // TLegendEntry *speac_target_location_TLine_entry =
+            //     Legend->AddEntry(speac_target_location_TLine, ("Spec target pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
+            // TLegendEntry *measured_target_location_TLine_entry =
+            //     Legend->AddEntry(measured_target_location_TLine, ("Meas. target pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+
+            // Legend->Draw("same");
         } else if (HistoList[i]->InheritsFrom("TH2D")) {
             HistoList[i]->Draw("colz");
 
