@@ -3658,178 +3658,142 @@ void HipoLooper() {
 
         if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
             if (first_electron && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
-                // myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
-                // myText->Print(fileName, "pdf");
-                // myText->Clear();
 
-                // myCanvas->cd(1);
                 first_electron = false;
             } else if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector1");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_electron_sector1 = false;
             } else if (first_electron_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector2");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_electron_sector2 = false;
             } else if (first_electron_sector3 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector3")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector3");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_electron_sector3 = false;
             } else if (first_electron_sector4 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector4")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector4");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_electron_sector4 = false;
             } else if (first_electron_sector5 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector5")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector5");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_electron_sector5 = false;
             } else if (first_electron_sector6 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector6")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector6");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_electron_sector6 = false;
             }
         } else if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{#pi^{+}}")) {
             if (first_piplus && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piplus = false;
             } else if (first_piplus_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector1");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piplus_sector1 = false;
             } else if (first_piplus_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector2");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piplus_sector2 = false;
             } else if (first_piplus_sector3 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector3")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector3");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piplus_sector3 = false;
             } else if (first_piplus_sector4 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector4")) {
-                myText->cd();
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector4");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
                 myCanvas->cd(1);
                 first_piplus_sector4 = false;
             } else if (first_piplus_sector5 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector5")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector5");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piplus_sector5 = false;
             } else if (first_piplus_sector6 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector6")) {
-                myText->cd();
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{+} plots - sector6");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
                 myCanvas->cd(1);
                 first_piplus_sector6 = false;
             }
         } else if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{#pi^{-}}")) {
             if (first_piminus && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piminus = false;
             } else if (first_piminus_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
-                myText->cd();
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector1");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
                 myCanvas->cd(1);
                 first_piminus_sector1 = false;
             } else if (first_piminus_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
-                myText->cd();
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector2");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
                 myCanvas->cd(1);
                 first_piminus_sector2 = false;
             } else if (first_piminus_sector3 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector3")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector3");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piminus_sector3 = false;
             } else if (first_piminus_sector4 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector4")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector4");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piminus_sector4 = false;
             } else if (first_piminus_sector5 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector5")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector5");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piminus_sector5 = false;
             } else if (first_piminus_sector6 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector6")) {
-                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "#pi^{-} plots - sector6");
-                myText->Print(fileName, "pdf");
-                myText->Clear();
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
 
-                myCanvas->cd(1);
                 first_piminus_sector6 = false;
             }
         }
