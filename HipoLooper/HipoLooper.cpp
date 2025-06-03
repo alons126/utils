@@ -3609,7 +3609,8 @@ void HipoLooper() {
     /////////////////////////////////////
     myText->cd();
 
-    titles.DrawLatex(0.05, 0.9, ("#splitline{Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
+    titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
+    text.DrawLatex(0.05, 0.85, ("#splitline{Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
 
     if (IsData) {
         text.DrawLatex(0.05, 0.7, ("InputFiles: " + InputFiles).c_str());
