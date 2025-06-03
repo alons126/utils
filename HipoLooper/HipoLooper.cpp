@@ -3645,17 +3645,19 @@ void HipoLooper() {
 
         if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
             if (first_electron && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
-                myCanvas->cd();
+                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots");
-                myCanvas->Print(fileName, "pdf");
-                myCanvas->Clear();
+                myText->Print(fileName, "pdf");
+                myText->Clear();
+                myCanvas->cd();
 
                 first_electron = false;
             } else if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
-                myCanvas->cd();
+                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector1");
-                myCanvas->Print(fileName, "pdf");
-                myCanvas->Clear();
+                myText->Print(fileName, "pdf");
+                myText->Clear();
+                myCanvas->cd();
 
                 first_electron_sector1 = false;
             } else if (first_electron_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
