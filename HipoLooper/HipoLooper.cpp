@@ -3653,6 +3653,10 @@ void HipoLooper() {
             } 
             
             if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
+                std::cout << "Printing sector1 electron plots..." << std::endl;
+                std::cout << "HistoList[i]->GetTitle() = " << HistoList[i]->GetTitle() << std::endl;
+                exit(1);
+                
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector1");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
