@@ -3633,23 +3633,12 @@ void HipoLooper() {
     bool first_piminus_sector1 = true, first_piminus_sector2 = true, first_piminus_sector3 = true, first_piminus_sector4 = true, first_piminus_sector5 = true, first_piminus_sector6 = true;
 
     for (int i = 0; i < HistoList.size(); i++) {
-        myCanvas->cd();
-
-        myCanvas->cd()->SetGrid();
-        myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
-
-        HistoList[i]->GetYaxis()->SetTitleOffset(1.5);
-        HistoList[i]->GetXaxis()->SetTitleOffset(1.1);
-
-        gPad->SetRightMargin(0.23);
-
         if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
             if (first_electron && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
                 myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots");
                 myText->Print(fileName, "pdf");
                 myText->Clear();
-                myCanvas->cd();
 
                 first_electron = false;
             } else if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
@@ -3657,14 +3646,13 @@ void HipoLooper() {
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector1");
                 myText->Print(fileName, "pdf");
                 myText->Clear();
-                myCanvas->cd();
 
                 first_electron_sector1 = false;
             } else if (first_electron_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
-                myCanvas->cd();
+                myText->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector2");
-                myCanvas->Print(fileName, "pdf");
-                myCanvas->Clear();
+                myText->Print(fileName, "pdf");
+                myText->Clear();
 
                 first_electron_sector2 = false;
             } else if (first_electron_sector3 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector3")) {
@@ -3784,6 +3772,16 @@ void HipoLooper() {
                 first_piminus_sector6 = false;
             }
         }
+
+        myCanvas->cd();
+
+        myCanvas->cd()->SetGrid();
+        myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
+
+        HistoList[i]->GetYaxis()->SetTitleOffset(1.5);
+        HistoList[i]->GetXaxis()->SetTitleOffset(1.1);
+
+        gPad->SetRightMargin(0.23);
 
         if (HistoList[i]->InheritsFrom("TH1D")) {
             HistoList[i]->Draw();
