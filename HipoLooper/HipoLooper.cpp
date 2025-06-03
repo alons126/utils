@@ -3592,7 +3592,7 @@ void HipoLooper() {
     TLatex titles;
     TLatex text;
     titles.SetTextSize(0.1);
-    text.SetTextSize(0.025);
+    text.SetTextSize(0.03);
 
     gStyle->SetOptStat("ourmen");
 
@@ -3610,7 +3610,7 @@ void HipoLooper() {
     myText->cd();
 
     titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
-    text.DrawLatex(0.05, 0.85, ("#splitline{Plots from (e,e') events in}{" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status + "}").c_str());
+    text.DrawLatex(0.05, 0.75, ("Plots from (e,e') events in:\t" + target_status + sample_type_status + genie_tune_status + Ebeam_status + Run_status).c_str());
 
     if (IsData) {
         text.DrawLatex(0.05, 0.7, ("InputFiles: " + InputFiles).c_str());
@@ -3623,28 +3623,14 @@ void HipoLooper() {
     myText->Clear();
 
     bool first_electron = true;
-    bool first_electron_sector1 = true;
-    bool first_electron_sector2 = true;
-    bool first_electron_sector3 = true;
-    bool first_electron_sector4 = true;
-    bool first_electron_sector5 = true;
-    bool first_electron_sector6 = true;
+    bool first_electron_sector1 = true, first_electron_sector2 = true, first_electron_sector3 = true, first_electron_sector4 = true, first_electron_sector5 = true,
+         first_electron_sector6 = true;
 
     bool first_piplus = true;
-    bool first_piplus_sector1 = true;
-    bool first_piplus_sector2 = true;
-    bool first_piplus_sector3 = true;
-    bool first_piplus_sector4 = true;
-    bool first_piplus_sector5 = true;
-    bool first_piplus_sector6 = true;
+    bool first_piplus_sector1 = true, first_piplus_sector2 = true, first_piplus_sector3 = true, first_piplus_sector4 = true, first_piplus_sector5 = true, first_piplus_sector6 = true;
 
     bool first_piminus = true;
-    bool first_piminus_sector1 = true;
-    bool first_piminus_sector2 = true;
-    bool first_piminus_sector3 = true;
-    bool first_piminus_sector4 = true;
-    bool first_piminus_sector5 = true;
-    bool first_piminus_sector6 = true;
+    bool first_piminus_sector1 = true, first_piminus_sector2 = true, first_piminus_sector3 = true, first_piminus_sector4 = true, first_piminus_sector5 = true, first_piminus_sector6 = true;
 
     for (int i = 0; i < HistoList.size(); i++) {
         myCanvas->cd();
@@ -3664,7 +3650,9 @@ void HipoLooper() {
                 myCanvas->Clear();
 
                 first_electron = false;
-            } else if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
+            } 
+            
+            if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector1");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
