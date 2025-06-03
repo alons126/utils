@@ -3645,28 +3645,28 @@ void HipoLooper() {
 
         if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "{e}")) {
             if (first_electron && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
 
                 first_electron = false;
             } else if (first_electron_sector1 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector1")) {
-                std::cout << "Printing sector1 electron plots..." << std::endl;
-                std::cout << "HistoList[i]->GetTitle() = " << HistoList[i]->GetTitle() << std::endl;
-                exit(1);
-
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector1");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
 
                 first_electron_sector1 = false;
             } else if (first_electron_sector2 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector2")) {
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector2");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
 
                 first_electron_sector2 = false;
             } else if (first_electron_sector3 && basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector3")) {
+                myCanvas->cd();
                 titles.DrawLatex(0.3, 0.5, "e^{-} plots - sector3");
                 myCanvas->Print(fileName, "pdf");
                 myCanvas->Clear();
