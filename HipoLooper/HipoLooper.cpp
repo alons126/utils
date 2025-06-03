@@ -3598,7 +3598,7 @@ void HipoLooper() {
 
     TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
 
-    std::string PDF_fileName = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/HipoLooperPlots.pdf";
+    std::string PDF_fileName = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/" + OutFolderName + ".pdf";
     char fileName[PDF_fileName.length()];
     sprintf(fileName, "%s[", PDF_fileName.c_str());
     myText->SaveAs(fileName);
