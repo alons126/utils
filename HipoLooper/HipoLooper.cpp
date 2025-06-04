@@ -2255,6 +2255,8 @@ void HipoLooper() {
 
     clasAna.printParams();
 
+    std::cout << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n";
+
 #pragma region Loop over events
     int counter = 0;
 
@@ -3169,10 +3171,13 @@ void HipoLooper() {
         } else if (HistoList[i]->InheritsFrom("TH2D")) {
             HistoList[i]->Draw("colz");
 
+            HistoList[i]->SetLogz(0);
+            if (basic_tools::FindSubstring(HistoList[i]->GetName(), "PCAL")) { HistoList[i]->SetLogz(1); }
+
             if (HistoList[i]->GetEntries() != 0) {
                 gPad->Update();
                 TPaletteAxis *palette = (TPaletteAxis *)HistoList[i]->GetListOfFunctions()->FindObject("palette");
-                palette->SetY2NDC(0.475);
+                palette->SetY2NDC(0.6);
                 gPad->Modified();
                 gPad->Update();
             }
