@@ -36,6 +36,9 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
+    std::string OutFolderName_prefix = "05_HipoLooper";
+    std::string OutFolderName_ver_status = "_v5_";
+
 #pragma region Sample selection
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
@@ -80,8 +83,6 @@ void HipoLooper() {
     // int Limiter = 100000;  // 10 files
     // int Limiter = 10000; // 1 file
 
-    std::string OutFolderName_prefix = "04_HipoLooper";
-    std::string OutFolderName_ver_status = "_v4_";
     std::string target_status = (basic_tools::FindSubstring(InputFiles, "/C12/") || basic_tools::FindSubstring(InputFiles, "/C/"))     ? "C12"
                                 : (basic_tools::FindSubstring(InputFiles, "/Ar40/") || basic_tools::FindSubstring(InputFiles, "/Ar/")) ? "Ar40"
                                                                                                                                        : "_Unknown";
@@ -93,8 +94,9 @@ void HipoLooper() {
 
     std::string sample_type_status = IsData ? "_data" : "_sim";
     std::string genie_tune_status = !IsData ? "_G18_" : "_";
-    std::string Ebeam_status_1 = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
-    std::string Ebeam_status_2 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
+    std::string Ebeam_status_1 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
+    // std::string Ebeam_status_1 = Is2GeV ? "2070MeV" : Is4GeV ? "4029MeV" : Is6GeV ? "5986MeV" : "_Unknown";
+    std::string Ebeam_status_2 = Is2GeV ? "_2GeV" : Is4GeV ? "_4GeV" : Is6GeV ? "_6GeV" : "_Unknown";
 
     if (Ebeam_status_1 == "_Unknown") {
         std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
@@ -2227,7 +2229,7 @@ void HipoLooper() {
     clasAna.setEcalSFCuts();
 
     clasAna.readEcalPPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsPI_40Ca_x2.dat").c_str());
-    clasAna.setEcalPCuts();
+    // clasAna.setEcalPCuts();
 
     clasAna.setEcalEdgeCuts();
 
