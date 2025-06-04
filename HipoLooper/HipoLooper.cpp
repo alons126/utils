@@ -2957,6 +2957,8 @@ void HipoLooper() {
         {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimFD_AC_BySector_1e_cut");
 
+        exit(1);
+
     /////////////////////////////////////////////////////
     // Now create the output PDFs
     /////////////////////////////////////////////////////
