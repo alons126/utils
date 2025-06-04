@@ -192,16 +192,20 @@ std::string SanitizeForBookmark(const std::string &s) {
 void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
     std::string ReassignBookmarksToolFile = WorkingDir + "framework/java/ReassignBookmarksTool/ReassignBookmarksTool.jar";
     std::string bookmarksJSON = "bookmarks.json";
-    std::string extractCmd =
-        "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
-        "-jar " +
-        ReassignBookmarksToolFile + " extract " + inputPDF + " " + bookmarksJSON;
+    std::string extractCmd = "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" " +
+                             ReassignBookmarksToolFile + " extract " + inputPDF + " " + bookmarksJSON;
+    // std::string extractCmd =
+    //     "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
+    //     "-jar " +
+    //     ReassignBookmarksToolFile + " extract " + inputPDF + " " + bookmarksJSON;
     std::string noBookmarkPDF = "no_bookmarks.pdf";
     std::string gsCmd = "gs -q -o " + noBookmarkPDF + " -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress " + inputPDF;
-    std::string reassignCmd =
-        "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
-        "-jar " +
-        ReassignBookmarksToolFile + " reassign " + noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
+    std::string reassignCmd = "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" " +
+                              ReassignBookmarksToolFile + " reassign " + noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
+    // std::string reassignCmd =
+    //     "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
+    //     "-jar " +
+    //     ReassignBookmarksToolFile + " reassign " + noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
 
     if (hierarchical) reassignCmd += " hierarchical";
 

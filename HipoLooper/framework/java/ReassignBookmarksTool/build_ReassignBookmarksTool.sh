@@ -52,5 +52,6 @@ jar --create --file ReassignBookmarksTool.jar --main-class ReassignBookmarksTool
 echo ""
 
 echo "${COLOR_START}Done. You can now use:${COLOR_END}"
-echo "  java -cp .:lib/* -jar ReassignBookmarksTool.jar input.pdf bookmarks.json output.pdf"
+echo "  java -cp .:lib/* ReassignBookmarksTool extract input.pdf bookmarks.json"
+echo "  java -cp .:lib/* ReassignBookmarksTool reassign input.pdf bookmarks.json output.pdf"
 echo ""
