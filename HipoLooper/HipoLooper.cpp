@@ -3171,8 +3171,8 @@ void HipoLooper() {
         } else if (HistoList[i]->InheritsFrom("TH2D")) {
             HistoList[i]->Draw("colz");
 
-            HistoList[i]->SetLogz(0);
-            if (basic_tools::FindSubstring(HistoList[i]->GetName(), "PCAL")) { HistoList[i]->SetLogz(1); }
+            myCanvas->SetLogz(0);
+            if (basic_tools::FindSubstring(HistoList[i]->GetName(), "PCAL")) { myCanvas->SetLogz(1); }
 
             if (HistoList[i]->GetEntries() != 0) {
                 gPad->Update();
