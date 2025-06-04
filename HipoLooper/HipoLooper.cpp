@@ -2456,7 +2456,7 @@ void HipoLooper() {
         bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
         bool bad_diag_CutCond = (!reco_analysis_functions::checkEcalDiagCuts(electrons[0]));
 
-        if (bad_Vz_e_CutCond) { continue; }
+        // if (bad_Vz_e_CutCond) { continue; }
         if (bad_DC_edge_CutCond) { continue; }
         if (bad_nphe_CutCond) { continue; }
         if (bad_Edep_PCAL_CutCond) { continue; }
