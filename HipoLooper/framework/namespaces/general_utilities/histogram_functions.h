@@ -941,6 +941,8 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
                       << " Min bin content: " << minContent << std::endl;
 
             gPad->SetLogy(0);  // reset log scale if needed
+            ((TH1D *)histograms[i])->SetMinimum(1e-3);  // set positive Y-min to enable log scale
+
             ((TH1D *)histograms[i])->SetLineColor(kRed);
             ((TH1D *)histograms[i])->SetMarkerColor(kRed);
             // ((TH1D *)histograms[i])->SetLineColor(kBlue);
