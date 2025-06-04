@@ -205,11 +205,11 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
 
     if (hierarchical) reassignCmd += " hierarchical";
 
-    std::cout << "\nReassignBookmarksToolFile: " << ReassignBookmarksToolFile << "\n";
-    std::cout << "bookmarksJSON:               " << bookmarksJSON << "\n";
-    std::cout << "extractCmd:                  " << extractCmd << "\n";
-    std::cout << "gsCmd:                       " << gsCmd << "\n";
-    std::cout << "reassignCmd:                 " << reassignCmd << "\n\n";
+    std::cout << "\033[33m" << "\nReassignBookmarksToolFile: " << "\033[0m" << ReassignBookmarksToolFile << "\n";
+    std::cout << "\033[33m" << "bookmarksJSON:               " << "\033[0m" << bookmarksJSON << "\n";
+    std::cout << "\033[33m" << "extractCmd:                  " << "\033[0m" << extractCmd << "\n";
+    std::cout << "\033[33m" << "gsCmd:                       " << "\033[0m" << gsCmd << "\n";
+    std::cout << "\033[33m" << "reassignCmd:                 " << "\033[0m" << reassignCmd << "\n\n";
 
     system(extractCmd.c_str());   // Step 1: Extract current bookmarks
     system(gsCmd.c_str());        // Step 2: Strip bookmarks from original PDF using gs
