@@ -597,8 +597,8 @@ void DrawTHStack(THStack *stack, bool useLogScale) {
 void CompareHistograms(const std::vector<TObject *> &histograms, const std::string &saveDirectory, const std::string &saveDirectoryName = "", const std::string &ComparisonName = "") {
     size_t nHistos = histograms.size();
 
-    if (nHistos != 2 && nHistos != 4 && nHistos != 5) {
-        std::cerr << "\n\nhistogram_functions::CompareHistograms: ERROR! Only supports 2, 4, or 5 histograms!\n\n" << std::endl;
+    if (nHistos != 2 && nHistos != 4 && nHistos != 5 && nHistos != 6) {
+        std::cerr << "\n\nhistogram_functions::CompareHistograms: ERROR! Only supports 2, 4, 5, or 6 histograms!\n\n" << std::endl;
         return;
     }
 
@@ -613,10 +613,10 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
         padMapping = {1, 2};
     } else if (nHistos == 4) {
         padMapping = {1, 2, 3, 4};
-        // canvasHeight = 440 * nRows;
     } else if (nHistos == 5) {
         padMapping = {1, 2, 3, 5, 6};
-        // canvasHeight = 440 * nRows;
+    } else if (nHistos == 6) {
+        padMapping = {1, 2, 3, 4, 5, 6};
     }
 
     // Create output directory if needed
@@ -628,13 +628,10 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
     // Linear Scale Canvas
     // ------------------
     TCanvas TempCanvas("TempCanvas", "Histograms - Linear Scale", canvasWidth, canvasHeight);
-    // TCanvas TempCanvas("TempCanvas", "Histograms - Linear Scale", 1000 * nCols, 450 * nRows);
-    // TCanvas TempCanvas("TempCanvas", "Histograms - Linear Scale", 1000 * nCols, 750 * nRows);
     TempCanvas.Divide(nCols, nRows);
 
     for (size_t i = 0; i < nHistos; ++i) {
         TempCanvas.cd(padMapping[i]);
-        // gPad->SetGrid();
         gPad->SetBottomMargin(0.14);
         gPad->SetLeftMargin(0.16);
         gPad->SetRightMargin(0.12);
@@ -648,13 +645,12 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
             gStyle->SetOptStat("ourmen");
 
             ((TH1D *)histograms[i])->GetYaxis()->SetTitleOffset(1.3);
-            // ((TH1D *)histograms[i])->GetYaxis()->SetTitleOffset(1.0);
             ((TH1D *)histograms[i])->GetXaxis()->SetTitleOffset(1.0);
             ((TH1D *)histograms[i])->SetLineColor(kBlue);
             ((TH1D *)histograms[i])->SetLineWidth(1);
             ((TH1D *)histograms[i])->SetLineStyle(1);
             ((TH1D *)histograms[i])->Draw();
-            gPad->Update();  // So that statbox will be found
+            gPad->Update();
 
             TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
             if (stats) {
@@ -731,7 +727,7 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
             ((TH1D *)histograms[i])->SetLineWidth(1);
             ((TH1D *)histograms[i])->SetLineStyle(1);
             ((TH1D *)histograms[i])->Draw();
-            gPad->Update();  // So that statbox will be found
+            gPad->Update();
 
             TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
             if (stats) {
