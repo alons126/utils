@@ -123,7 +123,7 @@ void HipoLooper() {
     system(("rm -rf " + OutputDir).c_str());
     system(("mkdir -p " + OutputDir).c_str());
 
-    TFile *outFile = new TFile(("/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/" + OutFileName + ".root").c_str(), "RECREATE");
+    TFile *outFile = new TFile((OutputDir + "/" + OutFileName + ".root").c_str(), "RECREATE");
 
     std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
     TString Beam_energy_TString = Ebeam_status_1;
@@ -2936,29 +2936,6 @@ void HipoLooper() {
         HistoList[i]->GetYaxis()->CenterTitle();
     }
 
-    histogram_functions::CompareHistograms(
-        {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_e_BC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_e_AC_BySector_1e_cut");
-
-    histogram_functions::CompareHistograms(
-        {h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut, h_Vz_pipFD_BC_sector5_1e_cut, h_Vz_pipFD_BC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipFD_BC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipFD_AC_BySector_1e_cut");
-
-    histogram_functions::CompareHistograms(
-        {h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut, h_Vz_pimFD_BC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimFD_BC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimFD_AC_BySector_1e_cut");
-
-        exit(1);
-
     /////////////////////////////////////////////////////
     // Now create the output PDFs
     /////////////////////////////////////////////////////
@@ -2974,7 +2951,7 @@ void HipoLooper() {
 
     TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
 
-    std::string PDF_fileName = "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/" + OutFolderName + ".pdf";
+    std::string PDF_fileName = OutputDir + "/" + OutFolderName + ".pdf";
     char fileName[PDF_fileName.length()];
     sprintf(fileName, "%s[", PDF_fileName.c_str());
     myText->SaveAs(fileName);
@@ -3169,6 +3146,27 @@ void HipoLooper() {
 
     histogram_functions::FixPDFOrientation(PDF_fileName);                                                             // Fix orientation
     histogram_functions::ReassignPDFBookmarks(basic_tools::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+
+    histogram_functions::CompareHistograms(
+        {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut}, OutputDir,
+        "Histogram_Comparisons", "Vz_e_BC_BySector_1e_cut");
+    histogram_functions::CompareHistograms(
+        {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut}, OutputDir,
+        "Histogram_Comparisons", "Vz_e_AC_BySector_1e_cut");
+
+    histogram_functions::CompareHistograms(
+        {h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut, h_Vz_pipFD_BC_sector5_1e_cut, h_Vz_pipFD_BC_sector6_1e_cut},
+        OutputDir, "Histogram_Comparisons", "Vz_pipFD_BC_BySector_1e_cut");
+    histogram_functions::CompareHistograms(
+        {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
+        OutputDir, "Histogram_Comparisons", "Vz_pipFD_AC_BySector_1e_cut");
+
+    histogram_functions::CompareHistograms(
+        {h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut, h_Vz_pimFD_BC_sector6_1e_cut},
+        OutputDir, "Histogram_Comparisons", "Vz_pimFD_BC_BySector_1e_cut");
+    histogram_functions::CompareHistograms(
+        {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
+        OutputDir, "Histogram_Comparisons", "Vz_pimFD_AC_BySector_1e_cut");
 
     outFile->cd();
     for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }

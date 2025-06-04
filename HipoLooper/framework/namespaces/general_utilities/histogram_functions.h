@@ -919,9 +919,6 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
         gPad->SetLeftMargin(0.16);
         gPad->SetRightMargin(0.12);
 
-        std::cout << "Drawing histogram " << i << ": " << histograms[i]->ClassName() << std::endl;
-        std::cout << "Histogram name " << i << ": " << histograms[i]->GetName() << std::endl;
-
         if (IsHistogramEmpty(histograms[i])) {
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
