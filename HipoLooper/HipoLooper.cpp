@@ -3021,7 +3021,7 @@ void HipoLooper() {
                     *first_flags[particle_key] = false;
                 } else {
                     for (int sector = 1; sector <= 6; ++sector) {
-                        std::string sector_str = "sector" + std::to_string(sector);
+                        std::string sector_str = "sector " + std::to_string(sector);
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
                             titles.DrawLatex(0.5, 0.5, (label + " plots - " + sector_str).c_str());
                             myText->Print(fileName, "pdf");
