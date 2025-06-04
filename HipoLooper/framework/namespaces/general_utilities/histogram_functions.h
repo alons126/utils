@@ -51,6 +51,13 @@ namespace histogram_functions {
 
 // FillByInt1D function -------------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Fills a 1D histogram with integer-based bin indexing.
+ *
+ * @param hist  Pointer to the TH1 histogram to be filled.
+ * @param bin   Bin index (0-based).
+ * @param weight  Optional weight for the bin content (default is 1.0).
+ */
 void FillByInt1D(TH1D *H1D_All_Int, TH1D *H1D_QEL, TH1D *H1D_MEC, TH1D *H1D_RES, TH1D *H1D_DIS, const bool &qel, const bool &mec, const bool &res, const bool &dis, const double &Variable,
                  const double &Weight) {
     H1D_All_Int->Fill(Variable, Weight);
@@ -68,6 +75,14 @@ void FillByInt1D(TH1D *H1D_All_Int, TH1D *H1D_QEL, TH1D *H1D_MEC, TH1D *H1D_RES,
 
 // FillByInt2D function -------------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Fills a 2D histogram with integer-based bin indexing.
+ *
+ * @param hist  Pointer to the TH2 histogram to be filled.
+ * @param xbin  Bin index along the X-axis (0-based).
+ * @param ybin  Bin index along the Y-axis (0-based).
+ * @param weight  Optional weight for the bin content (default is 1.0).
+ */
 void FillByInt2D(TH2D *H1D_All_Int, TH2D *H1D_QEL, TH2D *H1D_MEC, TH2D *H1D_RES, TH2D *H1D_DIS, const bool &qel, const bool &mec, const bool &res, const bool &dis, const double &Variable_x,
                  const double &Variable_y, const double &Weight) {
     H1D_All_Int->Fill(Variable_x, Variable_y, Weight);
@@ -85,6 +100,27 @@ void FillByInt2D(TH2D *H1D_All_Int, TH2D *H1D_QEL, TH2D *H1D_MEC, TH2D *H1D_RES,
 
 // FillByInthsPlots function --------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * Fills the appropriate hsPlots histogram(s) based on the interaction type flags.
+ *
+ * This function dispatches filling events to the correct hsPlots objects for
+ * all interactions and for each specific interaction type (QEL, MEC, RES, DIS).
+ *
+ * @param hsPlots_All_Int   hsPlots object for all interactions
+ * @param hsPlots_QEL       hsPlots object for QEL interactions
+ * @param hsPlots_MEC       hsPlots object for MEC interactions
+ * @param hsPlots_RES       hsPlots object for RES interactions
+ * @param hsPlots_DIS       hsPlots object for DIS interactions
+ * @param type              Histogram type (TH1D_TYPE or TH2D_TYPE)
+ * @param qel               True if this event is QEL
+ * @param mec               True if this event is MEC
+ * @param res               True if this event is RES
+ * @param dis               True if this event is DIS
+ * @param Slice_variable    The slicing variable (usually for multi-histograms)
+ * @param Variable_x        X value to fill
+ * @param Variable_y        Y value to fill (for 2D histograms)
+ * @param Weight            Optional event weight (default 1.0)
+ */
 void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &hsPlots_MEC, hsPlots &hsPlots_RES, hsPlots &hsPlots_DIS, hsPlots::HistoType type, const bool &qel,
                       const bool &mec, const bool &res, const bool &dis, const double &Slice_variable, const double &Variable_x, const double &Variable_y, const double &Weight = 1.0) {
     bool PrintOut = false;
@@ -148,19 +184,31 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
 // SanitizeForBookmark functions ----------------------------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Removes invalid characters from a string to make it safe for use as a PDF bookmark.
- *
- * This function returns a copy of the input string with only alphanumeric characters, spaces,
- * hyphens, and underscores preserved. All other characters are removed. This is useful when
- * generating bookmark titles for PDFs where unsupported characters can cause rendering or
- * compatibility issues.
- *
- * @param s The input string to be sanitized.
- * @return A new string containing only valid bookmark characters.
+ * Sanitizes a string to make it safe for use as a PDF bookmark title.
+ * 
+ * - Replaces "#pi^{+}" with "pi plus"
+ * - Replaces "#pi^{-}" with "pi minus"
+ * - Removes all characters except alphanumerics, space, '-', and '_'
+ * 
+ * @param s The original string to sanitize
+ * @return A sanitized version of the string suitable for bookmarks
  */
 std::string SanitizeForBookmark(const std::string &s) {
+    std::string modified = s;
+    size_t pos;
+
+    // Replace #pi^{+} with "pi plus"
+    while ((pos = modified.find("#pi^{+}")) != std::string::npos) {
+        modified.replace(pos, 7, "pi plus");
+    }
+
+    // Replace #pi^{-} with "pi minus"
+    while ((pos = modified.find("#pi^{-}")) != std::string::npos) {
+        modified.replace(pos, 7, "pi minus");
+    }
+
     std::string out;
-    for (char c : s) {
+    for (char c : modified) {
         if (isalnum(c) || c == ' ' || c == '-' || c == '_') {
             out += c;  // Only append allowed characters
         }
@@ -171,23 +219,23 @@ std::string SanitizeForBookmark(const std::string &s) {
 
 // ReassignPDFBookmarks functions ---------------------------------------------------------------------------------------------------------------------------------------
 
-// C++ function to call the Java PDF bookmark tool
 /**
- * @brief Reassigns bookmarks in a PDF file using an external Java tool.
+ * @brief Reassigns cleaned and organized bookmarks to a PDF file.
  *
- * This function automates the process of replacing existing bookmarks in a PDF.
- * It uses a Java-based tool to extract current bookmarks into a JSON file, removes
- * bookmarks from the original PDF using Ghostscript, and then reinserts the bookmarks
- * into the cleaned PDF. Optionally, the bookmarks can be inserted in a hierarchical format.
+ * This function is used to reprocess bookmarks in a PDF file using a Java tool. It:
+ *   1. Extracts the current bookmarks to a JSON file using the Java tool.
+ *   2. Strips all existing bookmarks from the PDF using Ghostscript.
+ *   3. Reapplies the bookmarks from the JSON to the stripped PDF using the Java tool.
  *
- * Dependencies:
- * - Java
- * - Ghostscript (gs)
- * - ReassignBookmarksTool.jar and required libraries (PDFBox, FontBox, Jackson)
+ * The Java class `ReassignBookmarksTool` must be present and compiled in the specified working directory.
+ * Its required dependencies (PDFBox, Jackson, etc.) must be present in the `lib/` subdirectory.
  *
- * @param inputPDF Path to the original PDF file with bookmarks.
- * @param outputPDF Path to the new PDF file with reassigned bookmarks.
- * @param hierarchical If true, creates hierarchical bookmarks in the output file.
+ * @param WorkingDir     Absolute path to the directory containing the Java ReassignBookmarksTool and its `lib/` folder.
+ * @param inputPDF       Full path to the input PDF file whose bookmarks are to be reassigned.
+ * @param outputPDF      Full path to the output PDF file that will be created with the reassigned bookmarks.
+ * @param hierarchical   Optional flag indicating whether bookmarks should be structured hierarchically.
+ *
+ * @note This function calls external tools (`java`, `gs`) via `system()` and assumes they are available in the environment.
  */
 void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
     std::string toolDir = WorkingDir + "framework/java/ReassignBookmarksTool/";
@@ -368,7 +416,16 @@ void TitleAligner(TH1D *simHistogram, TH1D *dataHistogram, const std::string &or
 
 // DrawAndSaveHistogramsToPDF function ----------------------------------------------------------------------------------------------------------------------------------
 
-// Function to render and save histograms from a list to a PDF
+/**
+ * DrawAndSaveHistogramsToPDF
+ * ---------------------------
+ * Draws a list of 1D and 2D histograms (TH1 and TH2) from the input vector and saves them as individual pages
+ * in a multipage PDF file. Empty histograms are marked with a notice instead of being drawn.
+ *
+ * @param HistoList     Vector of TH1 or TH2 pointers (casted as TObject).
+ * @param outputPDF     Full path to the output multipage PDF file.
+ * @param title         Optional title drawn at the top of each page.
+ */
 void DrawAndSaveHistogramsToPDF(TCanvas *MainCanvas, const std::vector<TObject *> &HistoList, const std::string &Histogram_OutPDF_fileName_str, char *Histogram_OutPDF_fileName_char,
                                 const std::string &SampleName, const std::string &VaryingSampleName, const double &beamE) {
     int pixelx = 1980;
@@ -519,7 +576,14 @@ TObject *FindHistogram(TFile *file, const char *histNameSubstring, const std::st
 
 // DrawEmptyHistogramNotice function ------------------------------------------------------------------------------------------------------------------------------------
 
-// This function saves some reusable code. It is also defined in hsPlots, yet it is placed here to avoid include errors
+/**
+ * DrawEmptyHistogramNotice
+ * -------------------------
+ * Displays a placeholder message on the current canvas when a histogram is empty,
+ * indicating that no data is available for the given plot.
+ *
+ * @param label  The title or label of the missing/empty histogram to show in the notice.
+ */
 void DrawEmptyHistogramNotice(double x_1, double y_1, double x_2, double y_2, double diplayTextSize = 0.1) {
     TPaveText *displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
     displayText->SetTextSize(diplayTextSize);
@@ -531,6 +595,14 @@ void DrawEmptyHistogramNotice(double x_1, double y_1, double x_2, double y_2, do
 
 // IsHistogramEmpty function --------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * IsHistogramEmpty
+ * ----------------
+ * Checks whether a given histogram (1D or 2D) is empty, i.e., has zero entries.
+ *
+ * @param hist  Pointer to a TH1 histogram (TH1D, TH1F, TH2D, etc.).
+ * @return      True if the histogram has no entries, false otherwise.
+ */
 bool IsHistogramEmpty(TObject *obj) {
     if (obj->InheritsFrom(TH1::Class())) {
         TH1 *h = (TH1 *)obj;
@@ -556,6 +628,18 @@ bool IsHistogramEmpty(TObject *obj) {
 
 // DrawTHStack ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * DrawTHStack
+ * -----------
+ * Draws a THStack of histograms, applies styling, sets axis labels and titles, and adds an optional legend.
+ * Useful for stacked histogram visualizations.
+ *
+ * @param stack     Pointer to the THStack object to draw.
+ * @param legend    Pointer to a TLegend object (optional, may be nullptr).
+ * @param xtitle    X-axis title.
+ * @param ytitle    Y-axis title.
+ * @param logY      Whether to set the Y-axis to log scale.
+ */
 void DrawTHStack(THStack *stack, bool useLogScale) {
     if (!stack) { return; }
 
@@ -842,11 +926,12 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
         if (IsHistogramEmpty(histograms[i])) {
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
-            gPad->SetLogy(1);
+            // gPad->SetLogy(1);
             ((TH1D *)histograms[i])->SetLineColor(kBlue);
             ((TH1D *)histograms[i])->SetLineWidth(1);
             ((TH1D *)histograms[i])->SetLineStyle(1);
             ((TH1D *)histograms[i])->Draw();
+            gPad->SetLogy(1);
             gPad->Update();
 
             TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");

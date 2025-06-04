@@ -19,6 +19,21 @@ public class ReassignBookmarksTool {
         public String parent; // optional
     }
 
+    /**
+     * Entry point for the ReassignBookmarksTool utility.
+     *
+     * This method parses command-line arguments to determine the operation mode.
+     * Supported operations:
+     * - "extract": Extracts bookmarks from a PDF and writes them to a JSON file.
+     * - "reassign": Reassigns bookmarks from a JSON file to a PDF, optionally in hierarchical format.
+     *
+     * Arguments:
+     *   extract input.pdf output.json
+     *   reassign input.pdf bookmarks.json output.pdf [hierarchical]
+     *
+     * @param args Command-line arguments specifying the operation and its parameters.
+     * @throws Exception If an error occurs during file I/O or processing.
+     */
     public static void main(String[] args) throws Exception {
         System.out.println(GREEN + "\nArguments received:" + RESET);
 
@@ -58,6 +73,17 @@ public class ReassignBookmarksTool {
         }
     }
 
+    /**
+     * Extracts bookmarks from a PDF file and writes them to a JSON file.
+     *
+     * This method loads the input PDF file, retrieves its outline/bookmarks (if any),
+     * and stores a structured representation of those bookmarks in a JSON file.
+     * Bookmarks with titles starting with "Page " are ignored.
+     *
+     * @param inputPDF     Path to the input PDF file from which bookmarks will be extracted.
+     * @param outputJSON   Path to the output JSON file where the extracted bookmarks will be saved.
+     * @throws IOException If reading the PDF or writing the JSON file fails.
+     */
     public static void extractBookmarks(String inputPDF, String outputJSON) throws IOException {
         try (PDDocument document = PDDocument.load(new File(inputPDF))) {
             PDDocumentOutline outline = document.getDocumentCatalog().getDocumentOutline();
@@ -74,6 +100,19 @@ public class ReassignBookmarksTool {
         }
     }
 
+    /**
+     * Recursively extracts bookmark entries from a PDF outline node.
+     *
+     * This helper method walks through the outline tree structure of a PDF,
+     * filters out any bookmarks whose titles start with "Page ",
+     * and populates a list with bookmark data including hierarchy if applicable.
+     *
+     * @param node        The current PDF outline node.
+     * @param parentTitle The title of the parent bookmark, or null if at root level.
+     * @param list        The list to populate with extracted BookmarkEntry instances.
+     * @param doc         The PDF document being processed.
+     * @throws IOException If accessing the PDF structure fails.
+     */
     private static void extractOutlineItems(PDOutlineNode node, String parentTitle, List<BookmarkEntry> list, PDDocument doc) throws IOException {
         PDOutlineItem current = node.getFirstChild();
         while (current != null) {
@@ -91,6 +130,19 @@ public class ReassignBookmarksTool {
         }
     }
 
+    /**
+     * Reassigns bookmarks to a PDF file based on a JSON definition.
+     *
+     * This method removes any existing bookmarks from the input PDF, then
+     * adds new bookmarks as defined in a JSON file. Bookmarks can be added
+     * hierarchically if specified.
+     *
+     * @param inputPDF     Path to the PDF file to modify.
+     * @param bookmarkJSON Path to the JSON file containing bookmark definitions.
+     * @param outputPDF    Path where the modified PDF will be saved.
+     * @param hierarchical If true, organizes bookmarks hierarchically based on parent relationships.
+     * @throws IOException If reading the PDF or JSON, or writing the new PDF fails.
+     */
     public static void reassignBookmarks(String inputPDF, String bookmarkJSON, String outputPDF, boolean hierarchical) throws IOException {
         try (PDDocument document = PDDocument.load(new File(inputPDF))) {
             // Remove old bookmarks

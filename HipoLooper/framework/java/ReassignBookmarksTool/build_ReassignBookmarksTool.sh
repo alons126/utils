@@ -1,5 +1,28 @@
 #!/bin/bash
 
+# =================================================================================================
+# Script Name: build_ReassignBookmarksTool.sh
+# Description: This script automates the build process for the Java-based
+#              PDF bookmark reassignment tool. It performs the following steps:
+#               - Cleans up previous build artifacts
+#               - Downloads required external libraries (PDFBox, Jackson, etc.)
+#               - Compiles the Java source code using Java 11
+#               - Packages the class into a runnable .jar file with a main class
+#
+# Usage:
+#   ./build_ReassignBookmarksTool.sh
+#
+# Output:
+#   - ReassignBookmarksTool.class (compiled class file)
+#   - ReassignBookmarksTool.jar (executable JAR)
+#   - lib/ (directory containing all required JAR dependencies)
+#
+# Example:
+#   java -cp .:lib/* ReassignBookmarksTool extract input.pdf bookmarks.json
+#   java -cp .:lib/* ReassignBookmarksTool reassign input.pdf bookmarks.json output.pdf
+#
+# =================================================================================================
+
 COLOR_START='\033[35m'
 COLOR_END='\033[0m'
 
