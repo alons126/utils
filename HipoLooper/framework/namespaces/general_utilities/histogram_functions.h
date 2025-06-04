@@ -207,11 +207,11 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
 
     // Print commands (with color formatting)
     std::cout << "\n";
-    std::cout << "\033[33m" << "Classpath:                   " << "\033[0m" << classpath << "\n";
-    std::cout << "\033[33m" << "bookmarksJSON:               " << "\033[0m" << bookmarksJSON << "\n";
-    std::cout << "\033[33m" << "extractCmd:                  " << "\033[0m" << extractCmd << "\n";
-    std::cout << "\033[33m" << "gsCmd:                       " << "\033[0m" << gsCmd << "\n";
-    std::cout << "\033[33m" << "reassignCmd:                 " << "\033[0m" << reassignCmd << "\n\n";
+    std::cout << "\033[33m" << "Classpath:     " << "\033[0m" << classpath << "\n";
+    std::cout << "\033[33m" << "bookmarksJSON: " << "\033[0m" << bookmarksJSON << "\n";
+    std::cout << "\033[33m" << "extractCmd:    " << "\033[0m" << extractCmd << "\n";
+    std::cout << "\033[33m" << "gsCmd:         " << "\033[0m" << gsCmd << "\n";
+    std::cout << "\033[33m" << "reassignCmd:   " << "\033[0m" << reassignCmd << "\n\n";
 
     // Run steps
     system(extractCmd.c_str());

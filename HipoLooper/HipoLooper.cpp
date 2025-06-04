@@ -3136,8 +3136,8 @@ void HipoLooper() {
             }
         }
 
-        myCanvas->Print(fileName, "pdf Title:");
-        // myCanvas->Print(fileName, "pdf");
+        // myCanvas->Print(fileName, "pdf Title:");
+        myCanvas->Print(fileName, "pdf");
         myCanvas->Clear();
     }
 
