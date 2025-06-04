@@ -919,17 +919,19 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
         gPad->SetLeftMargin(0.16);
         gPad->SetRightMargin(0.12);
 
+        std::cout << "Drawing histogram " << i << ": " << histograms[i]->ClassName() << std::endl;
+        
         if (IsHistogramEmpty(histograms[i])) {
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
-            TempCanvas_log.SetLogy(1);
-            // gPad->SetLogy(1);
+            gPad->SetLogy(0);  // reset log scale if needed
             ((TH1D *)histograms[i])->SetLineColor(kRed);
             ((TH1D *)histograms[i])->SetMarkerColor(kRed);
             // ((TH1D *)histograms[i])->SetLineColor(kBlue);
             ((TH1D *)histograms[i])->SetLineWidth(1);
             ((TH1D *)histograms[i])->SetLineStyle(1);
             ((TH1D *)histograms[i])->Draw();
+            gPad->SetLogy(1);
             gPad->Update();
 
             TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
