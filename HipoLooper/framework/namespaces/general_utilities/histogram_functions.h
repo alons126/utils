@@ -185,11 +185,11 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
 
 /**
  * Sanitizes a string to make it safe for use as a PDF bookmark title.
- * 
+ *
  * - Replaces "#pi^{+}" with "pi plus"
  * - Replaces "#pi^{-}" with "pi minus"
  * - Removes all characters except alphanumerics, space, '-', and '_'
- * 
+ *
  * @param s The original string to sanitize
  * @return A sanitized version of the string suitable for bookmarks
  */
@@ -198,14 +198,10 @@ std::string SanitizeForBookmark(const std::string &s) {
     size_t pos;
 
     // Replace #pi^{+} with "pi plus"
-    while ((pos = modified.find("#pi^{+}")) != std::string::npos) {
-        modified.replace(pos, 7, "pi plus");
-    }
+    while ((pos = modified.find("#pi^{+}")) != std::string::npos) { modified.replace(pos, 7, "pi plus"); }
 
     // Replace #pi^{-} with "pi minus"
-    while ((pos = modified.find("#pi^{-}")) != std::string::npos) {
-        modified.replace(pos, 7, "pi minus");
-    }
+    while ((pos = modified.find("#pi^{-}")) != std::string::npos) { modified.replace(pos, 7, "pi minus"); }
 
     std::string out;
     for (char c : modified) {
@@ -927,10 +923,12 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
             // gPad->SetLogy(1);
-            ((TH1D *)histograms[i])->SetLineColor(kBlue);
-            ((TH1D *)histograms[i])->SetLineWidth(1);
-            ((TH1D *)histograms[i])->SetLineStyle(1);
-            ((TH1D *)histograms[i])->Draw();
+            TH1D *h1 = (TH1D *)histograms[i];
+
+            h1->SetLineColor(kBlue);
+            h1->SetLineWidth(1);
+            h1->SetLineStyle(1);
+            h1->Draw();
             gPad->SetLogy(1);
             gPad->Update();
 
