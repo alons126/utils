@@ -3198,12 +3198,12 @@ void HipoLooper() {
     histogram_functions::CompareHistograms(
         {h_Vz_pip_AC_sector1_1e_cut, h_Vz_pip_AC_sector2_1e_cut, h_Vz_pip_AC_sector3_1e_cut, h_Vz_pip_AC_sector4_1e_cut, h_Vz_pip_AC_sector5_1e_cut, h_Vz_pip_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pip_AC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_pipCD_BC_sector1_1e_cut, h_Vz_pipCD_BC_sector2_1e_cut, h_Vz_pipCD_BC_sector3_1e_cut, h_Vz_pipCD_BC_sector4_1e_cut, h_Vz_pipCD_BC_sector5_1e_cut, h_Vz_pipCD_BC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_BC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_pipCD_AC_sector1_1e_cut, h_Vz_pipCD_AC_sector2_1e_cut, h_Vz_pipCD_AC_sector3_1e_cut, h_Vz_pipCD_AC_sector4_1e_cut, h_Vz_pipCD_AC_sector5_1e_cut, h_Vz_pipCD_AC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_AC_BySector_1e_cut");
+    // histogram_functions::CompareHistograms(
+    //     {h_Vz_pipCD_BC_sector1_1e_cut, h_Vz_pipCD_BC_sector2_1e_cut, h_Vz_pipCD_BC_sector3_1e_cut, h_Vz_pipCD_BC_sector4_1e_cut, h_Vz_pipCD_BC_sector5_1e_cut, h_Vz_pipCD_BC_sector6_1e_cut},
+    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_BC_BySector_1e_cut");
+    // histogram_functions::CompareHistograms(
+    //     {h_Vz_pipCD_AC_sector1_1e_cut, h_Vz_pipCD_AC_sector2_1e_cut, h_Vz_pipCD_AC_sector3_1e_cut, h_Vz_pipCD_AC_sector4_1e_cut, h_Vz_pipCD_AC_sector5_1e_cut, h_Vz_pipCD_AC_sector6_1e_cut},
+    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_AC_BySector_1e_cut");
 
     histogram_functions::CompareHistograms(
         {h_Vz_pim_BC_sector1_1e_cut, h_Vz_pim_BC_sector2_1e_cut, h_Vz_pim_BC_sector3_1e_cut, h_Vz_pim_BC_sector4_1e_cut, h_Vz_pim_BC_sector5_1e_cut, h_Vz_pim_BC_sector6_1e_cut},
@@ -3211,12 +3211,12 @@ void HipoLooper() {
     histogram_functions::CompareHistograms(
         {h_Vz_pim_AC_sector1_1e_cut, h_Vz_pim_AC_sector2_1e_cut, h_Vz_pim_AC_sector3_1e_cut, h_Vz_pim_AC_sector4_1e_cut, h_Vz_pim_AC_sector5_1e_cut, h_Vz_pim_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pim_AC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_pimCD_BC_sector1_1e_cut, h_Vz_pimCD_BC_sector2_1e_cut, h_Vz_pimCD_BC_sector3_1e_cut, h_Vz_pimCD_BC_sector4_1e_cut, h_Vz_pimCD_BC_sector5_1e_cut, h_Vz_pimCD_BC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_BC_BySector_1e_cut");
-    histogram_functions::CompareHistograms(
-        {h_Vz_pimCD_AC_sector1_1e_cut, h_Vz_pimCD_AC_sector2_1e_cut, h_Vz_pimCD_AC_sector3_1e_cut, h_Vz_pimCD_AC_sector4_1e_cut, h_Vz_pimCD_AC_sector5_1e_cut, h_Vz_pimCD_AC_sector6_1e_cut},
-        "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_AC_BySector_1e_cut");
+    // histogram_functions::CompareHistograms(
+    //     {h_Vz_pimCD_BC_sector1_1e_cut, h_Vz_pimCD_BC_sector2_1e_cut, h_Vz_pimCD_BC_sector3_1e_cut, h_Vz_pimCD_BC_sector4_1e_cut, h_Vz_pimCD_BC_sector5_1e_cut, h_Vz_pimCD_BC_sector6_1e_cut},
+    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_BC_BySector_1e_cut");
+    // histogram_functions::CompareHistograms(
+    //     {h_Vz_pimCD_AC_sector1_1e_cut, h_Vz_pimCD_AC_sector2_1e_cut, h_Vz_pimCD_AC_sector3_1e_cut, h_Vz_pimCD_AC_sector4_1e_cut, h_Vz_pimCD_AC_sector5_1e_cut, h_Vz_pimCD_AC_sector6_1e_cut},
+    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_AC_BySector_1e_cut");
 
     outFile->cd();
     for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
