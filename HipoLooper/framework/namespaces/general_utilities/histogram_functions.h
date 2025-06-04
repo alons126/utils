@@ -147,12 +147,23 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
 
 // SanitizeForBookmark functions ----------------------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Removes invalid characters from a string to make it safe for use as a PDF bookmark.
+ *
+ * This function returns a copy of the input string with only alphanumeric characters, spaces,
+ * hyphens, and underscores preserved. All other characters are removed. This is useful when
+ * generating bookmark titles for PDFs where unsupported characters can cause rendering or
+ * compatibility issues.
+ *
+ * @param s The input string to be sanitized.
+ * @return A new string containing only valid bookmark characters.
+ */
 std::string SanitizeForBookmark(const std::string &s) {
-    std::string out = s;
-
-    for (char &c : out) {
-        if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = ''; }
-        // if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = '_'; }
+    std::string out;
+    for (char c : s) {
+        if (isalnum(c) || c == ' ' || c == '-' || c == '_') {
+            out += c;  // Only append allowed characters
+        }
     }
 
     return out;
@@ -161,6 +172,23 @@ std::string SanitizeForBookmark(const std::string &s) {
 // ReassignPDFBookmarks functions ---------------------------------------------------------------------------------------------------------------------------------------
 
 // C++ function to call the Java PDF bookmark tool
+/**
+ * @brief Reassigns bookmarks in a PDF file using an external Java tool.
+ *
+ * This function automates the process of replacing existing bookmarks in a PDF.
+ * It uses a Java-based tool to extract current bookmarks into a JSON file, removes
+ * bookmarks from the original PDF using Ghostscript, and then reinserts the bookmarks
+ * into the cleaned PDF. Optionally, the bookmarks can be inserted in a hierarchical format.
+ *
+ * Dependencies:
+ * - Java
+ * - Ghostscript (gs)
+ * - ReassignBookmarksTool.jar and required libraries (PDFBox, FontBox, Jackson)
+ *
+ * @param inputPDF Path to the original PDF file with bookmarks.
+ * @param outputPDF Path to the new PDF file with reassigned bookmarks.
+ * @param hierarchical If true, creates hierarchical bookmarks in the output file.
+ */
 void ReassignPDFBookmarks(const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
     std::string bookmarksJSON = "bookmarks.json";
 
@@ -185,12 +213,6 @@ void ReassignPDFBookmarks(const std::string &inputPDF, const std::string &output
 
     system(reassignCmd.c_str());
 }
-// void ReassignPDFBookmarks(const std::string &inputPDF, const std::string &bookmarkJSON, const std::string &outputPDF) {
-//     std::string jarPath = "../../scripts/java/ReassignBookmarksTool.jar";  // Update this to actual path
-//     std::string command = "java -jar " + jarPath + " \"" + inputPDF + "\" \"" + bookmarkJSON + "\" \"" + outputPDF + "\"";
-//     int result = std::system(command.c_str());
-//     if (result != 0) { std::cerr << "Error: Java PDF bookmark tool failed with code " << result << std::endl; }
-// }
 
 // TitleAligner functions -----------------------------------------------------------------------------------------------------------------------------------------------
 
