@@ -194,7 +194,7 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     std::string libDir = toolDir + "lib/*";
     std::string classpath = toolDir + ":" + libDir;  // include toolDir explicitly
 
-    std::string bookmarksJSON = "bookmarks.json";
+    std::string bookmarksJSON = inputPDF.substr(0, inputPDF.find_last_of('/')) + "/bookmarks.json";
 
     std::string extractCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool extract \"" + inputPDF + "\" \"" + bookmarksJSON + "\"";
 
@@ -206,7 +206,8 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     if (hierarchical) reassignCmd += " hierarchical";
 
     // Print commands (with color formatting)
-    std::cout << "\033[33m" << "\nClasspath:                   " << "\033[0m" << classpath << "\n";
+    std::cout << "\n";
+    std::cout << "\033[33m" << "Classpath:                   " << "\033[0m" << classpath << "\n";
     std::cout << "\033[33m" << "bookmarksJSON:               " << "\033[0m" << bookmarksJSON << "\n";
     std::cout << "\033[33m" << "extractCmd:                  " << "\033[0m" << extractCmd << "\n";
     std::cout << "\033[33m" << "gsCmd:                       " << "\033[0m" << gsCmd << "\n";
