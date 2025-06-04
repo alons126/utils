@@ -2971,7 +2971,7 @@ void HipoLooper() {
             {"{e}", &first_electron}, {"{#pi^{+}FD}", &first_piplusFD}, {"{#pi^{-}FD}", &first_piminusFD}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
 
         std::map<std::string, std::string> particle_labels = {
-            {"{e}", "e^{-}"}, {"{#pi^{+}}", "FD #pi^{+}"}, {"{#pi^{-}}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
+            {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
         // Maps of sector flags (assumes these variables already exist)
         std::map<std::string, std::map<int, bool *>> sector_flags = {{"{e}",
