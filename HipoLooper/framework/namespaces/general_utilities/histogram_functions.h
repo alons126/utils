@@ -926,7 +926,7 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
         if (IsHistogramEmpty(histograms[i])) {
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
-            gPad->SetLogy(1);
+            // gPad->SetLogy(1);
             ((TH1D *)histograms[i])->SetLineColor(kBlue);
             ((TH1D *)histograms[i])->SetLineWidth(1);
             ((TH1D *)histograms[i])->SetLineStyle(1);
