@@ -868,18 +868,30 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pip_hit_map_AC_1e_cut[i]);
     }
 
-    TH1D *h_Chi2_pip_CD_BC_1e_cut = new TH1D(
-        "Chi2_pip_CD_BC_1e_cut",
-        ("#chi^{2}_{#pi^{+}} of CD #pi^{+} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{+}};Counts")
-            .c_str(),
-        75, -20, 20);
-    HistoList.push_back(h_Chi2_pip_CD_BC_1e_cut);
     TH1D *h_Chi2_pip_FD_BC_1e_cut = new TH1D(
         "Chi2_pip_FD_BC_1e_cut",
         ("#chi^{2}_{#pi^{+}} of FD #pi^{+} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{+}};Counts")
             .c_str(),
         75, -20, 20);
     HistoList.push_back(h_Chi2_pip_FD_BC_1e_cut);
+    TH1D *h_Chi2_pip_FD_AC_1e_cut = new TH1D(
+        "Chi2_pip_FD_AC_1e_cut",
+        ("#chi^{2}_{#pi^{+}} of FD #pi^{+} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (after cut);#chi^{2}_{#pi^{+}};Counts")
+            .c_str(),
+        75, -20, 20);
+    HistoList.push_back(h_Chi2_pip_FD_AC_1e_cut);
+    TH1D *h_Chi2_pip_CD_BC_1e_cut = new TH1D(
+        "Chi2_pip_CD_BC_1e_cut",
+        ("#chi^{2}_{#pi^{+}} of CD #pi^{+} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{+}};Counts")
+            .c_str(),
+        75, -20, 20);
+    HistoList.push_back(h_Chi2_pip_CD_BC_1e_cut);
+    TH1D *h_Chi2_pip_CD_AC_1e_cut = new TH1D(
+        "Chi2_pip_CD_AC_1e_cut",
+        ("#chi^{2}_{#pi^{+}} of CD #pi^{+} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (after cut);#chi^{2}_{#pi^{+}};Counts")
+            .c_str(),
+        75, -20, 20);
+    HistoList.push_back(h_Chi2_pip_CD_AC_1e_cut);
 
 #pragma endregion
 
@@ -1554,18 +1566,30 @@ void HipoLooper() {
         HistoList.push_back(h_dc_pim_hit_map_AC_1e_cut[i]);
     }
 
+    TH1D *h_Chi2_pim_FD_BC_1e_cut = new TH1D(
+        "Chi2_pim_FD_BC_1e_cut",
+        ("#chi^{2}_{#pi^{-}} of FD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{-}};Counts")
+            .c_str(),
+        75, -20, 20);
+    HistoList.push_back(h_Chi2_pim_FD_AC_1e_cut);
+    TH1D *h_Chi2_pim_FD_AC_1e_cut = new TH1D(
+        "Chi2_pim_FD_AC_1e_cut",
+        ("#chi^{2}_{#pi^{-}} of FD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (after cut);#chi^{2}_{#pi^{-}};Counts")
+            .c_str(),
+        75, -20, 20);
+    HistoList.push_back(h_Chi2_pim_FD_AC_1e_cut);
     TH1D *h_Chi2_pim_CD_BC_1e_cut = new TH1D(
         "Chi2_pim_CD_BC_1e_cut",
         ("#chi^{2}_{#pi^{-}} of CD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{-}};Counts")
             .c_str(),
         75, -20, 20);
     HistoList.push_back(h_Chi2_pim_CD_BC_1e_cut);
-    TH1D *h_Chi2_pim_FD_BC_1e_cut = new TH1D(
-        "Chi2_pim_FD_BC_1e_cut",
-        ("#chi^{2}_{#pi^{-}} of FD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{-}};Counts")
+    TH1D *h_Chi2_pim_CD_AC_1e_cut = new TH1D(
+        "Chi2_pim_CD_AC_1e_cut",
+        ("#chi^{2}_{#pi^{-}} of CD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (after cut);#chi^{2}_{#pi^{-}};Counts")
             .c_str(),
         75, -20, 20);
-    HistoList.push_back(h_Chi2_pim_FD_BC_1e_cut);
+    HistoList.push_back(h_Chi2_pim_CD_AC_1e_cut);
 
 #pragma endregion
 
@@ -2428,7 +2452,7 @@ void HipoLooper() {
         bool bad_Edep_PCAL_CutCond = (Edep_PCAL <= 0.06);
         bool bad_SF_CutCond = (EoP_e < 0.2 || EoP_e > 0.28);
         bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
-        bool bad_diag_CutCond = (!alysis_functions::checkEcalDiagCuts(electrons[0]));
+        bool bad_diag_CutCond = (!reco_analysis_functions::checkEcalDiagCuts(electrons[0]));
 
         if (bad_Vz_e_CutCond) { continue; }
         if (bad_DC_edge_CutCond) { continue; }
@@ -2579,9 +2603,9 @@ void HipoLooper() {
             reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pip_hit_map_BC_1e_cut, weight);
 
             if (piplus_det[i]->getRegion() == FD) {
-                h_Chi2_pip_CD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
-            } else if (piplus_det[i]->getRegion() == CD) {
                 h_Chi2_pip_FD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
+            } else if (piplus_det[i]->getRegion() == CD) {
+                h_Chi2_pip_CD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
             }
 
             if (piplus_det[i]->getSector() == 1) {
@@ -2633,9 +2657,9 @@ void HipoLooper() {
             reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pip_hit_map_AC_1e_cut, weight);
 
             if (piplus[i]->getRegion() == FD) {
-                h_Chi2_pip_CD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
-            } else if (piplus[i]->getRegion() == CD) {
                 h_Chi2_pip_FD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
+            } else if (piplus[i]->getRegion() == CD) {
+                h_Chi2_pip_CD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
             }
 
             if (piplus[i]->getSector() == 1) {
@@ -2689,9 +2713,9 @@ void HipoLooper() {
             reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pim_hit_map_BC_1e_cut, weight);
 
             if (piminus_det[i]->getRegion() == FD) {
-                h_Chi2_pim_CD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
-            } else if (piminus_det[i]->getRegion() == CD) {
                 h_Chi2_pim_FD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
+            } else if (piminus_det[i]->getRegion() == CD) {
+                h_Chi2_pim_CD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
             }
 
             if (piminus_det[i]->getSector() == 1) {
@@ -2743,9 +2767,9 @@ void HipoLooper() {
             reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pim_hit_map_AC_1e_cut, weight);
 
             if (piminus[i]->getRegion() == FD) {
-                h_Chi2_pim_CD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
-            } else if (piminus[i]->getRegion() == CD) {
                 h_Chi2_pim_FD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
+            } else if (piminus[i]->getRegion() == CD) {
+                h_Chi2_pim_CD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
             }
 
             if (piminus[i]->getSector() == 1) {
