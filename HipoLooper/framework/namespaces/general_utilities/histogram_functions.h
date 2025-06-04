@@ -189,29 +189,38 @@ std::string SanitizeForBookmark(const std::string &s) {
  * @param outputPDF Path to the new PDF file with reassigned bookmarks.
  * @param hierarchical If true, creates hierarchical bookmarks in the output file.
  */
-void ReassignPDFBookmarks(const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
+void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
+    std::string ReassignBookmarksToolFile = WorkingDir + "framwork/java/ReassignBookmarksTool.jar";
     std::string bookmarksJSON = "bookmarks.json";
-
-    // Step 1: Extract current bookmarks
     std::string extractCmd =
         "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
         "-jar ReassignBookmarksTool.jar extract " +
         inputPDF + " " + bookmarksJSON;
-    system(extractCmd.c_str());
-
-    // Step 2: Strip bookmarks from original PDF using gs
     std::string noBookmarkPDF = "no_bookmarks.pdf";
-    std::string gsCmd = "gs -o " + noBookmarkPDF + " -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress " + inputPDF;
-    system(gsCmd.c_str());
-
-    // Step 3: Reassign bookmarks
+    std::string gsCmd = "gs -q -o " + noBookmarkPDF + " -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress " + inputPDF;
     std::string reassignCmd =
         "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
         "-jar ReassignBookmarksTool.jar reassign " +
         noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
+
     if (hierarchical) reassignCmd += " hierarchical";
 
+    std::cout << "\nReassignBookmarksToolFile: " << ReassignBookmarksToolFile << "\n";
+    std::cout << "bookmarksJSON:               " << bookmarksJSON << "\n";
+    std::cout << "extractCmd:                  " << extractCmd << "\n";
+    std::cout << "gsCmd:                       " << extractCmd << "\n";
+    std::cout << "reassignCmd:                 " << extractCmd << "\n\n";
+
+    // Step 1: Extract current bookmarks
+    system(extractCmd.c_str());
+
+    // Step 2: Strip bookmarks from original PDF using gs
+    system(gsCmd.c_str());
+
+    // Step 3: Reassign bookmarks
     system(reassignCmd.c_str());
+
+    std::cout << "\n";
 }
 
 // TitleAligner functions -----------------------------------------------------------------------------------------------------------------------------------------------

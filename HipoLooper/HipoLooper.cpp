@@ -3144,8 +3144,8 @@ void HipoLooper() {
     sprintf(fileName, "%s]", PDF_fileName.c_str());
     myCanvas->Print(fileName, "pdf");
 
-    histogram_functions::FixPDFOrientation(PDF_fileName);                   // Fix orientation
-    histogram_functions::ReassignPDFBookmarks(PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+    histogram_functions::FixPDFOrientation(PDF_fileName);                                                             // Fix orientation
+    histogram_functions::ReassignPDFBookmarks(basic_tools::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
 
     histogram_functions::CompareHistograms(
         {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut},
