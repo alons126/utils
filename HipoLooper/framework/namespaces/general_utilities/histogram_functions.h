@@ -190,7 +190,7 @@ std::string SanitizeForBookmark(const std::string &s) {
  * @param hierarchical If true, creates hierarchical bookmarks in the output file.
  */
 void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
-    std::string ReassignBookmarksToolFile = WorkingDir + "framwork/java/ReassignBookmarksTool.jar";
+    std::string ReassignBookmarksToolFile = WorkingDir + "framework/java/ReassignBookmarksTool.jar";
     std::string bookmarksJSON = "bookmarks.json";
     std::string extractCmd =
         "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
@@ -208,9 +208,9 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     std::cout << "\nReassignBookmarksToolFile: " << ReassignBookmarksToolFile << "\n";
     std::cout << "bookmarksJSON:               " << bookmarksJSON << "\n";
     std::cout << "extractCmd:                  " << extractCmd << "\n";
-    std::cout << "gsCmd:                       " << extractCmd << "\n";
-    std::cout << "reassignCmd:                 " << extractCmd << "\n\n";
-
+    std::cout << "gsCmd:                       " << gsCmd << "\n";
+    std::cout << "reassignCmd:                 " << reassignCmd << "\n\n";
+    
     system(extractCmd.c_str());   // Step 1: Extract current bookmarks
     system(gsCmd.c_str());        // Step 2: Strip bookmarks from original PDF using gs
     system(reassignCmd.c_str());  // Step 3: Reassign bookmarks
