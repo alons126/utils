@@ -592,6 +592,23 @@ void DrawTHStack(THStack *stack, bool useLogScale) {
     }
 }
 
+// FixPDFOrientation ----------------------------------------------------------------------------------------------------------------------------------------------------
+
+inline void FixPDFOrientation(const std::string &pdfFilePath) {
+    if (pdfFilePath.find(".pdf") == std::string::npos) { return; }
+
+    std::string fix_rotation_cmd = "gs -o \"" + pdfFilePath +
+                                   ".tmp\" "
+                                   "-sDEVICE=pdfwrite "
+                                   "-dPDFSETTINGS=/prepress "
+                                   "-dAutoRotatePages=/None "
+                                   "-dNOPAUSE -dBATCH "
+                                   "\"" +
+                                   pdfFilePath + "\" && mv \"" + pdfFilePath + ".tmp\" \"" + pdfFilePath + "\"";
+
+    gSystem->Exec(fix_rotation_cmd.c_str());
+}
+
 // CompareHistograms -------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void CompareHistograms(const std::vector<TObject *> &histograms, const std::string &saveDirectory, const std::string &saveDirectoryName = "", const std::string &ComparisonName = "") {
@@ -646,7 +663,9 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
 
             ((TH1D *)histograms[i])->GetYaxis()->SetTitleOffset(1.3);
             ((TH1D *)histograms[i])->GetXaxis()->SetTitleOffset(1.0);
-            ((TH1D *)histograms[i])->SetLineColor(kBlue);
+            ((TH1D *)histograms[i])->SetLineColor(kRed);
+            ((TH1D *)histograms[i])->SetMarkerColor(kRed);
+            // ((TH1D *)histograms[i])->SetLineColor(kBlue);
             ((TH1D *)histograms[i])->SetLineWidth(1);
             ((TH1D *)histograms[i])->SetLineStyle(1);
             ((TH1D *)histograms[i])->Draw();
@@ -701,6 +720,7 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
 
     std::string linearFile = (ComparisonName != "") ? savePath + ComparisonName + "_linear_scale.pdf" : savePath + "comparison_linear_scale.pdf";
     TempCanvas.SaveAs(linearFile.c_str());
+    FixPDFOrientation(linearFile);
 
     // ------------------
     // Log Scale Canvas
@@ -767,6 +787,7 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
 
     std::string logFile = (ComparisonName != "") ? logDir + ComparisonName + "_log_scale.pdf" : logDir + "comparison_log_scale.pdf";
     TempCanvas_log.SaveAs(logFile.c_str());
+    FixPDFOrientation(linearFile);
 }
 
 };  // namespace histogram_functions
