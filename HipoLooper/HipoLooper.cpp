@@ -1571,7 +1571,7 @@ void HipoLooper() {
         ("#chi^{2}_{#pi^{-}} of FD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (before cut);#chi^{2}_{#pi^{-}};Counts")
             .c_str(),
         75, -20, 20);
-    HistoList.push_back(h_Chi2_pim_FD_AC_1e_cut);
+    HistoList.push_back(h_Chi2_pim_FD_BC_1e_cut);
     TH1D *h_Chi2_pim_FD_AC_1e_cut = new TH1D(
         "Chi2_pim_FD_AC_1e_cut",
         ("#chi^{2}_{#pi^{-}} of FD #pi^{-} in 1e cut - " + target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status + " (after cut);#chi^{2}_{#pi^{-}};Counts")
