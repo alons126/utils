@@ -190,33 +190,28 @@ std::string SanitizeForBookmark(const std::string &s) {
  * @param hierarchical If true, creates hierarchical bookmarks in the output file.
  */
 void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
-    std::string ReassignBookmarksToolFile = WorkingDir + "framework/java/ReassignBookmarksTool/ReassignBookmarksTool.jar";
+    std::string libDir = WorkingDir + "framework/java/ReassignBookmarksTool/lib/*";
+    std::string classpath = ".:" + libDir;
     std::string bookmarksJSON = "bookmarks.json";
-    std::string extractCmd = "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" " +
-                             ReassignBookmarksToolFile + " extract " + inputPDF + " " + bookmarksJSON;
-    // std::string extractCmd =
-    //     "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
-    //     "-jar " +
-    //     ReassignBookmarksToolFile + " extract " + inputPDF + " " + bookmarksJSON;
+
+    std::string extractCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool extract \"" + inputPDF + "\" \"" + bookmarksJSON + "\"";
+
     std::string noBookmarkPDF = "no_bookmarks.pdf";
-    std::string gsCmd = "gs -q -o " + noBookmarkPDF + " -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress " + inputPDF;
-    std::string reassignCmd = "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" " +
-                              ReassignBookmarksToolFile + " reassign " + noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
-    // std::string reassignCmd =
-    //     "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
-    //     "-jar " +
-    //     ReassignBookmarksToolFile + " reassign " + noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
+    std::string gsCmd = "gs -q -o \"" + noBookmarkPDF + "\" -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress \"" + inputPDF + "\"";
+
+    std::string reassignCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool reassign \"" + noBookmarkPDF + "\" \"" + bookmarksJSON + "\" \"" + outputPDF + "\"";
 
     if (hierarchical) reassignCmd += " hierarchical";
 
-    std::cout << "\033[33m" << "\nReassignBookmarksToolFile: " << "\033[0m" << ReassignBookmarksToolFile << "\n";
+    // Print commands (with color formatting)
+    std::cout << "\033[33m" << "\nClasspath:                   " << "\033[0m" << classpath << "\n";
     std::cout << "\033[33m" << "bookmarksJSON:               " << "\033[0m" << bookmarksJSON << "\n";
     std::cout << "\033[33m" << "extractCmd:                  " << "\033[0m" << extractCmd << "\n";
     std::cout << "\033[33m" << "gsCmd:                       " << "\033[0m" << gsCmd << "\n";
     std::cout << "\033[33m" << "reassignCmd:                 " << "\033[0m" << reassignCmd << "\n\n";
 
     system(extractCmd.c_str());   // Step 1: Extract current bookmarks
-    system(gsCmd.c_str());        // Step 2: Strip bookmarks from original PDF using gs
+    system(gsCmd.c_str());        // Step 2: Strip bookmarks
     system(reassignCmd.c_str());  // Step 3: Reassign bookmarks
 
     std::cout << "\n";
