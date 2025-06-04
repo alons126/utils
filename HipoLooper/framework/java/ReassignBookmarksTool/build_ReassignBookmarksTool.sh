@@ -39,7 +39,7 @@ mv *.jar lib/
 
 echo ""
 echo "${COLOR_START}Compiling ReassignBookmarksTool.java...${COLOR_END}"
-javac -cp ".:lib/*" ReassignBookmarksTool.java
+javac --release 11 -cp ".:lib/*" ReassignBookmarksTool.java
 echo ""
 
 if [ $? -ne 0 ]; then
