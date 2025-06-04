@@ -145,6 +145,18 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
     }
 }
 
+// SanitizeForBookmark functions ----------------------------------------------------------------------------------------------------------------------------------------
+
+std::string SanitizeForBookmark(const std::string &s) {
+    std::string out = s;
+
+    for (char &c : out) {
+        if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = '_'; }
+    }
+
+    return out;
+}
+
 // TitleAligner functions -----------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -594,19 +606,43 @@ void DrawTHStack(THStack *stack, bool useLogScale) {
 
 // FixPDFOrientation ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-inline void FixPDFOrientation(const std::string &pdfFilePath) {
-    if (pdfFilePath.find(".pdf") == std::string::npos) { return; }
+/**
+ * @brief Fixes the orientation of a PDF file to prevent it from being rotated when inserted into software like PowerPoint.
+ *
+ * This function uses Ghostscript (gs) to rewrite the PDF with the auto-rotation disabled. By default, many programs such as
+ * PowerPoint rely on internal rotation metadata embedded in PDF files to decide how to render the page, which can result in
+ * sideways or upside-down plots when inserting ROOT-generated PDFs.
+ *
+ * The Ghostscript command removes the auto-rotation flag by setting `-dAutoRotatePages=/None`. It rewrites the PDF quietly
+ * (using `-q`) and with high quality (`-dPDFSETTINGS=/prepress`), and then replaces the original file with the corrected one.
+ *
+ * @param pdfFilePath The full path to the PDF file to be fixed. The file must have a ".pdf" extension.
+ *
+ * Example usage:
+ *   histogram_functions::FixPDFOrientation("/path/to/plot.pdf");
+ */
+void FixPDFOrientation(const std::string &pdfFilePath) {
+    // Ensure the file ends with ".pdf"
+    if (pdfFilePath.find(".pdf") != std::string::npos) {
+        // Construct Ghostscript command:
+        // -q               : quiet mode (no standard output)
+        // -o file.tmp      : output file name
+        // -sDEVICE=pdfwrite: output format is PDF
+        // -dPDFSETTINGS=/prepress : high-quality output
+        // -dAutoRotatePages=/None : disable automatic rotation
+        // -dNOPAUSE -dBATCH : process without pausing or interactive input
+        std::string fix_rotation_cmd = "gs -q -o \"" + pdfFilePath +
+                                       ".tmp\" "
+                                       "-sDEVICE=pdfwrite "
+                                       "-dPDFSETTINGS=/prepress "
+                                       "-dAutoRotatePages=/None "
+                                       "-dNOPAUSE -dBATCH "
+                                       "\"" +
+                                       pdfFilePath + "\" && mv \"" + pdfFilePath + ".tmp\" \"" + pdfFilePath + "\"";
 
-    std::string fix_rotation_cmd = "gs -o \"" + pdfFilePath +
-                                   ".tmp\" "
-                                   "-sDEVICE=pdfwrite "
-                                   "-dPDFSETTINGS=/prepress "
-                                   "-dAutoRotatePages=/None "
-                                   "-dNOPAUSE -dBATCH "
-                                   "\"" +
-                                   pdfFilePath + "\" && mv \"" + pdfFilePath + ".tmp\" \"" + pdfFilePath + "\"";
-
-    gSystem->Exec(fix_rotation_cmd.c_str());
+        // Execute the system command
+        gSystem->Exec(fix_rotation_cmd.c_str());
+    }
 }
 
 // CompareHistograms -------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -33,16 +33,6 @@
 
 using namespace constants;
 
-std::string SanitizeForBookmark(const std::string &s) {
-    std::string out = s;
-
-    for (char &c : out) {
-        if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = '_'; }
-    }
-
-    return out;
-}
-
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
@@ -3059,7 +3049,7 @@ void HipoLooper() {
 
                 if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
                     std::string bookmark_title = label + " plots";
-                    std::string sanitized_bookmark_title = SanitizeForBookmark(bookmark_title);
+                    std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                     myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                     myText->Clear();
@@ -3069,7 +3059,7 @@ void HipoLooper() {
                         std::string sector_str = "sector " + std::to_string(sector);
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
                             std::string bookmark_title = label + " plots - " + sector_str;
-                            std::string sanitized_bookmark_title = SanitizeForBookmark(bookmark_title);
+                            std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                             myText->Clear();
@@ -3082,7 +3072,7 @@ void HipoLooper() {
                 break;  // Stop checking other particles after match
             }
         }
-        
+
         myCanvas->cd();
 
         myCanvas->cd()->SetGrid();
@@ -3145,7 +3135,8 @@ void HipoLooper() {
             }
         }
 
-        myCanvas->Print(fileName, "pdf");
+        myCanvas->Print(fileName, "pdf Title:");
+        // myCanvas->Print(fileName, "pdf");
         myCanvas->Clear();
     }
 
