@@ -190,8 +190,10 @@ std::string SanitizeForBookmark(const std::string &s) {
  * @param hierarchical If true, creates hierarchical bookmarks in the output file.
  */
 void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
-    std::string libDir = WorkingDir + "framework/java/ReassignBookmarksTool/lib/*";
-    std::string classpath = ".:" + libDir;
+    std::string toolDir = WorkingDir + "framework/java/ReassignBookmarksTool/";
+    std::string libDir = toolDir + "lib/*";
+    std::string classpath = toolDir + ":" + libDir;  // include toolDir explicitly
+
     std::string bookmarksJSON = "bookmarks.json";
 
     std::string extractCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool extract \"" + inputPDF + "\" \"" + bookmarksJSON + "\"";
@@ -210,9 +212,10 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     std::cout << "\033[33m" << "gsCmd:                       " << "\033[0m" << gsCmd << "\n";
     std::cout << "\033[33m" << "reassignCmd:                 " << "\033[0m" << reassignCmd << "\n\n";
 
-    system(extractCmd.c_str());   // Step 1: Extract current bookmarks
-    system(gsCmd.c_str());        // Step 2: Strip bookmarks
-    system(reassignCmd.c_str());  // Step 3: Reassign bookmarks
+    // Run steps
+    system(extractCmd.c_str());
+    system(gsCmd.c_str());
+    system(reassignCmd.c_str());
 
     std::cout << "\n";
 }
