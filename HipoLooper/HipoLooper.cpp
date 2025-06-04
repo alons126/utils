@@ -23,6 +23,7 @@
 
 // Include libraries:
 #include "framework/namespaces/general_utilities/utilities.h"
+#include "framework/namespaces/setup/path_definitions.h"
 
 // Include classes:
 #include "framework/classes/clas12ana/clas12ana.h"
@@ -2577,10 +2578,10 @@ void HipoLooper() {
 
             reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pip_hit_map_BC_1e_cut, weight);
 
-            if (piplus_det[i]->getRegion == FD) {
-                h_Chi2_pip_CD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2(), weight);
-            } else if (piplus_det[i]->getRegion == CD) {
-                h_Chi2_pip_FD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2(), weight);
+            if (piplus_det[i]->getRegion() == FD) {
+                h_Chi2_pip_CD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
+            } else if (piplus_det[i]->getRegion() == CD) {
+                h_Chi2_pip_FD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
             }
 
             if (piplus_det[i]->getSector() == 1) {
@@ -2631,10 +2632,10 @@ void HipoLooper() {
 
             reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pip_hit_map_AC_1e_cut, weight);
 
-            if (piplus[i]->getRegion == FD) {
-                h_Chi2_pip_CD_AC_1e_cut->Fill(piplus[i]->par()->getChi2(), weight);
-            } else if (piplus[i]->getRegion == CD) {
-                h_Chi2_pip_FD_AC_1e_cut->Fill(piplus[i]->par()->getChi2(), weight);
+            if (piplus[i]->getRegion() == FD) {
+                h_Chi2_pip_CD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
+            } else if (piplus[i]->getRegion() == CD) {
+                h_Chi2_pip_FD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
             }
 
             if (piplus[i]->getSector() == 1) {
@@ -2687,10 +2688,10 @@ void HipoLooper() {
 
             reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pim_hit_map_BC_1e_cut, weight);
 
-            if (piminus_det[i]->getRegion == FD) {
-                h_Chi2_pim_CD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2(), weight);
-            } else if (piminus_det[i]->getRegion == CD) {
-                h_Chi2_pim_FD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2(), weight);
+            if (piminus_det[i]->getRegion() == FD) {
+                h_Chi2_pim_CD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
+            } else if (piminus_det[i]->getRegion() == CD) {
+                h_Chi2_pim_FD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
             }
 
             if (piminus_det[i]->getSector() == 1) {
@@ -2741,10 +2742,10 @@ void HipoLooper() {
 
             reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pim_hit_map_AC_1e_cut, weight);
 
-            if (piminus[i]->getRegion == FD) {
-                h_Chi2_pim_CD_AC_1e_cut->Fill(piminus[i]->par()->getChi2(), weight);
-            } else if (piminus[i]->getRegion == CD) {
-                h_Chi2_pim_FD_AC_1e_cut->Fill(piminus[i]->par()->getChi2(), weight);
+            if (piminus[i]->getRegion() == FD) {
+                h_Chi2_pim_CD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
+            } else if (piminus[i]->getRegion() == CD) {
+                h_Chi2_pim_FD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
             }
 
             if (piminus[i]->getSector() == 1) {
