@@ -2708,32 +2708,6 @@ void HipoLooper() {
                 h_Vx_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                 h_Vy_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                 h_Vz_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-
-                if (piplus_det[i]->getSector() == 1) {
-                    h_Vx_pipCD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                } else if (piplus_det[i]->getSector() == 2) {
-                    h_Vx_pipCD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                } else if (piplus_det[i]->getSector() == 3) {
-                    h_Vx_pipCD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                } else if (piplus_det[i]->getSector() == 4) {
-                    h_Vx_pipCD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                } else if (piplus_det[i]->getSector() == 5) {
-                    h_Vx_pipCD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                } else if (piplus_det[i]->getSector() == 6) {
-                    h_Vx_pipCD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                }
             }
         }
 #pragma endregion
@@ -2794,32 +2768,6 @@ void HipoLooper() {
                 h_Vx_pipCD_AC_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
                 h_Vy_pipCD_AC_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
                 h_Vz_pipCD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-
-                if (piplus[i]->getSector() == 1) {
-                    h_Vx_pipCD_AC_sector1_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_AC_sector1_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_AC_sector1_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-                } else if (piplus[i]->getSector() == 2) {
-                    h_Vx_pipCD_AC_sector2_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_AC_sector2_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_AC_sector2_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-                } else if (piplus[i]->getSector() == 3) {
-                    h_Vx_pipCD_AC_sector3_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_AC_sector3_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_AC_sector3_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-                } else if (piplus[i]->getSector() == 4) {
-                    h_Vx_pipCD_AC_sector4_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_AC_sector4_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_AC_sector4_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-                } else if (piplus[i]->getSector() == 5) {
-                    h_Vx_pipCD_AC_sector5_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_AC_sector5_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_AC_sector5_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-                } else if (piplus[i]->getSector() == 6) {
-                    h_Vx_pipCD_AC_sector6_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
-                    h_Vy_pipCD_AC_sector6_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
-                    h_Vz_pipCD_AC_sector6_1e_cut->Fill(piplus[i]->par()->getVz(), weight);
-                }
             }
         }
 #pragma endregion
@@ -2882,32 +2830,6 @@ void HipoLooper() {
                 h_Vx_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
                 h_Vy_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
                 h_Vz_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-
-                if (piminus_det[i]->getSector() == 1) {
-                    h_Vx_pimCD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                } else if (piminus_det[i]->getSector() == 2) {
-                    h_Vx_pimCD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                } else if (piminus_det[i]->getSector() == 3) {
-                    h_Vx_pimCD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                } else if (piminus_det[i]->getSector() == 4) {
-                    h_Vx_pimCD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                } else if (piminus_det[i]->getSector() == 5) {
-                    h_Vx_pimCD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                } else if (piminus_det[i]->getSector() == 6) {
-                    h_Vx_pimCD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                }
             }
         }
 #pragma endregion
@@ -2968,32 +2890,6 @@ void HipoLooper() {
                 h_Vx_pimCD_AC_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
                 h_Vy_pimCD_AC_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
                 h_Vz_pimCD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-
-                if (piminus[i]->getSector() == 1) {
-                    h_Vx_pimCD_AC_sector1_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_AC_sector1_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_AC_sector1_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-                } else if (piminus[i]->getSector() == 2) {
-                    h_Vx_pimCD_AC_sector2_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_AC_sector2_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_AC_sector2_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-                } else if (piminus[i]->getSector() == 3) {
-                    h_Vx_pimCD_AC_sector3_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_AC_sector3_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_AC_sector3_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-                } else if (piminus[i]->getSector() == 4) {
-                    h_Vx_pimCD_AC_sector4_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_AC_sector4_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_AC_sector4_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-                } else if (piminus[i]->getSector() == 5) {
-                    h_Vx_pimCD_AC_sector5_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_AC_sector5_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_AC_sector5_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-                } else if (piminus[i]->getSector() == 6) {
-                    h_Vx_pimCD_AC_sector6_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
-                    h_Vy_pimCD_AC_sector6_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
-                    h_Vz_pimCD_AC_sector6_1e_cut->Fill(piminus[i]->par()->getVz(), weight);
-                }
             }
         }
 #pragma endregion
@@ -3067,11 +2963,16 @@ void HipoLooper() {
     bool first_piminus = true;
     bool first_piminus_sector1 = true, first_piminus_sector2 = true, first_piminus_sector3 = true, first_piminus_sector4 = true, first_piminus_sector5 = true, first_piminus_sector6 = true;
 
+    bool first_piplusCD = true;
+
+    bool first_piminusCD = true;
+
     for (int i = 0; i < HistoList.size(); i++) {
         // Maps to hold first-time flags
-        std::map<std::string, bool *> first_flags = {{"{e}", &first_electron}, {"{#pi^{+}}", &first_piplus}, {"{#pi^{-}}", &first_piminus}};
+        std::map<std::string, bool *> first_flags = {
+            {"{e}", &first_electron}, {"{#pi^{+}}", &first_piplus}, {"{#pi^{-}}", &first_piminus}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
 
-        std::map<std::string, std::string> particle_labels = {{"{e}", "e^{-}"}, {"{#pi^{+}}", "#pi^{+}"}, {"{#pi^{-}}", "#pi^{-}"}};
+        std::map<std::string, std::string> particle_labels = {{"{e}", "e^{-}"}, {"{#pi^{+}}", "#pi^{+}"}, {"{#pi^{-}}", "#pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
         // Maps of sector flags (assumes these variables already exist)
         std::map<std::string, std::map<int, bool *>> sector_flags = {
@@ -3199,10 +3100,12 @@ void HipoLooper() {
         {h_Vz_pip_AC_sector1_1e_cut, h_Vz_pip_AC_sector2_1e_cut, h_Vz_pip_AC_sector3_1e_cut, h_Vz_pip_AC_sector4_1e_cut, h_Vz_pip_AC_sector5_1e_cut, h_Vz_pip_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pip_AC_BySector_1e_cut");
     // histogram_functions::CompareHistograms(
-    //     {h_Vz_pipCD_BC_sector1_1e_cut, h_Vz_pipCD_BC_sector2_1e_cut, h_Vz_pipCD_BC_sector3_1e_cut, h_Vz_pipCD_BC_sector4_1e_cut, h_Vz_pipCD_BC_sector5_1e_cut, h_Vz_pipCD_BC_sector6_1e_cut},
+    //     {h_Vz_pipCD_BC_sector1_1e_cut, h_Vz_pipCD_BC_sector2_1e_cut, h_Vz_pipCD_BC_sector3_1e_cut, h_Vz_pipCD_BC_sector4_1e_cut, h_Vz_pipCD_BC_sector5_1e_cut,
+    //     h_Vz_pipCD_BC_sector6_1e_cut},
     //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_BC_BySector_1e_cut");
     // histogram_functions::CompareHistograms(
-    //     {h_Vz_pipCD_AC_sector1_1e_cut, h_Vz_pipCD_AC_sector2_1e_cut, h_Vz_pipCD_AC_sector3_1e_cut, h_Vz_pipCD_AC_sector4_1e_cut, h_Vz_pipCD_AC_sector5_1e_cut, h_Vz_pipCD_AC_sector6_1e_cut},
+    //     {h_Vz_pipCD_AC_sector1_1e_cut, h_Vz_pipCD_AC_sector2_1e_cut, h_Vz_pipCD_AC_sector3_1e_cut, h_Vz_pipCD_AC_sector4_1e_cut, h_Vz_pipCD_AC_sector5_1e_cut,
+    //     h_Vz_pipCD_AC_sector6_1e_cut},
     //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_AC_BySector_1e_cut");
 
     histogram_functions::CompareHistograms(
@@ -3212,10 +3115,12 @@ void HipoLooper() {
         {h_Vz_pim_AC_sector1_1e_cut, h_Vz_pim_AC_sector2_1e_cut, h_Vz_pim_AC_sector3_1e_cut, h_Vz_pim_AC_sector4_1e_cut, h_Vz_pim_AC_sector5_1e_cut, h_Vz_pim_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pim_AC_BySector_1e_cut");
     // histogram_functions::CompareHistograms(
-    //     {h_Vz_pimCD_BC_sector1_1e_cut, h_Vz_pimCD_BC_sector2_1e_cut, h_Vz_pimCD_BC_sector3_1e_cut, h_Vz_pimCD_BC_sector4_1e_cut, h_Vz_pimCD_BC_sector5_1e_cut, h_Vz_pimCD_BC_sector6_1e_cut},
+    //     {h_Vz_pimCD_BC_sector1_1e_cut, h_Vz_pimCD_BC_sector2_1e_cut, h_Vz_pimCD_BC_sector3_1e_cut, h_Vz_pimCD_BC_sector4_1e_cut, h_Vz_pimCD_BC_sector5_1e_cut,
+    //     h_Vz_pimCD_BC_sector6_1e_cut},
     //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_BC_BySector_1e_cut");
     // histogram_functions::CompareHistograms(
-    //     {h_Vz_pimCD_AC_sector1_1e_cut, h_Vz_pimCD_AC_sector2_1e_cut, h_Vz_pimCD_AC_sector3_1e_cut, h_Vz_pimCD_AC_sector4_1e_cut, h_Vz_pimCD_AC_sector5_1e_cut, h_Vz_pimCD_AC_sector6_1e_cut},
+    //     {h_Vz_pimCD_AC_sector1_1e_cut, h_Vz_pimCD_AC_sector2_1e_cut, h_Vz_pimCD_AC_sector3_1e_cut, h_Vz_pimCD_AC_sector4_1e_cut, h_Vz_pimCD_AC_sector5_1e_cut,
+    //     h_Vz_pimCD_AC_sector6_1e_cut},
     //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_AC_BySector_1e_cut");
 
     outFile->cd();
