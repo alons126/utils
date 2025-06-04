@@ -33,7 +33,7 @@
 
 using namespace constants;
 
-std::string sanitize(const std::string &s) {
+std::string SanitizeForBookmark(const std::string &s) {
     std::string out = s;
 
     for (char &c : out) {
@@ -3059,10 +3059,9 @@ void HipoLooper() {
 
                 if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
                     std::string bookmark_title = label + " plots";
+                    std::string sanitized_bookmark_title = SanitizeForBookmark(bookmark_title);
                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
-                    myText->Print((fileName + std::string("Title:") + bookmark_title).c_str(), "pdf");
-                    // titles.DrawLatex(0.5, 0.5, (label + " plots").c_str());
-                    // myText->Print(fileName, "pdf");
+                    myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                     myText->Clear();
                     *first_flags[particle_key] = false;
                 } else {
@@ -3070,20 +3069,20 @@ void HipoLooper() {
                         std::string sector_str = "sector " + std::to_string(sector);
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
                             std::string bookmark_title = label + " plots - " + sector_str;
+                            std::string sanitized_bookmark_title = SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
-                            myText->Print((fileName + std::string("Title:") + bookmark_title).c_str(), "pdf");
-                            // titles.DrawLatex(0.5, 0.5, (label + " plots - " + sector_str).c_str());
-                            // myText->Print(fileName, "pdf");
+                            myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                             myText->Clear();
                             *sector_flags[particle_key][sector] = false;
                             break;
                         }
                     }
                 }
+
                 break;  // Stop checking other particles after match
             }
         }
-
+        
         myCanvas->cd();
 
         myCanvas->cd()->SetGrid();
