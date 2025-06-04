@@ -927,7 +927,7 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
             gPad->SetLogy(0);  // reset log scale if needed
 
-            ((TH1D *)histograms[i])->SetMinimum(1e-5);  // set positive Y-min to enable log scale
+            ((TH1D *)histograms[i])->SetMinimum(0.5);  // set positive Y-min to enable log scale
             ((TH1D *)histograms[i])->SetLineColor(kRed);
             ((TH1D *)histograms[i])->SetMarkerColor(kRed);
             // ((TH1D *)histograms[i])->SetLineColor(kBlue);
