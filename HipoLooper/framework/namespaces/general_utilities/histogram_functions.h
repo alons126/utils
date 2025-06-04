@@ -151,11 +151,46 @@ std::string SanitizeForBookmark(const std::string &s) {
     std::string out = s;
 
     for (char &c : out) {
-        if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = '_'; }
+        if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = ''; }
+        // if (!isalnum(c) && c != ' ' && c != '-' && c != '_') { c = '_'; }
     }
 
     return out;
 }
+
+// ReassignPDFBookmarks functions ---------------------------------------------------------------------------------------------------------------------------------------
+
+// C++ function to call the Java PDF bookmark tool
+void ReassignPDFBookmarks(const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
+    std::string bookmarksJSON = "bookmarks.json";
+
+    // Step 1: Extract current bookmarks
+    std::string extractCmd =
+        "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
+        "-jar ReassignBookmarksTool.jar extract " +
+        inputPDF + " " + bookmarksJSON;
+    system(extractCmd.c_str());
+
+    // Step 2: Strip bookmarks from original PDF using gs
+    std::string noBookmarkPDF = "no_bookmarks.pdf";
+    std::string gsCmd = "gs -o " + noBookmarkPDF + " -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress " + inputPDF;
+    system(gsCmd.c_str());
+
+    // Step 3: Reassign bookmarks
+    std::string reassignCmd =
+        "java -cp \".:pdfbox-2.0.27.jar:fontbox-2.0.27.jar:jackson-databind-2.15.2.jar:jackson-core-2.15.2.jar:jackson-annotations-2.15.2.jar\" "
+        "-jar ReassignBookmarksTool.jar reassign " +
+        noBookmarkPDF + " " + bookmarksJSON + " " + outputPDF;
+    if (hierarchical) reassignCmd += " hierarchical";
+
+    system(reassignCmd.c_str());
+}
+// void ReassignPDFBookmarks(const std::string &inputPDF, const std::string &bookmarkJSON, const std::string &outputPDF) {
+//     std::string jarPath = "../../scripts/java/ReassignBookmarksTool.jar";  // Update this to actual path
+//     std::string command = "java -jar " + jarPath + " \"" + inputPDF + "\" \"" + bookmarkJSON + "\" \"" + outputPDF + "\"";
+//     int result = std::system(command.c_str());
+//     if (result != 0) { std::cerr << "Error: Java PDF bookmark tool failed with code " << result << std::endl; }
+// }
 
 // TitleAligner functions -----------------------------------------------------------------------------------------------------------------------------------------------
 

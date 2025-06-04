@@ -41,8 +41,8 @@ void HipoLooper() {
 
     bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
-    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
-    // int Limiter = 100000;  // 10 files
+    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000; // 1 file
 
 #pragma region Sample selection
@@ -2972,7 +2972,8 @@ void HipoLooper() {
         text.DrawLatex(0.05, 0.65, ("InputFiles: #font[42]{BaseDir + " + InputFiles.substr(BaseDir.length()) + "}").c_str());
     }
 
-    myText->Print(fileName, "pdf");
+    myText->Print(fileName, "pdf Title: Cover");
+    // myText->Print(fileName, "pdf");
     myText->Clear();
 
     bool first_electron = true;
@@ -3142,9 +3143,10 @@ void HipoLooper() {
 
     sprintf(fileName, "%s]", PDF_fileName.c_str());
     myCanvas->Print(fileName, "pdf");
-    histogram_functions::FixPDFOrientation(PDF_fileName);
 
-    // system(("mv " + PDF_fileName + " /lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName + "/").c_str());
+    histogram_functions::FixPDFOrientation(PDF_fileName);                   // Fix orientation
+    histogram_functions::ReassignPDFBookmarks(PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+
     histogram_functions::CompareHistograms(
         {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_e_BC_BySector_1e_cut");
@@ -3158,14 +3160,6 @@ void HipoLooper() {
     histogram_functions::CompareHistograms(
         {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipFD_AC_BySector_1e_cut");
-    // histogram_functions::CompareHistograms(
-    //     {h_Vz_pipCD_BC_sector1_1e_cut, h_Vz_pipCD_BC_sector2_1e_cut, h_Vz_pipCD_BC_sector3_1e_cut, h_Vz_pipCD_BC_sector4_1e_cut, h_Vz_pipCD_BC_sector5_1e_cut,
-    //     h_Vz_pipCD_BC_sector6_1e_cut},
-    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_BC_BySector_1e_cut");
-    // histogram_functions::CompareHistograms(
-    //     {h_Vz_pipCD_AC_sector1_1e_cut, h_Vz_pipCD_AC_sector2_1e_cut, h_Vz_pipCD_AC_sector3_1e_cut, h_Vz_pipCD_AC_sector4_1e_cut, h_Vz_pipCD_AC_sector5_1e_cut,
-    //     h_Vz_pipCD_AC_sector6_1e_cut},
-    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pipCD_AC_BySector_1e_cut");
 
     histogram_functions::CompareHistograms(
         {h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut, h_Vz_pimFD_BC_sector6_1e_cut},
@@ -3173,14 +3167,6 @@ void HipoLooper() {
     histogram_functions::CompareHistograms(
         {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
         "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimFD_AC_BySector_1e_cut");
-    // histogram_functions::CompareHistograms(
-    //     {h_Vz_pimCD_BC_sector1_1e_cut, h_Vz_pimCD_BC_sector2_1e_cut, h_Vz_pimCD_BC_sector3_1e_cut, h_Vz_pimCD_BC_sector4_1e_cut, h_Vz_pimCD_BC_sector5_1e_cut,
-    //     h_Vz_pimCD_BC_sector6_1e_cut},
-    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_BC_BySector_1e_cut");
-    // histogram_functions::CompareHistograms(
-    //     {h_Vz_pimCD_AC_sector1_1e_cut, h_Vz_pimCD_AC_sector2_1e_cut, h_Vz_pimCD_AC_sector3_1e_cut, h_Vz_pimCD_AC_sector4_1e_cut, h_Vz_pimCD_AC_sector5_1e_cut,
-    //     h_Vz_pimCD_AC_sector6_1e_cut},
-    //     "/lustre24/expphy/volatile/clas12/asportes/Analysis_output/" + OutFolderName, "Histogram_Comparisons", "Vz_pimCD_AC_BySector_1e_cut");
 
     outFile->cd();
     for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
