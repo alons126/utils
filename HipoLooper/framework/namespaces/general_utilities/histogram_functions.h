@@ -944,9 +944,10 @@ void CompareHistograms(const std::vector<TObject *> &histograms, const std::stri
                 stats->SetY1NDC(0.875 - dy);
             }
         } else if (histograms[i]->InheritsFrom(TH2D::Class())) {
-            gPad->SetLogz(1);
+            // gPad->SetLogz(1);
             TH2D *h2 = (TH2D *)histograms[i];
             h2->Draw("COLZ");
+            gPad->SetLogz(1);
             gPad->Update();
             TPaletteAxis *palette = (TPaletteAxis *)h2->GetListOfFunctions()->FindObject("palette");
             if (palette) palette->SetY2NDC(0.475);
