@@ -37,7 +37,9 @@ public class ReassignBookmarksTool {
             File inputFile = new File(inputPDF);
             String outputJSON = new File(inputFile.getParent(), "bookmarks.json").getAbsolutePath();
             extractBookmarks(inputPDF, outputJSON);
-            System.out.println(GREEN + "\nExtracted bookmarks saved to: " + RESET + outputJSON);
+
+            System.out.println(GREEN + "\nBookmark extraction completed!" + RESET);
+            System.out.println(GREEN + "Extracted bookmarks saved to: " + RESET + outputJSON + "\n");
         } else if (args[0].equals("reassign")) {
             boolean hierarchical = args.length > 4 && args[4].equalsIgnoreCase("hierarchical");
             String inputPDF = args[1];
@@ -48,8 +50,11 @@ public class ReassignBookmarksTool {
             // Delete bookmark JSON after reassignment if it was created in input directory
             File tempJson = new File(new File(inputPDF).getParent(), "bookmarks.json");
             if (tempJson.exists() && tempJson.getAbsolutePath().equals(new File(bookmarkJSON).getAbsolutePath())) {
-                if (tempJson.delete()) { System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + tempJson.getAbsolutePath() + "\n"); }
+                if (tempJson.delete()) { System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + tempJson.getAbsolutePath()); }
             }
+
+            System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
+            System.out.println(GREEN + "Reassigned PDF file saved to: " + RESET + outputPDF + "\n");
         }
     }
 
