@@ -2964,15 +2964,20 @@ void HipoLooper() {
     bool first_piminus_sector1 = true, first_piminus_sector2 = true, first_piminus_sector3 = true, first_piminus_sector4 = true, first_piminus_sector5 = true, first_piminus_sector6 = true;
 
     bool first_piplusCD = true;
+    bool first_piplusCD_sector1 = true, first_piplusCD_sector2 = true, first_piplusCD_sector3 = true, first_piplusCD_sector4 = true, first_piplusCD_sector5 = true,
+         first_piplusCD_sector6 = true;
 
     bool first_piminusCD = true;
+    bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
+         first_piminusCD_sector6 = true;
 
     for (int i = 0; i < HistoList.size(); i++) {
         // Maps to hold first-time flags
         std::map<std::string, bool *> first_flags = {
             {"{e}", &first_electron}, {"{#pi^{+}}", &first_piplus}, {"{#pi^{-}}", &first_piminus}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
 
-        std::map<std::string, std::string> particle_labels = {{"{e}", "e^{-}"}, {"{#pi^{+}}", "#pi^{+}"}, {"{#pi^{-}}", "#pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
+        std::map<std::string, std::string> particle_labels = {
+            {"{e}", "e^{-}"}, {"{#pi^{+}}", "#pi^{+}"}, {"{#pi^{-}}", "#pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
         // Maps of sector flags (assumes these variables already exist)
         std::map<std::string, std::map<int, bool *>> sector_flags = {
@@ -2986,7 +2991,21 @@ void HipoLooper() {
             {"{#pi^{+}}",
              {{1, &first_piplus_sector1}, {2, &first_piplus_sector2}, {3, &first_piplus_sector3}, {4, &first_piplus_sector4}, {5, &first_piplus_sector5}, {6, &first_piplus_sector6}}},
             {"{#pi^{-}}",
-             {{1, &first_piminus_sector1}, {2, &first_piminus_sector2}, {3, &first_piminus_sector3}, {4, &first_piminus_sector4}, {5, &first_piminus_sector5}, {6, &first_piminus_sector6}}}};
+             {{1, &first_piminus_sector1}, {2, &first_piminus_sector2}, {3, &first_piminus_sector3}, {4, &first_piminus_sector4}, {5, &first_piminus_sector5}, {6, &first_piminus_sector6}}},
+            {"{#pi^{+}CD}",
+             {{1, &first_piplusCD_sector1},
+              {2, &first_piplusCD_sector2},
+              {3, &first_piplusCD_sector3},
+              {4, &first_piplusCD_sector4},
+              {5, &first_piplusCD_sector5},
+              {6, &first_piplusCD_sector6}}},
+            {"{#pi^{-}CD}",
+             {{1, &first_piminusCD_sector1},
+              {2, &first_piminusCD_sector2},
+              {3, &first_piminusCD_sector3},
+              {4, &first_piminusCD_sector4},
+              {5, &first_piminusCD_sector5},
+              {6, &first_piminusCD_sector6}}}};
 
         std::string title = HistoList[i]->GetTitle();
 
