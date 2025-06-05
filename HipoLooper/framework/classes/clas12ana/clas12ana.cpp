@@ -415,16 +415,16 @@ bool clas12ana::checkEcalPCuts(const region_part_ptr &p) {
 
         cout << "\n\nSF cuts: " << sf_min_cut << " " << sf_max_cut << std::endl;
         cout << "SF value: " << sampling_frac << std::endl;
+        cout << "P value: " << p->par()->getP() << std::endl;
 
-        if (sampling_frac < sf_max_cut && sampling_frac > sf_min_cut)
+        if (sampling_frac < sf_max_cut && sampling_frac > sf_min_cut) {
             return true;
-
-        else
+        } else {
             return false;
-    }
-
-    else
+        }
+    } else {
         return false;
+    }
 }
 
 double clas12ana::getSF(const region_part_ptr &p) {
