@@ -2489,7 +2489,7 @@ void HipoLooper() {
 
         h_Edep_PCAL_VS_EC_BC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-        h_SF_VS_Edep_PCAL_BC_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+        h_SF_VS_Edep_PCAL_BC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
         h_SF_VS_P_e_BC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
         h_SF_VS_Lv_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2509,7 +2509,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_BC_sector1_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_BC_sector1_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_BC_sector1_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_sector1_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2528,7 +2528,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_BC_sector2_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_BC_sector2_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_BC_sector2_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_sector2_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2547,7 +2547,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_BC_sector3_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_BC_sector3_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_BC_sector3_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_sector3_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2566,7 +2566,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_BC_sector4_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_BC_sector4_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_BC_sector4_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_sector4_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2583,7 +2583,7 @@ void HipoLooper() {
 
             h_nphe_BC_sector5_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-            h_SF_VS_Edep_PCAL_BC_sector5_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_BC_sector5_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_Edep_PCAL_VS_EC_BC_sector5_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
             h_SF_VS_P_e_BC_sector5_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
@@ -2604,7 +2604,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_BC_sector6_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_BC_sector6_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_BC_sector6_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_sector6_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2645,7 +2645,7 @@ void HipoLooper() {
 
         h_Edep_PCAL_VS_EC_AC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-        h_SF_VS_Edep_PCAL_AC_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+        h_SF_VS_Edep_PCAL_AC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
         h_SF_VS_P_e_AC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
         h_SF_VS_Lv_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2665,7 +2665,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_AC_sector1_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_AC_sector1_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_AC_sector1_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_AC_sector1_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2684,7 +2684,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_AC_sector2_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_AC_sector2_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_AC_sector2_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_AC_sector2_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2703,7 +2703,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_AC_sector3_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_AC_sector3_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_AC_sector3_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_AC_sector3_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2722,7 +2722,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_AC_sector4_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_AC_sector4_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_AC_sector4_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_AC_sector4_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
@@ -2739,7 +2739,7 @@ void HipoLooper() {
 
             h_nphe_AC_sector5_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-            h_SF_VS_Edep_PCAL_AC_sector5_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_AC_sector5_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_Edep_PCAL_VS_EC_AC_sector5_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
             h_SF_VS_P_e_AC_sector5_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
@@ -2760,7 +2760,7 @@ void HipoLooper() {
 
             h_Edep_PCAL_VS_EC_AC_sector6_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-            h_SF_VS_Edep_PCAL_AC_sector6_1e_cut->Fill(reco_P_e.Mag(), Edep_PCAL, weight);
+            h_SF_VS_Edep_PCAL_AC_sector6_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_AC_sector6_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
             h_SF_VS_Lv_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
