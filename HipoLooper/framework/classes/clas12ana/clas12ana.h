@@ -23,8 +23,8 @@
 #include "region_particle.h"
 
 // My addition:
-const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()); 
-// extern const std::string CLAS12ANA_DIR;  // My addition
+// const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()); 
+extern const std::string CLAS12ANA_DIR;  // My addition
 //  #define CLAS12ANA_DIR _CLAS12ANA_DIR
 
 using namespace std;
