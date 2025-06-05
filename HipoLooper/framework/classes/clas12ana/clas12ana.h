@@ -41,7 +41,9 @@ class clas12ana : public clas12reader {
     clas12ana(bool debug) : debug_plots{debug} { Init(); };
 
     ~clas12ana() {
+        cout << "\n\nclas12ana destructor called" << std::endl;
         if (debug_plots) debug_c.WriteDebugPlots(debug_out_file);
+        cout << "\n\nclas12ana destructor finished\n\n" << std::endl;
     };
 
     void Init();
