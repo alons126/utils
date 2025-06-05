@@ -9,22 +9,23 @@
 #include <sstream>
 #include <vector>
 
+#include "../clas12debug/clas12debug.cpp"
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TLorentzVector.h"
 #include "TVector3.h"
-
-#include "../clas12debug/clas12debug.cpp"
 // #include "clas12debug.h"
 
-// 
+//
 #include "clas12reader.h"
 #include "region_particle.h"
 
-extern const std::string CLAS12ANA_DIR;  // My addition
-                                         //  #define CLAS12ANA_DIR _CLAS12ANA_DIR
+// My addition:
+const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()); 
+// extern const std::string CLAS12ANA_DIR;  // My addition
+//  #define CLAS12ANA_DIR _CLAS12ANA_DIR
 
 using namespace std;
 using namespace clas12;
