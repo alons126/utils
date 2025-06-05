@@ -21,12 +21,15 @@
 #include <typeinfo>
 #include <vector>
 
+const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/framework/classes/clas12ana/Ana/";
+
 // Include libraries:
 #include "framework/namespaces/general_utilities/utilities.h"
 #include "framework/namespaces/setup/path_definitions.h"
 
 // Include classes:
-#include "framework/classes/clas12ana/clas12ana.h"
+#include "framework/classes/clas12ana/clas12ana.cpp"
+// #include "framework/classes/clas12ana/clas12ana.h"
 
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
