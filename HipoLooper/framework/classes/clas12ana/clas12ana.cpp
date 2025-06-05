@@ -418,10 +418,10 @@ bool clas12ana::checkEcalPCuts(const region_part_ptr &p) {
         cout << "P value: " << p->par()->getP() << std::endl;
 
         if (sampling_frac < sf_max_cut && sampling_frac > sf_min_cut) {
-            cout << "SF cuts passed" << std::endl;
             return true;
         } else {
             cout << "SF cuts failed" << std::endl;
+            exit(1);
             return false;
         }
     } else {
