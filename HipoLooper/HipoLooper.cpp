@@ -59,11 +59,11 @@ void HipoLooper() {
 
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo";
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo";
-    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
+    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
 
     // Simulation samples:
 
-    // std::string InputFiles = BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
+    std::string InputFiles = BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
     // std::string InputFiles = BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo";
 
     // std::string InputFiles = BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo";
