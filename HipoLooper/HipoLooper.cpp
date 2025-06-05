@@ -209,10 +209,10 @@ void HipoLooper() {
     HistoList.push_back(h_Edep_PCAL_VS_EC_AC_1e_cut);
 
     TH2D *h_SF_VS_Edep_PCAL_BC_1e_cut = new TH2D(
-        "SF_VS_Edep_PCAL_BC_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0, 2, 100, 0.125, 0.325);
+        "SF_VS_Edep_PCAL_BC_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0, 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_1e_cut = new TH2D(
-        "SF_VS_Edep_PCAL_AC_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0, 2, 100, 0.125, 0.325);
+        "SF_VS_Edep_PCAL_AC_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0, 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_1e_cut =
@@ -304,11 +304,11 @@ void HipoLooper() {
 
     TH2D *h_SF_VS_Edep_PCAL_BC_sector1_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_BC_sector1_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut, sector1);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_sector1_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_sector1_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_AC_sector1_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut, sector1);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_sector1_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_sector1_1e_cut =
@@ -410,11 +410,11 @@ void HipoLooper() {
 
     TH2D *h_SF_VS_Edep_PCAL_BC_sector2_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_BC_sector2_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut, sector2);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_sector2_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_sector2_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_AC_sector2_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut, sector2);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_sector2_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_sector2_1e_cut =
@@ -516,11 +516,11 @@ void HipoLooper() {
 
     TH2D *h_SF_VS_Edep_PCAL_BC_sector3_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_BC_sector3_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut, sector3);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_sector3_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_sector3_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_AC_sector3_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut, sector3);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_sector3_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_sector3_1e_cut =
@@ -622,11 +622,11 @@ void HipoLooper() {
 
     TH2D *h_SF_VS_Edep_PCAL_BC_sector4_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_BC_sector4_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut, sector4);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_sector4_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_sector4_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_AC_sector4_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut, sector4);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_sector4_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_sector4_1e_cut =
@@ -728,11 +728,11 @@ void HipoLooper() {
 
     TH2D *h_SF_VS_Edep_PCAL_BC_sector5_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_BC_sector5_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut, sector5);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_sector5_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_sector5_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_AC_sector5_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut, sector5);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_sector5_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_sector5_1e_cut =
@@ -834,11 +834,11 @@ void HipoLooper() {
 
     TH2D *h_SF_VS_Edep_PCAL_BC_sector6_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_BC_sector6_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (before cut, sector6);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_BC_sector6_1e_cut);
     TH2D *h_SF_VS_Edep_PCAL_AC_sector6_1e_cut =
         new TH2D("SF_VS_Edep_PCAL_AC_sector6_1e_cut", "Electron sampling fraction vs. E_{dep}^{PCAL} in 1e cut (after cut, sector6);E_{dep}^{PCAL} [GeV];Electron sampling fraction", 100, 0,
-                 2., 100, 0.125, 0.325);
+                 1.25, 100, 0.125, 0.325);
     HistoList.push_back(h_SF_VS_Edep_PCAL_AC_sector6_1e_cut);
 
     TH2D *h_SF_VS_P_e_BC_sector6_1e_cut =
