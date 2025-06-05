@@ -2312,33 +2312,33 @@ void HipoLooper() {
 
     clas12ana clasAna;
 
-    clasAna.readEcalSFPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsSF_40Ca_x2.dat").c_str());
-    clasAna.setEcalSFCuts();
+    // clasAna.readEcalSFPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsSF_40Ca_x2.dat").c_str());
+    // clasAna.setEcalSFCuts();
 
-    clasAna.readEcalPPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsPI_40Ca_x2.dat").c_str());
-    // clasAna.setEcalPCuts();
+    // clasAna.readEcalPPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsPI_40Ca_x2.dat").c_str());
+    // // clasAna.setEcalPCuts();
 
-    clasAna.setEcalEdgeCuts();
+    // clasAna.setEcalEdgeCuts();
 
-    clasAna.setNpheCuts();
+    // clasAna.setNpheCuts();
 
-    clasAna.readInputParam(
-        (path_definitions::PathDefinitions.PIDCutsDirectory + "Fitted_PID_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
-    clasAna.setPidCuts();                                                                                            // making f_pidCuts = true
+    // clasAna.readInputParam(
+    //     (path_definitions::PathDefinitions.PIDCutsDirectory + "Fitted_PID_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
+    // clasAna.setPidCuts();                                                                                            // making f_pidCuts = true
 
-    // clasAna.set_e_VertexCuts();  // making f_e_vertexCuts = true
-    // clasAna.setVertexCuts();  // making f_vertexCuts = true
+    // // clasAna.set_e_VertexCuts();  // making f_e_vertexCuts = true
+    // // clasAna.setVertexCuts();  // making f_vertexCuts = true
 
-    clasAna.set_e_DCEdgeCuts();
-    clasAna.setDCEdgeCuts();
+    // clasAna.set_e_DCEdgeCuts();
+    // clasAna.setDCEdgeCuts();
 
-    // clasAna.setVertexCorrCuts();                                                                                 // making f_corr_vertexCuts = true
-    // clasAna.setVertexCorrCutsLim(CutManager.dVz_cuts.GetLowerCut(), CutManager.dVz_cuts.GetUpperCut());          // setting dVz cuts (general)
-    // clasAna.setVertexCorrCutsLimFD(CutManager.dVz_cuts_FD.GetLowerCut(), CutManager.dVz_cuts_FD.GetUpperCut());  // setting dVz cuts (FD only)
-    // clasAna.setVertexCorrCutsLimCD(CutManager.dVz_cuts_CD.GetLowerCut(), CutManager.dVz_cuts_CD.GetUpperCut());  // setting dVz cuts (CD only)
+    // // clasAna.setVertexCorrCuts();                                                                                 // making f_corr_vertexCuts = true
+    // // clasAna.setVertexCorrCutsLim(CutManager.dVz_cuts.GetLowerCut(), CutManager.dVz_cuts.GetUpperCut());          // setting dVz cuts (general)
+    // // clasAna.setVertexCorrCutsLimFD(CutManager.dVz_cuts_FD.GetLowerCut(), CutManager.dVz_cuts_FD.GetUpperCut());  // setting dVz cuts (FD only)
+    // // clasAna.setVertexCorrCutsLimCD(CutManager.dVz_cuts_CD.GetLowerCut(), CutManager.dVz_cuts_CD.GetUpperCut());  // setting dVz cuts (CD only)
 
-    clasAna.readInputParam(
-        (path_definitions::PathDefinitions.NucleonCutsDirectory + "Nucleon_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
+    // clasAna.readInputParam(
+    //     (path_definitions::PathDefinitions.NucleonCutsDirectory + "Nucleon_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
 
     clasAna.printParams();
 

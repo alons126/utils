@@ -224,8 +224,10 @@ class clas12ana : public clas12reader {
     bool f_DCEdgeCuts = true;
     bool f_CDEdgeCuts = true;
     bool f_pidCuts = true;
-    bool f_vertexCuts = true;
-    bool f_corr_vertexCuts = true;
+    bool f_vertexCuts = false;
+    // bool f_vertexCuts = true;
+    bool f_corr_vertexCuts = false;
+    // bool f_corr_vertexCuts = true;
     bool f_protonpidCuts = true;   // PID of CD protons handled not by chi2pid (CLAS) but our own
     bool f_ghostTrackCuts = true;  // ghost track cut in CD
 
