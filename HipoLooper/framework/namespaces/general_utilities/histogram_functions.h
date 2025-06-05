@@ -262,6 +262,8 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     system(gsCmd.c_str());
     system(reassignCmd.c_str());
 
+    system(("rm -rf " + bookmarksJSON).c_str());  // Clean up temporary file
+
     std::cout << "\n";
 }
 

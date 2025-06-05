@@ -3139,7 +3139,7 @@ void HipoLooper() {
             if (HistoList[i]->GetEntries() != 0) {
                 gPad->Update();
                 TPaletteAxis *palette = (TPaletteAxis *)HistoList[i]->GetListOfFunctions()->FindObject("palette");
-                palette->SetY2NDC(0.5);
+                palette->SetY2NDC(0.55);
                 gPad->Modified();
                 gPad->Update();
             }
@@ -3155,6 +3155,13 @@ void HipoLooper() {
 
     histogram_functions::FixPDFOrientation(PDF_fileName);                                                             // Fix orientation
     histogram_functions::ReassignPDFBookmarks(basic_tools::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+
+    histogram_functions::CompareHistograms(
+        {h_SF_VS_P_e_BC_sector1_1e_cut, h_SF_VS_P_e_BC_sector2_1e_cut, h_SF_VS_P_e_BC_sector3_1e_cut, h_SF_VS_P_e_BC_sector4_1e_cut, h_SF_VS_P_e_BC_sector5_1e_cut, h_SF_VS_P_e_BC_sector6_1e_cut}, OutputDir,
+        "Histogram_Comparisons", "SF_VS_P_e_BC_BySector_1e_cut");
+    histogram_functions::CompareHistograms(
+        {h_SF_VS_P_e_AC_sector1_1e_cut, h_SF_VS_P_e_AC_sector2_1e_cut, h_SF_VS_P_e_AC_sector3_1e_cut, h_SF_VS_P_e_AC_sector4_1e_cut, h_SF_VS_P_e_AC_sector5_1e_cut, h_SF_VS_P_e_AC_sector6_1e_cut}, OutputDir,
+        "Histogram_Comparisons", "SF_VS_P_e_AC_BySector_1e_cut");
 
     histogram_functions::CompareHistograms(
         {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut}, OutputDir,
