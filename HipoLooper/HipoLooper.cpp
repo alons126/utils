@@ -58,8 +58,8 @@ void HipoLooper() {
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo";
 
     // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo";
-    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo";
-    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
+    // std::string InputFiles = "/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo";
+    std::string InputFiles = "/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo";
 
     // Simulation samples:
 
