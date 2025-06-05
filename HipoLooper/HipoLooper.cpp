@@ -21,7 +21,7 @@
 #include <typeinfo>
 #include <vector>
 
-const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/framework/classes/clas12ana/";
+// const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/framework/classes/clas12ana/";
 
 // Include libraries:
 #include "framework/namespaces/general_utilities/utilities.h"
@@ -37,6 +37,8 @@ const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/f
 using namespace constants;
 
 void HipoLooper() {
+    const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/framework/classes/clas12ana/";
+
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
     int version = 8;  // Version of the code
@@ -3172,11 +3174,7 @@ void HipoLooper() {
         {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
         OutputDir, "Histogram_Comparisons", "Vz_pimFD_AC_BySector_1e_cut");
 
-    std::cout << "\n\nSaving histograms to ROOT file..." << "\n\n";
     outFile->cd();
-    std::cout << "Writing histograms to file: " << outFile->GetName() << "\n\n";
     for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
-    std::cout << "All histograms written to file: " << outFile->GetName() << "\n\n";
     outFile->Close();
-    std::cout << "HipoLooper finished successfully!" << "\n\n";
 }
