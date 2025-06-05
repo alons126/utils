@@ -222,17 +222,30 @@ class clas12ana : public clas12reader {
 
     bool f_ecalSFCuts = true;
     bool f_ecalPCuts = true;
-    bool f_ecalDiagCuts = true;
-    bool f_ecalEdgeCuts = true;
-    bool f_DCEdgeCuts = true;
-    bool f_CDEdgeCuts = true;
-    bool f_pidCuts = true;
+    bool f_ecalDiagCuts = false;
+    bool f_ecalEdgeCuts = false;
+    bool f_DCEdgeCuts = false;
+    bool f_CDEdgeCuts = false;
+    bool f_pidCuts = false;
     bool f_vertexCuts = false;
-    // bool f_vertexCuts = true;
+    // bool f_vertexCuts = false;
     bool f_corr_vertexCuts = false;
-    // bool f_corr_vertexCuts = true;
-    bool f_protonpidCuts = true;   // PID of CD protons handled not by chi2pid (CLAS) but our own
-    bool f_ghostTrackCuts = true;  // ghost track cut in CD
+    // bool f_corr_vertexCuts = false;
+    bool f_protonpidCuts = false;   // PID of CD protons handled not by chi2pid (CLAS) but our own
+    bool f_ghostTrackCuts = false;  // ghost track cut in CD
+    // bool f_ecalSFCuts = true;
+    // bool f_ecalPCuts = true;
+    // bool f_ecalDiagCuts = true;
+    // bool f_ecalEdgeCuts = true;
+    // bool f_DCEdgeCuts = true;
+    // bool f_CDEdgeCuts = true;
+    // bool f_pidCuts = true;
+    // bool f_vertexCuts = false;
+    // // bool f_vertexCuts = true;
+    // bool f_corr_vertexCuts = false;
+    // // bool f_corr_vertexCuts = true;
+    // bool f_protonpidCuts = true;   // PID of CD protons handled not by chi2pid (CLAS) but our own
+    // bool f_ghostTrackCuts = true;  // ghost track cut in CD
 
     // optional cut
     bool f_CDRegionCuts = false;
