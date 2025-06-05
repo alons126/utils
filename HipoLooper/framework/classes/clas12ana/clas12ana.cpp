@@ -722,8 +722,9 @@ void clas12ana::readInputParam(const char *filename) {
                 }
             }  // end vertex z cuts
         }
-    } else
-        cout << "Parameter file didn't read in " << endl;
+    } else {
+        cout << "Parameter file:\n" << filename << "didn't read in " << endl;
+    }
 
     this->printParams();
 
