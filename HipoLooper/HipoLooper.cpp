@@ -37,8 +37,6 @@
 using namespace constants;
 
 void HipoLooper() {
-    const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/framework/classes/clas12ana/";
-
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
     int version = 8;  // Version of the code

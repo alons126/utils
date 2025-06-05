@@ -24,7 +24,7 @@
 
 // My addition:
 // const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory());
-extern const std::string CLAS12ANA_DIR;  // My addition
+// extern const std::string CLAS12ANA_DIR;  // My addition
 //  #define CLAS12ANA_DIR _CLAS12ANA_DIR
 
 using namespace std;
@@ -44,6 +44,8 @@ class clas12ana : public clas12reader {
         if (debug_plots) debug_c.WriteDebugPlots(debug_out_file);
     };
 
+    const std::string CLAS12ANA_DIR = std::string(gSystem->WorkingDirectory()) + "/framework/classes/clas12ana/";
+    
     void Init();
     void WriteSFEcalCuts();
     void InitSFEcalCuts();
