@@ -93,17 +93,17 @@ void clas12ana::Run(const std::unique_ptr<clas12::clas12reader> &c12) {
         }
 
         /*
-      This may be a strange way to check the cuts, maybe there is a better way
-      We need to ensure that the flag f_cuts is on otherwise we don't want to apply any cut
-      The below logic will return particles that did not pass any cut (for only cut flags that are on
-      Then I will invert the logic using !(logic) to return when the particle do pass all cuts
+        This may be a strange way to check the cuts, maybe there is a better way
+        We need to ensure that the flag f_cuts is on otherwise we don't want to apply any cut
+        The below logic will return particles that did not pass any cut (for only cut flags that are on
+        Then I will invert the logic using !(logic) to return when the particle do pass all cuts
 
-      (!checkPidCut(p) && f_pidCuts)    ||	         //PID cuts
-      (!checkVertex(p) && f_vertexCuts) ||  //Vertex cut
-      (!CDEdgeCuts(p)  && f_CDEdgeCuts) ||  //CD edge cut
-      (!CDRegionCuts(p)  && f_CDRegionCuts) ||  //CD edge cut
-      (!DCEdgeCuts(p) && f_DCEdgeCuts)  || //DC edge cut
-      (!checkVertexCorrelation(electrons_det[0],p) && f_corr_vertexCuts) //Vertex correlation cut between electron
+        (!checkPidCut(p) && f_pidCuts)    ||	                           // PID cuts
+        (!checkVertex(p) && f_vertexCuts) ||                               // Vertex cut
+        (!CDEdgeCuts(p)  && f_CDEdgeCuts) ||                               // CD edge cut
+        (!CDRegionCuts(p)  && f_CDRegionCuts) ||                           // CD edge cut
+        (!DCEdgeCuts(p) && f_DCEdgeCuts)  ||                               // DC edge cut
+        (!checkVertexCorrelation(electrons_det[0],p) && f_corr_vertexCuts) // Vertex correlation cut between electron
         */
 
         std::for_each(particles.begin(), particles.end(), [this, electrons_det](auto p) {
@@ -412,6 +412,9 @@ bool clas12ana::checkEcalPCuts(const region_part_ptr &p) {
         // Turn on for functional form
         double sf_max_cut = ecal_p_fcn[1][sector]->Eval(p->par()->getP());
         double sf_min_cut = ecal_p_fcn[0][sector]->Eval(p->par()->getP());
+
+        cout << "\n\nSF cuts: " << sf_min_cut << " " << sf_max_cut << std::endl;
+        cout << "SF value: " << sampling_frac << std::endl;
 
         if (sampling_frac < sf_max_cut && sampling_frac > sf_min_cut)
             return true;
