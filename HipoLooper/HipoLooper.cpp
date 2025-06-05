@@ -28,8 +28,8 @@
 #include "framework/namespaces/setup/path_definitions.h"
 
 // Include classes:
-// #include "framework/classes/clas12ana/clas12ana.cpp"
-#include "framework/classes/clas12ana/clas12ana.h"
+#include "framework/classes/clas12ana/clas12ana.cpp"
+// #include "framework/classes/clas12ana/clas12ana.h"
 
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
@@ -2538,21 +2538,21 @@ void HipoLooper() {
 
         if (electrons.size() != 1) { continue; }
 
-        // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
-        bool bad_DC_edge_CutCond = (!reco_analysis_functions::DCEdgeCuts(electrons[0]));
-        bool bad_nphe_CutCond = (electrons[0]->che(clas12::HTCC)->getNphe() <= 2);
-        bool bad_Edep_PCAL_CutCond = (Edep_PCAL <= 0.06);
-        bool bad_SF_CutCond = (EoP_e < 0.2 || EoP_e > 0.28);
-        bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
-        bool bad_diag_CutCond = (!reco_analysis_functions::checkEcalDiagCuts(electrons[0]));
+        // // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
+        // bool bad_DC_edge_CutCond = (!reco_analysis_functions::DCEdgeCuts(electrons[0]));
+        // bool bad_nphe_CutCond = (electrons[0]->che(clas12::HTCC)->getNphe() <= 2);
+        // bool bad_Edep_PCAL_CutCond = (Edep_PCAL <= 0.06);
+        // bool bad_SF_CutCond = (EoP_e < 0.2 || EoP_e > 0.28);
+        // bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
+        // bool bad_diag_CutCond = (!reco_analysis_functions::checkEcalDiagCuts(electrons[0]));
 
-        // if (bad_Vz_e_CutCond) { continue; }
-        if (bad_DC_edge_CutCond) { continue; }
-        if (bad_nphe_CutCond) { continue; }
-        if (bad_Edep_PCAL_CutCond) { continue; }
-        if (bad_SF_CutCond) { continue; }
-        if (bad_PCAL_edge_CutCond) { continue; }
-        if (bad_diag_CutCond) { continue; }
+        // // if (bad_Vz_e_CutCond) { continue; }
+        // if (bad_DC_edge_CutCond) { continue; }
+        // if (bad_nphe_CutCond) { continue; }
+        // if (bad_Edep_PCAL_CutCond) { continue; }
+        // if (bad_SF_CutCond) { continue; }
+        // if (bad_PCAL_edge_CutCond) { continue; }
+        // if (bad_diag_CutCond) { continue; }
 
 #pragma region Electrons APID
         h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
@@ -3124,6 +3124,11 @@ void HipoLooper() {
                     Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
 
                 Legend->Draw("same");
+
+                auto ListOfFunctions = HistoList[i]->GetListOfFunctions();
+                ListOfFunctions->Add(speac_target_location_TLine);
+                ListOfFunctions->Add(measured_target_location_TLine);
+                ListOfFunctions->Add(Legend);
             }
         } else if (HistoList[i]->InheritsFrom("TH2D")) {
             HistoList[i]->Draw("colz");
