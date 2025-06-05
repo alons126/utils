@@ -3284,4 +3284,6 @@ void HipoLooper() {
     outFile->cd();
     for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
     outFile->Close();
+
+    gDirectory->Clear();
 }
