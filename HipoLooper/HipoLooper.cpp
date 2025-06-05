@@ -39,8 +39,9 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    std::string OutFolderName_prefix = "07_HipoLooper";
-    std::string OutFolderName_ver_status = "_v7_";
+    int version = 8;  // Version of the code
+    std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
+    std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
@@ -3171,7 +3172,11 @@ void HipoLooper() {
         {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
         OutputDir, "Histogram_Comparisons", "Vz_pimFD_AC_BySector_1e_cut");
 
+    std::cout << "\n\nSaving histograms to ROOT file..." << "\n\n";
     outFile->cd();
+    std::cout << "Writing histograms to file: " << outFile->GetName() << "\n\n";
     for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
+    std::cout << "All histograms written to file: " << outFile->GetName() << "\n\n";
     outFile->Close();
+    std::cout << "HipoLooper finished successfully!" << "\n\n";
 }
