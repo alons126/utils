@@ -148,6 +148,9 @@ public class ReassignBookmarksTool {
             String bookmarkJSON = args[2];
             String outputPDF = args[3];
             reassignBookmarks(inputPDF, bookmarkJSON, outputPDF, hierarchical);
+
+            System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
+            System.out.println(GREEN + "Reassign PDF file saved to: " + RESET + outputPDF + "\n");
             return;
         }
     }
@@ -272,6 +275,24 @@ public class ReassignBookmarksTool {
             addBookmarksToOutline(document, finalEntries);
 
             document.save(outputPDF);
+
+            // Delete temporary files if they exist
+            File jsonFile = new File(bookmarkJSON);
+            File strippedFile = new File(inputPDF);
+            if (jsonFile.exists()) {
+                if (jsonFile.delete()) {
+                    System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + bookmarkJSON);
+                } else {
+                    System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + bookmarkJSON);
+                }
+            }
+            if (strippedFile.exists() && !strippedFile.getAbsolutePath().equals(outputPDF)) {
+                if (strippedFile.delete()) {
+                    System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + inputPDF);
+                } else {
+                    System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + inputPDF);
+                }
+            }
         }
     }
 
@@ -282,10 +303,12 @@ public class ReassignBookmarksTool {
         PDDocumentOutline outline = new PDDocumentOutline();
         document.getDocumentCatalog().setDocumentOutline(outline);
 
+        System.out.println(GREEN + "\nAdding bookmarks to outline...\n" + RESET);
+
         for (BookmarkEntry entry : bookmarks) {
             PDOutlineItem item = createOutlineItem(document, entry);
             outline.addLast(item);
-            System.out.println("✔ Added root bookmark: '" + entry.title + "'");
+            System.out.println("- Added root bookmark: '" + entry.title + "'");
         }
 
         outline.openNode();
@@ -300,7 +323,7 @@ public class ReassignBookmarksTool {
         for (BookmarkEntry child : entry.getChildren()) {
             PDOutlineItem childItem = createOutlineItem(doc, child);
             item.addLast(childItem);
-            System.out.println("  ✔ Added child '" + child.title + "' to parent '" + entry.title + "'");
+            System.out.println("  - Added child '" + child.title + "' to parent '" + entry.title + "'");
         }
 
         return item;
