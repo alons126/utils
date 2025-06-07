@@ -43,7 +43,9 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    bool ApplyLimiter = true;
+    std::string General_status = "_NewClas12Ana_Cuts";
+
+    bool ApplyLimiter = false;
     // int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
@@ -118,7 +120,6 @@ void HipoLooper() {
                                  : basic_tools::FindSubstring(InputFiles.at(sample), "015743") ? "_run_015743"
                                  : basic_tools::FindSubstring(InputFiles.at(sample), "015792") ? "_run_015792"
                                                                                                : "";
-        std::string General_status = "";
 
         std::string CodeRun_status = target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status;
 
@@ -2766,6 +2767,7 @@ void HipoLooper() {
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);
+                    measured_target_location_TLine->SetLineWidth(3);
                     // measured_target_location_TLine->SetLineWidth(4);
                     measured_target_location_TLine->SetLineStyle(2);
                     measured_target_location_TLine->Draw("same");
