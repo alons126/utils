@@ -16,7 +16,7 @@
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
-// 
+//
 #include "clas12reader.h"
 #include "region_particle.h"
 
@@ -52,7 +52,8 @@ class clas12debug {
     TString debug_fileName = "./debugOutputFile.root";
     bool debug_plots = true;
 
-    std::vector<const TH2D *> hists_2D;
+    std::vector<TH2D *> hists_2D;
+    // std::vector<const TH2D *> hists_2D;
 
     std::vector<std::unique_ptr<TH2D>> sf_e_debug_b;
     std::vector<std::unique_ptr<TH2D>> sf_e_debug_a;
