@@ -2636,9 +2636,10 @@ void HipoLooper() {
     bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
          first_piminusCD_sector6 = true;
 
-    int plot_counter = 1;
+    int plot_counter = 2;
 
-    double yOffset = 0.10;  // Offset for the y position of the text
+    double yOffset = 0.075;  // Offset for the y position of the text
+    // double yOffset = 0.10;  // Offset for the y position of the text
 
     for (int i = 0; i < HistoList.size(); i++) {
         // Maps to hold first-time flags
@@ -2701,27 +2702,14 @@ void HipoLooper() {
                     *first_flags[particle_key] = false;
                     ++plot_counter;
                 } else {
-
-
-                    std::cout << "\n\nTitle: " << title << "\n";
-
-
                     for (int sector = 1; sector <= 6; ++sector) {
                         std::string sector_str = "sector" + std::to_string(sector);
                         std::string sector_title_str = "sector " + std::to_string(sector);
 
-
-                        std::cout << "sector: " << sector << "\n";
-                        std::cout << "sector_str: " << sector_str << "\n";
-                        std::cout << "*sector_flags[particle_key][sector]: " << *sector_flags[particle_key][sector] << "\n";
-                        std::cout << "basic_tools::FindSubstring(title, sector_str): " << basic_tools::FindSubstring(title, sector_str) << "\n\n";
-
-
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
-                            std::cout << "Title pass: " << title << "\n\n";
-
                             std::string bookmark_title = label + " plots - " + sector_title_str;
                             std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
+
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                             myText->Clear();
