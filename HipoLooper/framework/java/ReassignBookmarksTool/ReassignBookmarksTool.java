@@ -2,6 +2,7 @@
 import com.fasterxml.jackson.databind.*;
 import java.io.*;
 import java.util.*;
+import java.util.Arrays;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.*;
@@ -96,7 +97,12 @@ public class ReassignBookmarksTool {
                         System.out.println(RED + "Failed to delete stripped PDF: " + RESET + actualStripped.getAbsolutePath());
                     }
                 } else {
-                    System.out.println(CYAN + "Stripped PDF not deleted: path mismatch.\nExpected path: " + expectedStripped.getCanonicalPath() + "\nActual path:   " + actualStripped.getCanonicalPath() + RESET);
+                    String expectedPath = expectedStripped.getCanonicalPath();
+                    String actualPath = actualStripped.getCanonicalPath();
+                    
+                    System.out.println(CYAN + "Stripped PDF not deleted: path mismatch.\nExpected path: " + expectedPath + "\nActual path:   " + actualPath + RESET);
+                    System.out.println("Expected path bytes: " + Arrays.toString(expectedPath.getBytes()));
+                    System.out.println("Actual path bytes:   " + Arrays.toString(actualPath.getBytes()));
                 }
             } catch (IOException e) {
                 System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage());
