@@ -18,6 +18,14 @@ public class ReassignBookmarksTool {
         public String title;
         public int page;
         public String parent; // optional
+        public List<BookmarkEntry> children = new ArrayList<>();
+
+        // Needed for Jackson deserialization
+        public BookmarkEntry() {}
+        public BookmarkEntry(String title, int page) {
+            this.title = title;
+            this.page = page;
+        }
     }
 
     /**
@@ -131,8 +139,11 @@ public class ReassignBookmarksTool {
             List<BookmarkEntry> bookmarks = new ArrayList<>();
             extractOutlineItems(outline, null, bookmarks, document);
 
+            // Convert to hierarchical structure before writing
+            List<BookmarkEntry> hierarchical = convertToHierarchy(bookmarks);
+
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(outputJSON), bookmarks);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(outputJSON), hierarchical);
         }
     }
 
@@ -268,3 +279,39 @@ public class ReassignBookmarksTool {
         }
     }
 }
+    /**
+     * Converts a flat list of bookmarks with '>' in the title into a nested hierarchy.
+     */
+    private static List<BookmarkEntry> convertToHierarchy(List<BookmarkEntry> flatBookmarks) {
+        Map<String, BookmarkEntry> rootMap = new LinkedHashMap<>();
+        Map<String, BookmarkEntry> allBookmarks = new HashMap<>();
+
+        for (BookmarkEntry entry : flatBookmarks) {
+            String[] parts = entry.title.split(">");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim(); // remove whitespace
+            }
+
+            StringBuilder path = new StringBuilder();
+            BookmarkEntry parent = null;
+            for (int i = 0; i < parts.length; i++) {
+                if (i > 0) path.append(">");
+                path.append(parts[i]);
+                String key = path.toString();
+
+                BookmarkEntry current = allBookmarks.get(key);
+                if (current == null) {
+                    current = new BookmarkEntry(parts[i], i == parts.length - 1 ? entry.page : -1);
+                    allBookmarks.put(key, current);
+                    if (parent != null) {
+                        parent.children.add(current);
+                    } else {
+                        rootMap.putIfAbsent(key, current);
+                    }
+                }
+                parent = current;
+            }
+        }
+
+        return new ArrayList<>(rootMap.values());
+    }
