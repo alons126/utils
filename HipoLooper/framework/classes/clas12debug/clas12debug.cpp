@@ -245,46 +245,82 @@ void clas12debug::InitDebugPlots() {
     // hists_2D.push_back(pid_fd_debug.get());
 
     for (int i = 1; i <= 6; i++) {
-        sf_p_debug_b.push_back(
-            std::make_unique<TH2D>(Form("sf_p_debug_b_sector_%d", i), Form("Sampling Fraction Before Cuts Sector_%d;Momentum (GeV/c);Sampling Fraction", i), 100, 0, 6, 100, 0, .4));
-        sf_p_debug_a.push_back(
-            std::make_unique<TH2D>(Form("sf_p_debug_a_sector_%d", i), Form("Sampling Fraction  After Cuts Sector_%d;Momentum (GeV/c);Sampling Fraction", i), 100, 0, 6, 100, 0, .4));
+        auto sf_p_debug_b_hist = std::make_unique<TH2D>(Form("sf_p_debug_b_sector_%d", i), Form("Sampling Fraction Before Cuts Sector_%d;Momentum (GeV/c);Sampling Fraction", i), 100, 0, 6, 100, 0, .4);
+        sf_p_debug_b_hist->SetDirectory(nullptr);
+        sf_p_debug_b.push_back(std::move(sf_p_debug_b_hist));
+        auto sf_p_debug_a_hist = std::make_unique<TH2D>(Form("sf_p_debug_a_sector_%d", i), Form("Sampling Fraction  After Cuts Sector_%d;Momentum (GeV/c);Sampling Fraction", i), 100, 0, 6, 100, 0, .4);
+        sf_p_debug_a_hist->SetDirectory(nullptr);
+        sf_p_debug_a.push_back(std::move(sf_p_debug_a_hist));
 
-        sf_e_debug_b.push_back(
-            std::make_unique<TH2D>(Form("sf_e_debug_b_sector_%d", i), Form("Sampling Fraction Before Cuts Sector_%d;Energy (GeV);Sampling Fraction", i), 100, 0, 1.5, 100, 0, .4));
-        sf_e_debug_a.push_back(
-            std::make_unique<TH2D>(Form("sf_e_debug_a_sector_%d", i), Form("Sampling Fraction  After Cuts Sector_%d;Energy (GeV);Sampling Fraction", i), 100, 0, 1.5, 100, 0, .4));
+        auto sf_e_debug_b_hist = std::make_unique<TH2D>(Form("sf_e_debug_b_sector_%d", i), Form("Sampling Fraction Before Cuts Sector_%d;Energy (GeV);Sampling Fraction", i), 100, 0, 1.5, 100, 0, .4);
+        sf_e_debug_b_hist->SetDirectory(nullptr);
+        sf_e_debug_b.push_back(std::move(sf_e_debug_b_hist));
+        auto sf_e_debug_a_hist = std::make_unique<TH2D>(Form("sf_e_debug_a_sector_%d", i), Form("Sampling Fraction  After Cuts Sector_%d;Energy (GeV);Sampling Fraction", i), 100, 0, 1.5, 100, 0, .4);
+        sf_e_debug_a_hist->SetDirectory(nullptr);
+        sf_e_debug_a.push_back(std::move(sf_e_debug_a_hist));
 
-        dc_edge_el_chi2_r1.push_back(std::make_unique<TH1D>(Form("dc_edge_el_chi2_r1_%d", i), Form("Region 1 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_el_chi2_r2.push_back(std::make_unique<TH1D>(Form("dc_edge_el_chi2_r2_%d", i), Form("Region 2 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_el_chi2_r3.push_back(std::make_unique<TH1D>(Form("dc_edge_el_chi2_r3_%d", i), Form("Region 3 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
+        auto dc_edge_el_chi2_r1_hist = std::make_unique<TH1D>(Form("dc_edge_el_chi2_r1_%d", i), Form("Region 1 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_el_chi2_r1_hist->SetDirectory(nullptr);
+        dc_edge_el_chi2_r1.push_back(std::move(dc_edge_el_chi2_r1_hist));
+        auto dc_edge_el_chi2_r2_hist = std::make_unique<TH1D>(Form("dc_edge_el_chi2_r2_%d", i), Form("Region 2 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_el_chi2_r2_hist->SetDirectory(nullptr);
+        dc_edge_el_chi2_r2.push_back(std::move(dc_edge_el_chi2_r2_hist));
+        auto dc_edge_el_chi2_r3_hist = std::make_unique<TH1D>(Form("dc_edge_el_chi2_r3_%d", i), Form("Region 3 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_el_chi2_r3_hist->SetDirectory(nullptr);
+        dc_edge_el_chi2_r3.push_back(std::move(dc_edge_el_chi2_r3_hist));
 
-        dc_edge_p_chi2_r1.push_back(std::make_unique<TH1D>(Form("dc_edge_p_chi2_r1_%d", i), Form("Region 1 Protons DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_p_chi2_r2.push_back(std::make_unique<TH1D>(Form("dc_edge_p_chi2_r2_%d", i), Form("Region 2 Protons DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_p_chi2_r3.push_back(std::make_unique<TH1D>(Form("dc_edge_p_chi2_r3_%d", i), Form("Region 3 Protons DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
+        auto dc_edge_p_chi2_r1_hist = std::make_unique<TH1D>(Form("dc_edge_p_chi2_r1_%d", i), Form("Region 1 Protons DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_p_chi2_r1_hist->SetDirectory(nullptr);
+        dc_edge_p_chi2_r1.push_back(std::move(dc_edge_p_chi2_r1_hist));
+        auto dc_edge_p_chi2_r2_hist = std::make_unique<TH1D>(Form("dc_edge_p_chi2_r2_%d", i), Form("Region 2 Protons DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_p_chi2_r2_hist->SetDirectory(nullptr);
+        dc_edge_p_chi2_r2.push_back(std::move(dc_edge_p_chi2_r2_hist));
+        auto dc_edge_p_chi2_r3_hist = std::make_unique<TH1D>(Form("dc_edge_p_chi2_r3_%d", i), Form("Region 3 Protons DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_p_chi2_r3_hist->SetDirectory(nullptr);
+        dc_edge_p_chi2_r3.push_back(std::move(dc_edge_p_chi2_r3_hist));
 
-        dc_edge_el_r1.push_back(std::make_unique<TH1D>(Form("dc_edge_el_r1_%d", i), Form("Region 1 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_el_r2.push_back(std::make_unique<TH1D>(Form("dc_edge_el_r2_%d", i), Form("Region 2 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_el_r3.push_back(std::make_unique<TH1D>(Form("dc_edge_el_r3_%d", i), Form("Region 3 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
+        auto dc_edge_el_r1_hist = std::make_unique<TH1D>(Form("dc_edge_el_r1_%d", i), Form("Region 1 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_el_r1_hist->SetDirectory(nullptr);
+        dc_edge_el_r1.push_back(std::move(dc_edge_el_r1_hist));
+        auto dc_edge_el_r2_hist = std::make_unique<TH1D>(Form("dc_edge_el_r2_%d", i), Form("Region 2 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_el_r2_hist->SetDirectory(nullptr);
+        dc_edge_el_r2.push_back(std::move(dc_edge_el_r2_hist));
+        auto dc_edge_el_r3_hist = std::make_unique<TH1D>(Form("dc_edge_el_r3_%d", i), Form("Region 3 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_el_r3_hist->SetDirectory(nullptr);
+        dc_edge_el_r3.push_back(std::move(dc_edge_el_r3_hist));
 
-        dc_edge_p_r1.push_back(std::make_unique<TH1D>(Form("dc_edge_p_r1_%d", i), Form("Region 1 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_p_r2.push_back(std::make_unique<TH1D>(Form("dc_edge_p_r2_%d", i), Form("Region 2 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
-        dc_edge_p_r3.push_back(std::make_unique<TH1D>(Form("dc_edge_p_r3_%d", i), Form("Region 3 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50));
+        auto dc_edge_p_r1_hist = std::make_unique<TH1D>(Form("dc_edge_p_r1_%d", i), Form("Region 1 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_p_r1_hist->SetDirectory(nullptr);
+        dc_edge_p_r1.push_back(std::move(dc_edge_p_r1_hist));
+        auto dc_edge_p_r2_hist = std::make_unique<TH1D>(Form("dc_edge_p_r2_%d", i), Form("Region 2 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_p_r2_hist->SetDirectory(nullptr);
+        dc_edge_p_r2.push_back(std::move(dc_edge_p_r2_hist));
+        auto dc_edge_p_r3_hist = std::make_unique<TH1D>(Form("dc_edge_p_r3_%d", i), Form("Region 3 DC edge %d;Distance to Edge (cm);#chi^{2}/DOF", i), 100, 0, 50);
+        dc_edge_p_r3_hist->SetDirectory(nullptr);
+        dc_edge_p_r3.push_back(std::move(dc_edge_p_r3_hist));
     }
 
     // DC hit maps
     for (int i = 1; i <= 3; i++) {
-        dc_hit_map_b.push_back(std::make_unique<TH2D>(Form("dc_hitmap_before_%d", i), Form("Region %d Before Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300));
-        dc_hit_map_a.push_back(std::make_unique<TH2D>(Form("dc_hitmap_after_%d", i), Form("Region %d After Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300));
+        auto dc_hit_map_b_hist = std::make_unique<TH2D>(Form("dc_hitmap_before_%d", i), Form("Region %d Before Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300);
+        dc_hit_map_b_hist->SetDirectory(nullptr);
+        dc_hit_map_b.push_back(std::move(dc_hit_map_b_hist));
+        auto dc_hit_map_a_hist = std::make_unique<TH2D>(Form("dc_hitmap_after_%d", i), Form("Region %d After Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300);
+        dc_hit_map_a_hist->SetDirectory(nullptr);
+        dc_hit_map_a.push_back(std::move(dc_hit_map_a_hist));
 
-        dc_hit_map_a_proton.push_back(
-            std::make_unique<TH2D>(Form("dc_hitmap_after_proton_%d", i), Form("Region %d After Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300));
-        dc_hit_map_b_proton.push_back(
-            std::make_unique<TH2D>(Form("dc_hitmap_before_proton_%d", i), Form("Region %d Before Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300));
-        dc_hit_map_a_pion.push_back(
-            std::make_unique<TH2D>(Form("dc_hitmap_after_pion_%d", i), Form("Region %d After Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300));
-        dc_hit_map_b_pion.push_back(
-            std::make_unique<TH2D>(Form("dc_hitmap_before_pion_%d", i), Form("Region %d Before Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300));
+        auto dc_hit_map_a_proton_hist = std::make_unique<TH2D>(Form("dc_hitmap_after_proton_%d", i), Form("Region %d After Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300);
+        dc_hit_map_a_proton_hist->SetDirectory(nullptr);
+        dc_hit_map_a_proton.push_back(std::move(dc_hit_map_a_proton_hist));
+        auto dc_hit_map_b_proton_hist = std::make_unique<TH2D>(Form("dc_hitmap_before_proton_%d", i), Form("Region %d Before Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300);
+        dc_hit_map_b_proton_hist->SetDirectory(nullptr);
+        dc_hit_map_b_proton.push_back(std::move(dc_hit_map_b_proton_hist));
+        auto dc_hit_map_a_pion_hist = std::make_unique<TH2D>(Form("dc_hitmap_after_pion_%d", i), Form("Region %d After Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300);
+        dc_hit_map_a_pion_hist->SetDirectory(nullptr);
+        dc_hit_map_a_pion.push_back(std::move(dc_hit_map_a_pion_hist));
+        auto dc_hit_map_b_pion_hist = std::make_unique<TH2D>(Form("dc_hitmap_before_pion_%d", i), Form("Region %d Before Cuts;x-position (cm);y-position (cm)", i), 600, -300, 300, 600, -300, 300);
+        dc_hit_map_b_pion_hist->SetDirectory(nullptr);
+        dc_hit_map_b_pion.push_back(std::move(dc_hit_map_b_pion_hist));
 
         //       dc_hit_map_b[i] = new TH2D(Form("dc_hitmap_before_%d",i), Form("Region %d Before Cuts",i),600,-300,300,600,-300,300);
         //       dc_hit_map_a[i] = new TH2D(Form("dc_hitmap_after_%d",i), Form("Region %d After Cuts",i),600,-300,300,600,-300,300);
