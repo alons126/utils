@@ -12,10 +12,11 @@ public class ReassignBookmarksTool {
      * Converts a flat list of bookmarks with '>' in the title into a nested hierarchy.
      */
     private static List<BookmarkEntry> convertToHierarchy(List<BookmarkEntry> flatBookmarks) {
-        Map<String, BookmarkEntry> allBookmarks = new HashMap<>();
+        Map<String, BookmarkEntry> allBookmarks = new LinkedHashMap<>();
+        List<BookmarkEntry> topLevel = new ArrayList<>();
 
         for (BookmarkEntry entry : flatBookmarks) {
-            String[] parts = entry.title.split(">");
+            String[] parts = entry.getTitle().split(">");
             for (int i = 0; i < parts.length; i++) {
                 parts[i] = parts[i].trim();
             }
@@ -30,24 +31,21 @@ public class ReassignBookmarksTool {
 
                 BookmarkEntry current = allBookmarks.get(key);
                 if (current == null) {
-                    current = new BookmarkEntry(parts[i], (i == parts.length - 1) ? entry.page : -1);
+                    current = new BookmarkEntry(parts[i], entry.getPage());
                     allBookmarks.put(key, current);
 
                     if (parent != null) {
-                        parent.children.add(current);
+                        parent.getChildren().add(current);
+                    } else if (i == 0) {
+                        topLevel.add(current);
                     }
                 }
+
                 parent = current;
             }
         }
 
-        List<BookmarkEntry> rootBookmarks = new ArrayList<>();
-        for (BookmarkEntry entry : allBookmarks.values()) {
-            if (!entry.title.contains(">")) {
-                rootBookmarks.add(entry);
-            }
-        }
-        return rootBookmarks;
+        return topLevel;
     }
     
     // ANSI color codes for output
@@ -67,6 +65,18 @@ public class ReassignBookmarksTool {
         public BookmarkEntry(String title, int page) {
             this.title = title;
             this.page = page;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public int getPage() {
+            return page;
+        }
+
+        public List<BookmarkEntry> getChildren() {
+            return children;
         }
     }
 
@@ -181,11 +191,11 @@ public class ReassignBookmarksTool {
             List<BookmarkEntry> bookmarks = new ArrayList<>();
             extractOutlineItems(outline, null, bookmarks, document);
 
-            // Convert to hierarchical structure before writing
-            List<BookmarkEntry> hierarchical = convertToHierarchy(bookmarks);
+            // Convert bookmarks to hierarchy before writing
+            bookmarks = convertToHierarchy(bookmarks);
 
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(outputJSON), hierarchical);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(outputJSON), bookmarks);
         }
     }
 

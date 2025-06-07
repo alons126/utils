@@ -32,26 +32,26 @@ echo "${COLOR_START}= Bookmarks reassign tool builder                           
 echo "${COLOR_START}=======================================================================${COLOR_END}"
 echo ""
 
-echo "${COLOR_START}Cleaning previous build artifacts...${COLOR_END}"
-rm -f ReassignBookmarksTool.class ReassignBookmarksTool.jar
-rm -rf lib
-echo ""
+# echo "${COLOR_START}Cleaning previous build artifacts...${COLOR_END}"
+# rm -f ReassignBookmarksTool.class ReassignBookmarksTool.jar
+# rm -rf lib
+# echo ""
 
-echo "${COLOR_START}Downloading required libraries...${COLOR_END}"
-echo ""
+# echo "${COLOR_START}Downloading required libraries...${COLOR_END}"
+# echo ""
 
-# PDFBox + dependencies
-curl -O https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.27/pdfbox-2.0.27.jar
-curl -O https://repo1.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.27/fontbox-2.0.27.jar
+# # PDFBox + dependencies
+# curl -O https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox/2.0.27/pdfbox-2.0.27.jar
+# curl -O https://repo1.maven.org/maven2/org/apache/pdfbox/fontbox/2.0.27/fontbox-2.0.27.jar
 
-# Jackson JSON dependencies
-curl -O https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.15.2/jackson-core-2.15.2.jar
-curl -O https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.15.2/jackson-annotations-2.15.2.jar
-curl -O https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.15.2/jackson-databind-2.15.2.jar
-curl -O https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar
+# # Jackson JSON dependencies
+# curl -O https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.15.2/jackson-core-2.15.2.jar
+# curl -O https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.15.2/jackson-annotations-2.15.2.jar
+# curl -O https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.15.2/jackson-databind-2.15.2.jar
+# curl -O https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar
 
-echo ""
-echo "${COLOR_START}Libraries downloaded.${COLOR_END}"
+# echo ""
+# echo "${COLOR_START}Libraries downloaded.${COLOR_END}"
 
 
 # Copy your Java source code (make sure the path is correct)
