@@ -45,13 +45,11 @@ public class ReassignBookmarksTool {
                 if (current == null) {
                     current = new BookmarkEntry();
                     current.title = part;
-
                     if (i == parts.length - 1) { current.page = entry.page; }
-
+                    current.children = new ArrayList<>();
                     allBookmarks.put(key, current);
 
                     if (parent != null) {
-                        if (parent.children == null) parent.children = new ArrayList<>();
                         parent.children.add(current);
                         System.out.println("  ✔ Added child '" + current.title + "' to parent '" + parent.title + "'");
                     } else {
@@ -66,7 +64,7 @@ public class ReassignBookmarksTool {
 
         System.out.println("✅ Finished building hierarchy. Total root bookmarks: " + roots.size());
 
-        printHierarchy(roots,"");
+        printHierarchy(roots, "");
 
         return roots;
     }
