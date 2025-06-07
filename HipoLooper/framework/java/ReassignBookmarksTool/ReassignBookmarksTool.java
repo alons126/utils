@@ -63,7 +63,7 @@ public class ReassignBookmarksTool {
             }
             boolean preserveText = args.length == 4 && args[3].equalsIgnoreCase("preserveText");
             stripBookmarks(args[1], args[2], preserveText);
-            
+
             System.out.println(GREEN + "\nBookmark strip completed!" + RESET);
             System.out.println(GREEN + "Stripped PDF file saved to: " + RESET + args[2] + "\n");
         } else if (args[0].equals("reassign")) {
@@ -102,9 +102,7 @@ public class ReassignBookmarksTool {
                         System.out.println(CYAN + "Stripped PDF not deleted: File does not exist: " + RESET + actualStripped.getAbsolutePath());
                     }
                 }
-            } catch (IOException e) {
-                System.out.println(RED + "Error comparing or deleting stripped PDF: " + RESET + e.getMessage());
-            }
+            } catch (IOException e) { System.out.println(RED + "Error comparing or deleting stripped PDF: " + RESET + e.getMessage()); }
 
             System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
             System.out.println(GREEN + "Reassigned PDF file saved to: " + RESET + outputPDF + "\n");
@@ -188,7 +186,7 @@ public class ReassignBookmarksTool {
                     contentStream.drawImage(pdImage, 0, 0, newPage.getMediaBox().getWidth(), newPage.getMediaBox().getHeight());
                     contentStream.close();
                 }
-                
+
                 imageDoc.save(outputPDF);
                 imageDoc.close();
                 System.out.println(GREEN + "Bookmarks stripped and content flattened (no text layer): " + RESET + outputPDF);
