@@ -299,26 +299,58 @@ void clas12debug::InitDebugPlots() {
 void clas12debug::WriteDebugPlots(TString filename) {
     TFile f_debugOut(filename, "RECREATE");
 
-    std::for_each(sf_p_debug_b.begin(), sf_p_debug_b.end(), [](auto &el) { el->Write(); });
-    std::for_each(sf_p_debug_a.begin(), sf_p_debug_a.end(), [](auto &el) { el->Write(); });
-    std::for_each(sf_e_debug_a.begin(), sf_e_debug_a.end(), [](auto &el) { el->Write(); });
-    std::for_each(sf_e_debug_b.begin(), sf_e_debug_b.end(), [](auto &el) { el->Write(); });
+    std::for_each(sf_p_debug_b.begin(), sf_p_debug_b.end(), [](auto &el) {
+        if (el) el->Write();
+    });
+    std::for_each(sf_p_debug_a.begin(), sf_p_debug_a.end(), [](auto &el) {
+        if (el) el->Write();
+    });
+    std::for_each(sf_e_debug_a.begin(), sf_e_debug_a.end(), [](auto &el) {
+        if (el) el->Write();
+    });
+    std::for_each(sf_e_debug_b.begin(), sf_e_debug_b.end(), [](auto &el) {
+        if (el) el->Write();
+    });
 
-    std::for_each(dc_edge_el_chi2_r1.begin(), dc_edge_el_chi2_r1.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_el_chi2_r2.begin(), dc_edge_el_chi2_r2.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_el_chi2_r3.begin(), dc_edge_el_chi2_r3.end(), [](auto &p) { p->Write(); });
+    std::for_each(dc_edge_el_chi2_r1.begin(), dc_edge_el_chi2_r1.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_el_chi2_r2.begin(), dc_edge_el_chi2_r2.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_el_chi2_r3.begin(), dc_edge_el_chi2_r3.end(), [](auto &p) {
+        if (p) p->Write();
+    });
 
-    std::for_each(dc_edge_el_r1.begin(), dc_edge_el_r1.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_el_r2.begin(), dc_edge_el_r2.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_el_r3.begin(), dc_edge_el_r3.end(), [](auto &p) { p->Write(); });
+    std::for_each(dc_edge_el_r1.begin(), dc_edge_el_r1.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_el_r2.begin(), dc_edge_el_r2.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_el_r3.begin(), dc_edge_el_r3.end(), [](auto &p) {
+        if (p) p->Write();
+    });
 
-    std::for_each(dc_edge_p_chi2_r1.begin(), dc_edge_p_chi2_r1.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_p_chi2_r2.begin(), dc_edge_p_chi2_r2.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_p_chi2_r3.begin(), dc_edge_p_chi2_r3.end(), [](auto &p) { p->Write(); });
+    std::for_each(dc_edge_p_chi2_r1.begin(), dc_edge_p_chi2_r1.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_p_chi2_r2.begin(), dc_edge_p_chi2_r2.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_p_chi2_r3.begin(), dc_edge_p_chi2_r3.end(), [](auto &p) {
+        if (p) p->Write();
+    });
 
-    std::for_each(dc_edge_p_r1.begin(), dc_edge_p_r1.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_p_r2.begin(), dc_edge_p_r2.end(), [](auto &p) { p->Write(); });
-    std::for_each(dc_edge_p_r3.begin(), dc_edge_p_r3.end(), [](auto &p) { p->Write(); });
+    std::for_each(dc_edge_p_r1.begin(), dc_edge_p_r1.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_p_r2.begin(), dc_edge_p_r2.end(), [](auto &p) {
+        if (p) p->Write();
+    });
+    std::for_each(dc_edge_p_r3.begin(), dc_edge_p_r3.end(), [](auto &p) {
+        if (p) p->Write();
+    });
 
     for (int i = 0; i <= 2; i++) dc_hit_map_b[i]->Write();
 
