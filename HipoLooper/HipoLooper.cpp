@@ -39,7 +39,7 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    int version = 8;  // Version of the code
+    int version = 9;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
