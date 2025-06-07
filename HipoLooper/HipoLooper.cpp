@@ -2707,7 +2707,8 @@ void HipoLooper() {
 
 
                     for (int sector = 1; sector <= 6; ++sector) {
-                        std::string sector_str = "sector " + std::to_string(sector);
+                        std::string sector_str = "sector" + std::to_string(sector);
+                        std::string sector_title_str = "sector " + std::to_string(sector);
 
 
                         std::cout << "sector: " << sector << "\n";
@@ -2719,7 +2720,7 @@ void HipoLooper() {
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
                             std::cout << "Title pass: " << title << "\n\n";
 
-                            std::string bookmark_title = label + " plots - " + sector_str;
+                            std::string bookmark_title = label + " plots - " + sector_title_str;
                             std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
