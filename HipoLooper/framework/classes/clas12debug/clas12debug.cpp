@@ -296,127 +296,96 @@ void clas12debug::InitDebugPlots() {
     }
 }
 
+// My additions: this function gives a segmentation violation. Thus, it has been temporarily commented out
 void clas12debug::WriteDebugPlots(TString filename) {
-    TFile f_debugOut(filename, "RECREATE");
+    // TFile f_debugOut(filename, "RECREATE");
 
-    std::for_each(sf_p_debug_b.begin(), sf_p_debug_b.end(), [](auto &el) {
-        if (el) el->Write();
-    });
-    std::for_each(sf_p_debug_a.begin(), sf_p_debug_a.end(), [](auto &el) {
-        if (el) el->Write();
-    });
-    std::for_each(sf_e_debug_a.begin(), sf_e_debug_a.end(), [](auto &el) {
-        if (el) el->Write();
-    });
-    std::for_each(sf_e_debug_b.begin(), sf_e_debug_b.end(), [](auto &el) {
-        if (el) el->Write();
-    });
+    // std::for_each(sf_p_debug_b.begin(), sf_p_debug_b.end(), [](auto &el) { if (el) el->Write(); });
+    // std::for_each(sf_p_debug_a.begin(), sf_p_debug_a.end(), [](auto &el) { if (el) el->Write(); });
+    // std::for_each(sf_e_debug_a.begin(), sf_e_debug_a.end(), [](auto &el) { if (el) el->Write(); });
+    // std::for_each(sf_e_debug_b.begin(), sf_e_debug_b.end(), [](auto &el) { if (el) el->Write(); });
 
-    std::for_each(dc_edge_el_chi2_r1.begin(), dc_edge_el_chi2_r1.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_el_chi2_r2.begin(), dc_edge_el_chi2_r2.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_el_chi2_r3.begin(), dc_edge_el_chi2_r3.end(), [](auto &p) {
-        if (p) p->Write();
-    });
+    // std::for_each(dc_edge_el_chi2_r1.begin(), dc_edge_el_chi2_r1.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_el_chi2_r2.begin(), dc_edge_el_chi2_r2.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_el_chi2_r3.begin(), dc_edge_el_chi2_r3.end(), [](auto &p) { if (p) p->Write(); });
 
-    std::for_each(dc_edge_el_r1.begin(), dc_edge_el_r1.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_el_r2.begin(), dc_edge_el_r2.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_el_r3.begin(), dc_edge_el_r3.end(), [](auto &p) {
-        if (p) p->Write();
-    });
+    // std::for_each(dc_edge_el_r1.begin(), dc_edge_el_r1.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_el_r2.begin(), dc_edge_el_r2.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_el_r3.begin(), dc_edge_el_r3.end(), [](auto &p) { if (p) p->Write(); });
 
-    std::for_each(dc_edge_p_chi2_r1.begin(), dc_edge_p_chi2_r1.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_p_chi2_r2.begin(), dc_edge_p_chi2_r2.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_p_chi2_r3.begin(), dc_edge_p_chi2_r3.end(), [](auto &p) {
-        if (p) p->Write();
-    });
+    // std::for_each(dc_edge_p_chi2_r1.begin(), dc_edge_p_chi2_r1.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_p_chi2_r2.begin(), dc_edge_p_chi2_r2.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_p_chi2_r3.begin(), dc_edge_p_chi2_r3.end(), [](auto &p) { if (p) p->Write(); });
 
-    std::for_each(dc_edge_p_r1.begin(), dc_edge_p_r1.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_p_r2.begin(), dc_edge_p_r2.end(), [](auto &p) {
-        if (p) p->Write();
-    });
-    std::for_each(dc_edge_p_r3.begin(), dc_edge_p_r3.end(), [](auto &p) {
-        if (p) p->Write();
-    });
+    // std::for_each(dc_edge_p_r1.begin(), dc_edge_p_r1.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_p_r2.begin(), dc_edge_p_r2.end(), [](auto &p) { if (p) p->Write(); });
+    // std::for_each(dc_edge_p_r3.begin(), dc_edge_p_r3.end(), [](auto &p) { if (p) p->Write(); });
 
-    for (int i = 0; i <= 2; i++) dc_hit_map_b[i]->Write();
+    // for (int i = 0; i <= 2; i++) dc_hit_map_b[i]->Write();
 
-    for (int i = 0; i <= 2; i++) dc_hit_map_a[i]->Write();
+    // for (int i = 0; i <= 2; i++) dc_hit_map_a[i]->Write();
 
-    for (int i = 0; i <= 2; i++) dc_hit_map_b_proton[i]->Write();
+    // for (int i = 0; i <= 2; i++) dc_hit_map_b_proton[i]->Write();
 
-    for (int i = 0; i <= 2; i++) dc_hit_map_a_proton[i]->Write();
+    // for (int i = 0; i <= 2; i++) dc_hit_map_a_proton[i]->Write();
 
-    for (int i = 0; i <= 2; i++) dc_hit_map_b_pion[i]->Write();
+    // for (int i = 0; i <= 2; i++) dc_hit_map_b_pion[i]->Write();
 
-    for (int i = 0; i <= 2; i++) dc_hit_map_a_pion[i]->Write();
+    // for (int i = 0; i <= 2; i++) dc_hit_map_a_pion[i]->Write();
 
-    sf_v_ecalIN_debug->Write();
-    sf_w_ecalIN_debug->Write();
-    sf_v_ecalOUT_debug->Write();
-    sf_w_ecalOUT_debug->Write();
-    sf_v_pcal_debug->Write();
-    sf_w_pcal_debug->Write();
+    // sf_v_ecalIN_debug->Write();
+    // sf_w_ecalIN_debug->Write();
+    // sf_v_ecalOUT_debug->Write();
+    // sf_w_ecalOUT_debug->Write();
+    // sf_v_pcal_debug->Write();
+    // sf_w_pcal_debug->Write();
 
-    sf_v_ecalIN_a_debug->Write();
-    sf_w_ecalIN_a_debug->Write();
-    sf_v_ecalOUT_a_debug->Write();
-    sf_w_ecalOUT_a_debug->Write();
-    sf_v_pcal_a_debug->Write();
-    sf_w_pcal_a_debug->Write();
+    // sf_v_ecalIN_a_debug->Write();
+    // sf_w_ecalIN_a_debug->Write();
+    // sf_v_ecalOUT_a_debug->Write();
+    // sf_w_ecalOUT_a_debug->Write();
+    // sf_v_pcal_a_debug->Write();
+    // sf_w_pcal_a_debug->Write();
 
-    cd_particles_a->Write();
-    cd_particles_b->Write();
+    // cd_particles_a->Write();
+    // cd_particles_b->Write();
 
-    pid_proton_fd_debug->Write();
-    pid_deuteron_fd_debug->Write();
-    pid_piplus_fd_debug->Write();
-    pid_piminus_fd_debug->Write();
-    pid_kplus_fd_debug->Write();
-    pid_kminus_fd_debug->Write();
-    pid_neutrals_fd_debug->Write();
+    // pid_proton_fd_debug->Write();
+    // pid_deuteron_fd_debug->Write();
+    // pid_piplus_fd_debug->Write();
+    // pid_piminus_fd_debug->Write();
+    // pid_kplus_fd_debug->Write();
+    // pid_kminus_fd_debug->Write();
+    // pid_neutrals_fd_debug->Write();
 
-    pid_proton_cd_debug->Write();
-    pid_deuteron_cd_debug->Write();
-    pid_piplus_cd_debug->Write();
-    pid_piminus_cd_debug->Write();
-    pid_kplus_cd_debug->Write();
-    pid_kminus_cd_debug->Write();
-    pid_neutrals_cd_debug->Write();
+    // pid_proton_cd_debug->Write();
+    // pid_deuteron_cd_debug->Write();
+    // pid_piplus_cd_debug->Write();
+    // pid_piminus_cd_debug->Write();
+    // pid_kplus_cd_debug->Write();
+    // pid_kminus_cd_debug->Write();
+    // pid_neutrals_cd_debug->Write();
 
-    pid_cd_debug->Write();
-    pid_fd_debug->Write();
+    // pid_cd_debug->Write();
+    // pid_fd_debug->Write();
 
-    el_vz_b_debug->Write();
-    el_vz_a_debug->Write();
-    el_vz_p_debug->Write();
+    // el_vz_b_debug->Write();
+    // el_vz_a_debug->Write();
+    // el_vz_p_debug->Write();
 
-    pcal_energy_b_debug->Write();
-    pcal_energy_a_debug->Write();
+    // pcal_energy_b_debug->Write();
+    // pcal_energy_a_debug->Write();
 
-    pid_proton_chi2_fd_debug->Write();
-    pid_proton_chi2_cd_debug->Write();
+    // pid_proton_chi2_fd_debug->Write();
+    // pid_proton_chi2_cd_debug->Write();
 
-    pid_proton_tof_fd_b_debug->Write();
-    pid_proton_tof_cd_b_debug->Write();
-    pid_proton_tof_fd_a_debug->Write();
-    pid_proton_tof_cd_a_debug->Write();
+    // pid_proton_tof_fd_b_debug->Write();
+    // pid_proton_tof_cd_b_debug->Write();
+    // pid_proton_tof_fd_a_debug->Write();
+    // pid_proton_tof_cd_a_debug->Write();
 
-    p_vz_cd_debug->Write();
-    p_vz_fd_debug->Write();
+    // p_vz_cd_debug->Write();
+    // p_vz_fd_debug->Write();
 
-    f_debugOut.Close();
+    // f_debugOut.Close();
 }
