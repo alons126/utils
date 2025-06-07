@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.*;
 import java.io.*;
 import java.util.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.*;
 
@@ -64,7 +65,7 @@ public class ReassignBookmarksTool {
 
         System.out.println("✅ Finished building hierarchy. Total root bookmarks: " + roots.size());
 
-        printHierarchy(roots, "\t");
+        printHierarchy(roots, "");
 
         return roots;
     }
@@ -283,8 +284,7 @@ public class ReassignBookmarksTool {
      * Reassigns bookmarks to a PDF file based on a JSON definition.
      *
      * This method removes any existing bookmarks from the input PDF, then
-     * adds new bookmarks as defined in a JSON file. Bookmarks can be added
-     * hierarchically if specified.
+     * adds new bookmarks as defined in a JSON file. Handles nested bookmarks using " > " in titles.
      *
      * @param inputPDF     Path to the PDF file to modify.
      * @param bookmarkJSON Path to the JSON file containing bookmark definitions.
@@ -299,27 +299,10 @@ public class ReassignBookmarksTool {
 
             // Read new bookmarks
             ObjectMapper mapper = new ObjectMapper();
-            BookmarkEntry[] entries = mapper.readValue(new File(bookmarkJSON), BookmarkEntry[].class);
+            List<BookmarkEntry> entries = Arrays.asList(mapper.readValue(new File(bookmarkJSON), BookmarkEntry[].class));
 
-            Map<String, PDOutlineItem> titleMap = new HashMap<>();
-            PDDocumentOutline outline = new PDDocumentOutline();
-            document.getDocumentCatalog().setDocumentOutline(outline);
+            addBookmarksToOutline(document, entries);
 
-            for (BookmarkEntry entry : entries) {
-                PDOutlineItem item = new PDOutlineItem();
-                item.setTitle(entry.title);
-                item.setDestination(document.getPage(entry.page - 1));
-
-                if (hierarchical && entry.parent != null && titleMap.containsKey(entry.parent)) {
-                    titleMap.get(entry.parent).addLast(item);
-                } else {
-                    outline.addLast(item);
-                }
-
-                titleMap.put(entry.title, item);
-            }
-
-            outline.openNode();
             document.save(outputPDF);
         }
         // Delete the bookmark JSON file if it exists
@@ -344,5 +327,45 @@ public class ReassignBookmarksTool {
                 System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + tempPdf.getAbsolutePath());
             }
         }
+    }
+
+    /**
+     * Adds bookmarks to the PDF outline, handling nested bookmarks with " > " in titles.
+     */
+    private static void addBookmarksToOutline(PDDocument document, List<BookmarkEntry> bookmarks) {
+        PDDocumentOutline outline = new PDDocumentOutline();
+        document.getDocumentCatalog().setDocumentOutline(outline);
+
+        Map<String, PDOutlineItem> titleToItem = new HashMap<>();
+
+        for (BookmarkEntry entry : bookmarks) {
+            PDPage page = document.getPage(entry.getPage() - 1);
+            PDOutlineItem item = new PDOutlineItem();
+            item.setTitle(entry.title.trim());
+            item.setDestination(page);
+
+            titleToItem.put(entry.title.trim(), item);
+
+            boolean isNested = false;
+            int idx = entry.title.lastIndexOf(">");
+            if (idx != -1) {
+                String parentTitle = entry.title.substring(0, idx).trim();
+                PDOutlineItem parent = titleToItem.get(parentTitle.trim());
+                if (parent != null) {
+                    parent.addLast(item);
+                    isNested = true;
+                    System.out.println("✔ Added child '" + entry.title.trim() + "' to parent '" + parentTitle + "'");
+                } else {
+                    System.out.println("⚠ Warning: Parent '" + parentTitle + "' not found for '" + entry.title.trim() + "'");
+                }
+            }
+
+            if (!isNested) {
+                outline.addLast(item);
+                System.out.println("✔ Added root bookmark: '" + entry.title.trim() + "'");
+            }
+        }
+
+        outline.openNode();
     }
 }
