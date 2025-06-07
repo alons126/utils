@@ -63,6 +63,9 @@ public class ReassignBookmarksTool {
             }
             boolean preserveText = args.length == 4 && args[3].equalsIgnoreCase("preserveText");
             stripBookmarks(args[1], args[2], preserveText);
+            
+            System.out.println(GREEN + "\nBookmark strip completed!" + RESET);
+            System.out.println(GREEN + "Stripped PDF file saved to: " + RESET + args[2] + "\n");
         } else if (args[0].equals("reassign")) {
             boolean hierarchical = args.length > 4 && args[4].equalsIgnoreCase("hierarchical");
             String inputPDF = args[1];
@@ -84,27 +87,25 @@ public class ReassignBookmarksTool {
                 }
             } catch (IOException e) { System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage()); }
 
-            // Delete stripped PDF if it was saved in the same folder as inputPDF
+            // Delete stripped PDF if it was saved as no_bookmarks.pdf in the same directory as inputPDF
+            File expectedStripped = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf");
+            File actualStripped = new File(inputPDF.replace("bookmarks.json", "no_bookmarks.pdf"));
             try {
-                File expected = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf").getCanonicalFile();
-                File actual = new File(inputPDF).getCanonicalFile();
-
-                System.out.println("Expected path: " + expected.getAbsolutePath());
-                System.out.println("Actual path:   " + actual.getAbsolutePath());
-                System.out.println("Expected path bytes: " + Arrays.toString(expected.getAbsolutePath().getBytes()));
-                System.out.println("Actual path bytes:   " + Arrays.toString(actual.getAbsolutePath().getBytes()));
-
-                if (expected.equals(actual) && actual.exists()) {
-                    if (actual.delete()) {
-                        System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actual.getAbsolutePath());
+                if (expectedStripped.getCanonicalPath().equals(actualStripped.getCanonicalPath())) {
+                    if (actualStripped.delete()) {
+                        System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualStripped.getAbsolutePath());
                     } else {
-                        System.out.println(RED + "Failed to delete stripped PDF: " + RESET + actual.getAbsolutePath());
+                        System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + actualStripped.getAbsolutePath());
                     }
                 } else {
                     System.out.println(RED + "Stripped PDF not deleted: path mismatch." + RESET);
+                    System.out.println("Expected path: " + expectedStripped.getAbsolutePath());
+                    System.out.println("Actual path:   " + actualStripped.getAbsolutePath());
+                    System.out.println("Expected path bytes: " + Arrays.toString(expectedStripped.getAbsolutePath().getBytes()));
+                    System.out.println("Actual path bytes:   " + Arrays.toString(actualStripped.getAbsolutePath().getBytes()));
                 }
             } catch (IOException e) {
-                System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage());
+                System.out.println(RED + "Error comparing or deleting stripped PDF: " + RESET + e.getMessage());
             }
 
             System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
