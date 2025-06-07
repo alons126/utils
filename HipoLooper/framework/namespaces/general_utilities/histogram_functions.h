@@ -262,9 +262,9 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     system(gsCmd.c_str());
     system(reassignCmd.c_str());
 
-    // Clean up temporary files
-    // TODO: this should happen in the java tool, yet it doesn't work. Fix this in the java tool
-    system(("rm -rf " + bookmarksJSON).c_str());  // Clean up temporary file
+    // // Clean up temporary files
+    // // TODO: this should happen in the java tool, yet it doesn't work. Fix this in the java tool
+    // system(("rm -rf " + bookmarksJSON).c_str());  // Clean up temporary file
 
     std::cout << "\n";
 }

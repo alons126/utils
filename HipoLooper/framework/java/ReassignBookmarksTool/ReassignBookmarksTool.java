@@ -62,10 +62,20 @@ public class ReassignBookmarksTool {
             String outputPDF = args[3];
             reassignBookmarks(inputPDF, bookmarkJSON, outputPDF, hierarchical);
 
-            // Delete bookmark JSON after reassignment if it was created in input directory
-            File tempJson = new File(new File(inputPDF).getParent(), "bookmarks.json");
-            if (tempJson.exists() && tempJson.getAbsolutePath().equals(new File(bookmarkJSON).getAbsolutePath())) {
-                if (tempJson.delete()) { System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + tempJson.getAbsolutePath()); }
+            // Delete bookmark JSON after reassignment, with canonical path check
+            try {
+                File tempJson = new File(new File(inputPDF).getParent(), "bookmarks.json");
+                File actualJson = new File(bookmarkJSON);
+
+                if (tempJson.getCanonicalPath().equals(actualJson.getCanonicalPath()) && actualJson.exists()) {
+                    if (actualJson.delete()) {
+                        System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + actualJson.getAbsolutePath());
+                    } else {
+                        System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + actualJson.getAbsolutePath());
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage());
             }
 
             System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
@@ -172,6 +182,15 @@ public class ReassignBookmarksTool {
 
             outline.openNode();
             document.save(outputPDF);
+            // Attempt to delete the temporary bookmarks JSON file
+            File tempFile = new File(bookmarkJSON);
+            if (tempFile.exists()) {
+                if (tempFile.delete()) {
+                    System.out.println(GREEN + "Temporary file deleted: " + RESET + bookmarkJSON);
+                } else {
+                    System.out.println(CYAN + "Warning: Could not delete temporary file: " + RESET + bookmarkJSON);
+                }
+            }
         }
     }
 }
