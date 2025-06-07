@@ -185,21 +185,25 @@ public class ReassignBookmarksTool {
         }
         // Delete bookmark JSON after reassignment if it was created in input directory
         try {
-            File inputDir = new File(inputPDF).getParentFile();
-            File expectedJson = new File(inputDir, "bookmarks.json").getCanonicalFile();
-            File givenJson = new File(bookmarkJSON).getCanonicalFile();
+            File tempJson = new File(new File(inputPDF).getParent(), "bookmarks.json");
+            File targetJson = new File(bookmarkJSON);
 
-            if (expectedJson.equals(givenJson)) {
-                if (expectedJson.delete()) {
-                    System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + expectedJson.getAbsolutePath());
+            String tempPath = tempJson.getCanonicalPath();
+            String targetPath = targetJson.getCanonicalPath();
+
+            if (tempJson.exists() && tempPath.equals(targetPath)) {
+                if (tempJson.delete()) {
+                    System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + tempPath);
                 } else {
-                    System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + expectedJson.getAbsolutePath());
+                    System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + tempPath);
                 }
             } else {
-                System.out.println(CYAN + "Bookmark JSON not deleted: path mismatch." + RESET);
+                System.out.println(RED + "Bookmark JSON not deleted: path mismatch." + RESET);
+                System.out.println(CYAN + "Expected path: " + RESET + tempPath);
+                System.out.println(CYAN + "Actual path:   " + RESET + targetPath);
             }
         } catch (IOException e) {
-            System.out.println(RED + "IOException during cleanup: " + RESET + e.getMessage());
+            System.out.println(RED + "Error resolving paths for cleanup: " + RESET + e.getMessage());
         }
     }
 }
