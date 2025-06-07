@@ -55,6 +55,14 @@ public class ReassignBookmarksTool {
 
             System.out.println(GREEN + "\nBookmark extraction completed!" + RESET);
             System.out.println(GREEN + "Extracted bookmarks saved to: " + RESET + outputJSON + "\n");
+        } else if (args[0].equals("strip")) {
+            // } else if ("strip".equalsIgnoreCase(command)) {
+            if (args.length != 3) {
+                System.out.println(RED + "Usage: strip <input.pdf> <output.pdf>" + RESET);
+                return;
+            }
+
+            stripBookmarks(args[1], args[2]);
         } else if (args[0].equals("reassign")) {
             boolean hierarchical = args.length > 4 && args[4].equalsIgnoreCase("hierarchical");
             String inputPDF = args[1];
@@ -76,6 +84,26 @@ public class ReassignBookmarksTool {
                 }
             } catch (IOException e) {
                 System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage());
+            }
+
+            // Delete stripped PDF after reassignment, with canonical path check
+            try {
+                File tempPdf = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf");
+                File actualPdf = new File(inputPDF);
+
+                if (tempPdf.getCanonicalPath().equals(actualPdf.getCanonicalPath()) && actualPdf.exists()) {
+                    if (actualPdf.delete()) {
+                        System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualPdf.getAbsolutePath());
+                    } else {
+                        System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + actualPdf.getAbsolutePath());
+                    }
+                } else {
+                    System.out.println(RED + "Stripped PDF not deleted: path mismatch." + RESET);
+                    System.out.println(RED + "Expected path: " + tempPdf.getCanonicalPath() + RESET);
+                    System.out.println(RED + "Actual path:   " + actualPdf.getCanonicalPath() + RESET);
+                }
+            } catch (IOException e) {
+                System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage());
             }
 
             System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
@@ -137,6 +165,20 @@ public class ReassignBookmarksTool {
                 if (current.hasChildren()) { extractOutlineItems(current, title, list, doc); }
             }
             current = current.getNextSibling();
+        }
+    }
+
+    /**
+     * Strip all bookmarks from a PDF and save a new file with the same content but no outline tree.
+     */
+    public static void stripBookmarks(String inputPDF, String outputPDF) throws IOException {
+        try (PDDocument document = PDDocument.load(new File(inputPDF))) {
+            document.getDocumentCatalog().setDocumentOutline(null);
+            document.save(new File(outputPDF));
+            System.out.println(GREEN + "Bookmarks stripped and PDF saved: " + RESET + outputPDF);
+        } catch (IOException e) {
+            System.out.println(RED + "Error stripping bookmarks from PDF: " + RESET + e.getMessage());
+            throw e;
         }
     }
 

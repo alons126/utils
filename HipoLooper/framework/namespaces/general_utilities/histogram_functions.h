@@ -244,8 +244,9 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
 
     std::string noBookmarkPDF = inputPDF.substr(0, inputPDF.find_last_of('/')) + "/no_bookmarks.pdf";
     // std::string noBookmarkPDF = "no_bookmarks.pdf";
-    
-    std::string gsCmd = "gs -q -o \"" + noBookmarkPDF + "\" -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress \"" + inputPDF + "\"";
+
+    std::string stripCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool strip \"" + inputPDF + "\" \"" + noBookmarkPDF + "\" preserveText";
+    // std::string gsCmd = "gs -q -o \"" + noBookmarkPDF + "\" -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress \"" + inputPDF + "\"";
 
     std::string reassignCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool reassign \"" + noBookmarkPDF + "\" \"" + bookmarksJSON + "\" \"" + outputPDF + "\"";
 
@@ -256,12 +257,12 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     std::cout << "\033[33m" << "Classpath:     " << "\033[0m" << classpath << "\n";
     std::cout << "\033[33m" << "bookmarksJSON: " << "\033[0m" << bookmarksJSON << "\n";
     std::cout << "\033[33m" << "extractCmd:    " << "\033[0m" << extractCmd << "\n";
-    std::cout << "\033[33m" << "gsCmd:         " << "\033[0m" << gsCmd << "\n";
+    std::cout << "\033[33m" << "stripCmd:      " << "\033[0m" << stripCmd << "\n";
     std::cout << "\033[33m" << "reassignCmd:   " << "\033[0m" << reassignCmd << "\n\n";
 
     // Run steps
     system(extractCmd.c_str());
-    system(gsCmd.c_str());
+    system(stripCmd.c_str());
     system(reassignCmd.c_str());
 
     std::cout << "\n";

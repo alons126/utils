@@ -2589,7 +2589,7 @@ void HipoLooper() {
 
     TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
 
-    system(("mkdir -p " + OutputDir + "/Indevidual_plots").c_str());
+    system(("mkdir -p " + OutputDir + "/Individual_plots").c_str());
 
     std::string PDF_fileName = OutputDir + "/" + OutFolderName + ".pdf";
     char fileName[PDF_fileName.length()];
