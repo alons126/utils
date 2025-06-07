@@ -2708,14 +2708,13 @@ void HipoLooper() {
 
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
                             std::string bookmark_title = label + " plots - " + sector_title_str;
-                            std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
-
+                            // Compose hierarchical bookmark: parent/child
+                            std::string hierarchical_title = histogram_functions::SanitizeForBookmark(label + " plots") + "/" + histogram_functions::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
-                            myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
+                            myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
                             myText->Clear();
                             *sector_flags[particle_key][sector] = false;
                             ++plot_counter;
-
                             break;
                         }
                     }
