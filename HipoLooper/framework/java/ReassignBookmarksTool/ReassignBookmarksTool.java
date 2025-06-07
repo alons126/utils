@@ -52,10 +52,10 @@ public class ReassignBookmarksTool {
 
                     if (parent != null) {
                         parent.children.add(current);
-                        System.out.println("  ✔ Added child '" + current.title + "' to parent '" + parent.title + "'");
+                        System.out.println("  - Added child '" + current.title + "' to parent '" + parent.title + "'");
                     } else {
                         roots.add(current);
-                        System.out.println("✔ Added root bookmark: '" + current.title + "'");
+                        System.out.println("- Added root bookmark: '" + current.title + "'");
                     }
                 }
 
@@ -63,7 +63,7 @@ public class ReassignBookmarksTool {
             }
         }
 
-        System.out.println("✅ Finished building hierarchy. Total root bookmarks: " + roots.size());
+        System.out.println("Finished building hierarchy. Total root bookmarks: " + roots.size());
 
         printHierarchy(roots, "");
 
@@ -301,6 +301,7 @@ public class ReassignBookmarksTool {
             ObjectMapper mapper = new ObjectMapper();
             List<BookmarkEntry> entries = Arrays.asList(mapper.readValue(new File(bookmarkJSON), BookmarkEntry[].class));
 
+            if (hierarchical) { entries = convertToHierarchy(entries); }
             addBookmarksToOutline(document, entries);
 
             document.save(outputPDF);
