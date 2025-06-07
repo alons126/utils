@@ -239,9 +239,10 @@ void clas12debug::debugByPid(const clas12::region_part_ptr &p) {
     }
 }
 
+// My additions: this function gives a segmentation violation. Thus, it has been temporarily commented out
 void clas12debug::InitDebugPlots() {
-    hists_2D.push_back(pid_cd_debug.get());
-    hists_2D.push_back(pid_fd_debug.get());
+    // hists_2D.push_back(pid_cd_debug.get());
+    // hists_2D.push_back(pid_fd_debug.get());
 
     for (int i = 1; i <= 6; i++) {
         sf_p_debug_b.push_back(
