@@ -28,8 +28,8 @@
 #include "framework/namespaces/setup/path_definitions.h"
 
 // Include classes:
-#include "framework/classes/clas12ana/clas12ana.cpp"
-// #include "framework/classes/clas12ana/clas12ana.h"
+// #include "framework/classes/clas12ana/clas12ana.cpp"
+#include "framework/classes/clas12ana/clas12ana.h"
 
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
@@ -43,7 +43,8 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "_NewClas12Ana_Cuts";
+    std::string General_status = "_OldClas12Ana_Cuts";
+    // std::string General_status = "_NewClas12Ana_Cuts";
 
     bool ApplyLimiter = false;
     // int Limiter = 10000000;  // 10M events (fo the data)
@@ -1894,33 +1895,33 @@ void HipoLooper() {
 
         clas12ana clasAna;
 
-        // clasAna.readEcalSFPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsSF_40Ca_x2.dat").c_str());
-        // clasAna.setEcalSFCuts();
+        clasAna.readEcalSFPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsSF_40Ca_x2.dat").c_str());
+        clasAna.setEcalSFCuts();
 
-        // clasAna.readEcalPPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsPI_40Ca_x2.dat").c_str());
-        // // clasAna.setEcalPCuts();
+        clasAna.readEcalPPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsPI_40Ca_x2.dat").c_str());
+        // clasAna.setEcalPCuts();
 
-        // clasAna.setEcalEdgeCuts();
+        clasAna.setEcalEdgeCuts();
 
-        // clasAna.setNpheCuts();
+        clasAna.setNpheCuts();
 
-        // clasAna.readInputParam(
-        //     (path_definitions::PathDefinitions.PIDCutsDirectory + "Fitted_PID_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
-        // clasAna.setPidCuts();                                                                                            // making f_pidCuts = true
+        clasAna.readInputParam(
+            (path_definitions::PathDefinitions.PIDCutsDirectory + "Fitted_PID_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
+        clasAna.setPidCuts();                                                                                            // making f_pidCuts = true
 
-        // // clasAna.set_e_VertexCuts();  // making f_e_vertexCuts = true
-        // // clasAna.setVertexCuts();  // making f_vertexCuts = true
+        // clasAna.set_e_VertexCuts();  // making f_e_vertexCuts = true
+        // clasAna.setVertexCuts();  // making f_vertexCuts = true
 
-        // clasAna.set_e_DCEdgeCuts();
-        // clasAna.setDCEdgeCuts();
+        clasAna.set_e_DCEdgeCuts();
+        clasAna.setDCEdgeCuts();
 
-        // // clasAna.setVertexCorrCuts();                                                                                 // making f_corr_vertexCuts = true
-        // // clasAna.setVertexCorrCutsLim(CutManager.dVz_cuts.GetLowerCut(), CutManager.dVz_cuts.GetUpperCut());          // setting dVz cuts (general)
-        // // clasAna.setVertexCorrCutsLimFD(CutManager.dVz_cuts_FD.GetLowerCut(), CutManager.dVz_cuts_FD.GetUpperCut());  // setting dVz cuts (FD only)
-        // // clasAna.setVertexCorrCutsLimCD(CutManager.dVz_cuts_CD.GetLowerCut(), CutManager.dVz_cuts_CD.GetUpperCut());  // setting dVz cuts (CD only)
+        // clasAna.setVertexCorrCuts();                                                                                 // making f_corr_vertexCuts = true
+        // clasAna.setVertexCorrCutsLim(CutManager.dVz_cuts.GetLowerCut(), CutManager.dVz_cuts.GetUpperCut());          // setting dVz cuts (general)
+        // clasAna.setVertexCorrCutsLimFD(CutManager.dVz_cuts_FD.GetLowerCut(), CutManager.dVz_cuts_FD.GetUpperCut());  // setting dVz cuts (FD only)
+        // clasAna.setVertexCorrCutsLimCD(CutManager.dVz_cuts_CD.GetLowerCut(), CutManager.dVz_cuts_CD.GetUpperCut());  // setting dVz cuts (CD only)
 
-        // clasAna.readInputParam(
-        //     (path_definitions::PathDefinitions.NucleonCutsDirectory + "Nucleon_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
+        clasAna.readInputParam(
+            (path_definitions::PathDefinitions.NucleonCutsDirectory + "Nucleon_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
 
         clasAna.printParams();
 
