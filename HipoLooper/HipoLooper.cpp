@@ -2691,6 +2691,7 @@ void HipoLooper() {
                     myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                     myText->Clear();
                     *first_flags[particle_key] = false;
+                    ++plot_counter;
                 } else {
                     for (int sector = 1; sector <= 6; ++sector) {
                         std::string sector_str = "sector " + std::to_string(sector);
@@ -2701,6 +2702,8 @@ void HipoLooper() {
                             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                             myText->Clear();
                             *sector_flags[particle_key][sector] = false;
+                            ++plot_counter;
+
                             break;
                         }
                     }
@@ -2777,7 +2780,7 @@ void HipoLooper() {
             }
         }
 
-        myCanvas->SaveAs((OutputDir + "/Indevidual_plots/" + to_string(plot_counter) + HistoList[i]->GetName() + ".pdf").c_str());
+        myCanvas->SaveAs((OutputDir + "/Indevidual_plots/" + to_string(plot_counter) + "_" + HistoList[i]->GetName() + ".pdf").c_str());
         myCanvas->Print(fileName, "pdf");
         myCanvas->Clear();
         ++plot_counter;
