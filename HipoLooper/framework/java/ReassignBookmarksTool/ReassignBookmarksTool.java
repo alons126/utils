@@ -64,7 +64,7 @@ public class ReassignBookmarksTool {
 
         System.out.println("✅ Finished building hierarchy. Total root bookmarks: " + roots.size());
 
-        printHierarchy(roots, "");
+        printHierarchy(roots, "\t");
 
         return roots;
     }
