@@ -2711,6 +2711,7 @@ void HipoLooper() {
 
 
                         std::cout << "sector: " << sector << "\n";
+                        std::cout << "sector_str: " << sector_str << "\n";
                         std::cout << "*sector_flags[particle_key][sector]: " << *sector_flags[particle_key][sector] << "\n";
                         std::cout << "basic_tools::FindSubstring(title, sector_str): " << basic_tools::FindSubstring(title, sector_str) << "\n\n";
 
