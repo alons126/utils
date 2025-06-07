@@ -71,7 +71,7 @@ void HipoLooper() {
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
 
-    for (int sample = 1; sample < InputFiles.size(); sample++) {
+    for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
         bool IsData = basic_tools::FindSubstring(InputFiles.at(sample), "cache");
 
