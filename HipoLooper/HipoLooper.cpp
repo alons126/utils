@@ -2630,7 +2630,7 @@ void HipoLooper() {
 
     int plot_counter = 1;
 
-    double yOffset = 0.05;  // Offset for the y position of the text
+    double yOffset = 0.10;  // Offset for the y position of the text
 
     for (int i = 0; i < HistoList.size(); i++) {
         // Maps to hold first-time flags
