@@ -285,7 +285,7 @@ class clas12ana : public clas12reader {
     double beam_energy = 0;
     double event_mult = 0;  // charged particle multiplicity
 
-    bool debug_plots = true;
+    bool debug_plots = false;
 };
 
 #endif
