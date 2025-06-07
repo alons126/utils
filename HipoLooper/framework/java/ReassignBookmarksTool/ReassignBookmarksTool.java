@@ -8,6 +8,48 @@ import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.*;
 
 public class ReassignBookmarksTool {
+    /**
+     * Converts a flat list of bookmarks with '>' in the title into a nested hierarchy.
+     */
+    private static List<BookmarkEntry> convertToHierarchy(List<BookmarkEntry> flatBookmarks) {
+        Map<String, BookmarkEntry> allBookmarks = new HashMap<>();
+
+        for (BookmarkEntry entry : flatBookmarks) {
+            String[] parts = entry.title.split(">");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
+
+            StringBuilder path = new StringBuilder();
+            BookmarkEntry parent = null;
+
+            for (int i = 0; i < parts.length; i++) {
+                if (i > 0) path.append(">");
+                path.append(parts[i]);
+                String key = path.toString();
+
+                BookmarkEntry current = allBookmarks.get(key);
+                if (current == null) {
+                    current = new BookmarkEntry(parts[i], (i == parts.length - 1) ? entry.page : -1);
+                    allBookmarks.put(key, current);
+
+                    if (parent != null) {
+                        parent.children.add(current);
+                    }
+                }
+                parent = current;
+            }
+        }
+
+        List<BookmarkEntry> rootBookmarks = new ArrayList<>();
+        for (BookmarkEntry entry : allBookmarks.values()) {
+            if (!entry.title.contains(">")) {
+                rootBookmarks.add(entry);
+            }
+        }
+        return rootBookmarks;
+    }
+    
     // ANSI color codes for output
     public static final String RESET = "\u001B[0m";
     public static final String RED = "\u001B[31m"; // Errors
@@ -279,39 +321,3 @@ public class ReassignBookmarksTool {
         }
     }
 }
-    /**
-     * Converts a flat list of bookmarks with '>' in the title into a nested hierarchy.
-     */
-    private static List<BookmarkEntry> convertToHierarchy(List<BookmarkEntry> flatBookmarks) {
-        Map<String, BookmarkEntry> rootMap = new LinkedHashMap<>();
-        Map<String, BookmarkEntry> allBookmarks = new HashMap<>();
-
-        for (BookmarkEntry entry : flatBookmarks) {
-            String[] parts = entry.title.split(">");
-            for (int i = 0; i < parts.length; i++) {
-                parts[i] = parts[i].trim(); // remove whitespace
-            }
-
-            StringBuilder path = new StringBuilder();
-            BookmarkEntry parent = null;
-            for (int i = 0; i < parts.length; i++) {
-                if (i > 0) path.append(">");
-                path.append(parts[i]);
-                String key = path.toString();
-
-                BookmarkEntry current = allBookmarks.get(key);
-                if (current == null) {
-                    current = new BookmarkEntry(parts[i], i == parts.length - 1 ? entry.page : -1);
-                    allBookmarks.put(key, current);
-                    if (parent != null) {
-                        parent.children.add(current);
-                    } else {
-                        rootMap.putIfAbsent(key, current);
-                    }
-                }
-                parent = current;
-            }
-        }
-
-        return new ArrayList<>(rootMap.values());
-    }
