@@ -2294,6 +2294,7 @@ void HipoLooper() {
                 h_Vx_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                 h_Vy_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                 h_Vz_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                h_Vz_pipFD_BC_zoomin_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                 reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_1e_cut, weight);
 
@@ -2303,36 +2304,42 @@ void HipoLooper() {
                     h_Vx_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                     h_Vy_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                     h_Vz_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_AC_sector1_1e_cut, weight);
                 } else if (piplus_det[i]->getSector() == 2) {
                     h_Vx_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                     h_Vy_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                     h_Vz_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_AC_sector2_1e_cut, weight);
                 } else if (piplus_det[i]->getSector() == 3) {
                     h_Vx_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                     h_Vy_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                     h_Vz_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_AC_sector3_1e_cut, weight);
                 } else if (piplus_det[i]->getSector() == 4) {
                     h_Vx_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                     h_Vy_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                     h_Vz_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_AC_sector4_1e_cut, weight);
                 } else if (piplus_det[i]->getSector() == 5) {
                     h_Vx_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                     h_Vy_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                     h_Vz_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_AC_sector5_1e_cut, weight);
                 } else if (piplus_det[i]->getSector() == 6) {
                     h_Vx_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                     h_Vy_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                     h_Vz_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_AC_sector6_1e_cut, weight);
                 }
@@ -2342,6 +2349,7 @@ void HipoLooper() {
                 h_Vx_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                 h_Vy_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
                 h_Vz_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                h_Vz_pipCD_BC_zoomin_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
             }
         }
 #pragma endregion
@@ -2693,9 +2701,14 @@ void HipoLooper() {
                     *first_flags[particle_key] = false;
                     ++plot_counter;
                 } else {
+                    std::cout << "\n\nTitle: " << title << "\n";
+
                     for (int sector = 1; sector <= 6; ++sector) {
                         std::string sector_str = "sector " + std::to_string(sector);
                         if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
+                            std::cout << "Title pass: " << title << "\n\n";
+
+
                             std::string bookmark_title = label + " plots - " + sector_str;
                             std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
