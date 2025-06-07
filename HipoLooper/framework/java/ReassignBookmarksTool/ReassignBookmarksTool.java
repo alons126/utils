@@ -13,39 +13,38 @@ public class ReassignBookmarksTool {
      */
     private static List<BookmarkEntry> convertToHierarchy(List<BookmarkEntry> flatBookmarks) {
         Map<String, BookmarkEntry> allBookmarks = new LinkedHashMap<>();
-        List<BookmarkEntry> topLevel = new ArrayList<>();
+        List<BookmarkEntry> rootBookmarks = new ArrayList<>();
 
         for (BookmarkEntry entry : flatBookmarks) {
-            String[] parts = entry.getTitle().split(">");
-            for (int i = 0; i < parts.length; i++) {
-                parts[i] = parts[i].trim();
-            }
-
+            String[] parts = entry.title.split(">");
             StringBuilder path = new StringBuilder();
             BookmarkEntry parent = null;
 
             for (int i = 0; i < parts.length; i++) {
-                if (i > 0) path.append(">");
-                path.append(parts[i]);
+                String part = parts[i].trim();
+                if (path.length() > 0) path.append(" > ");
+                path.append(part);
                 String key = path.toString();
 
                 BookmarkEntry current = allBookmarks.get(key);
                 if (current == null) {
-                    current = new BookmarkEntry(parts[i], entry.getPage());
+                    current = new BookmarkEntry();
+                    current.title = part;
+                    if (i == parts.length - 1) {
+                        current.page = entry.page;
+                    }
                     allBookmarks.put(key, current);
 
                     if (parent != null) {
-                        parent.getChildren().add(current);
-                    } else if (i == 0) {
-                        topLevel.add(current);
+                        parent.children.add(current);
+                    } else {
+                        rootBookmarks.add(current);
                     }
                 }
-
                 parent = current;
             }
         }
-
-        return topLevel;
+        return rootBookmarks;
     }
     
     // ANSI color codes for output
