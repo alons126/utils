@@ -194,5 +194,16 @@ public class ReassignBookmarksTool {
         } else {
             System.out.println(CYAN + "Bookmark JSON not deleted: file not found." + RESET);
         }
+
+        // Delete no_bookmarks.pdf if it was created in the same directory as inputPDF
+        File inputDir = new File(inputPDF).getParentFile();
+        File tempPdf = new File(inputDir, "no_bookmarks.pdf");
+        if (tempPdf.exists()) {
+            if (tempPdf.delete()) {
+                System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + tempPdf.getAbsolutePath());
+            } else {
+                System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + tempPdf.getAbsolutePath());
+            }
+        }
     }
 }

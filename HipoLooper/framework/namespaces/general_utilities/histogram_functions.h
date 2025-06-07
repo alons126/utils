@@ -242,7 +242,9 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
 
     std::string extractCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool extract \"" + inputPDF + "\" \"" + bookmarksJSON + "\"";
 
-    std::string noBookmarkPDF = "no_bookmarks.pdf";
+    std::string noBookmarkPDF = inputPDF.substr(0, inputPDF.find_last_of('/')) + "/no_bookmarks.pdf";
+    // std::string noBookmarkPDF = "no_bookmarks.pdf";
+    
     std::string gsCmd = "gs -q -o \"" + noBookmarkPDF + "\" -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -dNoOutputFonts -dPDFSETTINGS=/prepress \"" + inputPDF + "\"";
 
     std::string reassignCmd = "java -cp \"" + classpath + "\" ReassignBookmarksTool reassign \"" + noBookmarkPDF + "\" \"" + bookmarksJSON + "\" \"" + outputPDF + "\"";
@@ -261,10 +263,6 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
     system(extractCmd.c_str());
     system(gsCmd.c_str());
     system(reassignCmd.c_str());
-
-    // // Clean up temporary files
-    // // TODO: this should happen in the java tool, yet it doesn't work. Fix this in the java tool
-    // system(("rm -rf " + bookmarksJSON).c_str());  // Clean up temporary file
 
     std::cout << "\n";
 }
