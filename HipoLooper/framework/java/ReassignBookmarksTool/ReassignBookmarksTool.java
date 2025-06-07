@@ -17,22 +17,21 @@ public class ReassignBookmarksTool {
 
         for (BookmarkEntry entry : flatBookmarks) {
             String[] parts = entry.title.split(">");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
+
             StringBuilder path = new StringBuilder();
             BookmarkEntry parent = null;
 
             for (int i = 0; i < parts.length; i++) {
-                String part = parts[i].trim();
-                if (path.length() > 0) path.append(" > ");
-                path.append(part);
+                if (i > 0) path.append(">");
+                path.append(parts[i]);
                 String key = path.toString();
 
                 BookmarkEntry current = allBookmarks.get(key);
                 if (current == null) {
-                    current = new BookmarkEntry();
-                    current.title = part;
-                    if (i == parts.length - 1) {
-                        current.page = entry.page;
-                    }
+                    current = new BookmarkEntry(parts[i], i == parts.length - 1 ? entry.page : -1);
                     allBookmarks.put(key, current);
 
                     if (parent != null) {
@@ -41,9 +40,11 @@ public class ReassignBookmarksTool {
                         rootBookmarks.add(current);
                     }
                 }
+
                 parent = current;
             }
         }
+
         return rootBookmarks;
     }
     
