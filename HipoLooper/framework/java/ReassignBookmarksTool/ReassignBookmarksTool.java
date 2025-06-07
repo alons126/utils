@@ -83,23 +83,24 @@ public class ReassignBookmarksTool {
                 }
             } catch (IOException e) { System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage()); }
 
-            // Delete stripped PDF after reassignment, with canonical path check
+            // Delete stripped PDF if it was saved in the same folder as inputPDF
             try {
-                File tempPdf = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf");
-                File actualPdf = new File(inputPDF);
+                File inputDir = new File(inputPDF).getParentFile();
+                File expectedStripped = new File(inputDir, "no_bookmarks.pdf");
+                File actualStripped = new File(inputPDF).getParentFile().toPath().resolve("no_bookmarks.pdf").toFile();
 
-                if (tempPdf.getCanonicalPath().equals(actualPdf.getCanonicalPath()) && actualPdf.exists()) {
-                    if (actualPdf.delete()) {
-                        System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualPdf.getAbsolutePath());
+                if (expectedStripped.getCanonicalPath().equals(actualStripped.getCanonicalPath()) && actualStripped.exists()) {
+                    if (actualStripped.delete()) {
+                        System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualStripped.getAbsolutePath());
                     } else {
-                        System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + actualPdf.getAbsolutePath());
+                        System.out.println(RED + "Failed to delete stripped PDF: " + RESET + actualStripped.getAbsolutePath());
                     }
                 } else {
-                    System.out.println(RED + "Stripped PDF not deleted: path mismatch." + RESET);
-                    System.out.println(RED + "Expected path: " + tempPdf.getCanonicalPath() + RESET);
-                    System.out.println(RED + "Actual path:   " + actualPdf.getCanonicalPath() + RESET);
+                    System.out.println(CYAN + "Stripped PDF not deleted: path mismatch.\nExpected path: " + expectedStripped.getCanonicalPath() + "\nActual path:   " + actualStripped.getCanonicalPath() + RESET);
                 }
-            } catch (IOException e) { System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage()); }
+            } catch (IOException e) {
+                System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage());
+            }
 
             System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
             System.out.println(GREEN + "Reassigned PDF file saved to: " + RESET + outputPDF + "\n");
