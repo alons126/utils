@@ -2003,7 +2003,7 @@ void HipoLooper() {
             h_Vx_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-            h_Vz_e_BC_sector1_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector1_1e_cut, weight);
 
@@ -2023,7 +2023,7 @@ void HipoLooper() {
             h_Vx_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-            h_Vz_e_BC_sector2_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector2_1e_cut, weight);
 
@@ -2043,7 +2043,7 @@ void HipoLooper() {
             h_Vx_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-            h_Vz_e_BC_sector3_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector3_1e_cut, weight);
 
@@ -2063,7 +2063,7 @@ void HipoLooper() {
             h_Vx_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-            h_Vz_e_BC_sector4_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector4_1e_cut, weight);
 
@@ -2083,7 +2083,7 @@ void HipoLooper() {
             h_Vx_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-            h_Vz_e_BC_sector5_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector5_1e_cut, weight);
 
@@ -2103,7 +2103,7 @@ void HipoLooper() {
             h_Vx_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-            h_Vz_e_BC_sector6_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector6_1e_cut, weight);
 
@@ -2166,7 +2166,7 @@ void HipoLooper() {
             h_Vx_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_sector1_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector1_1e_cut, weight);
 
@@ -2186,7 +2186,7 @@ void HipoLooper() {
             h_Vx_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_sector2_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector2_1e_cut, weight);
 
@@ -2206,7 +2206,7 @@ void HipoLooper() {
             h_Vx_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_sector3_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector3_1e_cut, weight);
 
@@ -2226,7 +2226,7 @@ void HipoLooper() {
             h_Vx_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_sector4_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector4_1e_cut, weight);
 
@@ -2246,7 +2246,7 @@ void HipoLooper() {
             h_Vx_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_sector5_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector5_1e_cut, weight);
 
@@ -2266,7 +2266,7 @@ void HipoLooper() {
             h_Vx_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_sector6_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector6_1e_cut, weight);
 
@@ -2777,9 +2777,10 @@ void HipoLooper() {
             }
         }
 
-        myCanvas->SaveAs(OutputDir + "/Indevidual_plots/" + to_string(plot_counter) + HistoList[i]->GetName() + ".pdf");
+        myCanvas->SaveAs((OutputDir + "/Indevidual_plots/" + to_string(plot_counter) + HistoList[i]->GetName() + ".pdf").c_str());
         myCanvas->Print(fileName, "pdf");
         myCanvas->Clear();
+        ++plot_counter;
     }
 
     sprintf(fileName, "%s]", PDF_fileName.c_str());
