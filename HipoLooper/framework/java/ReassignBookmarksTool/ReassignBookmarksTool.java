@@ -311,6 +311,8 @@ public class ReassignBookmarksTool {
             System.out.println("- Added root bookmark: '" + entry.title + "'");
         }
 
+        System.out.println("\n");
+
         outline.openNode();
     }
 
@@ -323,7 +325,7 @@ public class ReassignBookmarksTool {
         for (BookmarkEntry child : entry.getChildren()) {
             PDOutlineItem childItem = createOutlineItem(doc, child);
             item.addLast(childItem);
-            System.out.println("  - Added child '" + child.title + "' to parent '" + entry.title + "'");
+            System.out.println("\t- Added child '" + child.title + "' to parent '" + entry.title + "'");
         }
 
         return item;
