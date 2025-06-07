@@ -148,40 +148,7 @@ public class ReassignBookmarksTool {
             String bookmarkJSON = args[2];
             String outputPDF = args[3];
             reassignBookmarks(inputPDF, bookmarkJSON, outputPDF, hierarchical);
-
-            // Delete bookmark JSON after reassignment, with canonical path check
-            try {
-                File tempJson = new File(new File(inputPDF).getParent(), "bookmarks.json");
-                File actualJson = new File(bookmarkJSON);
-
-                if (tempJson.getCanonicalPath().equals(actualJson.getCanonicalPath()) && actualJson.exists()) {
-                    if (actualJson.delete()) {
-                        System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + actualJson.getAbsolutePath());
-                    } else {
-                        System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + actualJson.getAbsolutePath());
-                    }
-                }
-            } catch (IOException e) { System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage()); }
-
-            // Delete stripped PDF if it was saved as no_bookmarks.pdf in the same directory as inputPDF
-            File tempStripped = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf");
-            File actualStripped = new File(inputPDF);
-            try {
-                if (tempStripped.getCanonicalPath().equals(actualStripped.getCanonicalPath())) {
-                    if (actualStripped.exists()) {
-                        if (actualStripped.delete()) {
-                            System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualStripped.getAbsolutePath());
-                        } else {
-                            System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + actualStripped.getAbsolutePath());
-                        }
-                    } else {
-                        System.out.println(CYAN + "Stripped PDF not deleted: File does not exist: " + RESET + actualStripped.getAbsolutePath());
-                    }
-                }
-            } catch (IOException e) { System.out.println(RED + "Error comparing or deleting stripped PDF: " + RESET + e.getMessage()); }
-
-            System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
-            System.out.println(GREEN + "Reassigned PDF file saved to: " + RESET + outputPDF + "\n");
+            return;
         }
     }
 
@@ -301,72 +268,41 @@ public class ReassignBookmarksTool {
             ObjectMapper mapper = new ObjectMapper();
             List<BookmarkEntry> entries = Arrays.asList(mapper.readValue(new File(bookmarkJSON), BookmarkEntry[].class));
 
-            if (hierarchical) { entries = convertToHierarchy(entries); }
-            addBookmarksToOutline(document, entries);
+            List<BookmarkEntry> finalEntries = hierarchical ? convertToHierarchy(entries) : entries;
+            addBookmarksToOutline(document, finalEntries);
 
             document.save(outputPDF);
-        }
-        // Delete the bookmark JSON file if it exists
-        File jsonFile = new File(bookmarkJSON);
-        if (jsonFile.exists()) {
-            if (jsonFile.delete()) {
-                System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + jsonFile.getAbsolutePath());
-            } else {
-                System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + jsonFile.getAbsolutePath());
-            }
-        } else {
-            System.out.println(CYAN + "Bookmark JSON not deleted: file not found." + RESET);
-        }
-
-        // Delete no_bookmarks.pdf if it was created in the same directory as inputPDF
-        File inputDir = new File(inputPDF).getParentFile();
-        File tempPdf = new File(inputDir, "no_bookmarks.pdf");
-        if (tempPdf.exists()) {
-            if (tempPdf.delete()) {
-                System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + tempPdf.getAbsolutePath());
-            } else {
-                System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + tempPdf.getAbsolutePath());
-            }
         }
     }
 
     /**
-     * Adds bookmarks to the PDF outline, handling nested bookmarks with " > " in titles.
+     * Adds bookmarks to the PDF outline, handling recursive child bookmarks.
      */
     private static void addBookmarksToOutline(PDDocument document, List<BookmarkEntry> bookmarks) {
         PDDocumentOutline outline = new PDDocumentOutline();
         document.getDocumentCatalog().setDocumentOutline(outline);
 
-        Map<String, PDOutlineItem> titleToItem = new HashMap<>();
-
         for (BookmarkEntry entry : bookmarks) {
-            PDPage page = document.getPage(entry.getPage() - 1);
-            PDOutlineItem item = new PDOutlineItem();
-            item.setTitle(entry.title.trim());
-            item.setDestination(page);
-
-            titleToItem.put(entry.title.trim(), item);
-
-            boolean isNested = false;
-            int idx = entry.title.lastIndexOf(">");
-            if (idx != -1) {
-                String parentTitle = entry.title.substring(0, idx).trim();
-                PDOutlineItem parent = titleToItem.get(parentTitle.trim());
-                if (parent != null) {
-                    parent.addLast(item);
-                    isNested = true;
-                    System.out.println("✔ Added child '" + entry.title.trim() + "' to parent '" + parentTitle + "'");
-                } else {
-                    System.out.println("⚠ Warning: Parent '" + parentTitle + "' not found for '" + entry.title.trim() + "'");
-                }
-            }
-
-            if (!isNested) {
-                outline.addLast(item);
-                System.out.println("✔ Added root bookmark: '" + entry.title.trim() + "'");
-            }
+            PDOutlineItem item = createOutlineItem(document, entry);
+            outline.addLast(item);
+            System.out.println("✔ Added root bookmark: '" + entry.title + "'");
         }
 
         outline.openNode();
+    }
+
+    private static PDOutlineItem createOutlineItem(PDDocument doc, BookmarkEntry entry) {
+        PDPage page = doc.getPage(entry.page - 1);
+        PDOutlineItem item = new PDOutlineItem();
+        item.setTitle(entry.title.trim());
+        item.setDestination(page);
+
+        for (BookmarkEntry child : entry.getChildren()) {
+            PDOutlineItem childItem = createOutlineItem(doc, child);
+            item.addLast(childItem);
+            System.out.println("  ✔ Added child '" + child.title + "' to parent '" + entry.title + "'");
+        }
+
+        return item;
     }
 }
