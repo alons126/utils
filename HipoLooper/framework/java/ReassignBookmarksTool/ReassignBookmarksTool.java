@@ -56,13 +56,12 @@ public class ReassignBookmarksTool {
             System.out.println(GREEN + "\nBookmark extraction completed!" + RESET);
             System.out.println(GREEN + "Extracted bookmarks saved to: " + RESET + outputJSON + "\n");
         } else if (args[0].equals("strip")) {
-            // } else if ("strip".equalsIgnoreCase(command)) {
-            if (args.length != 3) {
-                System.out.println(RED + "Usage: strip <input.pdf> <output.pdf>" + RESET);
+            if (args.length < 3 || args.length > 4) {
+                System.out.println(RED + "Usage: strip <input.pdf> <output.pdf> [preserveText]" + RESET);
                 return;
             }
-
-            stripBookmarks(args[1], args[2]);
+            boolean preserveText = args.length == 4 && args[3].equalsIgnoreCase("preserveText");
+            stripBookmarks(args[1], args[2], preserveText);
         } else if (args[0].equals("reassign")) {
             boolean hierarchical = args.length > 4 && args[4].equalsIgnoreCase("hierarchical");
             String inputPDF = args[1];
@@ -82,9 +81,7 @@ public class ReassignBookmarksTool {
                         System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + actualJson.getAbsolutePath());
                     }
                 }
-            } catch (IOException e) {
-                System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage());
-            }
+            } catch (IOException e) { System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage()); }
 
             // Delete stripped PDF after reassignment, with canonical path check
             try {
@@ -102,9 +99,7 @@ public class ReassignBookmarksTool {
                     System.out.println(RED + "Expected path: " + tempPdf.getCanonicalPath() + RESET);
                     System.out.println(RED + "Actual path:   " + actualPdf.getCanonicalPath() + RESET);
                 }
-            } catch (IOException e) {
-                System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage());
-            }
+            } catch (IOException e) { System.out.println(RED + "Error verifying or deleting stripped PDF: " + RESET + e.getMessage()); }
 
             System.out.println(GREEN + "\nBookmark reassignment completed!" + RESET);
             System.out.println(GREEN + "Reassigned PDF file saved to: " + RESET + outputPDF + "\n");
@@ -171,9 +166,30 @@ public class ReassignBookmarksTool {
     /**
      * Strip all bookmarks from a PDF and save a new file with the same content but no outline tree.
      */
-    public static void stripBookmarks(String inputPDF, String outputPDF) throws IOException {
+    public static void stripBookmarks(String inputPDF, String outputPDF, boolean preserveText) throws IOException {
         try (PDDocument document = PDDocument.load(new File(inputPDF))) {
             document.getDocumentCatalog().setDocumentOutline(null);
+
+            if (!preserveText) {
+                // Remove text content from all pages (e.g., flatten to images)
+                org.apache.pdfbox.rendering.PDFRenderer pdfRenderer = new org.apache.pdfbox.rendering.PDFRenderer(document);
+                PDDocument imageDoc = new PDDocument();
+                for (int page = 0; page < document.getNumberOfPages(); ++page) {
+                    java.awt.image.BufferedImage bim = pdfRenderer.renderImageWithDPI(page, 300);
+                    org.apache.pdfbox.pdmodel.PDPage newPage = new org.apache.pdfbox.pdmodel.PDPage(document.getPage(page).getMediaBox());
+                    imageDoc.addPage(newPage);
+                    org.apache.pdfbox.pdmodel.PDPageContentStream contentStream = new org.apache.pdfbox.pdmodel.PDPageContentStream(imageDoc, newPage);
+                    org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject pdImage = org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory.createFromImage(imageDoc, bim);
+                    contentStream.drawImage(pdImage, 0, 0, newPage.getMediaBox().getWidth(), newPage.getMediaBox().getHeight());
+                    contentStream.close();
+                }
+                
+                imageDoc.save(outputPDF);
+                imageDoc.close();
+                System.out.println(GREEN + "Bookmarks stripped and content flattened (no text layer): " + RESET + outputPDF);
+                return;
+            }
+
             document.save(new File(outputPDF));
             System.out.println(GREEN + "Bookmarks stripped and PDF saved: " + RESET + outputPDF);
         } catch (IOException e) {
