@@ -2,42 +2,61 @@
 import com.fasterxml.jackson.databind.*;
 import java.io.*;
 import java.util.*;
-import java.util.Arrays;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.*;
 
 public class ReassignBookmarksTool {
+    // ANSI color codes for output
+    public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m"; // Errors
+    public static final String GREEN = "\u001B[32m"; // Success/info
+    public static final String CYAN = "\u001B[36m"; // Warnings (changed to cyan)
+
+    private static void printHierarchy(List<BookmarkEntry> entries, String indent) {
+        for (BookmarkEntry e : entries) {
+            System.out.println(indent + "- " + e.title + " (Page " + e.page + ")");
+            if (e.children != null) { printHierarchy(e.children, indent + "  "); }
+        }
+    }
+
     /**
      * Converts a flat list of bookmarks with '>' in the title into a nested hierarchy.
      */
     private static List<BookmarkEntry> convertToHierarchy(List<BookmarkEntry> flatBookmarks) {
         Map<String, BookmarkEntry> allBookmarks = new LinkedHashMap<>();
-        List<BookmarkEntry> rootBookmarks = new ArrayList<>();
+        List<BookmarkEntry> roots = new ArrayList<>();
 
         for (BookmarkEntry entry : flatBookmarks) {
             String[] parts = entry.title.split(">");
-            for (int i = 0; i < parts.length; i++) {
-                parts[i] = parts[i].trim();
-            }
-
-            StringBuilder path = new StringBuilder();
+            StringBuilder fullPath = new StringBuilder();
             BookmarkEntry parent = null;
 
             for (int i = 0; i < parts.length; i++) {
-                if (i > 0) path.append(">");
-                path.append(parts[i]);
-                String key = path.toString();
+                String part = parts[i].trim();
+                if (part.isEmpty()) continue;
 
+                if (fullPath.length() > 0) fullPath.append(" > ");
+                fullPath.append(part);
+
+                String key = fullPath.toString();
                 BookmarkEntry current = allBookmarks.get(key);
+
                 if (current == null) {
-                    current = new BookmarkEntry(parts[i], i == parts.length - 1 ? entry.page : -1);
+                    current = new BookmarkEntry();
+                    current.title = part;
+
+                    if (i == parts.length - 1) { current.page = entry.page; }
+
                     allBookmarks.put(key, current);
 
                     if (parent != null) {
+                        if (parent.children == null) parent.children = new ArrayList<>();
                         parent.children.add(current);
+                        System.out.println("  ✔ Added child '" + current.title + "' to parent '" + parent.title + "'");
                     } else {
-                        rootBookmarks.add(current);
+                        roots.add(current);
+                        System.out.println("✔ Added root bookmark: '" + current.title + "'");
                     }
                 }
 
@@ -45,14 +64,12 @@ public class ReassignBookmarksTool {
             }
         }
 
-        return rootBookmarks;
+        System.out.println("✅ Finished building hierarchy. Total root bookmarks: " + roots.size());
+
+        printHierarchy(roots,"");
+
+        return roots;
     }
-    
-    // ANSI color codes for output
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m"; // Errors
-    public static final String GREEN = "\u001B[32m"; // Success/info
-    public static final String CYAN = "\u001B[36m"; // Warnings (changed to cyan)
 
     static class BookmarkEntry {
         public String title;
