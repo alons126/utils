@@ -88,21 +88,19 @@ public class ReassignBookmarksTool {
             } catch (IOException e) { System.out.println(RED + "Error verifying or deleting bookmark JSON: " + RESET + e.getMessage()); }
 
             // Delete stripped PDF if it was saved as no_bookmarks.pdf in the same directory as inputPDF
-            File expectedStripped = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf");
-            File actualStripped = new File(inputPDF.replace("bookmarks.json", "no_bookmarks.pdf"));
+            File tempStripped = new File(new File(inputPDF).getParent(), "no_bookmarks.pdf");
+            File actualStripped = new File(inputPDF);
             try {
-                if (expectedStripped.getCanonicalPath().equals(actualStripped.getCanonicalPath())) {
-                    if (actualStripped.delete()) {
-                        System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualStripped.getAbsolutePath());
+                if (tempStripped.getCanonicalPath().equals(actualStripped.getCanonicalPath())) {
+                    if (actualStripped.exists()) {
+                        if (actualStripped.delete()) {
+                            System.out.println(GREEN + "Temporary stripped PDF deleted: " + RESET + actualStripped.getAbsolutePath());
+                        } else {
+                            System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + actualStripped.getAbsolutePath());
+                        }
                     } else {
-                        System.out.println(RED + "Failed to delete temporary stripped PDF: " + RESET + actualStripped.getAbsolutePath());
+                        System.out.println(CYAN + "Stripped PDF not deleted: File does not exist: " + RESET + actualStripped.getAbsolutePath());
                     }
-                } else {
-                    System.out.println(RED + "Stripped PDF not deleted: path mismatch." + RESET);
-                    System.out.println("Expected path: " + expectedStripped.getAbsolutePath());
-                    System.out.println("Actual path:   " + actualStripped.getAbsolutePath());
-                    System.out.println("Expected path bytes: " + Arrays.toString(expectedStripped.getAbsolutePath().getBytes()));
-                    System.out.println("Actual path bytes:   " + Arrays.toString(actualStripped.getAbsolutePath().getBytes()));
                 }
             } catch (IOException e) {
                 System.out.println(RED + "Error comparing or deleting stripped PDF: " + RESET + e.getMessage());
