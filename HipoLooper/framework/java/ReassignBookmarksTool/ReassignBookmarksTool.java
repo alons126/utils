@@ -183,18 +183,20 @@ public class ReassignBookmarksTool {
             outline.openNode();
             document.save(outputPDF);
         }
-        // Delete bookmark JSON after reassignment if it was created in the input PDF's directory
+        // Delete bookmark JSON after reassignment if it was created in input directory
         try {
             File inputDir = new File(inputPDF).getParentFile();
-            File tempJson = new File(inputDir, "bookmarks.json");
-            File providedJson = new File(bookmarkJSON);
+            File expectedJson = new File(inputDir, "bookmarks.json").getCanonicalFile();
+            File givenJson = new File(bookmarkJSON).getCanonicalFile();
 
-            if (tempJson.getCanonicalPath().equals(providedJson.getCanonicalPath())) {
-                if (tempJson.delete()) {
-                    System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + tempJson.getAbsolutePath());
+            if (expectedJson.equals(givenJson)) {
+                if (expectedJson.delete()) {
+                    System.out.println(GREEN + "Temporary bookmark file deleted: " + RESET + expectedJson.getAbsolutePath());
                 } else {
-                    System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + tempJson.getAbsolutePath());
+                    System.out.println(RED + "Failed to delete temporary bookmark file: " + RESET + expectedJson.getAbsolutePath());
                 }
+            } else {
+                System.out.println(CYAN + "Bookmark JSON not deleted: path mismatch." + RESET);
             }
         } catch (IOException e) {
             System.out.println(RED + "IOException during cleanup: " + RESET + e.getMessage());
