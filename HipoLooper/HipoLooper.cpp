@@ -131,6 +131,10 @@ void HipoLooper() {
         system(("rm -rf " + OutputDir).c_str());
         system(("mkdir -p " + OutputDir).c_str());
 
+        const std::string IndividualPlotsOutputDir = OutputDir + "/Individual_plots/";
+        system(("rm -rf " + IndividualPlotsOutputDir).c_str());
+        system(("mkdir -p " + IndividualPlotsOutputDir).c_str());
+
         TFile *outFile = new TFile((OutputDir + "/" + OutFileName + ".root").c_str(), "RECREATE");
 
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
@@ -3241,8 +3245,6 @@ void HipoLooper() {
 
         TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
 
-        system(("mkdir -p " + OutputDir + "/Individual_plots").c_str());
-
         std::string PDF_fileName = OutputDir + "/" + OutFolderName + ".pdf";
         char fileName[PDF_fileName.length()];
         sprintf(fileName, "%s[", PDF_fileName.c_str());
@@ -3443,7 +3445,7 @@ void HipoLooper() {
                 }
             }
 
-            myCanvas->SaveAs((OutputDir + "/Indevidual_plots/" + to_string(plot_counter) + "_" + HistoList[i]->GetName() + ".pdf").c_str());
+            myCanvas->SaveAs((IndividualPlotsOutputDir + to_string(plot_counter) + "_" + HistoList[i]->GetName() + ".pdf").c_str());
             myCanvas->Print(fileName, "pdf");
             myCanvas->Clear();
             ++plot_counter;
