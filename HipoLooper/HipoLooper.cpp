@@ -46,7 +46,7 @@ void HipoLooper() {
     std::string General_status = "";
     // std::string General_status = "_NewClas12Ana_Cuts";
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
