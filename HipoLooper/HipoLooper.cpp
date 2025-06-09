@@ -39,7 +39,7 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    int version = 10;  // Version of the code
+    int version = 11;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
@@ -2682,6 +2682,8 @@ void HipoLooper() {
 #pragma endregion
 
             if (electrons.size() != 1) { continue; }
+
+            if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
             // // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
             // bool bad_DC_edge_CutCond = (!reco_analysis_functions::DCEdgeCuts(electrons[0]));
