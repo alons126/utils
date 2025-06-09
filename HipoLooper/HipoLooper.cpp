@@ -44,9 +44,9 @@ void HipoLooper() {
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     // std::string General_status = "";
-    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts";
+    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_full";
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
