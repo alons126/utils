@@ -2573,8 +2573,8 @@ void HipoLooper() {
                 }
             }
 
-            bool Both_e_and_pions_passed_dVz_cuts =
-                (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
+            bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
+            // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
 
             // skip event if e and pions do not pass dVz cuts
             if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
