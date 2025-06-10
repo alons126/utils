@@ -222,7 +222,8 @@ class clas12ana : public clas12reader {
 
     bool f_ecalSFCuts = true;
     bool f_ecalPCuts = true;
-    bool f_ecalDiagCuts = true;
+    bool f_ecalDiagCuts = false;
+    // bool f_ecalDiagCuts = true;
     bool f_ecalEdgeCuts = true;
     bool f_DCEdgeCuts = true;
     bool f_CDEdgeCuts = true;
