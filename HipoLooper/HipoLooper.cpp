@@ -2504,9 +2504,9 @@ void HipoLooper() {
             auto piplus_det = c12->getByID(211);
             auto piminus_det = c12->getByID(-211);
 
-            if (electrons_det.size() != 0) { ++NumOfEvents_wAny_e_det; }
+            if (electrons_det.size() > 0) { ++NumOfEvents_wAny_e_det; }
             if (electrons_det.size() == 1) { ++NumOfEvents_wOne_e_det; }
-            if (electrons.size() != 0) { ++NumOfEvents_wAny_e; }
+            if (electrons.size() > 0) { ++NumOfEvents_wAny_e; }
             if (electrons.size() == 1) { ++NumOfEvents_wOne_e; }
 
             if (electrons_det.size() != 1) { continue; }
@@ -3315,11 +3315,18 @@ void HipoLooper() {
             text.DrawLatex(0.05, 0.65, ("InputFiles: #font[42]{BaseDir + " + InputFiles.at(sample).substr(BaseDir.length()) + "}").c_str());
         }
 
-        text.DrawLatex(0.05, 0.60, ("Total #(Events):                #font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
-        text.DrawLatex(0.05, 0.55, ("Total #(Events) with any e_det: #font[42]{" + std::to_string(NumOfEvents_wAny_e_det) + "}").c_str());
-        text.DrawLatex(0.05, 0.50, ("Total #(Events) with one e_det: #font[42]{" + std::to_string(NumOfEvents_wOne_e_det) + "}").c_str());
-        text.DrawLatex(0.05, 0.45, ("Total #(Events) with any e:     #font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
-        text.DrawLatex(0.05, 0.40, ("Total #(Events) with one e:     #font[42]{" + std::to_string(NumOfEvents_wOne_e) + "}").c_str());
+        text.DrawLatex(0.05, 0.60, "Event counts:");
+        text.DrawLatex(0.10, 0.60, ("Total #(events):           \t#font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
+        text.DrawLatex(0.10, 0.55, ("#(Events) with any e_det:  \t#font[42]{" + std::to_string(NumOfEvents_wAny_e_det) + "}").c_str());
+        text.DrawLatex(0.10, 0.50,
+                       ("#(Events) with one e_det:  \t#font[42]{" + std::to_string(NumOfEvents_wOne_e_det) + " (" +
+                        basic_tools::ToStringWithPrecision(100 * (NumOfEvents_wOne_e_det / NumOfEvents_wAny_e_det), 2) + "%)}")
+                           .c_str());
+        text.DrawLatex(0.10, 0.45, ("#(Events) with any e:      \t#font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
+        text.DrawLatex(0.10, 0.40,
+                       ("#(Events) with one e:      \t#font[42]{" + std::to_string(NumOfEvents_wOne_e) + " (" +
+                        basic_tools::ToStringWithPrecision(100 * (NumOfEvents_wOne_e / NumOfEvents_wAny_e), 2) + "%)}")
+                           .c_str());
 
         myText->Print(fileName, "pdf Title: Cover");
         // myText->Print(fileName, "pdf");
