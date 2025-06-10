@@ -3636,5 +3636,14 @@ void HipoLooper() {
 
         // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
         if (InputFiles.size() > 1) { gDirectory->Clear(); }
+
+        cout << "\033[33m\n=============================================================\n\033[0m";
+        cout << "\033[33m\n= HipoLooper summary                                         \n\033[0m";
+        cout << "\033[33m\n=============================================================\n\033[0m";
+
+        cout << "\033[33m\n\n- Input variables -------------------------------------------\n\033[0m";
+        cout << "\033[33mInputFiles.at(sample):\033[0m " << InputFiles.at(sample) << endl;
+        cout << "\033[33mnCodeRun_status:\033[0m       " << CodeRun_status << endl;
+        cout << "\033[33mOutputDir:\033[0m             " << OutputDir << "\n\n";
     }
 }
