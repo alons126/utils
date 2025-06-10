@@ -49,7 +49,8 @@ void HipoLooper() {
     // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piminusOnly";
     // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piplusOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusOnly";
-    std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusOnly";
+    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusOnly";
+    std::string General_status = "_NewCuts2_wReverseddVz_cuts";
     // std::string General_status = "";
 
     bool ApplyLimiter = false;
@@ -2553,39 +2554,39 @@ void HipoLooper() {
 
             //  - Apply dVz cuts on both e and FD/CD pions ----------------------------------------------------------------------------------------------------------------------------
 
-            vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
-            vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
+            // vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
+            // vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
 
-            bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
-            bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
+            // bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
+            // bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
 
-            for (int i = 0; i < piplus.size(); i++) {
-                double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
+            // for (int i = 0; i < piplus.size(); i++) {
+            //     double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
 
-                if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
-                    Both_e_and_pipFD_passed_dVz_cuts = false;
-                } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
-                    Both_e_and_pipCD_passed_dVz_cuts = false;
-                }
-            }
+            //     if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
+            //         Both_e_and_pipFD_passed_dVz_cuts = false;
+            //     } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
+            //         Both_e_and_pipCD_passed_dVz_cuts = false;
+            //     }
+            // }
 
-            for (int i = 0; i < piminus.size(); i++) {
-                double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
+            // for (int i = 0; i < piminus.size(); i++) {
+            //     double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
 
-                if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
-                    Both_e_and_pimFD_passed_dVz_cuts = false;
-                } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
-                    Both_e_and_pimCD_passed_dVz_cuts = false;
-                }
-            }
+            //     if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
+            //         Both_e_and_pimFD_passed_dVz_cuts = false;
+            //     } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
+            //         Both_e_and_pimCD_passed_dVz_cuts = false;
+            //     }
+            // }
 
-            bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
-            // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
-            // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
-            // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
+            // bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
+            // // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
+            // // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
+            // // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
 
-            // skip event if e and pions do not pass dVz cuts
-            if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
+            // // skip event if e and pions do not pass dVz cuts
+            // if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
