@@ -44,14 +44,10 @@ void HipoLooper() {
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     // std::string General_status = "";
-    // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_regTest";
-    // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_pions";
-    // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piminusOnly";
-    // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piplusOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusOnly";
-    std::string General_status = "_NewCuts2_wReverseddVz_cuts";
-    // std::string General_status = "";
+    std::string General_status = "_NewCuts2_wdVz_cuts";
+    // std::string General_status = "_NewCuts2_wReverseddVz_cuts";
 
     bool ApplyLimiter = false;
     // int Limiter = 10000000;  // 10M events (fo the data)
@@ -65,21 +61,21 @@ void HipoLooper() {
 
     // // Data samples:
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
-    // // Simulation samples:
+    // Simulation samples:
 
-    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
 
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
