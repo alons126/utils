@@ -45,7 +45,9 @@ void HipoLooper() {
 
     // std::string General_status = "";
     // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_regTest";
-    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_pions";
+    // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_pions";
+    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piplusOnly";
+    // std::string General_status = "";
 
     bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
@@ -2574,7 +2576,8 @@ void HipoLooper() {
                 }
             }
 
-            bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
+            bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
+            // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
             // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
 
             // skip event if e and pions do not pass dVz cuts
