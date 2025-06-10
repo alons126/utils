@@ -2504,10 +2504,10 @@ void HipoLooper() {
             auto piplus_det = c12->getByID(211);
             auto piminus_det = c12->getByID(-211);
 
-            // if (electrons_det.size() != 0) { ++NumOfEvents_wAny_e_det; }
-            // if (electrons_det.size() == 1) { ++NumOfEvents_wOne_e_det; }
-            // if (electrons.size() != 0) { ++NumOfEvents_wAny_e; }
-            // if (electrons.size() == 1) { ++NumOfEvents_wOne_e; }
+            if (electrons_det.size() != 0) { ++NumOfEvents_wAny_e_det; }
+            if (electrons_det.size() == 1) { ++NumOfEvents_wOne_e_det; }
+            if (electrons.size() != 0) { ++NumOfEvents_wAny_e; }
+            if (electrons.size() == 1) { ++NumOfEvents_wOne_e; }
 
             if (electrons_det.size() != 1) { continue; }
 
@@ -2520,7 +2520,7 @@ void HipoLooper() {
             TVector3 reco_P_e;
             reco_P_e.SetMagThetaPhi(electrons_det[0]->getP(), electrons_det[0]->getTheta(), electrons_det[0]->getPhi());
 
-            // double vtz_e_det = electrons_det[0]->par()->getVz();
+            double vtz_e_det = electrons_det[0]->par()->getVz();
             // double vtz_e = electrons[0]->par()->getVz();
 
             TVector3 P_q = P_b - reco_P_e;
