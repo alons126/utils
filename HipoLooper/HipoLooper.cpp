@@ -46,7 +46,8 @@ void HipoLooper() {
     // std::string General_status = "";
     // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_regTest";
     // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_pions";
-    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piplusOnly";
+    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piminusOnly";
+    // std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_piplusOnly";
     // std::string General_status = "";
 
     bool ApplyLimiter = true;
@@ -2576,7 +2577,8 @@ void HipoLooper() {
                 }
             }
 
-            bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
+            bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
+            // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
             // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
             // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
 
