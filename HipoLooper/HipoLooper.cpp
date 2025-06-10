@@ -44,7 +44,7 @@ void HipoLooper() {
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     // std::string General_status = "";
-    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_regTest";
+    std::string General_status = "_NewClas12Ana_Cuts_wdVz_cuts_on_both_electrons_and_pions";
 
     bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
@@ -2547,34 +2547,37 @@ void HipoLooper() {
 
             //  - Apply dVz cuts on both e and FD/CD pions ----------------------------------------------------------------------------------------------------------------------------
 
-            // vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
-            // vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
+            vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
+            vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
 
-            // bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
-            // bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
+            bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
+            bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
 
-            // for (int i = 0; i < piplus.size(); i++) {
-            //     double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
+            for (int i = 0; i < piplus.size(); i++) {
+                double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
 
-            //     if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
-            //         Both_e_and_pipFD_passed_dVz_cuts = false;
-            //     } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
-            //         Both_e_and_pipCD_passed_dVz_cuts = false;
-            //     }
-            // }
+                if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
+                    Both_e_and_pipFD_passed_dVz_cuts = false;
+                } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
+                    Both_e_and_pipCD_passed_dVz_cuts = false;
+                }
+            }
 
-            // for (int i = 0; i < piminus.size(); i++) {
-            //     double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
+            for (int i = 0; i < piminus.size(); i++) {
+                double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
 
-            //     if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
-            //         Both_e_and_pimFD_passed_dVz_cuts = false;
-            //     } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
-            //         Both_e_and_pimCD_passed_dVz_cuts = false;
-            //     }
-            // }
+                if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
+                    Both_e_and_pimFD_passed_dVz_cuts = false;
+                } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
+                    Both_e_and_pimCD_passed_dVz_cuts = false;
+                }
+            }
 
-            // bool Both_e_and_pions_passed_dVz_cuts =
-            //     (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
+            bool Both_e_and_pions_passed_dVz_cuts =
+                (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
+
+            // skip event if e and pions do not pass dVz cuts
+            if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
@@ -3316,15 +3319,15 @@ void HipoLooper() {
         }
 
         text.DrawLatex(0.05, 0.60, "Event counts:");
-        text.DrawLatex(0.10, 0.55, ("Total #(events):           #font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
+        text.DrawLatex(0.10, 0.55, ("Total #(events):            #font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
         text.DrawLatex(0.10, 0.50, ("#(Events) with any e_det:  #font[42]{" + std::to_string(NumOfEvents_wAny_e_det) + "}").c_str());
         text.DrawLatex(0.10, 0.45,
                        ("#(Events) with one e_det:  #font[42]{" + std::to_string(NumOfEvents_wOne_e_det) + " (" +
                         basic_tools::ToStringWithPrecision((100 * NumOfEvents_wOne_e_det / NumOfEvents_wAny_e_det), 2) + "%)}")
                            .c_str());
-        text.DrawLatex(0.10, 0.40, ("#(Events) with any e:      #font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
+        text.DrawLatex(0.10, 0.40, ("#(Events) with any e:       #font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
         text.DrawLatex(0.10, 0.35,
-                       ("#(Events) with one e:      #font[42]{" + std::to_string(NumOfEvents_wOne_e) + " (" +
+                       ("#(Events) with one e:       #font[42]{" + std::to_string(NumOfEvents_wOne_e) + " (" +
                         basic_tools::ToStringWithPrecision((100 * NumOfEvents_wOne_e / NumOfEvents_wAny_e), 2) + "%)}")
                            .c_str());
 
