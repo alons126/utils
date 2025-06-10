@@ -247,8 +247,10 @@ class clas12ana : public clas12reader {
     vector<double> vertex_x_cuts = {-99, 99};
     vector<double> vertex_y_cuts = {-99, 99};
 
-    vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
-    vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
+    vector<double> vertex_corr_cuts_cd = {-5, 3};  // electron vertex <-> particle vertex correlation cuts
+    // vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
+    vector<double> vertex_corr_cuts_fd = {-6, 4};  // electron vertex <-> particle vertex correlation cuts
+    // vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
 
     const double pi = 3.1415926535;
     const double c = 29.9792458;  // speed of light ns/cm
