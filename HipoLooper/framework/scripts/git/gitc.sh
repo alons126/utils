@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# source "$(dirname "$0")/../environment/system_colors.sh"
+# Get the directory where this script lives
+GITC_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source system_colors.sh relative to this script
+source "${GITC_SCRIPT_DIR}/../environment/system_colors.sh"
 # source ../environment/system_colors.sh
 
 # Define your constant prefix
