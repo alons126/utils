@@ -46,8 +46,8 @@ void HipoLooper() {
     // std::string General_status = "";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusFDOnly";
-    std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusFDOnly";
+    std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusFDOnly";
+    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusFDOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusCDOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusCDOnly";
     // std::string General_status = "_NewCuts2_wReverseddVz_cuts";
@@ -2601,8 +2601,8 @@ void HipoLooper() {
 
             // bool Both_e_and_pions_passed_dVz_cuts = (piminus_cd.size() > 0 && piminus_fd.size() == 0 && piplus.size() == 0);
             // bool Both_e_and_pions_passed_dVz_cuts = (piplus_cd.size() > 0 && piplus_fd.size() == 0 && piminus.size() == 0);
-            bool Both_e_and_pions_passed_dVz_cuts = (piminus_fd.size() > 0 && piminus_cd.size() == 0 && piplus.size() == 0);
-            // bool Both_e_and_pions_passed_dVz_cuts = (piplus_fd.size() > 0 && piplus_cd.size() == 0 && piminus.size() == 0);
+            // bool Both_e_and_pions_passed_dVz_cuts = (piminus_fd.size() > 0 && piminus_cd.size() == 0 && piplus.size() == 0);
+            bool Both_e_and_pions_passed_dVz_cuts = (piplus_fd.size() > 0 && piplus_cd.size() == 0 && piminus.size() == 0);
             // bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
             // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
             // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
