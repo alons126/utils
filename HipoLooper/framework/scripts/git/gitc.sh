@@ -31,5 +31,5 @@ git commit -m "${GIT_COMMIT_PREFIX}$*"
 git push
 echo -e ""
 
-echo "${COLOR_START}- Operation finished --------------------------------------------------${COLOR_END}"
+echo -e "${COLOR_START}- Operation finished --------------------------------------------------${COLOR_END}"
 echo -e ""
