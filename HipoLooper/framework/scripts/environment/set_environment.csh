@@ -1,18 +1,5 @@
 #!/bin/tcsh
 
-# Get the directory where this script lives
-set SCRIPT_NAME = "$0"
-set SCRIPT_DIR = `dirname "$SCRIPT_NAME"`
-
-# Convert to absolute path
-cd "$SCRIPT_DIR"
-setenv SET_ENVIRONMENT_SCRIPT_DIR `pwd`
-
-# Source system_colors.csh relative to this script
-source "$SET_ENVIRONMENT_SCRIPT_DIR/system_colors.sh"
-# source environment/system_colors.sh
-# source system_colors.sh
-
 echo "${COLOR_START}=======================================================================${COLOR_END}"
 echo "${COLOR_START}= Updating environment                                                =${COLOR_END}"
 echo "${COLOR_START}=======================================================================${COLOR_END}"

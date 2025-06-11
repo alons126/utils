@@ -1,18 +1,15 @@
 #!/bin/bash
 
-# Get the directory where this script lives
-set SCRIPT_NAME = "$0"
-set CODE_UPDATER_SCRIPT_DIR = `dirname "$SCRIPT_NAME"`
+# Check and set COLOR_START and COLOR_END if not already defined
+if (! $?COLOR_START) then
+    unset COLOR_START
+    setenv COLOR_START '\033[35m'
+endif
 
-# Convert to absolute path
-unset CODE_UPDATER_SCRIPT_DIR
-cd "$CODE_UPDATER_SCRIPT_DIR"
-setenv CODE_UPDATER_SCRIPT_DIR `pwd`
-cd -
-
-# Source system_colors.csh relative to this script
-source "$CODE_UPDATER_SCRIPT_DIR/system_colors.sh"
-# source environment/system_colors.sh
+if (! $?COLOR_END) then
+    unset COLOR_END
+    setenv COLOR_END '\033[0m'
+endif
 
 echo ""
 echo "${COLOR_START}=======================================================================${COLOR_END}"
