@@ -16,12 +16,14 @@ HipoLooperCodeVersion=14
 GIT_COMMIT_PREFIX="[${HipoLooperCodeVersion}_HipoLooper_v${HipoLooperCodeVersion}] "
 # GIT_COMMIT_PREFIX="[MyProject] "
 
-echo "${COLOR_START}=======================================================================${COLOR_END}"
-echo "${COLOR_START}= Updating environment                                                =${COLOR_END}"
-echo "${COLOR_START}=======================================================================${COLOR_END}"
-echo ""
+echo -e ""
+echo -e "${COLOR_START}=======================================================================${COLOR_END}"
+echo -e "${COLOR_START}= Updating environment                                                =${COLOR_END}"
+echo -e "${COLOR_START}=======================================================================${COLOR_END}"
+echo -e ""
 
 echo -e "${COLOR_START}Committing with prefix: ${GIT_COMMIT_PREFIX}${COLOR_END}"
+echo -e ""
 
 # Commit with the prefix and user input
 git add .
