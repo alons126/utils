@@ -1,10 +1,15 @@
 #!/bin/bash
 
 # Get the directory where this script lives
-CODE_UPDATER_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+set SCRIPT_NAME = "$0"
+set SCRIPT_DIR = `dirname "$SCRIPT_NAME"`
 
-# Source system_colors.sh relative to this script
-source "${CODE_UPDATER_SCRIPT_DIR}/environment/system_colors.sh"
+# Convert to absolute path
+cd "$SCRIPT_DIR"
+setenv SET_ENVIRONMENT_SCRIPT_DIR `pwd`
+
+# Source system_colors.csh relative to this script
+source "$SET_ENVIRONMENT_SCRIPT_DIR/system_colors.sh"
 # source environment/system_colors.sh
 
 echo ""
