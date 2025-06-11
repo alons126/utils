@@ -12,3 +12,4 @@ GIT_COMMIT_PREFIX="[${HipoLooperCodeVersion}_HipoLooper_v${HipoLooperCodeVersion
 # Commit with the prefix and user input
 git add .
 git commit -m "${GIT_COMMIT_PREFIX}$*"
+git push
