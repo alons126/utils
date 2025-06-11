@@ -1,6 +1,6 @@
 #!/bin/tcsh
 
-source ./system_colors.sh
+source system_colors.sh
 
 echo "${COLOR_START}=======================================================================${COLOR_END}"
 echo "${COLOR_START}= Updating environment                                                =${COLOR_END}"

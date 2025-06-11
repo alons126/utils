@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./environment/system_colors.sh
+source environment/system_colors.sh
 
 echo ""
 echo "${COLOR_START}=======================================================================${COLOR_END}"
