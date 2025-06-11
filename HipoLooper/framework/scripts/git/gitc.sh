@@ -18,7 +18,7 @@ GIT_COMMIT_PREFIX="[${HipoLooperCodeVersion}_HipoLooper_v${HipoLooperCodeVersion
 
 echo -e ""
 echo -e "${COLOR_START}=======================================================================${COLOR_END}"
-echo -e "${COLOR_START}= Updating environment                                                =${COLOR_END}"
+echo -e "${COLOR_START}= Git commit & push                                                   =${COLOR_END}"
 echo -e "${COLOR_START}=======================================================================${COLOR_END}"
 echo -e ""
 
