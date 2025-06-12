@@ -308,8 +308,9 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     TLegend *legend = new TLegend(0.18, 0.8, 0.65, 0.88);
     // TLegend *legend = new TLegend(0.18, 0.8, 0.6, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
+    legend->SetTextSize(0.03);
     g->GetListOfFunctions()->Add(legend);
-
+    
     TPaveText *FitParam1 = new TPaveText(0.18, 0.68, 0.39, 0.78, "NDC");
     TPaveText *FitParam2 = new TPaveText(0.39, 0.68, 0.60, 0.78, "NDC");
 
