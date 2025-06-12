@@ -260,7 +260,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
 
     double phi_e_offset = 0;
 
-    if (basic_tools::Fbasic_tools::FindSubstring(BeamE_status, "2GeV")) {
+    if (basic_tools::FindSubstring(BeamE_status, "2GeV")) {
         phi_e_offset = 16.;
     } else if (basic_tools::FindSubstring(BeamE_status, "4GeV")) {
         phi_e_offset = 7.;
