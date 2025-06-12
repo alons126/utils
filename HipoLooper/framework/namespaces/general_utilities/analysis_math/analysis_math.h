@@ -267,14 +267,16 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     TGraph *g = new TGraph(6, phi_deg, z_vals);
     g->GetXaxis()->SetLimits(-180, 180);
     g->SetTitle(("Average Z^{" + Particle + "}_{rec} vs. #phi_{" + Particle + "};#phi_{" + Particle + "}[#circ];Average Z^{" + Particle + "}_{rec} [cm]").c_str());
-    g->SetMarkerStyle(20);
-    g->SetMarkerSize(1.2);
+    g->SetMarkerStyle(21);
+    g->SetMarkerSize(1.5);
     g->GetXaxis()->CenterTitle();
     g->GetYaxis()->CenterTitle();
 
     // Fit function: argument in degrees, convert to radians in the formula
     TF1 *fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
     fitFunc->SetParNames("Amplitude", "Phi_beam", "Z0");
+    fitFunc->SetLineWidth(3);
+    fitFunc->SetLineColor(kRed);
 
     double maxZ = *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end());
     double minZ = *std::min_element(Zrec_peaks.begin(), Zrec_peaks.end());
