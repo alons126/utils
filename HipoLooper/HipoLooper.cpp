@@ -324,6 +324,11 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector1_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_sector1_1e_cut);
 
+        TH2D *h_Vz_VS_phi_e_AC_sector1_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_1e_sector1_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+                     -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_sector1_1e_cut);
+
         TH2D *h_dc_electron_hit_map_BC_sector1_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector1_1e_cut[4];  // 3 regions
 
@@ -441,6 +446,11 @@ void HipoLooper() {
         TH1D *h_Vy_e_AC_sector2_1e_cut =
             new TH1D("Vy_e_AC_sector2_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_sector2_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_sector2_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_1e_sector2_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+                     -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_sector2_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector2_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector2_1e_cut[4];  // 3 regions
@@ -560,6 +570,11 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector3_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_sector3_1e_cut);
 
+        TH2D *h_Vz_VS_phi_e_AC_sector3_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_1e_sector3_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+                     -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_sector3_1e_cut);
+
         TH2D *h_dc_electron_hit_map_BC_sector3_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector3_1e_cut[4];  // 3 regions
 
@@ -677,6 +692,11 @@ void HipoLooper() {
         TH1D *h_Vy_e_AC_sector4_1e_cut =
             new TH1D("Vy_e_AC_sector4_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_sector4_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_sector4_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_1e_sector4_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+                     -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_sector4_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector4_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector4_1e_cut[4];  // 3 regions
@@ -796,6 +816,11 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector5_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_sector5_1e_cut);
 
+        TH2D *h_Vz_VS_phi_e_AC_sector5_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_1e_sector5_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+                     -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_sector5_1e_cut);
+
         TH2D *h_dc_electron_hit_map_BC_sector5_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector5_1e_cut[4];  // 3 regions
 
@@ -913,6 +938,11 @@ void HipoLooper() {
         TH1D *h_Vy_e_AC_sector6_1e_cut =
             new TH1D("Vy_e_AC_sector6_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_sector6_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_sector6_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_1e_sector6_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+                     -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_sector6_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector6_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector6_1e_cut[4];  // 3 regions
@@ -2816,6 +2846,8 @@ void HipoLooper() {
                 h_Vz_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
                 h_Vz_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
+                h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector1_1e_cut, weight);
 
                 h_nphe_AC_sector1_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -2835,6 +2867,8 @@ void HipoLooper() {
                 h_Vy_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
                 h_Vz_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+
+                h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector2_1e_cut, weight);
 
@@ -2856,6 +2890,8 @@ void HipoLooper() {
                 h_Vz_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
                 h_Vz_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
+                h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector3_1e_cut, weight);
 
                 h_nphe_AC_sector3_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -2875,6 +2911,8 @@ void HipoLooper() {
                 h_Vy_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
                 h_Vz_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+
+                h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector4_1e_cut, weight);
 
@@ -2896,6 +2934,8 @@ void HipoLooper() {
                 h_Vz_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
                 h_Vz_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
+                h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector5_1e_cut, weight);
 
                 h_nphe_AC_sector5_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -2915,6 +2955,8 @@ void HipoLooper() {
                 h_Vy_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
                 h_Vz_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+
+                h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector6_1e_cut, weight);
 
