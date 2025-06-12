@@ -255,16 +255,16 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply
  * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
  * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Z0, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle, std::string BeamE_status) {
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle, std::string Ebeam_status) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
     double phi_e_offset = 0;
 
-    if (basic_tools::FindSubstring(BeamE_status, "2GeV")) {
+    if (basic_tools::FindSubstring(Ebeam_status, "2GeV")) {
         phi_e_offset = 16.;
-    } else if (basic_tools::FindSubstring(BeamE_status, "4GeV")) {
+    } else if (basic_tools::FindSubstring(Ebeam_status, "4GeV")) {
         phi_e_offset = 7.;
-    } else if (basic_tools::FindSubstring(BeamE_status, "6GeV")) {
+    } else if (basic_tools::FindSubstring(Ebeam_status, "6GeV")) {
         phi_e_offset = 5.;
     }
 
