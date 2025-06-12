@@ -207,7 +207,8 @@ void HipoLooper() {
         TH1D *h_Vy_e_AC_1e_cut = new TH1D("Vy_e_AC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D("Vz_VS_phi_e_AC_1e_cut", "V_{z}^{e} vs. #phi_{e} in (e,e') (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]", 100, -180, 180, 100, -13, 2);
+        TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D(
+            "Vz_VS_phi_e_AC_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
@@ -1067,8 +1068,9 @@ void HipoLooper() {
         }
 
         TH2D *h_Vz_VS_phi_pipFD_AC_1e_cut =
-            new TH2D("Vz_VS_phi_pipFD_AC_1e_cut", "V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]", 100, -180, 180,
-                     100, -13, 2);
+            new TH2D("Vz_VS_phi_pipFD_AC_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(), 100, -180,
+                     180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_1e_cut[4];  // 3 regions
@@ -1725,8 +1727,9 @@ void HipoLooper() {
         }
 
         TH2D *h_Vz_VS_phi_pimFD_AC_1e_cut =
-            new TH2D("Vz_VS_phi_pimFD_AC_1e_cut", "V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]", 100, -180, 180,
-                     100, -13, 2);
+            new TH2D("Vz_VS_phi_pimFD_AC_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 100, -180,
+                     180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_1e_cut[4];  // 3 regions
