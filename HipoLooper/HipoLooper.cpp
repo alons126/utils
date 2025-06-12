@@ -43,20 +43,11 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    // std::string General_status = "";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusFDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusFDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusCDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusCDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts";
-    std::string General_status = "_NewCuts2_wdVz_cuts";
-    // std::string General_status = "_NewCuts2_NOdVz_cuts";
+    std::string General_status = "";
 
     bool ApplyLimiter = true;
-    // int Limiter = 10000000;  // 10M events (fo the data)
-    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    int Limiter = 10000000;  // 10M events (fo the data)
+    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
@@ -325,7 +316,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_sector1_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector1_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_1e_sector1_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+            new TH2D("Vz_VS_phi_e_AC_sector1_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector1_1e_cut);
 
@@ -448,7 +439,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_sector2_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector2_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_1e_sector2_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+            new TH2D("Vz_VS_phi_e_AC_sector2_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector2_1e_cut);
 
@@ -571,7 +562,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_sector3_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector3_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_1e_sector3_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+            new TH2D("Vz_VS_phi_e_AC_sector3_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector3_1e_cut);
 
@@ -694,7 +685,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_sector4_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector4_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_1e_sector4_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+            new TH2D("Vz_VS_phi_e_AC_sector4_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector4_1e_cut);
 
@@ -817,7 +808,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_sector5_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector5_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_1e_sector5_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+            new TH2D("Vz_VS_phi_e_AC_sector5_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector5_1e_cut);
 
@@ -940,7 +931,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_sector6_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector6_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_1e_sector6_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
+            new TH2D("Vz_VS_phi_e_AC_sector6_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector6_1e_cut);
 

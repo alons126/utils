@@ -55,7 +55,14 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
         phi_e_offset = 5.;
     }
 
-    double phi_deg[6] = {-150 - phi_e_offset, -90 - phi_e_offset, -30 - phi_e_offset, 30 - phi_e_offset, 90 - phi_e_offset, 150 - phi_e_offset};
+    std::string sector_lable[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
+    double phi_deg[6] = {30 - phi_e_offset,    // Sector 1
+                         90 - phi_e_offset,    // Sector 2
+                         150 - phi_e_offset,   // Sector 3
+                         -150 - phi_e_offset,  // Sector 4
+                         -90 - phi_e_offset,   // Sector 5
+                         -30 - phi_e_offset};  // Sector 6
+    // double phi_deg[6] = {-150 - phi_e_offset, -90 - phi_e_offset, -30 - phi_e_offset, 30 - phi_e_offset, 90 - phi_e_offset, 150 - phi_e_offset};
     double z_vals[6];
 
     for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
@@ -63,8 +70,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
     g->GetXaxis()->SetLimits(-180, 180);
-    g->GetYaxis()->SetRangeUser(-7, -5.5);
-    // g->GetYaxis()->SetLimits(-180, (*std::max_element(Zrec_peaks.begin(), Zrec_peaks.end())) * 1.2);
+    g->GetYaxis()->SetRangeUser(-6.8, -5.9);
+    // g->GetYaxis()->SetRangeUser(-7, -5.5);
     g->SetTitle(("Rec V_{z}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "}[#circ];Rec V_{z}^{" + Particle + "} peaks [cm]").c_str());
     g->SetMarkerStyle(21);
     g->SetMarkerSize(1.5);
@@ -84,12 +91,12 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
 
     fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
 
-    double maxAmp = -5.9;
-    double minAmp = -6.6;
-    fitFunc->SetParLimits(0, 0.5 * (maxAmp - minAmp) * 0.9, 0.5 * (maxAmp - minAmp) * 1.1);
+    // double maxAmp = -6.0;
+    // double minAmp = -6.55;
+    // fitFunc->SetParLimits(0, 0.5 * (maxAmp - minAmp) * 0.9, 0.5 * (maxAmp - minAmp) * 1.1);
 
-    g->Fit(fitFunc);
-    // g->Fit(fitFunc, "Q");
+    // g->Fit(fitFunc);
+    g->Fit(fitFunc, "F");
 
     double A = fitFunc->GetParameter(0);
     double phi_beam = fitFunc->GetParameter(1);
@@ -98,14 +105,13 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     std::ostringstream legendText;
     legendText << "V_{z}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,0}";
 
-    TLegend *legend = new TLegend(0.18, 0.8, 0.55, 0.88);
-    // TLegend *legend = new TLegend(0.18, 0.8, 0.6, 0.88);
+    TLegend *legend = new TLegend(0.18, 0.81, 0.59, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     legend->SetTextSize(0.03);
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.68, 0.34, 0.78, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.34, 0.68, 0.50, 0.78, "NDC");
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.68, 0.35, 0.78, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.35, 0.68, 0.51, 0.78, "NDC");
 
     for (auto *box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
@@ -124,6 +130,20 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     g->GetListOfFunctions()->Add(FitParam1);
     g->GetListOfFunctions()->Add(FitParam2);
     g->GetListOfFunctions()->Add(fitFunc);
+
+    for (int i = 0; i < 6; ++i) {
+        double x = phi_deg[i];
+        double y = z_vals[i];
+
+        std::ostringstream label;
+        label << "#splitline{#font[62]{" << sector_lable[i] << "}}{(" << basic_tools::ToStringWithPrecision(x) << "#circ, " << basic_tools::ToStringWithPrecision(y) << " cm)}";
+
+        TLatex *latex = new TLatex(x + 2 - 10, y + 0.075, label.str().c_str());  // offset to avoid overlap
+        latex->SetTextFont(42);
+        latex->SetTextSize(0.025);
+        latex->SetTextAlign(12);
+        g->GetListOfFunctions()->Add(latex);
+    }
 
     return std::make_tuple(A, phi_beam, Vz_0, g);
 }

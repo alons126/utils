@@ -71,11 +71,12 @@ void CompareHistogramsTester2() {
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
     std::vector<std::string> InputFiles;
-    InputFiles.push_back(
-        "/Users/alon/Downloads/13_HipoLooper_v13/013_HipoLooper_v13_NewCuts2_wdVz_cuts/013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts/"
-        "013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts.root");
-    
-        std::string SaveDirFolder = "/Users/alon/Downloads";
+    InputFiles.push_back("/Users/alon/Downloads/014_HipoLooper_v14_Ar40_data_2GeV_run_015672_NewCuts2_wdVz_cuts/014_HipoLooper_v14_Ar40_data_2GeV_run_015672_NewCuts2_wdVz_cuts.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Downloads/13_HipoLooper_v13/013_HipoLooper_v13_NewCuts2_wdVz_cuts/013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts/"
+    //     "013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts.root");
+
+    std::string SaveDirFolder = "/Users/alon/Downloads";
 
     for (auto sample = 0; sample < InputFiles.size(); ++sample) {
         bool IsData = basic_tools::FindSubstring(InputFiles.at(sample), "data");
@@ -152,7 +153,7 @@ void CompareHistogramsTester2() {
         system(("mkdir -p " + SaveDirFolder + "/" + SaveDirFoldersName).c_str());
 
         std::cout << "\033[33m\n\n===========================================================================================\n\n";
-        std::cout << "\033[33mCodeRun_status:            \t\033[0m" << CodeRun_status << "\n";
+        std::cout << "\033[33mCodeRun_status:    \t\033[0m" << CodeRun_status << "\n";
         std::cout << "\033[33mSaveDirFolder:     \t\033[0m" << SaveDirFolder << "\n";
         std::cout << "\033[33mSaveDirFoldersName:\t\033[0m" << SaveDirFoldersName << "\n";
         std::cout << "\033[33mfilename:          \t\033[0m" << filename << "\n";
@@ -167,20 +168,88 @@ void CompareHistogramsTester2() {
             return obj;
         };
 
-        auto h_Vz_e_AC_sector1_1e_cut = (TH1D *)load("Vz_e_AC_sector1_1e_cut", "TH1D");
-        auto h_Vz_e_AC_sector2_1e_cut = (TH1D *)load("Vz_e_AC_sector2_1e_cut", "TH1D");
-        auto h_Vz_e_AC_sector3_1e_cut = (TH1D *)load("Vz_e_AC_sector3_1e_cut", "TH1D");
-        auto h_Vz_e_AC_sector4_1e_cut = (TH1D *)load("Vz_e_AC_sector4_1e_cut", "TH1D");
-        auto h_Vz_e_AC_sector5_1e_cut = (TH1D *)load("Vz_e_AC_sector5_1e_cut", "TH1D");
-        auto h_Vz_e_AC_sector6_1e_cut = (TH1D *)load("Vz_e_AC_sector6_1e_cut", "TH1D");
+        // Project TH2D onto phi (X) axis and register result
+        auto project = [&](const char *name) -> TH1D * {
+            auto h2 = (TH2D *)load(name, "TH2D");
+            if (!h2) return nullptr;
+
+            std::string projName = basic_tools::ReplaceSubstring(name, "Vz_VS_", "");
+            auto h_phi = h2->ProjectionX(projName.c_str());
+            if (!h_phi) {
+                std::cerr << "Error: Projection of " << name << " failed." << std::endl;
+                return nullptr;
+            }
+
+            HistoList.push_back(h_phi);
+            return h_phi;
+        };
+
+        auto loadVzAndPhiHistograms = [&](const std::string &sector_tag, const std::string &particle = "e") -> std::pair<TH1D *, TH1D *> {
+            std::string Vz_name = "Vz_" + particle + "_AC_zoomin_" + sector_tag + "_1e_cut";
+            std::string Vz_vs_phi_name = "Vz_VS_phi_" + particle + "_AC_" + sector_tag + "_1e_cut";
+
+            TH1D *vz_hist = (TH1D *)load(Vz_name.c_str(), "TH1D");
+            TH1D *phi_hist = project(Vz_vs_phi_name.c_str());
+
+            return std::make_pair(vz_hist, phi_hist);
+        };
+
+        auto [h_Vz_e_AC_sector1_1e_cut, h_phi_e_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1");
+        auto [h_Vz_e_AC_sector2_1e_cut, h_phi_e_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2");
+        auto [h_Vz_e_AC_sector3_1e_cut, h_phi_e_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3");
+        auto [h_Vz_e_AC_sector4_1e_cut, h_phi_e_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4");
+        auto [h_Vz_e_AC_sector5_1e_cut, h_phi_e_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5");
+        auto [h_Vz_e_AC_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6");
 
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
         /////////////////////////////////////////////////////
-        std::vector<double> Vz_e_peaks_BySector = {
-            h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
-            h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
-            h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
+
+        auto fit_peak_gaussian = [](TH1D *hist, std::vector<double> fitLimits = {}) -> double {
+            double fitMin, fitMax;
+
+            if (hist->GetEntries() == 0) {
+                std::cerr << "Histogram is empty. Returning NaN." << std::endl;
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            if (fitLimits.size() == 0) {
+                // If no limits are provided, use the histogram's peak center
+                double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
+                fitMin = -std::fabs(peakCenter * 1.05);
+                fitMax = -std::fabs(peakCenter * 0.9);
+            } else if (fitLimits.size() == 2) {
+                fitMin = fitLimits[0];
+                fitMax = fitLimits[1];
+            } else {
+                std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
+            hist->Fit(fit, "RQ");  // R = use range, Q = quiet
+
+            fit->SetLineColor(kMagenta);
+
+            hist->GetListOfFunctions()->Clear();
+            hist->GetListOfFunctions()->Add(fit);  // Add fit to the histogram's function list
+
+            return fit->GetParameter(1);  // Return fitted mean
+        };
+
+        // Usage:
+        double peak_sector1 = fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut);
+        double peak_sector2 = fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut);
+        double peak_sector3 = fit_peak_gaussian(h_Vz_e_AC_sector3_1e_cut);
+        double peak_sector4 = fit_peak_gaussian(h_Vz_e_AC_sector4_1e_cut);
+        double peak_sector5 = fit_peak_gaussian(h_Vz_e_AC_sector5_1e_cut);
+        double peak_sector6 = fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut);
+
+        std::vector<double> Vz_e_peaks_BySector = {peak_sector1, peak_sector2, peak_sector3, peak_sector4, peak_sector5, peak_sector6};
+        // h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
+        // // -6.5, h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
+        // h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
+        // h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
         auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi(Vz_e_peaks_BySector, "e", Ebeam_status_1);
 
         FittedParametersGraph->GetXaxis()->CenterTitle();
@@ -388,7 +457,7 @@ void CompareHistogramsTester2() {
                     speac_target_location_TLine->Draw("same");
 
                     TLine *measured_target_location_TLine;
-                    double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                    double measured_target_location_value = fit_peak_gaussian(h);
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);
