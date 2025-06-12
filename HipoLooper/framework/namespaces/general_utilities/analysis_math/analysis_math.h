@@ -5,9 +5,14 @@
 #ifndef ANALYSIS_MATH_H
 #define ANALYSIS_MATH_H
 
+#include <TF1.h>
+#include <TGraph.h>
+#include <TMath.h>
+
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <utility>  // for std::tuple
 #include <vector>
 
 #include "../basic_tools.h"
@@ -226,6 +231,73 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply
             }
         }
     }
+}
+
+// FitVertexVsPhi function ----------------------------------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Fits the average reconstructed vertex positions from 6 CLAS12 sectors
+ *        to a sinusoidal function to extract the beam offset direction and magnitude.
+ *
+ * Motivation:
+ * In CLAS12, if the beam is transversely offset relative to the nominal target axis,
+ * the reconstructed z-vertex depends on the azimuthal angle of the detected particle.
+ * This introduces a sector-dependent bias in Z_rec that follows a cosine dependence.
+ * By fitting the peak Z_rec values across the 6 sectors to the form:
+ *     Z_rec(φ) = A * cos(φ - φ_beam) + Z0
+ * one can extract:
+ *   - A        : amplitude ∝ beam offset magnitude
+ *   - φ_beam   : direction of the beam offset
+ *   - Z0       : average z-position of the target center
+ *
+ * The function returns a tuple with (Amplitude A, Beam direction φ_beam [rad], Z0, and TGraph* for visualization).
+ *
+ * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
+ * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Z0, graph with fit and legend).
+ */
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks) {
+    if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
+
+    double phi_deg[6] = {30, 90, 150, 210, 270, 330};
+    double phi_rad[6];
+    double z_vals[6];
+
+    for (int i = 0; i < 6; ++i) {
+        phi_rad[i] = phi_deg[i] * TMath::DegToRad();
+        z_vals[i] = Zrec_peaks[i];
+    }
+
+    TGraph *g = new TGraph(6, phi_rad, z_vals);
+    g->SetTitle("Average Z_{rec} vs #phi;#phi [rad];Z_{rec} [cm]");
+    g->SetMarkerStyle(20);
+    g->SetMarkerSize(1.2);
+
+    TF1 *fitFunc = new TF1("fitFunc", "[0]*cos(x - [1]) + [2]", 0, 2 * TMath::Pi());
+    fitFunc->SetParNames("Amplitude", "Phi_beam", "Z0");
+
+    double maxZ = *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end());
+    double minZ = *std::min_element(Zrec_peaks.begin(), Zrec_peaks.end());
+    double ampGuess = 0.5 * (maxZ - minZ);
+    double meanGuess = 0.5 * (maxZ + minZ);
+
+    fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
+
+    g->Fit(fitFunc, "Q");
+
+    double A = fitFunc->GetParameter(0);
+    double phi_beam = fitFunc->GetParameter(1);
+    double Z0 = fitFunc->GetParameter(2);
+
+    g->GetListOfFunctions()->Add(fitFunc);
+
+    std::ostringstream legendText;
+    legendText << "f(#phi) = " << std::fixed << std::setprecision(3) << A << " cos(#phi - " << phi_beam << ") + " << Z0;
+
+    TLegend *legend = new TLegend(0.15, 0.8, 0.55, 0.88);
+    legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
+    g->GetListOfFunctions()->Add(legend);
+
+    return std::make_tuple(A, phi_beam, Z0, g);
 }
 
 };  // namespace analysis_math

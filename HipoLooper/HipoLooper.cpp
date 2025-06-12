@@ -39,7 +39,7 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    int version = 13;  // Version of the code
+    int version = 14;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
@@ -54,7 +54,7 @@ void HipoLooper() {
     std::string General_status = "_NewCuts2_wdVz_cuts";
     // std::string General_status = "_NewCuts2_NOdVz_cuts";
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     int Limiter = 100000;  // 10 files or 100K events (fo the data)
@@ -160,7 +160,8 @@ void HipoLooper() {
         /////////////////////////////////////
         // Prepare histograms
         /////////////////////////////////////
-        vector<TH1 *> HistoList;
+        vector<TObject *> HistoList;
+        // vector<TH1 *> HistoList;
 
         gStyle->SetTitleXSize(0.05);
         gStyle->SetTitleYSize(0.05);
@@ -205,6 +206,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_BC_1e_cut);
         TH1D *h_Vy_e_AC_1e_cut = new TH1D("Vy_e_AC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D("Vz_VS_phi_e_AC_1e_cut", "V_{z}^{e} vs. #phi_{e} in (e,e') (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]", 100, -180, 180, 100, -9, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_1e_cut[4];  // 3 regions
@@ -1062,6 +1066,11 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pipFD_AC_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_1e_cut", "V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]", 100, -180, 180,
+                     100, -9, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_1e_cut);
+
         TH2D *h_dc_pipFD_hit_map_BC_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_1e_cut[4];  // 3 regions
 
@@ -1714,6 +1723,11 @@ void HipoLooper() {
                 ("dV_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-} cuts);dV^{#pi^{-}FD}_{z}=V^{e}_{z}-V^{#pi^{-}FD}_{z} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pimFD_AC_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_1e_cut", "V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]", 100, -180, 180,
+                     100, -9, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_1e_cut[4];  // 3 regions
@@ -2493,11 +2507,8 @@ void HipoLooper() {
 
 #pragma region Loop over events
         int NumOfEvents = 0;
-        int NumOfEvents_wAny_e_det = 0;
-        int NumOfEvents_wOne_e_det = 0;
-
-        int NumOfEvents_wAny_e = 0;
-        int NumOfEvents_wOne_e = 0;
+        int NumOfEvents_wAny_e_det = 0, NumOfEvents_wOne_e_det = 0;
+        int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
         while (chain.Next() == true) {
             // Display completed
@@ -2773,27 +2784,13 @@ void HipoLooper() {
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
-            // // bool bad_Vz_e_CutCond = (electrons[0]->par()->getVz() < -4. || electrons[0]->par()->getVz() > -2.);
-            // bool bad_DC_edge_CutCond = (!reco_analysis_functions::DCEdgeCuts(electrons[0]));
-            // bool bad_nphe_CutCond = (electrons[0]->che(clas12::HTCC)->getNphe() <= 2);
-            // bool bad_Edep_PCAL_CutCond = (Edep_PCAL <= 0.06);
-            // bool bad_SF_CutCond = (EoP_e < 0.2 || EoP_e > 0.28);
-            // bool bad_PCAL_edge_CutCond = (electrons[0]->cal(clas12::PCAL)->getLv() < 14. || electrons[0]->cal(clas12::PCAL)->getLw() < 14.);
-            // bool bad_diag_CutCond = (!reco_analysis_functions::checkEcalDiagCuts(electrons[0]));
-
-            // // if (bad_Vz_e_CutCond) { continue; }
-            // if (bad_DC_edge_CutCond) { continue; }
-            // if (bad_nphe_CutCond) { continue; }
-            // if (bad_Edep_PCAL_CutCond) { continue; }
-            // if (bad_SF_CutCond) { continue; }
-            // if (bad_PCAL_edge_CutCond) { continue; }
-            // if (bad_diag_CutCond) { continue; }
-
 #pragma region Electrons APID
             h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
             h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
             h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+
+            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), electrons[0]->par()->getPhi() * 180 / constants::pi, weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
@@ -3037,6 +3034,8 @@ void HipoLooper() {
                     h_dVz_pipFD_AC_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), piplus[i]->par()->getPhi() * 180 / constants::pi, weight);
+
                     reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
@@ -3221,6 +3220,8 @@ void HipoLooper() {
                     h_dVz_pimFD_AC_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), piminus[i]->par()->getPhi() * 180 / constants::pi, weight);
+
                     reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
@@ -3303,12 +3304,27 @@ void HipoLooper() {
 
 #pragma endregion
 
-#pragma region nPlotting and saving histograms
+#pragma region nExtracting Vz correction parameters
+        std::cout << "\n\nExtracting Vz correction parameters..." << "\n\n";
+
+        /////////////////////////////////////////////////////
+        // Extracting Vz correction parameters
+        /////////////////////////////////////////////////////
+        std::vector<double> Vz_e_peaks_BySector = {
+            h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
+            h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
+            h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
+        auto [A, phi_beam, Z0, FittedParametersGraph] = analysis_math::FitVertexVsPhi(Vz_e_peaks_BySector);
+#pragma endregion
+
+#pragma region Plotting and saving histograms
         std::cout << "\n\nPlotting and saving histograms..." << "\n\n";
 
         /////////////////////////////////////////////////////
         // Organize histograms
         /////////////////////////////////////////////////////
+        int insert_index = 0;
+
         for (int i = 0; i < HistoList.size(); i++) {
             if (HistoList[i]->InheritsFrom("TH1D")) {
                 HistoList[i]->Sumw2();
@@ -3319,7 +3335,11 @@ void HipoLooper() {
 
             HistoList[i]->GetXaxis()->CenterTitle();
             HistoList[i]->GetYaxis()->CenterTitle();
+
+            if (HistoList[i]->GetName() == "E_PCALoP_e_VS_E_PCALoP_e_AC") { insert_index = i + 1; }
         }
+
+        HistoList.insert(HistoList.begin() + insert_index, FittedParametersGraph);
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
@@ -3547,6 +3567,14 @@ void HipoLooper() {
                     gPad->Modified();
                     gPad->Update();
                 }
+            } else if (HistoList[i]->InheritsFrom("TGraph")) {
+                ((TGraph *)HistoList[i])->Draw("APL");
+
+                // TLegend *Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.10 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.20 - yOffset);
+                // Legend->AddEntry(HistoList[i], HistoList[i]->GetTitle(), "l");
+                // Legend->Draw("same");
+
+                // HistoList[i]->GetListOfFunctions()->Add(Legend);
             }
 
             if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
