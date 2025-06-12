@@ -258,13 +258,14 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply
 std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
-    double phi_deg[6] = {30, 90, 150, 210, 270, 330};
+    double phi_deg[6] = {-150, -90, -30, 30, 90, 150};
     double z_vals[6];
 
     for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
 
     // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
+    g->GetXaxis()->SetLimits(-180, 180);
     g->SetTitle(("Average Z^{" + Particle + "}_{rec} vs. #phi_{" + Particle + "};#phi_{" + Particle + "}[#circ];Average Z^{" + Particle + "}_{rec} [cm]").c_str());
     g->SetMarkerStyle(20);
     g->SetMarkerSize(1.2);
@@ -293,7 +294,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     std::ostringstream legendText;
     legendText << "f(#phi) = " << std::fixed << std::setprecision(3) << A << " cos(#phi - " << phi_beam << "#circ) + " << Z0;
 
-    TLegend *legend = new TLegend(0.15, 0.8, 0.55, 0.88);
+    TLegend *legend = new TLegend(0.15 + 0.05, 0.8, 0.55 + 0.05, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     g->GetListOfFunctions()->Add(legend);
 
