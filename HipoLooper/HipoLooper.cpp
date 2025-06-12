@@ -2790,7 +2790,7 @@ void HipoLooper() {
             h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
-            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), electrons[0]->par()->getPhi() * 180 / constants::pi, weight);
+            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), electrons[0]->getPhi() * 180 / analysis_math::pi, weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
@@ -3034,7 +3034,7 @@ void HipoLooper() {
                     h_dVz_pipFD_AC_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), piplus[i]->par()->getPhi() * 180 / constants::pi, weight);
+                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), piplus[i]->getPhi() * 180 / constants::pi, weight);
 
                     reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
@@ -3220,7 +3220,7 @@ void HipoLooper() {
                     h_dVz_pimFD_AC_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), piminus[i]->par()->getPhi() * 180 / constants::pi, weight);
+                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), piminus[i]->getPhi() * 180 / constants::pi, weight);
 
                     reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
@@ -3326,17 +3326,25 @@ void HipoLooper() {
         int insert_index = 0;
 
         for (int i = 0; i < HistoList.size(); i++) {
-            if (HistoList[i]->InheritsFrom("TH1D")) {
-                HistoList[i]->Sumw2();
-                HistoList[i]->SetMinimum(0);
-                HistoList[i]->SetLineWidth(2);
-                HistoList[i]->SetLineColor(kRed);
+            if (HistoList[i]->InheritsFrom("TH1")) {
+                auto *h1 = (TH1 *)HistoList[i];
+                h1->Sumw2();
+                h1->SetMinimum(0);
+                h1->SetLineWidth(2);
+                h1->SetLineColor(kRed);
             }
 
-            HistoList[i]->GetXaxis()->CenterTitle();
-            HistoList[i]->GetYaxis()->CenterTitle();
+            if (HistoList[i]->InheritsFrom("TH1") || HistoList[i]->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)HistoList[i];
+                h->GetXaxis()->CenterTitle();
+                h->GetYaxis()->CenterTitle();
+            } else if (HistoList[i]->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)HistoList[i];
+                g->GetXaxis()->CenterTitle();
+                g->GetYaxis()->CenterTitle();
+            }
 
-            if (HistoList[i]->GetName() == "E_PCALoP_e_VS_E_PCALoP_e_AC") { insert_index = i + 1; }
+            if (std::string(HistoList[i]->GetName()) == "E_PCALoP_e_VS_E_PCALoP_e_AC") { insert_index = i + 1; }
         }
 
         HistoList.insert(HistoList.begin() + insert_index, FittedParametersGraph);
