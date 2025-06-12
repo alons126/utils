@@ -71,7 +71,7 @@ void CompareHistogramsTester2() {
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
     std::vector<std::string> InputFiles;
-    InputFiles.push_back("/Users/alon/Downloads/014_HipoLooper_v14_Ar40_data_2GeV_run_015672_NewCuts2_wdVz_cuts/014_HipoLooper_v14_Ar40_data_2GeV_run_015672_NewCuts2_wdVz_cuts.root");
+    InputFiles.push_back("/Users/alon/Downloads/014_HipoLooper_v14_Ar40_data_2GeV_run_015672/014_HipoLooper_v14_Ar40_data_2GeV_run_015672.root");
     // InputFiles.push_back(
     //     "/Users/alon/Downloads/13_HipoLooper_v13/013_HipoLooper_v13_NewCuts2_wdVz_cuts/013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts/"
     //     "013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts.root");
@@ -146,16 +146,12 @@ void CompareHistogramsTester2() {
         std::string SampleType = (IsData) ? "Data" : "sim";
         std::string SampleBeamE = Ebeam_status_2;
 
-        std::string SaveDirFoldersName = CodeRun_status + "_plots";
         const char *filename = InputFiles[sample].c_str();
-
-        system(("rm -rf " + SaveDirFolder + "/" + SaveDirFoldersName).c_str());
-        system(("mkdir -p " + SaveDirFolder + "/" + SaveDirFoldersName).c_str());
 
         std::cout << "\033[33m\n\n===========================================================================================\n\n";
         std::cout << "\033[33mCodeRun_status:    \t\033[0m" << CodeRun_status << "\n";
         std::cout << "\033[33mSaveDirFolder:     \t\033[0m" << SaveDirFolder << "\n";
-        std::cout << "\033[33mSaveDirFoldersName:\t\033[0m" << SaveDirFoldersName << "\n";
+        std::cout << "\033[33mOutputDir:\t\033[0m" << OutputDir << "\n";
         std::cout << "\033[33mfilename:          \t\033[0m" << filename << "\n";
 
         TFile *file = new TFile(filename);
@@ -175,6 +171,8 @@ void CompareHistogramsTester2() {
 
             std::string projName = basic_tools::ReplaceSubstring(name, "Vz_VS_", "");
             auto h_phi = h2->ProjectionX(projName.c_str());
+            h_phi->SetTitle(basic_tools::ReplaceSubstring(h_phi->GetTitle(), "V_{z}^{e} vs. #phi_{e}", "#phi_{e}").c_str());
+
             if (!h_phi) {
                 std::cerr << "Error: Projection of " << name << " failed." << std::endl;
                 return nullptr;
@@ -237,6 +235,25 @@ void CompareHistogramsTester2() {
             return fit->GetParameter(1);  // Return fitted mean
         };
 
+        // auto approx_phi_peak_location = [](TH1D *hist) -> double {
+        //     measured_target_location_TLine = new TLine(hist->GetBinCenter(hist->GetMaximumBin()), 0., hist->GetBinCenter(hist->GetMaximumBin()), gPad->GetFrame()->GetY2());
+        //     measured_target_location_TLine->SetLineColor(kGreen + 1);
+        //     measured_target_location_TLine->SetLineWidth(3);
+        //     // measured_target_location_TLine->SetLineWidth(4);
+        //     measured_target_location_TLine->SetLineStyle(2);
+        //     // measured_target_location_TLine->Draw("same");
+
+        //     auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
+        //     // TLegendEntry *speac_target_location_TLine_entry =
+        //         // Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
+        //     TLegendEntry *measured_target_location_TLine_entry =
+        //         Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+
+        //     Legend->Draw("same");
+
+        //     return fit->GetParameter(1);  // Return fitted mean
+        // };
+
         // Usage:
         double peak_sector1 = fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut);
         double peak_sector2 = fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut);
@@ -246,11 +263,11 @@ void CompareHistogramsTester2() {
         double peak_sector6 = fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut);
 
         std::vector<double> Vz_e_peaks_BySector = {peak_sector1, peak_sector2, peak_sector3, peak_sector4, peak_sector5, peak_sector6};
-        // h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
-        // // -6.5, h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
-        // h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
-        // h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector);
+        std::vector<double> phi_e_peaks_BySector = {
+            h_phi_e_AC_sector1_1e_cut->GetBinCenter(h_phi_e_AC_sector1_1e_cut->GetMaximumBin()), h_phi_e_AC_sector2_1e_cut->GetBinCenter(h_phi_e_AC_sector2_1e_cut->GetMaximumBin()),
+            h_phi_e_AC_sector3_1e_cut->GetBinCenter(h_phi_e_AC_sector3_1e_cut->GetMaximumBin()), h_phi_e_AC_sector4_1e_cut->GetBinCenter(h_phi_e_AC_sector4_1e_cut->GetMaximumBin()),
+            h_phi_e_AC_sector5_1e_cut->GetBinCenter(h_phi_e_AC_sector5_1e_cut->GetMaximumBin()), h_phi_e_AC_sector6_1e_cut->GetBinCenter(h_phi_e_AC_sector6_1e_cut->GetMaximumBin())};
+        auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector, phi_e_peaks_BySector);
 
         FittedParametersGraph->GetXaxis()->CenterTitle();
         FittedParametersGraph->GetYaxis()->CenterTitle();
@@ -477,6 +494,29 @@ void CompareHistogramsTester2() {
 
                     auto ListOfFunctions = h->GetListOfFunctions();
                     ListOfFunctions->Add(speac_target_location_TLine);
+                    ListOfFunctions->Add(measured_target_location_TLine);
+                    ListOfFunctions->Add(Legend);
+                } else if (basic_tools::FindSubstring(h->GetName(), "phi_e")) {
+                    gPad->Update();
+
+                    TLine *measured_target_location_TLine;
+                    double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                    // double measured_target_location_value = fit_peak_gaussian(h);
+
+                    measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
+                    measured_target_location_TLine->SetLineColor(kGreen + 1);
+                    measured_target_location_TLine->SetLineWidth(3);
+                    // measured_target_location_TLine->SetLineWidth(4);
+                    measured_target_location_TLine->SetLineStyle(2);
+                    measured_target_location_TLine->Draw("same");
+
+                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.325 - yOffset);
+                    TLegendEntry *measured_target_location_TLine_entry =
+                        Legend->AddEntry(measured_target_location_TLine, ("phi_e peak = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + "#circ").c_str(), "l");
+
+                    Legend->Draw("same");
+
+                    auto ListOfFunctions = h->GetListOfFunctions();
                     ListOfFunctions->Add(measured_target_location_TLine);
                     ListOfFunctions->Add(Legend);
                 }

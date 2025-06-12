@@ -111,6 +111,13 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     double phi_beam = fitFunc->GetParameter(1);
     double Vz_0 = fitFunc->GetParameter(2);
 
+    phi_beam = fmod(phi_beam, 360.0);
+    if (phi_beam < -180.0) {
+        phi_beam += 360.0;
+    } else if (phi_beam > 180.0) {
+        phi_beam -= 360.0;
+    }
+
     std::ostringstream legendText;
     legendText << "V_{z}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,0}";
 
@@ -146,6 +153,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
         std::ostringstream label;
         label << "#splitline{#font[62]{" << sector_lable[i] << "}}{(" << basic_tools::ToStringWithPrecision(x) << "#circ, " << basic_tools::ToStringWithPrecision(y) << " cm)}";
+        std::cout << label.str() << std::endl;
 
         TLatex *latex = new TLatex(x + 2 - 10, y + 0.075, label.str().c_str());  // offset to avoid overlap
         latex->SetTextFont(42);
