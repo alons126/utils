@@ -3346,6 +3346,47 @@ void HipoLooper() {
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
         /////////////////////////////////////////////////////
+
+        auto fit_peak_gaussian = [](TH1D *hist, std::vector<double> fitLimits = {}) -> double {
+            double fitMin, fitMax;
+
+            if (hist->GetEntries() == 0) {
+                std::cerr << "Histogram is empty. Returning NaN." << std::endl;
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            if (fitLimits.size() == 0) {
+                // If no limits are provided, use the histogram's peak center
+                double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
+                fitMin = -std::fabs(peakCenter * 1.05);
+                fitMax = -std::fabs(peakCenter * 0.9);
+            } else if (fitLimits.size() == 2) {
+                fitMin = fitLimits[0];
+                fitMax = fitLimits[1];
+            } else {
+                std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
+            hist->Fit(fit, "RQ");  // R = use range, Q = quiet
+
+            fit->SetLineColor(kMagenta);
+
+            hist->GetListOfFunctions()->Clear();
+            hist->GetListOfFunctions()->Add(fit);  // Add fit to the histogram's function list
+
+            return fit->GetParameter(1);  // Return fitted mean
+        };
+
+        // Usage:
+        double peak_sector1 = fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut);
+        double peak_sector2 = fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut);
+        double peak_sector3 = fit_peak_gaussian(h_Vz_e_AC_sector3_1e_cut);
+        double peak_sector4 = fit_peak_gaussian(h_Vz_e_AC_sector4_1e_cut);
+        double peak_sector5 = fit_peak_gaussian(h_Vz_e_AC_sector5_1e_cut);
+        double peak_sector6 = fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut);
+
         std::vector<double> Vz_e_peaks_BySector = {
             h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
             h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
@@ -3589,7 +3630,8 @@ void HipoLooper() {
                     speac_target_location_TLine->Draw("same");
 
                     TLine *measured_target_location_TLine;
-                    double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                    // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                    double measured_target_location_value = fit_peak_gaussian(h);
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);

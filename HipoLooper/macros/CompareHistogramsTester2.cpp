@@ -457,6 +457,7 @@ void CompareHistogramsTester2() {
                     speac_target_location_TLine->Draw("same");
 
                     TLine *measured_target_location_TLine;
+                    // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
                     double measured_target_location_value = fit_peak_gaussian(h);
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
