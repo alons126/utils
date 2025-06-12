@@ -259,23 +259,20 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
     double phi_deg[6] = {30, 90, 150, 210, 270, 330};
-    double phi_rad[6];
     double z_vals[6];
 
-    for (int i = 0; i < 6; ++i) {
-        phi_rad[i] = phi_deg[i] * TMath::DegToRad();
-        z_vals[i] = Zrec_peaks[i];
-    }
+    for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
 
+    // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
-    // TGraph *g = new TGraph(6, phi_rad, z_vals);
     g->SetTitle(("Average Z^{" + Particle + "}_{rec} vs. #phi_{" + Particle + "};#phi_{" + Particle + "}[#circ];Average Z^{" + Particle + "}_{rec} [cm]").c_str());
     g->SetMarkerStyle(20);
     g->SetMarkerSize(1.2);
     g->GetXaxis()->CenterTitle();
     g->GetYaxis()->CenterTitle();
 
-    TF1 *fitFunc = new TF1("fitFunc", "[0]*cos(x - [1]) + [2]", 0, 2 * TMath::Pi());
+    // Fit function: argument in degrees, convert to radians in the formula
+    TF1 *fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
     fitFunc->SetParNames("Amplitude", "Phi_beam", "Z0");
 
     double maxZ = *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end());
@@ -294,7 +291,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     g->GetListOfFunctions()->Add(fitFunc);
 
     std::ostringstream legendText;
-    legendText << "f(#phi) = " << std::fixed << std::setprecision(3) << A << " cos(#phi - " << phi_beam << ") + " << Z0;
+    legendText << "f(#phi) = " << std::fixed << std::setprecision(3) << A << " cos(#phi - " << phi_beam << "#circ) + " << Z0;
 
     TLegend *legend = new TLegend(0.15, 0.8, 0.55, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
