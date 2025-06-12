@@ -3034,7 +3034,7 @@ void HipoLooper() {
                     h_dVz_pipFD_AC_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), piplus[i]->getPhi() * 180 / constants::pi, weight);
+                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), piplus[i]->getPhi() * 180 / analysis_math::pi, weight);
 
                     reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
@@ -3220,7 +3220,7 @@ void HipoLooper() {
                     h_dVz_pimFD_AC_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), piminus[i]->getPhi() * 180 / constants::pi, weight);
+                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), piminus[i]->getPhi() * 180 / analysis_math::pi, weight);
 
                     reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
@@ -3515,8 +3515,15 @@ void HipoLooper() {
             myCanvas->cd()->SetGrid();
             myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
 
-            HistoList[i]->GetYaxis()->SetTitleOffset(1.5);
-            HistoList[i]->GetXaxis()->SetTitleOffset(1.1);
+            if (HistoList[i]->InheritsFrom("TH1") || HistoList[i]->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)HistoList[i];
+                h->GetYaxis()->SetTitleOffset(1.5);
+                h->GetXaxis()->SetTitleOffset(1.1);
+            } else if (HistoList[i]->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)HistoList[i];
+                g->GetYaxis()->SetTitleOffset(1.5);
+                g->GetXaxis()->SetTitleOffset(1.1);
+            }
 
             // gPad->SetRightMargin(0.23);
 
