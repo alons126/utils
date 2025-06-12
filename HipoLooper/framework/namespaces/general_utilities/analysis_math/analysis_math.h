@@ -291,22 +291,32 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     double phi_beam = fitFunc->GetParameter(1);
     double Z0 = fitFunc->GetParameter(2);
 
-    TPaveText *FitParam = new TPaveText(0.18, 0.5, 0.6, 0.7, "NDC");
-    FitParam->SetBorderSize(1), FitParam->SetFillColor(0), FitParam->SetTextAlign(12), FitParam->SetTextFont(42), FitParam->SetTextSize(0.03);
-    FitParam->AddText(("Fit #chi^{2} = " + basic_tools::ToStringWithPrecision(fitFunc->GetChisquare())).c_str());
-    FitParam->AddText(("A = " + basic_tools::ToStringWithPrecision(A) + " cm").c_str());
-    FitParam->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
-    FitParam->AddText(("Z_{0} = " + basic_tools::ToStringWithPrecision(Z0) + " cm").c_str());
-
-    g->GetListOfFunctions()->Add(FitParam);
-    g->GetListOfFunctions()->Add(fitFunc);
-
     std::ostringstream legendText;
     legendText << "f(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + Z_{0}";
 
-    TLegend *legend = new TLegend(0.15 + 0.025, 0.8, 0.55 + 0.05, 0.88);
+    TLegend *legend = new TLegend(0.18, 0.8, 0.6, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     g->GetListOfFunctions()->Add(legend);
+
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.63, 0.39, 0.83, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.39, 0.63, 0.60, 0.83, "NDC");
+
+    for (auto *box : {FitParam1, FitParam2}) {
+        box->SetBorderSize(1);
+        box->SetFillColor(0);
+        box->SetTextAlign(12);
+        box->SetTextFont(42);
+        box->SetTextSize(0.03);
+    }
+
+    FitParam1->AddText(("Fit #chi^{2} = " + basic_tools::ToStringWithPrecision(fitFunc->GetChisquare())).c_str());
+    FitParam1->AddText(("A = " + basic_tools::ToStringWithPrecision(A) + " cm").c_str());
+
+    FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
+    FitParam2->AddText(("Z_{0} = " + basic_tools::ToStringWithPrecision(Z0) + " cm").c_str());
+
+    g->GetListOfFunctions()->Add(FitParam);
+    g->GetListOfFunctions()->Add(fitFunc);
 
     return std::make_tuple(A, phi_beam, Z0, g);
 }
