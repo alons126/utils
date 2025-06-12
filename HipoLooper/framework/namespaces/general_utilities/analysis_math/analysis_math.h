@@ -255,8 +255,18 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply
  * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
  * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Z0, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle) {
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle, std::string BeamE_status) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
+
+    double phi_e_offset = 0;
+
+    if (basic_tools::Fbasic_tools::FindSubstring(BeamE_status, "2GeV")) {
+        phi_e_offset = 16.;
+    } else if (basic_tools::FindSubstring(BeamE_status, "4GeV")) {
+        phi_e_offset = 7.;
+    } else if (basic_tools::FindSubstring(BeamE_status, "6GeV")) {
+        phi_e_offset = 5.;
+    }
 
     double phi_deg[6] = {-150, -90, -30, 30, 90, 150};
     double z_vals[6];
@@ -298,8 +308,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.63, 0.39, 0.83, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.39, 0.63, 0.60, 0.83, "NDC");
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.63, 0.39, 0.73, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.39, 0.63, 0.60, 0.73, "NDC");
 
     for (auto *box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
