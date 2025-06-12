@@ -250,7 +250,7 @@ void CompareHistogramsTester2() {
         // // -6.5, h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
         // h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
         // h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi(Vz_e_peaks_BySector, "e", Ebeam_status_1);
+        auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector);
 
         FittedParametersGraph->GetXaxis()->CenterTitle();
         FittedParametersGraph->GetYaxis()->CenterTitle();

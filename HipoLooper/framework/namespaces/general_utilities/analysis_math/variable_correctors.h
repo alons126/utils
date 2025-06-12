@@ -42,27 +42,36 @@ namespace variable_correctors {
  * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
  * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Vz_0, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle, std::string Ebeam_status) {
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<double> &Zrec_peaks, const std::vector<double> &phi_peaks = {}) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
-    double phi_e_offset = 0;
+    std::string sector_lable[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
 
-    if (basic_tools::FindSubstring(Ebeam_status, "2GeV")) {
-        phi_e_offset = 16.;
-    } else if (basic_tools::FindSubstring(Ebeam_status, "4GeV")) {
-        phi_e_offset = 7.;
-    } else if (basic_tools::FindSubstring(Ebeam_status, "6GeV")) {
-        phi_e_offset = 5.;
+    double phi_deg[6];
+
+    if (phi_peaks.size() == 6) {
+        // Use provided phi_peaks directly
+        for (int i = 0; i < 6; ++i) { phi_deg[i] = phi_peaks[i]; }
+    } else if (phi_peaks.size() == 0) {
+        // Default phi offset values based on the sample name
+        double phi_e_offset = (basic_tools::FindSubstring(SampleName, "2GeV"))   ? 16.0
+                              : (basic_tools::FindSubstring(SampleName, "4GeV")) ? 7.0
+                              : (basic_tools::FindSubstring(SampleName, "6GeV")) ? 5.0
+                                                                                 : 0.0;
+
+        // Default phi values for each sector, adjusted by the phi_e_offset
+        double default_phi_deg[6] = {30 - phi_e_offset,    // Sector 1
+                                     90 - phi_e_offset,    // Sector 2
+                                     150 - phi_e_offset,   // Sector 3
+                                     -150 - phi_e_offset,  // Sector 4
+                                     -90 - phi_e_offset,   // Sector 5
+                                     -30 - phi_e_offset};  // Sector 6
+
+        for (int i = 0; i < 6; ++i) { phi_deg[i] = default_phi_deg[i]; }
+    } else if (phi_peaks.size() != 6 && phi_peaks.size() != 0) {
+        throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (phi_peaks.size() != 6)");
     }
 
-    std::string sector_lable[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
-    double phi_deg[6] = {30 - phi_e_offset,    // Sector 1
-                         90 - phi_e_offset,    // Sector 2
-                         150 - phi_e_offset,   // Sector 3
-                         -150 - phi_e_offset,  // Sector 4
-                         -90 - phi_e_offset,   // Sector 5
-                         -30 - phi_e_offset};  // Sector 6
-    // double phi_deg[6] = {-150 - phi_e_offset, -90 - phi_e_offset, -30 - phi_e_offset, 30 - phi_e_offset, 90 - phi_e_offset, 150 - phi_e_offset};
     double z_vals[6];
 
     for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
