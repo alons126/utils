@@ -3526,7 +3526,7 @@ void HipoLooper() {
                 h->GetXaxis()->SetTitleOffset(1.1);
             } else if (HistoList[i]->InheritsFrom("TGraph")) {
                 auto *g = (TGraph *)HistoList[i];
-                g->SetTitle((g->GetTitle() + " - " + CodeRun_status).c_str());  // Ensure title has x and y labels
+                g->SetTitle((std::string(g->GetTitle()) + std::string(" - " + CodeRun_status)).c_str());  // Ensure title has x and y labels
 
                 g->GetYaxis()->SetTitleOffset(1.5);
                 g->GetXaxis()->SetTitleOffset(1.1);
