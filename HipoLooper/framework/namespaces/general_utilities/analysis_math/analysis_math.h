@@ -268,7 +268,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
         phi_e_offset = 5.;
     }
 
-    double phi_deg[6] = {-150, -90, -30, 30, 90, 150};
+    double phi_deg[6] = {-150 - phi_e_offset, -90 - phi_e_offset, -30 - phi_e_offset, 30 - phi_e_offset, 90 - phi_e_offset, 150 - phi_e_offset};
     double z_vals[6];
 
     for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
@@ -304,12 +304,13 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     std::ostringstream legendText;
     legendText << "f(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + Z_{0}";
 
-    TLegend *legend = new TLegend(0.18, 0.8, 0.6, 0.88);
+    TLegend *legend = new TLegend(0.18, 0.8, 0.65, 0.88);
+    // TLegend *legend = new TLegend(0.18, 0.8, 0.6, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.63, 0.39, 0.73, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.39, 0.63, 0.60, 0.73, "NDC");
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.68, 0.39, 0.78, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.39, 0.68, 0.60, 0.78, "NDC");
 
     for (auto *box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
