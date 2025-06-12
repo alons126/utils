@@ -3528,9 +3528,11 @@ void HipoLooper() {
             // gPad->SetRightMargin(0.23);
 
             if (HistoList[i]->InheritsFrom("TH1D")) {
-                HistoList[i]->Draw();
+                auto *h = (TH1D *)HistoList[i];
 
-                if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "dV_{z}^{")) {
+                h->Draw();
+
+                if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{")) {
                     gPad->Update();
                     TLine *speac_target_location_TLine;
                     double speac_target_location_value = 0.0;
@@ -3547,7 +3549,7 @@ void HipoLooper() {
                     speac_target_location_TLine->Draw("same");
 
                     TLine *measured_target_location_TLine;
-                    double measured_target_location_value = HistoList[i]->GetBinCenter(HistoList[i]->GetMaximumBin());
+                    double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);
@@ -3564,20 +3566,22 @@ void HipoLooper() {
 
                     Legend->Draw("same");
 
-                    auto ListOfFunctions = HistoList[i]->GetListOfFunctions();
+                    auto ListOfFunctions = h->GetListOfFunctions();
                     ListOfFunctions->Add(speac_target_location_TLine);
                     ListOfFunctions->Add(measured_target_location_TLine);
                     ListOfFunctions->Add(Legend);
                 }
             } else if (HistoList[i]->InheritsFrom("TH2D")) {
-                HistoList[i]->Draw("colz");
+                auto *h = (TH2D *)HistoList[i];
+
+                h->Draw("colz");
 
                 myCanvas->SetLogz(0);
-                if (basic_tools::FindSubstring(HistoList[i]->GetName(), "PCAL") && !basic_tools::FindSubstring(HistoList[i]->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
+                if (basic_tools::FindSubstring(h->GetName(), "PCAL") && !basic_tools::FindSubstring(h->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
 
-                if (HistoList[i]->GetEntries() != 0) {
+                if (h->GetEntries() != 0) {
                     gPad->Update();
-                    TPaletteAxis *palette = (TPaletteAxis *)HistoList[i]->GetListOfFunctions()->FindObject("palette");
+                    TPaletteAxis *palette = (TPaletteAxis *)h->GetListOfFunctions()->FindObject("palette");
                     palette->SetY2NDC(0.55);
                     gPad->Modified();
                     gPad->Update();
