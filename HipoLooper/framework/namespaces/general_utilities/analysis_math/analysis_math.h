@@ -294,7 +294,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     std::ostringstream legendText;
     legendText << "f(#phi) = " << std::fixed << std::setprecision(3) << A << " cos(#phi - " << phi_beam << "#circ) + " << Z0;
 
-    TLegend *legend = new TLegend(0.15 + 0.05, 0.8, 0.55 + 0.05, 0.88);
+    TLegend *legend = new TLegend(0.15 + 0.025, 0.8, 0.55 + 0.05, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     g->GetListOfFunctions()->Add(legend);
 
