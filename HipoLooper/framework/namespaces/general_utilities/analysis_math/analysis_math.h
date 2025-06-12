@@ -315,7 +315,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
     FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
     FitParam2->AddText(("Z_{0} = " + basic_tools::ToStringWithPrecision(Z0) + " cm").c_str());
 
-    g->GetListOfFunctions()->Add(FitParam);
+    g->GetListOfFunctions()->Add(FitParam1);
+    g->GetListOfFunctions()->Add(FitParam2);
     g->GetListOfFunctions()->Add(fitFunc);
 
     return std::make_tuple(A, phi_beam, Z0, g);
