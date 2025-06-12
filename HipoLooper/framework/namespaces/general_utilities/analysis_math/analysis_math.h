@@ -295,7 +295,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
 
     fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
 
-    g->Fit(fitFunc, "Q");
+    g->Fit(fitFunc);
+    // g->Fit(fitFunc, "Q");
 
     double A = fitFunc->GetParameter(0);
     double phi_beam = fitFunc->GetParameter(1);
