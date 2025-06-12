@@ -56,8 +56,8 @@ void HipoLooper() {
 
     bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
-    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
-    int Limiter = 100000;  // 10 files or 100K events (fo the data)
+    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
@@ -207,7 +207,7 @@ void HipoLooper() {
         TH1D *h_Vy_e_AC_1e_cut = new TH1D("Vy_e_AC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vy_e_AC_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D("Vz_VS_phi_e_AC_1e_cut", "V_{z}^{e} vs. #phi_{e} in (e,e') (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]", 100, -180, 180, 100, -12, 2);
+        TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D("Vz_VS_phi_e_AC_1e_cut", "V_{z}^{e} vs. #phi_{e} in (e,e') (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]", 100, -180, 180, 100, -15, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
@@ -1068,7 +1068,7 @@ void HipoLooper() {
 
         TH2D *h_Vz_VS_phi_pipFD_AC_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_1e_cut", "V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]", 100, -180, 180,
-                     100, -12, 2);
+                     100, -15, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_1e_cut[4];  // 3 regions
@@ -1726,7 +1726,7 @@ void HipoLooper() {
 
         TH2D *h_Vz_VS_phi_pimFD_AC_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_1e_cut", "V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]", 100, -180, 180,
-                     100, -12, 2);
+                     100, -15, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_1e_cut[4];  // 3 regions
@@ -3589,7 +3589,8 @@ void HipoLooper() {
                     gPad->Update();
                 }
             } else if (HistoList[i]->InheritsFrom("TGraph")) {
-                ((TGraph *)HistoList[i])->Draw("APL");
+                ((TGraph *)HistoList[i])->Draw("ap");
+                // ((TGraph *)HistoList[i])->Draw("APL");
 
                 // TLegend *Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.10 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.20 - yOffset);
                 // Legend->AddEntry(HistoList[i], HistoList[i]->GetTitle(), "l");
