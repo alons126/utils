@@ -255,7 +255,7 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply
  * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
  * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Z0, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks) {
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<double> &Zrec_peaks, std::string Particle) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
     double phi_deg[6] = {30, 90, 150, 210, 270, 330};
@@ -267,10 +267,13 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(const std::vector<do
         z_vals[i] = Zrec_peaks[i];
     }
 
-    TGraph *g = new TGraph(6, phi_rad, z_vals);
-    g->SetTitle("Average Z_{rec} vs #phi;#phi [rad];Z_{rec} [cm]");
+    TGraph *g = new TGraph(6, phi_deg, z_vals);
+    // TGraph *g = new TGraph(6, phi_rad, z_vals);
+    g->SetTitle(("Average Z^{" + Particle + "}_{rec} vs. #phi_{" + Particle + "};#phi_{" + Particle + "}[#circ];Average Z^{" + Particle + "}_{rec} [cm]").c_str());
     g->SetMarkerStyle(20);
     g->SetMarkerSize(1.2);
+    g->GetXaxis()->CenterTitle();
+    g->GetYaxis()->CenterTitle();
 
     TF1 *fitFunc = new TF1("fitFunc", "[0]*cos(x - [1]) + [2]", 0, 2 * TMath::Pi());
     fitFunc->SetParNames("Amplitude", "Phi_beam", "Z0");

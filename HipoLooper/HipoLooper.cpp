@@ -2790,7 +2790,7 @@ void HipoLooper() {
             h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
-            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), electrons[0]->getPhi() * 180 / analysis_math::pi, weight);
+            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
@@ -3034,7 +3034,7 @@ void HipoLooper() {
                     h_dVz_pipFD_AC_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVz(), piplus[i]->getPhi() * 180 / analysis_math::pi, weight);
+                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
@@ -3220,7 +3220,7 @@ void HipoLooper() {
                     h_dVz_pimFD_AC_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVz(), piminus[i]->getPhi() * 180 / analysis_math::pi, weight);
+                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
@@ -3314,7 +3314,7 @@ void HipoLooper() {
             h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
             h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
             h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A, phi_beam, Z0, FittedParametersGraph] = analysis_math::FitVertexVsPhi(Vz_e_peaks_BySector);
+        auto [A, phi_beam, Z0, FittedParametersGraph] = analysis_math::FitVertexVsPhi(Vz_e_peaks_BySecto, "e");
 #pragma endregion
 
 #pragma region Plotting and saving histograms
@@ -3344,10 +3344,12 @@ void HipoLooper() {
                 g->GetYaxis()->CenterTitle();
             }
 
-            if (std::string(HistoList[i]->GetName()) == "E_PCALoP_e_VS_E_PCALoP_e_AC") { insert_index = i + 1; }
+            if (std::string(HistoList[i]->GetName()) == "Vz_VS_phi_e_AC_1e_cut") { insert_index = i + 1; }
         }
 
         HistoList.insert(HistoList.begin() + insert_index, FittedParametersGraph);
+        FittedParametersGraph->GetXaxis()->CenterTitle();
+        FittedParametersGraph->GetYaxis()->CenterTitle();
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
@@ -3724,10 +3726,10 @@ void HipoLooper() {
         if (InputFiles.size() > 1) { gDirectory->Clear(); }
 
         cout << "\033[33m\n=============================================================\n\033[0m";
-        cout << "\033[33m\n= HipoLooper summary                                         \n\033[0m";
-        cout << "\033[33m\n=============================================================\n\033[0m";
+        cout << "\033[33m= HipoLooper summary                                         \n\033[0m";
+        cout << "\033[33m=============================================================\n\033[0m";
 
-        cout << "\033[33m\n\n- Input variables -------------------------------------------\n\033[0m";
+        cout << "\033[33m\n- Input variables -------------------------------------------\n\033[0m";
         cout << "\033[33mInputFiles.at(sample):\033[0m " << InputFiles.at(sample) << endl;
         cout << "\033[33mnCodeRun_status:\033[0m       " << CodeRun_status << endl;
         cout << "\033[33mOutputDir:\033[0m             " << OutputDir << "\n\n";
