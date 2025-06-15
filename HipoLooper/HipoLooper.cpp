@@ -43,8 +43,8 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    // std::string General_status = "Theta_e_test";
-    std::string General_status = "RegTest";
+    std::string General_status = "Theta_e_test";
+    // std::string General_status = "RegTest";
 
     bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
@@ -2810,8 +2810,8 @@ void HipoLooper() {
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
 #pragma region Electrons APID
-            if (true) {
-            // if (electrons[0]->getTheta() * 180 / analysis_math::pi >= 15 || electrons[0]->getTheta() * 180 / analysis_math::pi <= 25) {
+            // if (true) {
+            if (electrons[0]->getTheta() * 180 / analysis_math::pi >= 15 || electrons[0]->getTheta() * 180 / analysis_math::pi <= 25) {
                 h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
                 h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
