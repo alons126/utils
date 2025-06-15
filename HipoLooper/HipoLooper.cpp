@@ -43,7 +43,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "Theta_e_test";
+    std::string General_status = "_sector_zoomin_test";
     // std::string General_status = "RegTest";
 
     bool ApplyLimiter = true;
@@ -51,6 +51,9 @@ void HipoLooper() {
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
+
+    bool apply_theta_slices = true;
+    std::vector<double> theta_slices = {5.0, 10.0, 10.0, 15.0, 15.0, 20.0, 20.0, 25.0, 25.0, 30.0, 30.0, 35.0, 35.0, 40.0};
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
@@ -321,6 +324,11 @@ void HipoLooper() {
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector1_1e_cut);
 
+        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_zoomin_sector1_1e_cut",
+                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -10, 70, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut);
+
         TH2D *h_dc_electron_hit_map_BC_sector1_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector1_1e_cut[4];  // 3 regions
 
@@ -443,6 +451,11 @@ void HipoLooper() {
             new TH2D("Vz_VS_phi_e_AC_sector2_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector2_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_zoomin_sector2_1e_cut",
+                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 50, 130, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector2_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector2_1e_cut[4];  // 3 regions
@@ -567,6 +580,11 @@ void HipoLooper() {
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector3_1e_cut);
 
+        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_zoomin_sector3_1e_cut",
+                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 110, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut);
+
         TH2D *h_dc_electron_hit_map_BC_sector3_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector3_1e_cut[4];  // 3 regions
 
@@ -689,6 +707,11 @@ void HipoLooper() {
             new TH2D("Vz_VS_phi_e_AC_sector4_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector4_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut = new TH2D(
+            "Vz_VS_phi_e_AC_zoomin_sector4_1e_cut",
+            ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -180, -110, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector4_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector4_1e_cut[4];  // 3 regions
@@ -813,6 +836,11 @@ void HipoLooper() {
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector5_1e_cut);
 
+        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut = new TH2D(
+            "Vz_VS_phi_e_AC_zoomin_sector5_1e_cut",
+            ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -110, -50, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut);
+
         TH2D *h_dc_electron_hit_map_BC_sector5_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector5_1e_cut[4];  // 3 regions
 
@@ -935,6 +963,11 @@ void HipoLooper() {
             new TH2D("Vz_VS_phi_e_AC_sector6_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
                      -180, 180, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector6_1e_cut);
+
+        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut =
+            new TH2D("Vz_VS_phi_e_AC_zoomin_sector6_1e_cut",
+                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -50, 10, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector6_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector6_1e_cut[4];  // 3 regions
@@ -1194,6 +1227,18 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_sector1_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pipFD_AC_sector1_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_sector1_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector1);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut);
+
+        TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut = new TH2D(
+            "Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut",
+            ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector1);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+            100, -10, 70, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut);
+
         TH2D *h_dc_pipFD_hit_map_BC_sector1_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_sector1_1e_cut[4];  // 3 regions
 
@@ -1286,6 +1331,12 @@ void HipoLooper() {
                          75, -4, 1);
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_sector2_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pipFD_AC_sector2_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_sector2_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector2);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector2_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_sector2_1e_cut[4];  // 3 regions
@@ -1380,6 +1431,12 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_sector3_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pipFD_AC_sector3_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_sector3_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector3);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut);
+
         TH2D *h_dc_pipFD_hit_map_BC_sector3_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_sector3_1e_cut[4];  // 3 regions
 
@@ -1472,6 +1529,12 @@ void HipoLooper() {
                          75, -4, 1);
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_sector4_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pipFD_AC_sector4_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_sector4_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector4);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector4_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_sector4_1e_cut[4];  // 3 regions
@@ -1566,6 +1629,12 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_sector5_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pipFD_AC_sector5_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_sector5_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector5);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut);
+
         TH2D *h_dc_pipFD_hit_map_BC_sector5_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_sector5_1e_cut[4];  // 3 regions
 
@@ -1658,6 +1727,12 @@ void HipoLooper() {
                          75, -4, 1);
             HistoList.push_back(h_dVz_pipFD_AC_zoomin_sector6_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pipFD_AC_sector6_1e_cut =
+            new TH2D("Vz_VS_phi_pipFD_AC_sector6_1e_cut",
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector6);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector6_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_sector6_1e_cut[4];  // 3 regions
@@ -1853,6 +1928,18 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_sector1_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pimFD_AC_sector1_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_sector1_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector1);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut);
+
+        TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut = new TH2D(
+            "Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut",
+            ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector1);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+            100, -10, 70, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut);
+
         TH2D *h_dc_pimFD_hit_map_BC_sector1_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_sector1_1e_cut[4];  // 3 regions
 
@@ -1945,6 +2032,12 @@ void HipoLooper() {
                          75, -4, 1);
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_sector2_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pimFD_AC_sector2_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_sector2_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector2);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector2_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_sector2_1e_cut[4];  // 3 regions
@@ -2039,6 +2132,12 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_sector3_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pimFD_AC_sector3_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_sector3_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector3);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut);
+
         TH2D *h_dc_pimFD_hit_map_BC_sector3_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_sector3_1e_cut[4];  // 3 regions
 
@@ -2131,6 +2230,12 @@ void HipoLooper() {
                          75, -4, 1);
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_sector4_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pimFD_AC_sector4_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_sector4_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector4);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector4_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_sector4_1e_cut[4];  // 3 regions
@@ -2225,6 +2330,12 @@ void HipoLooper() {
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_sector5_1e_cut);
         }
 
+        TH2D *h_Vz_VS_phi_pimFD_AC_sector5_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_sector5_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector5);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut);
+
         TH2D *h_dc_pimFD_hit_map_BC_sector5_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_sector5_1e_cut[4];  // 3 regions
 
@@ -2317,6 +2428,12 @@ void HipoLooper() {
                          75, -4, 1);
             HistoList.push_back(h_dVz_pimFD_AC_zoomin_sector6_1e_cut);
         }
+
+        TH2D *h_Vz_VS_phi_pimFD_AC_sector6_1e_cut =
+            new TH2D("Vz_VS_phi_pimFD_AC_sector6_1e_cut",
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector6);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                     100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector6_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_sector6_1e_cut[4];  // 3 regions
@@ -2810,8 +2927,8 @@ void HipoLooper() {
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
 #pragma region Electrons APID
-            // if (true) {
-            if (electrons[0]->getTheta() * 180 / analysis_math::pi >= 15 && electrons[0]->getTheta() * 180 / analysis_math::pi <= 25) {
+            if (true) {
+                // if (electrons[0]->getTheta() * 180 / analysis_math::pi >= 15 && electrons[0]->getTheta() * 180 / analysis_math::pi <= 25) {
                 h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
                 h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
@@ -3246,6 +3363,8 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector1_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector1_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                        h_Vz_VS_phi_pipFD_AC_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
+
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector1_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 2) {
                         h_Vx_pipFD_AC_sector2_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
@@ -3255,6 +3374,8 @@ void HipoLooper() {
 
                         h_dVz_pipFD_AC_sector2_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector2_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+
+                        h_Vz_VS_phi_pipFD_AC_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector2_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 3) {
@@ -3266,6 +3387,8 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector3_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector3_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                        h_Vz_VS_phi_pipFD_AC_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
+
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector3_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 4) {
                         h_Vx_pipFD_AC_sector4_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
@@ -3275,6 +3398,8 @@ void HipoLooper() {
 
                         h_dVz_pipFD_AC_sector4_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector4_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+
+                        h_Vz_VS_phi_pipFD_AC_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector4_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 5) {
@@ -3286,6 +3411,8 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector5_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector5_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                        h_Vz_VS_phi_pipFD_AC_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
+
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector5_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 6) {
                         h_Vx_pipFD_AC_sector6_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
@@ -3295,6 +3422,8 @@ void HipoLooper() {
 
                         h_dVz_pipFD_AC_sector6_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector6_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+
+                        h_Vz_VS_phi_pipFD_AC_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector6_1e_cut, weight);
                     }
@@ -3432,6 +3561,8 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector1_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector1_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                        h_Vz_VS_phi_pimFD_AC_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
+
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector1_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 2) {
                         h_Vx_pimFD_AC_sector2_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
@@ -3441,6 +3572,8 @@ void HipoLooper() {
 
                         h_dVz_pimFD_AC_sector2_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector2_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+
+                        h_Vz_VS_phi_pimFD_AC_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector2_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 3) {
@@ -3452,6 +3585,8 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector3_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector3_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                        h_Vz_VS_phi_pimFD_AC_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
+
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector3_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 4) {
                         h_Vx_pimFD_AC_sector4_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
@@ -3461,6 +3596,8 @@ void HipoLooper() {
 
                         h_dVz_pimFD_AC_sector4_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector4_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+
+                        h_Vz_VS_phi_pimFD_AC_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector4_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 5) {
@@ -3472,6 +3609,8 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector5_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector5_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
+                        h_Vz_VS_phi_pimFD_AC_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
+
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector5_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 6) {
                         h_Vx_pimFD_AC_sector6_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
@@ -3481,6 +3620,8 @@ void HipoLooper() {
 
                         h_dVz_pimFD_AC_sector6_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector6_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+
+                        h_Vz_VS_phi_pimFD_AC_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector6_1e_cut, weight);
                     }

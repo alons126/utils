@@ -47,7 +47,7 @@ using namespace std;
 // CompareHistogramsTester ------------------------------------------------------------------
 
 void CompareHistogramsTester2() {
-    int version = 15;  // Version of the code
+    int version = 16;  // Version of the code
     std::string OutFolderName_prefix = "ReRun_HipoLooper";
     // std::string OutFolderName_prefix = "ReRun" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status_1 = "_v" + basic_tools::ToStringWithPrecision(version, 0);
@@ -55,6 +55,8 @@ void CompareHistogramsTester2() {
     // std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     std::string General_status = "";
+    // std::string General_status = "RegTest";
+    // std::string General_status = "Theta_e_test";
 
     std::string BaseDir = "/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper" + OutFolderName_ver_status_1 + "/";
 
@@ -66,6 +68,9 @@ void CompareHistogramsTester2() {
     InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_2GeV_run_015672/015_HipoLooper_v15_Ar40_data_2GeV_run_015672.root");
     InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_4GeV_run_015743/015_HipoLooper_v15_Ar40_data_4GeV_run_015743.root");
     InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_6GeV_run_015792/015_HipoLooper_v15_Ar40_data_6GeV_run_015792.root");
+
+    // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672RegTest/016_HipoLooper_v16_Ar40_data_2GeV_run_015672RegTest.root");
+    // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test.root");
 
     std::string SaveDirFolder = "/Users/alon/Downloads";
 
@@ -289,10 +294,12 @@ void CompareHistogramsTester2() {
 
         std::vector<double> Vz_e_peaks_BySector = {peak_sector1, peak_sector2, peak_sector3, peak_sector4, peak_sector5, peak_sector6};
         std::vector<double> phi_e_peaks_BySector = {
+            // fit_peak_gaussian(h_phi_e_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector2_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector3_1e_cut),
+            // fit_peak_gaussian(h_phi_e_AC_sector4_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector6_1e_cut)};
             h_phi_e_AC_sector1_1e_cut->GetBinCenter(h_phi_e_AC_sector1_1e_cut->GetMaximumBin()), h_phi_e_AC_sector2_1e_cut->GetBinCenter(h_phi_e_AC_sector2_1e_cut->GetMaximumBin()),
             h_phi_e_AC_sector3_1e_cut->GetBinCenter(h_phi_e_AC_sector3_1e_cut->GetMaximumBin()), h_phi_e_AC_sector4_1e_cut->GetBinCenter(h_phi_e_AC_sector4_1e_cut->GetMaximumBin()),
             h_phi_e_AC_sector5_1e_cut->GetBinCenter(h_phi_e_AC_sector5_1e_cut->GetMaximumBin()), h_phi_e_AC_sector6_1e_cut->GetBinCenter(h_phi_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector, phi_e_peaks_BySector);
+            auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector, phi_e_peaks_BySector);
 
         FittedParametersGraph->GetXaxis()->CenterTitle();
         FittedParametersGraph->GetYaxis()->CenterTitle();
