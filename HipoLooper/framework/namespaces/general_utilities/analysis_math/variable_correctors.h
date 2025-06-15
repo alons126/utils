@@ -9,6 +9,7 @@
 #include <TGraph.h>
 #include <TMath.h>
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -78,14 +79,26 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
-    g->GetXaxis()->SetLimits(-180, 180);
-    g->GetYaxis()->SetRangeUser(-6.8, -5.9);
-    // g->GetYaxis()->SetRangeUser(-7, -5.5);
-    g->SetTitle(("Rec V_{z}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "}[#circ];Rec V_{z}^{" + Particle + "} peaks [cm]").c_str());
+    g->SetTitle(("Rec V_{z}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "} [#circ];Rec V_{z}^{" + Particle + "} peaks [cm]").c_str());
     g->SetMarkerStyle(21);
     g->SetMarkerSize(1.5);
     g->GetXaxis()->CenterTitle();
     g->GetYaxis()->CenterTitle();
+
+    g->GetXaxis()->SetLimits(-180, 180);
+    g->GetYaxis()->SetRangeUser(*std::min_element(Zrec_peaks.begin(), Zrec_peaks.end()) * 1.02, *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end()) * 0.9);
+
+    // if (basic_tools::FindSubstring(SampleName, "2GeV")) {
+    //     if (basic_tools::FindSubstring(SampleName, "Ar40")) {
+    //         g->GetYaxis()->SetRangeUser(-6.8, -5.9);
+    //     }
+    // } else if (basic_tools::FindSubstring(SampleName, "4GeV")) {
+    //     if (basic_tools::FindSubstring(SampleName, "Ar40")) {
+    //         g->GetYaxis()->SetRangeUser(-6.8, -5.9);
+    //     }
+    // } else if (basic_tools::FindSubstring(SampleName, "6GeV")) {
+    //     g->GetXaxis()->SetRangeUser(-180, 180);
+    // }
 
     // Fit function: argument in degrees, convert to radians in the formula
     TF1 *fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
@@ -147,6 +160,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     g->GetListOfFunctions()->Add(FitParam2);
     g->GetListOfFunctions()->Add(fitFunc);
 
+    std::cout << std::endl;
+
     for (int i = 0; i < 6; ++i) {
         double x = phi_deg[i];
         double y = z_vals[i];
@@ -161,6 +176,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         latex->SetTextAlign(12);
         g->GetListOfFunctions()->Add(latex);
     }
+
+    std::cout << std::endl;
 
     return std::make_tuple(A, phi_beam, Vz_0, g);
 }

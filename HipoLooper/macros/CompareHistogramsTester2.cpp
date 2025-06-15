@@ -47,34 +47,25 @@ using namespace std;
 // CompareHistogramsTester ------------------------------------------------------------------
 
 void CompareHistogramsTester2() {
-    int version = 14;  // Version of the code
-    std::string OutFolderName_prefix = "0a0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
-    std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
+    int version = 15;  // Version of the code
+    std::string OutFolderName_prefix = "ReRun_HipoLooper";
+    // std::string OutFolderName_prefix = "ReRun" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
+    std::string OutFolderName_ver_status_1 = "_v" + basic_tools::ToStringWithPrecision(version, 0);
+    std::string OutFolderName_ver_status_2 = OutFolderName_ver_status_1 + "_";
+    // std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    // std::string General_status = "";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusFDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusFDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piplusCDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts_on_both_electrons_and_piminusCDOnly";
-    // std::string General_status = "_NewCuts2_wReverseddVz_cuts";
-    std::string General_status = "_NewCuts2_wdVz_cuts";
-    // std::string General_status = "_NewCuts2_NOdVz_cuts";
+    std::string General_status = "";
 
-    bool ApplyLimiter = true;
-    // int Limiter = 10000000;  // 10M events (fo the data)
-    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
-    // int Limiter = 100000;  // 10 files or 100K events (fo the data)
-    // int Limiter = 10000;  // 1 file
-
-    std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
+    std::string BaseDir = "/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper" + OutFolderName_ver_status_1 + "/";
 
     std::vector<std::string> InputFiles;
-    InputFiles.push_back("/Users/alon/Downloads/014_HipoLooper_v14_Ar40_data_2GeV_run_015672/014_HipoLooper_v14_Ar40_data_2GeV_run_015672.root");
-    // InputFiles.push_back(
-    //     "/Users/alon/Downloads/13_HipoLooper_v13/013_HipoLooper_v13_NewCuts2_wdVz_cuts/013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts/"
-    //     "013_HipoLooper_v13_Ar40_data_2GeV_run_015672_NewCuts2_wReverseddVz_cuts.root");
+
+    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_C12_data_2GeV_run_015664/015_HipoLooper_v15_C12_data_2GeV_run_015664.root");
+    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_C12_data_4GeV_run_015778/015_HipoLooper_v15_C12_data_4GeV_run_015778.root");
+
+    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_2GeV_run_015672/015_HipoLooper_v15_Ar40_data_2GeV_run_015672.root");
+    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_4GeV_run_015743/015_HipoLooper_v15_Ar40_data_4GeV_run_015743.root");
+    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_6GeV_run_015792/015_HipoLooper_v15_Ar40_data_6GeV_run_015792.root");
 
     std::string SaveDirFolder = "/Users/alon/Downloads";
 
@@ -128,7 +119,7 @@ void CompareHistogramsTester2() {
 
         std::string CodeRun_status = target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status;
 
-        std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status + CodeRun_status + General_status;
+        std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status_2 + CodeRun_status + General_status;
         std::string OutFileName = OutFolderName;
 
         const std::string OutputDir = SaveDirFolder + "/" + OutFolderName;
@@ -192,12 +183,44 @@ void CompareHistogramsTester2() {
             return std::make_pair(vz_hist, phi_hist);
         };
 
-        auto [h_Vz_e_AC_sector1_1e_cut, h_phi_e_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1");
-        auto [h_Vz_e_AC_sector2_1e_cut, h_phi_e_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2");
-        auto [h_Vz_e_AC_sector3_1e_cut, h_phi_e_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3");
-        auto [h_Vz_e_AC_sector4_1e_cut, h_phi_e_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4");
-        auto [h_Vz_e_AC_sector5_1e_cut, h_phi_e_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5");
-        auto [h_Vz_e_AC_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6");
+        auto h_Vz_e_AC_zoomin_1e_cut = (TH1D *)load("Vz_e_AC_zoomin_1e_cut", "TH1D");
+        auto [h_Vz_e_AC_sector1_1e_cut, h_phi_e_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "e");
+        auto [h_Vz_e_AC_sector2_1e_cut, h_phi_e_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "e");
+        auto [h_Vz_e_AC_sector3_1e_cut, h_phi_e_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "e");
+        auto [h_Vz_e_AC_sector4_1e_cut, h_phi_e_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "e");
+        auto [h_Vz_e_AC_sector5_1e_cut, h_phi_e_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "e");
+        auto [h_Vz_e_AC_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "e");
+
+        auto h_Vz_pipFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_1e_cut", "TH1D");
+        auto h_Vz_pipFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector1_1e_cut", "TH1D");
+        auto h_Vz_pipFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector2_1e_cut", "TH1D");
+        auto h_Vz_pipFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector3_1e_cut", "TH1D");
+        auto h_Vz_pipFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector4_1e_cut", "TH1D");
+        auto h_Vz_pipFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector5_1e_cut", "TH1D");
+        auto h_Vz_pipFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector6_1e_cut", "TH1D");
+        // auto [h_Vz_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pipFD");
+        // auto [h_Vz_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pipFD");
+        // auto [h_Vz_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pipFD");
+        // auto [h_Vz_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "pipFD");
+        // auto [h_Vz_pipFD_AC_sector5_1e_cut, h_phi_pipFD_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "pipFD");
+        // auto [h_Vz_pipFD_AC_sector6_1e_cut, h_phi_pipFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pipFD");
+
+        auto h_Vz_pimFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_1e_cut", "TH1D");
+        auto h_Vz_pimFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector1_1e_cut", "TH1D");
+        auto h_Vz_pimFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector2_1e_cut", "TH1D");
+        auto h_Vz_pimFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector3_1e_cut", "TH1D");
+        auto h_Vz_pimFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector4_1e_cut", "TH1D");
+        auto h_Vz_pimFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector5_1e_cut", "TH1D");
+        auto h_Vz_pimFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector6_1e_cut", "TH1D");
+        // auto [h_Vz_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pimFD");
+        // auto [h_Vz_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pimFD");
+        // auto [h_Vz_pimFD_AC_sector3_1e_cut, h_phi_pimFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pimFD");
+        // auto [h_Vz_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "pimFD");
+        // auto [h_Vz_pimFD_AC_sector5_1e_cut, h_phi_pimFD_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "pimFD");
+        // auto [h_Vz_pimFD_AC_sector6_1e_cut, h_phi_pimFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pimFD");
+
+        auto h_Vz_pipCD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pipCD_AC_zoomin_1e_cut", "TH1D");
+        auto h_Vz_pimCD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pimCD_AC_zoomin_1e_cut", "TH1D");
 
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
@@ -214,8 +237,10 @@ void CompareHistogramsTester2() {
             if (fitLimits.size() == 0) {
                 // If no limits are provided, use the histogram's peak center
                 double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
-                fitMin = -std::fabs(peakCenter * 1.05);
+                fitMin = -std::fabs(peakCenter * 1.1);
                 fitMax = -std::fabs(peakCenter * 0.9);
+                // fitMin = -std::fabs(peakCenter * 1.2);
+                // fitMax = -std::fabs(peakCenter * 0.8);
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
                 fitMax = fitLimits[1];
