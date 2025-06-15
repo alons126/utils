@@ -55,8 +55,8 @@ void HipoLooper() {
     // bool apply_theta_slices = true;
     // std::vector<double> theta_slices = {0.0, 180.0};
     // std::vector<double> theta_slices = {5.0, 10.0};
-    std::vector<double> theta_slices = {10.0, 15.0};
-    // std::vector<double> theta_slices = {15.0, 20.0};
+    // std::vector<double> theta_slices = {10.0, 15.0};
+    std::vector<double> theta_slices = {15.0, 20.0};
     // std::vector<double> theta_slices = {20.0, 25.0};
     // std::vector<double> theta_slices = {25.0, 30.0};
     // std::vector<double> theta_slices = {30.0, 35.0};
