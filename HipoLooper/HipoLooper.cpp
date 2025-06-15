@@ -2811,7 +2811,7 @@ void HipoLooper() {
 
 #pragma region Electrons APID
             // if (true) {
-            if (electrons[0]->getTheta() * 180 / analysis_math::pi >= 15 || electrons[0]->getTheta() * 180 / analysis_math::pi <= 25) {
+            if (electrons[0]->getTheta() * 180 / analysis_math::pi >= 15 && electrons[0]->getTheta() * 180 / analysis_math::pi <= 25) {
                 h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
                 h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
