@@ -3693,275 +3693,269 @@ void HipoLooper() {
         /////////////////////////////////////////////////////
         // Now create the output PDFs
         /////////////////////////////////////////////////////
-        int pixelx = 1980;
-        int pixely = 1530;
-        TCanvas *myText = new TCanvas("myText", "myText", pixelx, pixely);
-        TLatex titles;
-        TLatex text;
-        titles.SetTextSize(0.1);
-        text.SetTextSize(0.03);
+        auto GeneratePDFOutput = [&](std::string TempOutputDir, std::string TempOutFolderName, std::string TempBaseDir, std::vector<std::string> TempInputFiles, int Tempsample,
+                                     std::vector<TH1 *> TempHistoList, int TempNumOfEvents, int TempNumOfEvents_wAny_e_det, int TempNumOfEvents_wOne_e_det, int TempNumOfEvents_wAny_e,
+                                     int TempNumOfEvents_wOne_e, std::string TempCodeRun_status, bool TempIsData, std::string Temptarget_status) {
+            int pixelx = 1980;
+            int pixely = 1530;
+            TCanvas *myText = new TCanvas("myText", "myText", pixelx, pixely);
+            TLatex titles;
+            TLatex text;
+            titles.SetTextSize(0.1);
+            text.SetTextSize(0.03);
 
-        gStyle->SetOptStat("ourmen");
+            gStyle->SetOptStat("ourmen");
 
-        TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
+            TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
 
-        std::string PDF_fileName = OutputDir + "/" + OutFolderName + ".pdf";
-        char fileName[PDF_fileName.length()];
-        sprintf(fileName, "%s[", PDF_fileName.c_str());
-        myText->SaveAs(fileName);
-        sprintf(fileName, "%s", PDF_fileName.c_str());
+            std::string PDF_fileName = TempOutputDir + "/" + TempOutFolderName + ".pdf";
+            char fileName[PDF_fileName.length()];
+            sprintf(fileName, "%s[", PDF_fileName.c_str());
+            myText->SaveAs(fileName);
+            sprintf(fileName, "%s", PDF_fileName.c_str());
 
-        /////////////////////////////////////
-        // CND Neutron Information
-        /////////////////////////////////////
-        myText->cd();
+            myText->cd();
+            titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
+            text.DrawLatex(0.05, 0.80, "This output is for the Ar40 implementation in GEMC");
+            text.DrawLatex(0.05, 0.70, ("Plots from (e,e') events in: #font[42]{" + TempCodeRun_status + "}").c_str());
 
-        titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
-        text.DrawLatex(0.05, 0.80, "This output is for the Ar40 implementation in GEMC");
-        text.DrawLatex(0.05, 0.70, ("Plots from (e,e') events in: #font[42]{" + CodeRun_status + "}").c_str());
+            if (TempIsData) {
+                text.DrawLatex(0.05, 0.65, ("TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}").c_str());
+                text.DrawLatex(0.05, 0.60, "TempOutFolderName:");
+                text.DrawLatex(0.10, 0.55, ("#font[42]{" + TempOutFolderName + "}").c_str());
+            } else {
+                text.DrawLatex(0.05, 0.65, ("TempBaseDir: #font[42]{" + TempBaseDir + "}").c_str());
+                text.DrawLatex(0.05, 0.60, ("TempInputFiles: #font[42]{TempBaseDir + " + TempInputFiles.at(Tempsample).substr(TempBaseDir.length()) + "}").c_str());
+                text.DrawLatex(0.05, 0.55, "TempOutFolderName:");
+                text.DrawLatex(0.10, 0.50, ("#font[42]{" + TempOutFolderName + "}").c_str());
+            }
 
-        if (IsData) {
-            text.DrawLatex(0.05, 0.65, ("InputFiles: #font[42]{" + InputFiles.at(sample) + "}").c_str());
-            text.DrawLatex(0.05, 0.60, "OutFolderName:");
-            text.DrawLatex(0.10, 0.55, ("#font[42]{" + OutFolderName + "}").c_str());
-        } else {
-            text.DrawLatex(0.05, 0.65, ("BaseDir: #font[42]{" + BaseDir + "}").c_str());
-            text.DrawLatex(0.05, 0.60, ("InputFiles: #font[42]{BaseDir + " + InputFiles.at(sample).substr(BaseDir.length()) + "}").c_str());
-            text.DrawLatex(0.05, 0.55, "OutFolderName:");
-            text.DrawLatex(0.10, 0.50, ("#font[42]{" + OutFolderName + "}").c_str());
-        }
+            text.DrawLatex(0.05, 0.45, "Event counts:");
+            text.DrawLatex(0.10, 0.40, ("Total #(events):            #font[42]{" + std::to_string(TempNumOfEvents) + "}").c_str());
+            text.DrawLatex(0.10, 0.35, ("#(Events) with any e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wAny_e_det) + "}").c_str());
+            text.DrawLatex(0.10, 0.30,
+                        ("#(Events) with one e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wOne_e_det) + " (" +
+                            basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e_det / TempNumOfEvents_wAny_e_det), 2) + "%)}")
+                                .c_str());
+            text.DrawLatex(0.10, 0.25, ("#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}").c_str());
+            text.DrawLatex(0.10, 0.20,
+                        ("#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
+                            basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
+                                .c_str());
 
-        text.DrawLatex(0.05, 0.45, "Event counts:");
-        text.DrawLatex(0.10, 0.40, ("Total #(events):            #font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
-        text.DrawLatex(0.10, 0.35, ("#(Events) with any e_det:  #font[42]{" + std::to_string(NumOfEvents_wAny_e_det) + "}").c_str());
-        text.DrawLatex(0.10, 0.30,
-                       ("#(Events) with one e_det:  #font[42]{" + std::to_string(NumOfEvents_wOne_e_det) + " (" +
-                        basic_tools::ToStringWithPrecision((100 * NumOfEvents_wOne_e_det / NumOfEvents_wAny_e_det), 2) + "%)}")
-                           .c_str());
-        text.DrawLatex(0.10, 0.25, ("#(Events) with any e:       #font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
-        text.DrawLatex(0.10, 0.20,
-                       ("#(Events) with one e:       #font[42]{" + std::to_string(NumOfEvents_wOne_e) + " (" +
-                        basic_tools::ToStringWithPrecision((100 * NumOfEvents_wOne_e / NumOfEvents_wAny_e), 2) + "%)}")
-                           .c_str());
+            myText->Print(fileName, "pdf Title: Cover");
+            myText->Clear();
 
-        myText->Print(fileName, "pdf Title: Cover");
-        // myText->Print(fileName, "pdf");
-        myText->Clear();
+            // Remaining flags, loops, and drawing logic as-is
+            // (You may optionally break this block further into helper lambdas)
+            // ...
+            // (Paste all remaining code from first_electron through ReassignPDFBookmarks here)
 
-        bool first_electron = true;
-        bool first_electron_sector1 = true, first_electron_sector2 = true, first_electron_sector3 = true, first_electron_sector4 = true, first_electron_sector5 = true,
-             first_electron_sector6 = true;
+            bool first_electron = true;
+            bool first_electron_sector1 = true, first_electron_sector2 = true, first_electron_sector3 = true, first_electron_sector4 = true, first_electron_sector5 = true,
+                first_electron_sector6 = true;
 
-        bool first_piplusFD = true;
-        bool first_piplusFD_sector1 = true, first_piplusFD_sector2 = true, first_piplusFD_sector3 = true, first_piplusFD_sector4 = true, first_piplusFD_sector5 = true,
-             first_piplusFD_sector6 = true;
+            bool first_piplusFD = true;
+            bool first_piplusFD_sector1 = true, first_piplusFD_sector2 = true, first_piplusFD_sector3 = true, first_piplusFD_sector4 = true, first_piplusFD_sector5 = true,
+                first_piplusFD_sector6 = true;
 
-        bool first_piminusFD = true;
-        bool first_piminusFD_sector1 = true, first_piminusFD_sector2 = true, first_piminusFD_sector3 = true, first_piminusFD_sector4 = true, first_piminusFD_sector5 = true,
-             first_piminusFD_sector6 = true;
+            bool first_piminusFD = true;
+            bool first_piminusFD_sector1 = true, first_piminusFD_sector2 = true, first_piminusFD_sector3 = true, first_piminusFD_sector4 = true, first_piminusFD_sector5 = true,
+                first_piminusFD_sector6 = true;
 
-        bool first_piplusCD = true;
-        bool first_piplusCD_sector1 = true, first_piplusCD_sector2 = true, first_piplusCD_sector3 = true, first_piplusCD_sector4 = true, first_piplusCD_sector5 = true,
-             first_piplusCD_sector6 = true;
+            bool first_piplusCD = true;
+            bool first_piplusCD_sector1 = true, first_piplusCD_sector2 = true, first_piplusCD_sector3 = true, first_piplusCD_sector4 = true, first_piplusCD_sector5 = true,
+                first_piplusCD_sector6 = true;
 
-        bool first_piminusCD = true;
-        bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
-             first_piminusCD_sector6 = true;
+            bool first_piminusCD = true;
+            bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
+                first_piminusCD_sector6 = true;
 
-        int plot_counter = 2;
+            int plot_counter = 2;
 
-        double yOffset = 0.075;  // Offset for the y position of the text
-        // double yOffset = 0.10;  // Offset for the y position of the text
+            double yOffset = 0.075;  // Offset for the y position of the text
 
-        for (int i = 0; i < HistoList.size(); i++) {
-            // Maps to hold first-time flags
-            std::map<std::string, bool *> first_flags = {
-                {"{e}", &first_electron}, {"{#pi^{+}FD}", &first_piplusFD}, {"{#pi^{-}FD}", &first_piminusFD}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
+            for (int i = 0; i < TempHistoList.size(); i++) {
+                // Maps to hold first-time flags
+                std::map<std::string, bool *> first_flags = {
+                    {"{e}", &first_electron}, {"{#pi^{+}FD}", &first_piplusFD}, {"{#pi^{-}FD}", &first_piminusFD}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
 
-            std::map<std::string, std::string> particle_labels = {
-                {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
+                std::map<std::string, std::string> particle_labels = {
+                    {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
-            // Maps of sector flags (assumes these variables already exist)
-            std::map<std::string, std::map<int, bool *>> sector_flags = {{"{e}",
-                                                                          {{1, &first_electron_sector1},
-                                                                           {2, &first_electron_sector2},
-                                                                           {3, &first_electron_sector3},
-                                                                           {4, &first_electron_sector4},
-                                                                           {5, &first_electron_sector5},
-                                                                           {6, &first_electron_sector6}}},
-                                                                         {"{#pi^{+}FD}",
-                                                                          {{1, &first_piplusFD_sector1},
-                                                                           {2, &first_piplusFD_sector2},
-                                                                           {3, &first_piplusFD_sector3},
-                                                                           {4, &first_piplusFD_sector4},
-                                                                           {5, &first_piplusFD_sector5},
-                                                                           {6, &first_piplusFD_sector6}}},
-                                                                         {"{#pi^{-}FD}",
-                                                                          {{1, &first_piminusFD_sector1},
-                                                                           {2, &first_piminusFD_sector2},
-                                                                           {3, &first_piminusFD_sector3},
-                                                                           {4, &first_piminusFD_sector4},
-                                                                           {5, &first_piminusFD_sector5},
-                                                                           {6, &first_piminusFD_sector6}}},
-                                                                         {"{#pi^{+}CD}",
-                                                                          {{1, &first_piplusCD_sector1},
-                                                                           {2, &first_piplusCD_sector2},
-                                                                           {3, &first_piplusCD_sector3},
-                                                                           {4, &first_piplusCD_sector4},
-                                                                           {5, &first_piplusCD_sector5},
-                                                                           {6, &first_piplusCD_sector6}}},
-                                                                         {"{#pi^{-}CD}",
-                                                                          {{1, &first_piminusCD_sector1},
-                                                                           {2, &first_piminusCD_sector2},
-                                                                           {3, &first_piminusCD_sector3},
-                                                                           {4, &first_piminusCD_sector4},
-                                                                           {5, &first_piminusCD_sector5},
-                                                                           {6, &first_piminusCD_sector6}}}};
+                // Maps of sector flags (assumes these variables already exist)
+                std::map<std::string, std::map<int, bool *>> sector_flags = {{"{e}",
+                                                                            {{1, &first_electron_sector1},
+                                                                            {2, &first_electron_sector2},
+                                                                            {3, &first_electron_sector3},
+                                                                            {4, &first_electron_sector4},
+                                                                            {5, &first_electron_sector5},
+                                                                            {6, &first_electron_sector6}}},
+                                                                        {"{#pi^{+}FD}",
+                                                                            {{1, &first_piplusFD_sector1},
+                                                                            {2, &first_piplusFD_sector2},
+                                                                            {3, &first_piplusFD_sector3},
+                                                                            {4, &first_piplusFD_sector4},
+                                                                            {5, &first_piplusFD_sector5},
+                                                                            {6, &first_piplusFD_sector6}}},
+                                                                        {"{#pi^{-}FD}",
+                                                                            {{1, &first_piminusFD_sector1},
+                                                                            {2, &first_piminusFD_sector2},
+                                                                            {3, &first_piminusFD_sector3},
+                                                                            {4, &first_piminusFD_sector4},
+                                                                            {5, &first_piminusFD_sector5},
+                                                                            {6, &first_piminusFD_sector6}}},
+                                                                        {"{#pi^{+}CD}",
+                                                                            {{1, &first_piplusCD_sector1},
+                                                                            {2, &first_piplusCD_sector2},
+                                                                            {3, &first_piplusCD_sector3},
+                                                                            {4, &first_piplusCD_sector4},
+                                                                            {5, &first_piplusCD_sector5},
+                                                                            {6, &first_piplusCD_sector6}}},
+                                                                        {"{#pi^{-}CD}",
+                                                                            {{1, &first_piminusCD_sector1},
+                                                                            {2, &first_piminusCD_sector2},
+                                                                            {3, &first_piminusCD_sector3},
+                                                                            {4, &first_piminusCD_sector4},
+                                                                            {5, &first_piminusCD_sector5},
+                                                                            {6, &first_piminusCD_sector6}}}};
 
-            std::string title = HistoList[i]->GetTitle();
+                std::string title = TempHistoList[i]->GetTitle();
 
-            for (const auto &[particle_key, label] : particle_labels) {
-                if (basic_tools::FindSubstring(title, particle_key)) {
-                    myText->cd();
-                    titles.SetTextAlign(22);  // Center text both horizontally and vertically
+                for (const auto &[particle_key, label] : particle_labels) {
+                    if (basic_tools::FindSubstring(title, particle_key)) {
+                        myText->cd();
+                        titles.SetTextAlign(22);  // Center text both horizontally and vertically
 
-                    if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
-                        std::string bookmark_title = label + " plots";
-                        std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
-                        titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
-                        myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
-                        myText->Clear();
-                        *first_flags[particle_key] = false;
-                        ++plot_counter;
-                    } else {
-                        for (int sector = 1; sector <= 6; ++sector) {
-                            std::string sector_str = "sector" + std::to_string(sector);
-                            std::string sector_title_str = "sector " + std::to_string(sector);
+                        if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
+                            std::string bookmark_title = label + " plots";
+                            std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
+                            titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
+                            myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
+                            myText->Clear();
+                            *first_flags[particle_key] = false;
+                            ++plot_counter;
+                        } else {
+                            for (int sector = 1; sector <= 6; ++sector) {
+                                std::string sector_str = "sector" + std::to_string(sector);
+                                std::string sector_title_str = "sector " + std::to_string(sector);
 
-                            if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
-                                std::string bookmark_title = label + " plots - " + sector_title_str;
-                                // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
-                                std::string hierarchical_title = histogram_functions::SanitizeForBookmark(label + " plots") + ">" + histogram_functions::SanitizeForBookmark(bookmark_title);
-                                titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
-                                myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
-                                myText->Clear();
-                                *sector_flags[particle_key][sector] = false;
-                                ++plot_counter;
-                                break;
+                                if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
+                                    std::string bookmark_title = label + " plots - " + sector_title_str;
+                                    // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
+                                    std::string hierarchical_title = histogram_functions::SanitizeForBookmark(label + " plots") + ">" + histogram_functions::SanitizeForBookmark(bookmark_title);
+                                    titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
+                                    myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
+                                    myText->Clear();
+                                    *sector_flags[particle_key][sector] = false;
+                                    ++plot_counter;
+                                    break;
+                                }
                             }
                         }
+
+                        break;  // Stop checking other particles after match
                     }
-
-                    break;  // Stop checking other particles after match
                 }
-            }
 
-            myCanvas->cd();
+                myCanvas->cd();
 
-            myCanvas->cd()->SetGrid();
-            myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
+                myCanvas->cd()->SetGrid();
+                myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
 
-            if (HistoList[i]->InheritsFrom("TH1") || HistoList[i]->InheritsFrom("TH2")) {
-                auto *h = (TH1 *)HistoList[i];
-                h->GetYaxis()->SetTitleOffset(1.5);
-                h->GetXaxis()->SetTitleOffset(1.1);
-            } else if (HistoList[i]->InheritsFrom("TGraph")) {
-                auto *g = (TGraph *)HistoList[i];
-                g->SetTitle((std::string(g->GetTitle()) + std::string(" - " + CodeRun_status)).c_str());  // Ensure title has x and y labels
+                if (TempHistoList[i]->InheritsFrom("TH1") || TempHistoList[i]->InheritsFrom("TH2")) {
+                    auto *h = (TH1 *)TempHistoList[i];
+                    h->GetYaxis()->SetTitleOffset(1.5);
+                    h->GetXaxis()->SetTitleOffset(1.1);
+                } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
+                    auto *g = (TGraph *)TempHistoList[i];
+                    g->SetTitle((std::string(g->GetTitle()) + std::string(" - " + TempCodeRun_status)).c_str());  // Ensure title has x and y labels
 
-                g->GetYaxis()->SetTitleOffset(1.5);
-                g->GetXaxis()->SetTitleOffset(1.1);
-            }
+                    g->GetYaxis()->SetTitleOffset(1.5);
+                    g->GetXaxis()->SetTitleOffset(1.1);
+                }
 
-            // gPad->SetRightMargin(0.23);
+                if (TempHistoList[i]->InheritsFrom("TH1D")) {
+                    auto *h = (TH1D *)TempHistoList[i];
 
-            if (HistoList[i]->InheritsFrom("TH1D")) {
-                auto *h = (TH1D *)HistoList[i];
+                    h->Draw();
 
-                h->Draw();
+                    if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{")) {
+                        gPad->Update();
+                        TLine *speac_target_location_TLine;
+                        double speac_target_location_value = 0.0;
 
-                if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{")) {
-                    gPad->Update();
-                    TLine *speac_target_location_TLine;
-                    double speac_target_location_value = 0.0;
+                        if (Temptarget_status == "C12") {
+                            speac_target_location_value = (2.5 - 3.0);
+                        } else if (Temptarget_status == "Ar40") {
+                            speac_target_location_value = (-2.5 - 3.0);
+                        }
 
-                    if (target_status == "C12") {
-                        speac_target_location_value = (2.5 - 3.0);
-                    } else if (target_status == "Ar40") {
-                        speac_target_location_value = (-2.5 - 3.0);
+                        speac_target_location_TLine = new TLine(speac_target_location_value, 0., speac_target_location_value, gPad->GetFrame()->GetY2());
+                        speac_target_location_TLine->SetLineColor(kBlue);
+                        speac_target_location_TLine->Draw("same");
+
+                        TLine *measured_target_location_TLine;
+                        double measured_target_location_value = fit_peak_gaussian(h);
+
+                        measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
+                        measured_target_location_TLine->SetLineColor(kGreen + 1);
+                        measured_target_location_TLine->SetLineWidth(3);
+                        measured_target_location_TLine->SetLineStyle(2);
+                        measured_target_location_TLine->Draw("same");
+
+                        auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
+                        TLegendEntry *speac_target_location_TLine_entry =
+                            Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
+                        TLegendEntry *measured_target_location_TLine_entry =
+                            Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+
+                        Legend->Draw("same");
+
+                        auto ListOfFunctions = h->GetListOfFunctions();
+                        ListOfFunctions->Add(speac_target_location_TLine);
+                        ListOfFunctions->Add(measured_target_location_TLine);
+                        ListOfFunctions->Add(Legend);
                     }
+                } else if (TempHistoList[i]->InheritsFrom("TH2D")) {
+                    auto *h = (TH2D *)TempHistoList[i];
 
-                    speac_target_location_TLine = new TLine(speac_target_location_value, 0., speac_target_location_value, gPad->GetFrame()->GetY2());
-                    speac_target_location_TLine->SetLineColor(kBlue);
-                    // speac_target_location_TLine->SetLineWidth(2);
-                    speac_target_location_TLine->Draw("same");
+                    h->Draw("colz");
 
-                    TLine *measured_target_location_TLine;
-                    // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
-                    double measured_target_location_value = fit_peak_gaussian(h);
+                    myCanvas->SetLogz(0);
+                    if (basic_tools::FindSubstring(h->GetName(), "PCAL") && !basic_tools::FindSubstring(h->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
 
-                    measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
-                    measured_target_location_TLine->SetLineColor(kGreen + 1);
-                    measured_target_location_TLine->SetLineWidth(3);
-                    // measured_target_location_TLine->SetLineWidth(4);
-                    measured_target_location_TLine->SetLineStyle(2);
-                    measured_target_location_TLine->Draw("same");
-
-                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
-                    TLegendEntry *speac_target_location_TLine_entry =
-                        Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
-                    TLegendEntry *measured_target_location_TLine_entry =
-                        Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
-
-                    Legend->Draw("same");
-
-                    auto ListOfFunctions = h->GetListOfFunctions();
-                    ListOfFunctions->Add(speac_target_location_TLine);
-                    ListOfFunctions->Add(measured_target_location_TLine);
-                    ListOfFunctions->Add(Legend);
+                    if (h->GetEntries() != 0) {
+                        gPad->Update();
+                        TPaletteAxis *palette = (TPaletteAxis *)h->GetListOfFunctions()->FindObject("palette");
+                        palette->SetY2NDC(0.55);
+                        gPad->Modified();
+                        gPad->Update();
+                    }
+                } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
+                    ((TGraph *)TempHistoList[i])->Draw("ap");
                 }
-            } else if (HistoList[i]->InheritsFrom("TH2D")) {
-                auto *h = (TH2D *)HistoList[i];
 
-                h->Draw("colz");
-
-                myCanvas->SetLogz(0);
-                if (basic_tools::FindSubstring(h->GetName(), "PCAL") && !basic_tools::FindSubstring(h->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
-
-                if (h->GetEntries() != 0) {
-                    gPad->Update();
-                    TPaletteAxis *palette = (TPaletteAxis *)h->GetListOfFunctions()->FindObject("palette");
-                    palette->SetY2NDC(0.55);
-                    gPad->Modified();
-                    gPad->Update();
+                if (basic_tools::FindSubstring(TempHistoList[i]->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(TempHistoList[i]->GetTitle(), "sector")) {
+                    std::string Individual_PDF_fileName = IndividualPlotsTempOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
+                    myCanvas->SaveAs(Individual_PDF_fileName.c_str());
+                    histogram_functions::FixPDFOrientation(Individual_PDF_fileName);
                 }
-            } else if (HistoList[i]->InheritsFrom("TGraph")) {
-                ((TGraph *)HistoList[i])->Draw("ap");
-                // ((TGraph *)HistoList[i])->Draw("APL");
 
-                // TLegend *Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.10 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.20 - yOffset);
-                // Legend->AddEntry(HistoList[i], HistoList[i]->GetTitle(), "l");
-                // Legend->Draw("same");
-
-                // HistoList[i]->GetListOfFunctions()->Add(Legend);
+                myCanvas->Print(fileName, "pdf");
+                myCanvas->Clear();
+                ++plot_counter;
             }
 
-            if (basic_tools::FindSubstring(HistoList[i]->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(HistoList[i]->GetTitle(), "sector")) {
-                std::string Individual_PDF_fileName = IndividualPlotsOutputDir + to_string(plot_counter) + "_" + HistoList[i]->GetName() + ".pdf";
-                myCanvas->SaveAs(Individual_PDF_fileName.c_str());
-                histogram_functions::FixPDFOrientation(Individual_PDF_fileName);
-            }
-
+            sprintf(fileName, "%s]", PDF_fileName.c_str());
             myCanvas->Print(fileName, "pdf");
-            myCanvas->Clear();
-            ++plot_counter;
-        }
 
-        sprintf(fileName, "%s]", PDF_fileName.c_str());
-        myCanvas->Print(fileName, "pdf");
+            histogram_functions::FixPDFOrientation(PDF_fileName);                                                             // Fix orientation
+            histogram_functions::ReassignPDFBookmarks(basic_tools::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+        };
 
-        histogram_functions::FixPDFOrientation(PDF_fileName);                                                             // Fix orientation
-        histogram_functions::ReassignPDFBookmarks(basic_tools::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+        GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
+                          NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
                                                 h_SF_VS_Edep_PCAL_BC_sector4_1e_cut, h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
