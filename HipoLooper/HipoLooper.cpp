@@ -3030,8 +3030,8 @@ void HipoLooper() {
             h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
-            h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->par()->getVz(), weight);
+            h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
+            h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
 
             h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
             h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
