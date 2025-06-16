@@ -63,8 +63,8 @@ void HipoLooper() {
     // theta_slices.push_back({15.0, 20.0});
     // theta_slices.push_back({20.0, 25.0});
     // theta_slices.push_back({25.0, 30.0});
-    theta_slices.push_back({30.0, 35.0});
-    // theta_slices.push_back({35.0, 40.0});
+    // theta_slices.push_back({30.0, 35.0});
+    theta_slices.push_back({35.0, 40.0});
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
