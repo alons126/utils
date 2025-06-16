@@ -3756,6 +3756,8 @@ void HipoLooper() {
                     auto Vz_pip_corrected = correct_Vz(Vz_pip, r, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_rad);
 
                     std::cout << "Vz_pip: " << Vz_pip << ", Vz_pip_corrected: " << Vz_pip_corrected << std::endl;
+                    std::cout << "r: " << r << ", phi_beam_rad: " << phi_beam_rad << std::endl;
+                    std::cout << std::endl;
 
                     h_Vx_pipFD_AC_1e_cut->Fill(Vx_pip, weight);
                     h_Vy_pipFD_AC_1e_cut->Fill(Vy_pip, weight);
