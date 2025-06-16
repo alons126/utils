@@ -204,9 +204,9 @@ void HipoLooper() {
         Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};   // pimCD
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
-        auto compute_r = [](std::map<std::string, std::pair<double, double>> Beam_Coordinates) -> double {
-            double Vx_peak = Beam_Coordinates[CodeRun_status].first;
-            double Vy_peak = Beam_Coordinates[CodeRun_status].second;
+        auto compute_r = [](std::map<std::string, std::pair<double, double>> Beam_Coor) -> double {
+            double Vx_peak = Beam_Coor[CodeRun_status].first;
+            double Vy_peak = Beam_Coor[CodeRun_status].second;
 
             if (IsData) {
                 if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
@@ -218,9 +218,9 @@ void HipoLooper() {
         };
 
         // Lambda to compute phi_beam in degrees, using atan2 for correct quadrant
-        auto compute_phi_beam_rad = [](std::map<std::string, std::pair<double, double>> Beam_Coordinates) -> double {
-            double Vx_peak = Beam_Coordinates[CodeRun_status].first;
-            double Vy_peak = Beam_Coordinates[CodeRun_status].second;
+        auto compute_phi_beam_rad = [](std::map<std::string, std::pair<double, double>> Beam_Coor) -> double {
+            double Vx_peak = Beam_Coor[CodeRun_status].first;
+            double Vy_peak = Beam_Coor[CodeRun_status].second;
 
             if (IsData) {
                 if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
@@ -236,8 +236,8 @@ void HipoLooper() {
             return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
-        auto r = compute_r(Beam_Coordinates[CodeRun_status].first, Beam_Coordinates[CodeRun_status].second);
-        auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates[CodeRun_status].first, Beam_Coordinates[CodeRun_status].second);
+        auto r = compute_r(Beam_Coordinates);
+        auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
 #pragma region electron histograms
 
