@@ -101,9 +101,9 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
     if (useThetaSlice) {
-        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} for " + basic_tools::ToStringWithPrecision(theta_slice.at(0)) + "#circ #leq #theta_{" + Particle +
-                     "} #leq " + basic_tools::ToStringWithPrecision(theta_slice.at(1)) + "#circ;#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]")
-                        .c_str());
+        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} for " + basic_tools::ToStringWithPrecision(theta_slice.first) + "#circ #leq #theta_{" + Particle +
+                     "} #leq " + basic_tools::ToStringWithPrecision(theta_slice.second) + "#circ;#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]")
+                       .c_str());
     } else {
         g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]").c_str());
     }
