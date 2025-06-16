@@ -48,23 +48,23 @@ void HipoLooper() {
     std::string General_status = "";
     // std::string General_status = "RegTest";
 
-    bool ApplyLimiter = false;
-    int Limiter = 10000000;  // 10M events (fo the data)
+    // bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
+    // int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
-    // int Limiter = 100000;  // 10 files or 100K events (fo the data)
+    int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
     std::vector<std::vector<double>> theta_slices;
-    theta_slices.push_back({-9999.0, 9999.0});
+    // theta_slices.push_back({-9999.0, 9999.0});
     theta_slices.push_back({0.0, 180.0});
-    theta_slices.push_back({5.0, 10.0});
-    theta_slices.push_back({10.0, 15.0});
-    theta_slices.push_back({15.0, 20.0});
-    theta_slices.push_back({20.0, 25.0});
-    theta_slices.push_back({25.0, 30.0});
-    theta_slices.push_back({30.0, 35.0});
-    theta_slices.push_back({35.0, 40.0});
-    // std::vector<double> theta_slices = {5.0, 10.0, 10.0, 15.0, 15.0, 20.0, 20.0, 25.0, 25.0, 30.0, 30.0, 35.0, 35.0, 40.0};
+    // theta_slices.push_back({5.0, 10.0});
+    // theta_slices.push_back({10.0, 15.0});
+    // theta_slices.push_back({15.0, 20.0});
+    // theta_slices.push_back({20.0, 25.0});
+    // theta_slices.push_back({25.0, 30.0});
+    // theta_slices.push_back({30.0, 35.0});
+    // theta_slices.push_back({35.0, 40.0});
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
@@ -3746,24 +3746,27 @@ void HipoLooper() {
             myText->cd();
 
             titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
+            text.DrawLatex(0.05, 0.80, "This output is Ar40 implementation in GEMC");
             text.DrawLatex(0.05, 0.75, ("Plots from (e,e') events in: #font[42]{" + CodeRun_status + "}").c_str());
 
             if (IsData) {
-                text.DrawLatex(0.05, 0.7, ("InputFiles: #font[42]{" + InputFiles.at(sample) + "}").c_str());
+                text.DrawLatex(0.05, 0.70, ("InputFiles: #font[42]{" + InputFiles.at(sample) + "}").c_str());
+                text.DrawLatex(0.05, 0.65, ("OutFolderName: #font[42]{" + OutFolderName + "}").c_str());
             } else {
-                text.DrawLatex(0.05, 0.7, ("BaseDir: #font[42]{" + BaseDir + "}").c_str());
+                text.DrawLatex(0.05, 0.70, ("BaseDir: #font[42]{" + BaseDir + "}").c_str());
                 text.DrawLatex(0.05, 0.65, ("InputFiles: #font[42]{BaseDir + " + InputFiles.at(sample).substr(BaseDir.length()) + "}").c_str());
+                text.DrawLatex(0.05, 0.60, ("OutFolderName: #font[42]{BaseDir + " + OutFolderName + "}").c_str());
             }
 
-            text.DrawLatex(0.05, 0.60, "Event counts:");
-            text.DrawLatex(0.10, 0.55, ("Total #(events):            #font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
-            text.DrawLatex(0.10, 0.50, ("#(Events) with any e_det:  #font[42]{" + std::to_string(NumOfEvents_wAny_e_det) + "}").c_str());
-            text.DrawLatex(0.10, 0.45,
+            text.DrawLatex(0.05, 0.55, "Event counts:");
+            text.DrawLatex(0.10, 0.50, ("Total #(events):            #font[42]{" + std::to_string(NumOfEvents) + "}").c_str());
+            text.DrawLatex(0.10, 0.45, ("#(Events) with any e_det:  #font[42]{" + std::to_string(NumOfEvents_wAny_e_det) + "}").c_str());
+            text.DrawLatex(0.10, 0.40,
                            ("#(Events) with one e_det:  #font[42]{" + std::to_string(NumOfEvents_wOne_e_det) + " (" +
                             basic_tools::ToStringWithPrecision((100 * NumOfEvents_wOne_e_det / NumOfEvents_wAny_e_det), 2) + "%)}")
                                .c_str());
-            text.DrawLatex(0.10, 0.40, ("#(Events) with any e:       #font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
-            text.DrawLatex(0.10, 0.35,
+            text.DrawLatex(0.10, 0.35, ("#(Events) with any e:       #font[42]{" + std::to_string(NumOfEvents_wAny_e) + "}").c_str());
+            text.DrawLatex(0.10, 0.30,
                            ("#(Events) with one e:       #font[42]{" + std::to_string(NumOfEvents_wOne_e) + " (" +
                             basic_tools::ToStringWithPrecision((100 * NumOfEvents_wOne_e / NumOfEvents_wAny_e), 2) + "%)}")
                                .c_str());
