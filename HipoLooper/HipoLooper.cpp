@@ -3259,8 +3259,8 @@ void HipoLooper() {
             auto compute_phi_beam_deg = [](double Vx_peak, double Vy_peak) -> double { return std::atan2(Vy_peak, Vx_peak) * 180 / analysis_math::pi; };
 
             // Lambda to compute corrected Vz
-            auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_particle_rad) -> double {
-                return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_particle_rad);
+            auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
+                return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
                 // auto correct_Vz = [](double Vz_rec, double r, double theta_deg, double phi_particle_deg, double phi_beam_deg) -> double {
                 //     double theta_rad = theta_deg * 180 / analysis_math::pi;
                 //     double delta_phi_rad = (phi_particle_deg - phi_beam_deg) * 180 / analysis_math::pi;
