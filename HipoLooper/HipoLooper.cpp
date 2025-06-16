@@ -46,6 +46,7 @@ void HipoLooper() {
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     std::string General_status = "newTest";
+    General_status = "_" + General_status;
 
     // bool ApplyLimiter = false;
     bool ApplyLimiter = true;
@@ -90,7 +91,7 @@ void HipoLooper() {
     for (int theta_slice = 0; theta_slice < theta_slices.size(); theta_slice++) {
         if (theta_slices.size() != 0) {
             General_status = "_" + basic_tools::ReplaceSubstring(basic_tools::ToStringWithPrecision(theta_slices.at(theta_slice).at(0), 0), ".", "_") + "_to_" +
-                             basic_tools::ReplaceSubstring(basic_tools::ToStringWithPrecision(theta_slices.at(theta_slice).at(1), 0), ".", "_") + "_theta_slices" + General_status;
+                             basic_tools::ReplaceSubstring(basic_tools::ToStringWithPrecision(theta_slices.at(theta_slice).at(1), 0), ".", "_") + "_deg" + General_status;
         }
 
         for (int sample = 0; sample < InputFiles.size(); sample++) {
