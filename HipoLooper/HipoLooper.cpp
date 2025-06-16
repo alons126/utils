@@ -188,9 +188,11 @@ void HipoLooper() {
         std::vector<double> HistoList_zoomin_limits;
 
         if (target_status == "Ar40") {
-            HistoList_zoomin_limits.push_back(-8.0, -4.0);
+            HistoList_zoomin_limits.push_back(-8.0);
+            HistoList_zoomin_limits.push_back(-4.0);
         } else if (target_status == "C12") {
-            HistoList_zoomin_limits.push_back(-4.0, 1.0);
+            HistoList_zoomin_limits.push_back(-4.0);
+            HistoList_zoomin_limits.push_back(1.0);
         }
 
 #pragma region electron histograms
