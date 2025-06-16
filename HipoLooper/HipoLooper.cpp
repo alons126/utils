@@ -45,8 +45,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "";
-    // std::string General_status = "RegTest";
+    std::string General_status = "newTest";
 
     // bool ApplyLimiter = false;
     bool ApplyLimiter = true;
