@@ -4095,7 +4095,7 @@ void HipoLooper() {
         for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
         outFile_ByThetaSlices->Close();
 
-        HistoList_ByThetaSlices.clear();
+        // HistoList_ByThetaSlices.clear();
         // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
 
 #pragma endregion
