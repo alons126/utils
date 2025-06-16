@@ -39,51 +39,51 @@ using namespace constants;
 void HipoLooper() {
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    int version = 16;  // Version of the code
+    int version = 17;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     std::string General_status = "";
     // std::string General_status = "RegTest";
 
-    bool ApplyLimiter = false;
-    int Limiter = 10000000;  // 10M events (fo the data)
-    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    bool ApplyLimiter = true;
+    // int Limiter = 10000000;  // 10M events (fo the data)
+    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
     // bool apply_theta_slices = true;
-    // std::vector<double> theta_slices = {0.0, 180.0};
+    std::vector<double> theta_slices = {0.0, 180.0};
     // std::vector<double> theta_slices = {5.0, 10.0};
     // std::vector<double> theta_slices = {10.0, 15.0};
     // std::vector<double> theta_slices = {15.0, 20.0};
     // std::vector<double> theta_slices = {20.0, 25.0};
     // std::vector<double> theta_slices = {25.0, 30.0};
     // std::vector<double> theta_slices = {30.0, 35.0};
-    std::vector<double> theta_slices = {35.0, 40.0};
+    // std::vector<double> theta_slices = {35.0, 40.0};
     // std::vector<double> theta_slices = {5.0, 10.0, 10.0, 15.0, 15.0, 20.0, 20.0, 25.0, 25.0, 30.0, 30.0, 35.0, 35.0, 40.0};
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
     std::vector<std::string> InputFiles;
 
-    // Data samples:
+    // // Data samples:
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
     InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
-    // Simulation samples:
+    // // Simulation samples:
 
-    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
-    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
 
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
 
     if (theta_slices.size() != 0) {
         General_status = "_" + basic_tools::ReplaceSubstring(basic_tools::ToStringWithPrecision(theta_slices.at(0), 0), ".", "_") + "_to_" +
@@ -3001,7 +3001,7 @@ void HipoLooper() {
 
 #pragma region Electrons APID
             // if (true) {
-            if (electrons[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(0) && electrons[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(1)) {
+            if ((electrons[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(0)) && (electrons[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(1))) {
                 h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
                 h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
                 h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
@@ -3262,7 +3262,7 @@ void HipoLooper() {
 #pragma region piplus APID
             for (int i = 0; i < piplus.size(); i++) {
                 if (piplus[i]->getRegion() == FD &&
-                    (piplus[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(0) && piplus[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(1))) {
+                    ((piplus[i]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(0)) && (piplus[i]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(1)))) {
                     // if (piplus[i]->getRegion() == FD) {
                     h_Vx_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVx(), weight);
                     h_Vy_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getVy(), weight);
@@ -3468,7 +3468,7 @@ void HipoLooper() {
 #pragma region piminus APID
             for (int i = 0; i < piminus.size(); i++) {
                 if (piminus[i]->getRegion() == FD &&
-                    (piminus[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(0) && piminus[0]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(1))) {
+                    ((piminus[i]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(0)) && (piminus[i]->getTheta() * 180 / analysis_math::pi >= theta_slices.at(1)))) {
                     // if (piminus[i]->getRegion() == FD) {
                     h_Vx_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVx(), weight);
                     h_Vy_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getVy(), weight);
