@@ -204,9 +204,9 @@ void HipoLooper() {
         Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};   // pimCD
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
-        auto compute_r = [](std::map<std::string, std::pair<double, double>> Beam_Coor) -> double {
-            double Vx_peak = Beam_Coor[CodeRun_status].first;
-            double Vy_peak = Beam_Coor[CodeRun_status].second;
+        auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor) -> double {
+            double Vx_peak = Beam_Coor.at(CodeRun_status).first;
+            double Vy_peak = Beam_Coor.at(CodeRun_status).second;
 
             if (IsData) {
                 if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
@@ -217,10 +217,10 @@ void HipoLooper() {
             return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak);
         };
 
-        // Lambda to compute phi_beam in degrees, using atan2 for correct quadrant
-        auto compute_phi_beam_rad = [](std::map<std::string, std::pair<double, double>> Beam_Coor) -> double {
-            double Vx_peak = Beam_Coor[CodeRun_status].first;
-            double Vy_peak = Beam_Coor[CodeRun_status].second;
+        // Lambda to compute phi_beam in radians, using atan2 for correct quadrant
+        auto compute_phi_beam_rad = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor) -> double {
+            double Vx_peak = Beam_Coor.at(CodeRun_status).first;
+            double Vy_peak = Beam_Coor.at(CodeRun_status).second;
 
             if (IsData) {
                 if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
