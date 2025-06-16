@@ -48,7 +48,7 @@ void HipoLooper() {
     std::string General_status = "";
     // std::string General_status = "RegTest";
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
@@ -56,14 +56,14 @@ void HipoLooper() {
 
     std::vector<std::vector<double>> theta_slices;
     theta_slices.push_back({-9999.0, 9999.0});
-    // theta_slices.push_back({0.0, 180.0});
-    // theta_slices.push_back({5.0, 10.0});
-    // theta_slices.push_back({10.0, 15.0});
-    // theta_slices.push_back({15.0, 20.0});
-    // theta_slices.push_back({20.0, 25.0});
-    // theta_slices.push_back({25.0, 30.0});
-    // theta_slices.push_back({30.0, 35.0});
-    // theta_slices.push_back({35.0, 40.0});
+    theta_slices.push_back({0.0, 180.0});
+    theta_slices.push_back({5.0, 10.0});
+    theta_slices.push_back({10.0, 15.0});
+    theta_slices.push_back({15.0, 20.0});
+    theta_slices.push_back({20.0, 25.0});
+    theta_slices.push_back({25.0, 30.0});
+    theta_slices.push_back({30.0, 35.0});
+    theta_slices.push_back({35.0, 40.0});
     // std::vector<double> theta_slices = {5.0, 10.0, 10.0, 15.0, 15.0, 20.0, 20.0, 25.0, 25.0, 30.0, 30.0, 35.0, 35.0, 40.0};
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
