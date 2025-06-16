@@ -158,6 +158,7 @@ void HipoLooper() {
         system(("mkdir -p " + IndividualPlotsOutputDir).c_str());
 
         TFile *outFile = new TFile((OutputDir + "/" + OutFileName + ".root").c_str(), "RECREATE");
+        TFile *outFile_ByThetaSlices = new TFile((OutputDir + "/" + OutFileName + "_ByThetaSlices.root").c_str(), "RECREATE");
 
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
         TString Beam_energy_TString = Ebeam_status_1;
@@ -175,7 +176,7 @@ void HipoLooper() {
         // Prepare histograms
         /////////////////////////////////////
         vector<TObject *> HistoList;
-        vector<TObject *> HistoList_ByThetaSlice;
+        vector<TObject *> HistoList_ByThetaSlices;
         // vector<TH1 *> HistoList;
 
         gStyle->SetTitleXSize(0.05);
@@ -203,7 +204,7 @@ void HipoLooper() {
         TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_AC_1e_cut);
 
-        hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlice, "Vz_e_AC_1e_cut_BySliceOf",
+        hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_1e_cut_BySliceOf",
                                                      "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
 
         TH1D *h_Vz_e_BC_zoomin_1e_cut = new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75,
@@ -214,7 +215,7 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
 
         hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlice, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
                     "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
                     HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
@@ -3692,26 +3693,26 @@ void HipoLooper() {
         FittedParametersGraph->GetXaxis()->CenterTitle();
         FittedParametersGraph->GetYaxis()->CenterTitle();
 
-        for (int i = 0; i < HistoList_ByThetaSlice.size(); i++) {
-            if (HistoList_ByThetaSlice[i]->InheritsFrom("TH1")) {
-                auto *h1 = (TH1 *)HistoList_ByThetaSlice[i];
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) {
+            if (HistoList_ByThetaSlices[i]->InheritsFrom("TH1")) {
+                auto *h1 = (TH1 *)HistoList_ByThetaSlices[i];
                 h1->Sumw2();
                 h1->SetMinimum(0);
                 h1->SetLineWidth(2);
                 h1->SetLineColor(kRed);
             }
 
-            if (HistoList_ByThetaSlice[i]->InheritsFrom("TH1") || HistoList_ByThetaSlice[i]->InheritsFrom("TH2")) {
-                auto *h = (TH1 *)HistoList_ByThetaSlice[i];
+            if (HistoList_ByThetaSlices[i]->InheritsFrom("TH1") || HistoList_ByThetaSlices[i]->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)HistoList_ByThetaSlices[i];
                 h->GetXaxis()->CenterTitle();
                 h->GetYaxis()->CenterTitle();
-            } else if (HistoList_ByThetaSlice[i]->InheritsFrom("TGraph")) {
-                auto *g = (TGraph *)HistoList_ByThetaSlice[i];
+            } else if (HistoList_ByThetaSlices[i]->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)HistoList_ByThetaSlices[i];
                 g->GetXaxis()->CenterTitle();
                 g->GetYaxis()->CenterTitle();
             }
 
-            // if (std::string(HistoList_ByThetaSlice[i]->GetName()) == "Vz_VS_phi_e_AC_1e_cut") { insert_index = i + 1; }
+            // if (std::string(HistoList_ByThetaSlices[i]->GetName()) == "Vz_VS_phi_e_AC_1e_cut") { insert_index = i + 1; }
         }
 
         /////////////////////////////////////////////////////
@@ -3981,7 +3982,7 @@ void HipoLooper() {
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
-        GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlice"), BaseDir, InputFiles, sample, HistoList_ByThetaSlice, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
+        GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
                           NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
@@ -4089,6 +4090,14 @@ void HipoLooper() {
         outFile->cd();
         for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
         outFile->Close();
+
+        outFile_ByThetaSlices->cd();
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
+        outFile_ByThetaSlices->Close();
+
+        HistoList_ByThetaSlices.clear();
+        // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
+
 #pragma endregion
 
         // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
