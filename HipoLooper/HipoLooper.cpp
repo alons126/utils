@@ -185,6 +185,14 @@ void HipoLooper() {
         char temp_name[100];
         char temp_title[100];
 
+        std::vector<double> HistoList_zoomin_limits;
+
+        if (target_status == "Ar40") {
+            HistoList_zoomin_limits.push_back(-8.0, -4.0);
+        } else if (target_status == "C12") {
+            HistoList_zoomin_limits.push_back(-4.0, 1.0);
+        }
+
 #pragma region electron histograms
 
 #pragma region electron histograms - all sectors
@@ -196,32 +204,16 @@ void HipoLooper() {
         hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_1e_cut_BySliceOf",
                                                      "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
 
-        TH1D *h_Vz_e_BC_zoomin_1e_cut, *h_Vz_e_AC_zoomin_1e_cut;
-        hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf;
+        TH1D *h_Vz_e_BC_zoomin_1e_cut = new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75,
+                                                 HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
+        HistoList.push_back(h_Vz_e_BC_zoomin_1e_cut);
+        TH1D *h_Vz_e_AC_zoomin_1e_cut = new TH1D("Vz_e_AC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75,
+                                                 HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
+        HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
 
-        if (target_status == "Ar40") {
-            h_Vz_e_BC_zoomin_1e_cut =
-                new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -8, -4);
-            HistoList.push_back(h_Vz_e_BC_zoomin_1e_cut);
-            h_Vz_e_AC_zoomin_1e_cut =
-                new TH1D("Vz_e_AC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -8, -4);
-            HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
-
-            h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
-                hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
-                        "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -8, -4, 75, -8, -4, "#theta_{e} [#circ]");
-        } else if (target_status == "C12") {
-            h_Vz_e_BC_zoomin_1e_cut =
-                new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
-            HistoList.push_back(h_Vz_e_BC_zoomin_1e_cut);
-            h_Vz_e_AC_zoomin_1e_cut =
-                new TH1D("Vz_e_AC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
-            HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
-
-            h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
-                hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
-                        "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -4, 1, 75, -4, 1, "#theta_{e} [#circ]");
-        }
+        hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf = hsPlots(
+            theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOf", "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts",
+            75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
         TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_1e_cut);

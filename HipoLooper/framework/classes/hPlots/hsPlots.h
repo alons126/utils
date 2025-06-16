@@ -32,9 +32,7 @@ class hsPlots {
    public:
     enum HistoType { TH1D_TYPE, TH2D_TYPE };
 
-    // hsPlots constructors ---------------------------------------------------------------------------------------------------------------------------------------------
-
-    hsPlots() = default;
+    // hsPlots constructor ----------------------------------------------------------------------------------------------------------------------------------------------
 
     hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, const std::string& baseName, const std::string& titleTemplate,
             const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var);
@@ -63,7 +61,7 @@ class hsPlots {
         displayText->SetTextAlign(22);
         displayText->Draw();
     }
-
+    
     // SaveHistograms function -------------------------------------------------------------------------------------------------------------------------------------
 
     void SaveHistograms(const std::string& outputDir, const std::string& baseFileName) const;
