@@ -43,7 +43,8 @@ namespace variable_correctors {
  * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
  * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Vz_0, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<double> &Zrec_peaks, const std::vector<double> &phi_peaks = {}) {
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<double> &Zrec_peaks, const std::vector<double> &phi_peaks = {},
+                                                            const std::pair<double, double> &theta_slice = {-1, -1}) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
     std::string sector_lable[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
@@ -77,9 +78,25 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
 
+    bool useThetaSlice = (theta_slice.first > 0.0 && theta_slice.second > 0.0 && theta_slice.second > theta_slice.first);
+
+    double mean_theta = 0.0;
+    double mean_theta_rad = 0.0;
+    if (useThetaSlice) {
+        mean_theta = 0.5 * (theta_slice.first + theta_slice.second);  // mean in degrees
+        // mean_theta is provided in degrees; convert to radians for trigonometric use
+        mean_theta_rad = mean_theta * TMath::DegToRad();
+    }
+
     // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
-    g->SetTitle(("Rec V_{z}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "} [#circ];Rec V_{z}^{" + Particle + "} peaks [cm]").c_str());
+    if (useThetaSlice) {
+        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} for " + basic_tools::ToStringWithPrecision(theta_slice.at(0)) + "#circ #leq #theta_{" + Particle +
+                     "} #leq " + basic_tools::ToStringWithPrecision(theta_slice.at(1)) + "#circ;#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]")
+                        .c_str());
+    } else {
+        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]").c_str());
+    }
     g->SetMarkerStyle(21);
     g->SetMarkerSize(1.5);
     g->GetXaxis()->CenterTitle();
@@ -101,10 +118,15 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     // }
 
     // Fit function: argument in degrees, convert to radians in the formula
-    TF1 *fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
-    fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_0");
-    fitFunc->SetLineWidth(3);
-    fitFunc->SetLineColor(kRed);
+    TF1 *fitFunc = nullptr;
+    if (!useThetaSlice) {
+        fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
+        fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_0");
+    } else {
+        // mean_theta is provided in degrees; convert to radians for trigonometric use
+        fitFunc = new TF1("fitFunc", ([=](double *x, double *par) { return (par[0] / tan(mean_theta_rad)) * cos((x[0] - par[1]) * TMath::DegToRad()) + par[2]; }), -180, 180, 3);
+        fitFunc->SetParNames("r", "Phi_beam", "Vz_0");
+    }
 
     double maxZ = *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end());
     double minZ = *std::min_element(Zrec_peaks.begin(), Zrec_peaks.end());
@@ -124,6 +146,10 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     double phi_beam = fitFunc->GetParameter(1);
     double Vz_0 = fitFunc->GetParameter(2);
 
+    if (useThetaSlice) {
+        A = A / tan(mean_theta_rad);  // convert back from r to amplitude
+    }
+
     phi_beam = fmod(phi_beam, 360.0);
     if (phi_beam < -180.0) {
         phi_beam += 360.0;
@@ -132,7 +158,13 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     }
 
     std::ostringstream legendText;
-    legendText << "V_{z}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,0}";
+
+    if (useThetaSlice) {
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = (r/tan(" << basic_tools::ToStringWithPrecision(mean_theta) << "#circ))*cos(#phi_{" << Particle
+                   << "} - #phi_{beam}) + V_{z,true}";
+    } else {
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,true}";
+    }
 
     TLegend *legend = new TLegend(0.18, 0.81, 0.59, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
@@ -151,7 +183,12 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     }
 
     FitParam1->AddText(("Fit #chi^{2} = " + basic_tools::ToStringWithPrecision(fitFunc->GetChisquare())).c_str());
-    FitParam1->AddText(("A = " + basic_tools::ToStringWithPrecision(A) + " cm").c_str());
+
+    if (useThetaSlice) {
+        FitParam1->AddText(("r = " + basic_tools::ToStringWithPrecision(A) + " cm").c_str());
+    } else {
+        FitParam1->AddText(("A = " + basic_tools::ToStringWithPrecision(A) + " cm").c_str());
+    }
 
     FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
     FitParam2->AddText(("V_{z,0} = " + basic_tools::ToStringWithPrecision(Vz_0) + " cm").c_str());
