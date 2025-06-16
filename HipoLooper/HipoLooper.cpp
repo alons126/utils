@@ -175,6 +175,7 @@ void HipoLooper() {
         // Prepare histograms
         /////////////////////////////////////
         vector<TObject *> HistoList;
+        vector<TObject *> HistoList_ByThetaSlice;
         // vector<TH1 *> HistoList;
 
         gStyle->SetTitleXSize(0.05);
@@ -202,7 +203,7 @@ void HipoLooper() {
         TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_AC_1e_cut);
 
-        hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_1e_cut_BySliceOf",
+        hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlice, "Vz_e_AC_1e_cut_BySliceOf",
                                                      "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
 
         TH1D *h_Vz_e_BC_zoomin_1e_cut = new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75,
@@ -212,9 +213,10 @@ void HipoLooper() {
                                                  HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
         HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
 
-        hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf = hsPlots(
-            theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOf", "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts",
-            75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
+        hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlice, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
+                    "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
+                    HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
         TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_1e_cut);
@@ -3734,14 +3736,14 @@ void HipoLooper() {
             text.DrawLatex(0.10, 0.40, ("Total #(events):            #font[42]{" + std::to_string(TempNumOfEvents) + "}").c_str());
             text.DrawLatex(0.10, 0.35, ("#(Events) with any e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wAny_e_det) + "}").c_str());
             text.DrawLatex(0.10, 0.30,
-                        ("#(Events) with one e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wOne_e_det) + " (" +
+                           ("#(Events) with one e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wOne_e_det) + " (" +
                             basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e_det / TempNumOfEvents_wAny_e_det), 2) + "%)}")
-                                .c_str());
+                               .c_str());
             text.DrawLatex(0.10, 0.25, ("#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}").c_str());
             text.DrawLatex(0.10, 0.20,
-                        ("#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
+                           ("#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
                             basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
-                                .c_str());
+                               .c_str());
 
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
@@ -3753,23 +3755,23 @@ void HipoLooper() {
 
             bool first_electron = true;
             bool first_electron_sector1 = true, first_electron_sector2 = true, first_electron_sector3 = true, first_electron_sector4 = true, first_electron_sector5 = true,
-                first_electron_sector6 = true;
+                 first_electron_sector6 = true;
 
             bool first_piplusFD = true;
             bool first_piplusFD_sector1 = true, first_piplusFD_sector2 = true, first_piplusFD_sector3 = true, first_piplusFD_sector4 = true, first_piplusFD_sector5 = true,
-                first_piplusFD_sector6 = true;
+                 first_piplusFD_sector6 = true;
 
             bool first_piminusFD = true;
             bool first_piminusFD_sector1 = true, first_piminusFD_sector2 = true, first_piminusFD_sector3 = true, first_piminusFD_sector4 = true, first_piminusFD_sector5 = true,
-                first_piminusFD_sector6 = true;
+                 first_piminusFD_sector6 = true;
 
             bool first_piplusCD = true;
             bool first_piplusCD_sector1 = true, first_piplusCD_sector2 = true, first_piplusCD_sector3 = true, first_piplusCD_sector4 = true, first_piplusCD_sector5 = true,
-                first_piplusCD_sector6 = true;
+                 first_piplusCD_sector6 = true;
 
             bool first_piminusCD = true;
             bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
-                first_piminusCD_sector6 = true;
+                 first_piminusCD_sector6 = true;
 
             int plot_counter = 2;
 
@@ -3785,40 +3787,40 @@ void HipoLooper() {
 
                 // Maps of sector flags (assumes these variables already exist)
                 std::map<std::string, std::map<int, bool *>> sector_flags = {{"{e}",
-                                                                            {{1, &first_electron_sector1},
-                                                                            {2, &first_electron_sector2},
-                                                                            {3, &first_electron_sector3},
-                                                                            {4, &first_electron_sector4},
-                                                                            {5, &first_electron_sector5},
-                                                                            {6, &first_electron_sector6}}},
-                                                                        {"{#pi^{+}FD}",
-                                                                            {{1, &first_piplusFD_sector1},
-                                                                            {2, &first_piplusFD_sector2},
-                                                                            {3, &first_piplusFD_sector3},
-                                                                            {4, &first_piplusFD_sector4},
-                                                                            {5, &first_piplusFD_sector5},
-                                                                            {6, &first_piplusFD_sector6}}},
-                                                                        {"{#pi^{-}FD}",
-                                                                            {{1, &first_piminusFD_sector1},
-                                                                            {2, &first_piminusFD_sector2},
-                                                                            {3, &first_piminusFD_sector3},
-                                                                            {4, &first_piminusFD_sector4},
-                                                                            {5, &first_piminusFD_sector5},
-                                                                            {6, &first_piminusFD_sector6}}},
-                                                                        {"{#pi^{+}CD}",
-                                                                            {{1, &first_piplusCD_sector1},
-                                                                            {2, &first_piplusCD_sector2},
-                                                                            {3, &first_piplusCD_sector3},
-                                                                            {4, &first_piplusCD_sector4},
-                                                                            {5, &first_piplusCD_sector5},
-                                                                            {6, &first_piplusCD_sector6}}},
-                                                                        {"{#pi^{-}CD}",
-                                                                            {{1, &first_piminusCD_sector1},
-                                                                            {2, &first_piminusCD_sector2},
-                                                                            {3, &first_piminusCD_sector3},
-                                                                            {4, &first_piminusCD_sector4},
-                                                                            {5, &first_piminusCD_sector5},
-                                                                            {6, &first_piminusCD_sector6}}}};
+                                                                              {{1, &first_electron_sector1},
+                                                                               {2, &first_electron_sector2},
+                                                                               {3, &first_electron_sector3},
+                                                                               {4, &first_electron_sector4},
+                                                                               {5, &first_electron_sector5},
+                                                                               {6, &first_electron_sector6}}},
+                                                                             {"{#pi^{+}FD}",
+                                                                              {{1, &first_piplusFD_sector1},
+                                                                               {2, &first_piplusFD_sector2},
+                                                                               {3, &first_piplusFD_sector3},
+                                                                               {4, &first_piplusFD_sector4},
+                                                                               {5, &first_piplusFD_sector5},
+                                                                               {6, &first_piplusFD_sector6}}},
+                                                                             {"{#pi^{-}FD}",
+                                                                              {{1, &first_piminusFD_sector1},
+                                                                               {2, &first_piminusFD_sector2},
+                                                                               {3, &first_piminusFD_sector3},
+                                                                               {4, &first_piminusFD_sector4},
+                                                                               {5, &first_piminusFD_sector5},
+                                                                               {6, &first_piminusFD_sector6}}},
+                                                                             {"{#pi^{+}CD}",
+                                                                              {{1, &first_piplusCD_sector1},
+                                                                               {2, &first_piplusCD_sector2},
+                                                                               {3, &first_piplusCD_sector3},
+                                                                               {4, &first_piplusCD_sector4},
+                                                                               {5, &first_piplusCD_sector5},
+                                                                               {6, &first_piplusCD_sector6}}},
+                                                                             {"{#pi^{-}CD}",
+                                                                              {{1, &first_piminusCD_sector1},
+                                                                               {2, &first_piminusCD_sector2},
+                                                                               {3, &first_piminusCD_sector3},
+                                                                               {4, &first_piminusCD_sector4},
+                                                                               {5, &first_piminusCD_sector5},
+                                                                               {6, &first_piminusCD_sector6}}}};
 
                 std::string title = TempHistoList[i]->GetTitle();
 
@@ -3843,7 +3845,8 @@ void HipoLooper() {
                                 if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
                                     std::string bookmark_title = label + " plots - " + sector_title_str;
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
-                                    std::string hierarchical_title = histogram_functions::SanitizeForBookmark(label + " plots") + ">" + histogram_functions::SanitizeForBookmark(bookmark_title);
+                                    std::string hierarchical_title =
+                                        histogram_functions::SanitizeForBookmark(label + " plots") + ">" + histogram_functions::SanitizeForBookmark(bookmark_title);
                                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                                     myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
                                     myText->Clear();
@@ -3907,8 +3910,8 @@ void HipoLooper() {
                         auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
                         TLegendEntry *speac_target_location_TLine_entry =
                             Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
-                        TLegendEntry *measured_target_location_TLine_entry =
-                            Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                        TLegendEntry *measured_target_location_TLine_entry = Legend->AddEntry(
+                            measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
 
                         Legend->Draw("same");
 
@@ -3956,6 +3959,8 @@ void HipoLooper() {
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
+        GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlice"), BaseDir, InputFiles, sample, HistoList_ByThetaSlice, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
+                          NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
                                                 h_SF_VS_Edep_PCAL_BC_sector4_1e_cut, h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
