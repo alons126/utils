@@ -3692,6 +3692,28 @@ void HipoLooper() {
         FittedParametersGraph->GetXaxis()->CenterTitle();
         FittedParametersGraph->GetYaxis()->CenterTitle();
 
+        for (int i = 0; i < HistoList_ByThetaSlice.size(); i++) {
+            if (HistoList_ByThetaSlice[i]->InheritsFrom("TH1")) {
+                auto *h1 = (TH1 *)HistoList_ByThetaSlice[i];
+                h1->Sumw2();
+                h1->SetMinimum(0);
+                h1->SetLineWidth(2);
+                h1->SetLineColor(kRed);
+            }
+
+            if (HistoList_ByThetaSlice[i]->InheritsFrom("TH1") || HistoList_ByThetaSlice[i]->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)HistoList_ByThetaSlice[i];
+                h->GetXaxis()->CenterTitle();
+                h->GetYaxis()->CenterTitle();
+            } else if (HistoList_ByThetaSlice[i]->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)HistoList_ByThetaSlice[i];
+                g->GetXaxis()->CenterTitle();
+                g->GetYaxis()->CenterTitle();
+            }
+
+            // if (std::string(HistoList_ByThetaSlice[i]->GetName()) == "Vz_VS_phi_e_AC_1e_cut") { insert_index = i + 1; }
+        }
+
         /////////////////////////////////////////////////////
         // Now create the output PDFs
         /////////////////////////////////////////////////////
