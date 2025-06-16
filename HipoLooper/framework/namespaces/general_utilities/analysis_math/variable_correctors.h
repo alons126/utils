@@ -32,22 +32,29 @@ namespace variable_correctors {
  * the reconstructed z-vertex depends on the azimuthal angle of the detected particle.
  * This introduces a sector-dependent bias in Z_rec that follows a cosine dependence.
  * By fitting the peak Z_rec values across the 6 sectors to the form:
- *     Z_rec(φ) = A * cos(φ - φ_beam) + Vz_0
+ *     Z_rec(φ) = A * cos(φ - φ_beam) + Vz_true
  * one can extract:
- *   - A        : amplitude ∝ beam offset magnitude
- *   - φ_beam   : direction of the beam offset
- *   - Vz_0       : average z-position of the target center
+ *   - A             : amplitude ∝ beam offset magnitude
+ *   - φ_beam        : direction of the beam offset
+ *   - Vz_true       : average z-position of the target center
  *
- * The function returns a tuple with (Amplitude A, Beam direction φ_beam [rad], Vz_0, and TGraph* for visualization).
+ * Optionally, if a theta slice is provided, the fit is performed using:
+ *     Z_rec(φ) = (r / tan(mean_theta)) * cos(φ - φ_beam) + Vz_true
+ * which reflects the relation A = r / tan(theta) for transversely offset beams.
  *
- * @param Zrec_peaks Vector of peak vertex positions per sector (size must be 6).
- * @return std::tuple<double, double, double, TGraph*> with (A, φ_beam, Vz_0, graph with fit and legend).
+ * The function returns a tuple with (Amplitude A or offset r, Beam direction φ_beam [deg],
+ * Vz_true, and TGraph* for visualization).
+ *
+ * @param Zrec_peaks   Vector of peak vertex positions per sector (size must be 6).
+ * @param phi_peaks    Optional phi centers of the sectors [deg]. If omitted, estimated from SampleName.
+ * @param theta_slice  Optional pair of theta limits in degrees (first < second). Used to fit with A = r / tan(theta).
+ * @return std::tuple<double, double, double, TGraph*> with (A or r, φ_beam, Vz_true, graph with fit and legend).
  */
 std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<double> &Zrec_peaks, const std::vector<double> &phi_peaks = {},
                                                             const std::pair<double, double> &theta_slice = {-1, -1}) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
-    std::string sector_lable[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
+    std::string sector_label[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
 
     double phi_deg[6];
 
@@ -78,6 +85,9 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     for (int i = 0; i < 6; ++i) { z_vals[i] = Zrec_peaks[i]; }
 
+    double minZ = *std::min_element(Zrec_peaks.begin(), Zrec_peaks.end());
+    double maxZ = *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end());
+
     bool useThetaSlice = (theta_slice.first > 0.0 && theta_slice.second > 0.0 && theta_slice.second > theta_slice.first);
 
     double mean_theta = 0.0;
@@ -103,7 +113,9 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     g->GetYaxis()->CenterTitle();
 
     g->GetXaxis()->SetLimits(-180, 180);
-    g->GetYaxis()->SetRangeUser(*std::min_element(Zrec_peaks.begin(), Zrec_peaks.end()) * 1.02, *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end()) * 0.9);
+
+    double margin = 0.1 * std::abs(maxZ - minZ);
+    g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + margin);
 
     // if (basic_tools::FindSubstring(SampleName, "2GeV")) {
     //     if (basic_tools::FindSubstring(SampleName, "Ar40")) {
@@ -121,15 +133,13 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     TF1 *fitFunc = nullptr;
     if (!useThetaSlice) {
         fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
-        fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_0");
+        fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_true");
     } else {
         // mean_theta is provided in degrees; convert to radians for trigonometric use
         fitFunc = new TF1("fitFunc", ([=](double *x, double *par) { return (par[0] / tan(mean_theta_rad)) * cos((x[0] - par[1]) * TMath::DegToRad()) + par[2]; }), -180, 180, 3);
-        fitFunc->SetParNames("r", "Phi_beam", "Vz_0");
+        fitFunc->SetParNames("r", "Phi_beam", "Vz_true");
     }
 
-    double maxZ = *std::max_element(Zrec_peaks.begin(), Zrec_peaks.end());
-    double minZ = *std::min_element(Zrec_peaks.begin(), Zrec_peaks.end());
     double ampGuess = 0.5 * (maxZ - minZ);
     double meanGuess = 0.5 * (maxZ + minZ);
 
@@ -144,7 +154,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     double A = fitFunc->GetParameter(0);
     double phi_beam = fitFunc->GetParameter(1);
-    double Vz_0 = fitFunc->GetParameter(2);
+    double Vz_true = fitFunc->GetParameter(2);
 
     if (useThetaSlice) {
         A = A / tan(mean_theta_rad);  // convert back from r to amplitude
@@ -160,7 +170,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     std::ostringstream legendText;
 
     if (useThetaSlice) {
-        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = (r/tan(" << basic_tools::ToStringWithPrecision(mean_theta) << "#circ))*cos(#phi_{" << Particle
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = (r/tan(#theta = " << basic_tools::ToStringWithPrecision(mean_theta) << "#circ))*cos(#phi_{" << Particle
                    << "} - #phi_{beam}) + V_{z,true}";
     } else {
         legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,true}";
@@ -191,7 +201,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     }
 
     FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
-    FitParam2->AddText(("V_{z,0} = " + basic_tools::ToStringWithPrecision(Vz_0) + " cm").c_str());
+    FitParam2->AddText(("V_{z,true} = " + basic_tools::ToStringWithPrecision(Vz_true) + " cm").c_str());
 
     g->GetListOfFunctions()->Add(FitParam1);
     g->GetListOfFunctions()->Add(FitParam2);
@@ -204,10 +214,10 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         double y = z_vals[i];
 
         std::ostringstream label;
-        label << "#splitline{#font[62]{" << sector_lable[i] << "}}{(" << basic_tools::ToStringWithPrecision(x) << "#circ, " << basic_tools::ToStringWithPrecision(y) << " cm)}";
+        label << "#splitline{#font[62]{" << sector_label[i] << "}}{(" << basic_tools::ToStringWithPrecision(x) << "#circ, " << basic_tools::ToStringWithPrecision(y) << " cm)}";
         std::cout << label.str() << std::endl;
 
-        TLatex *latex = new TLatex(x + 2 - 10, y + 0.075, label.str().c_str());  // offset to avoid overlap
+        TLatex *latex = new TLatex(x + 3, y + 0.075, label.str().c_str());  // offset to avoid overlap
         latex->SetTextFont(42);
         latex->SetTextSize(0.025);
         latex->SetTextAlign(12);
@@ -216,7 +226,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     std::cout << std::endl;
 
-    return std::make_tuple(A, phi_beam, Vz_0, g);
+    return std::make_tuple(A, phi_beam, Vz_true, g);
 }
 
 };  // namespace variable_correctors

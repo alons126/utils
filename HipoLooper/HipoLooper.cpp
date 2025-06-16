@@ -30,6 +30,7 @@
 // Include classes:
 #include "framework/classes/clas12ana/clas12ana.cpp"
 // #include "framework/classes/clas12ana/clas12ana.h"
+#include "framework/classes/hPlots/hsPlots.cpp"
 
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
@@ -192,7 +193,11 @@ void HipoLooper() {
             TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
             HistoList.push_back(h_Vz_e_AC_1e_cut);
 
+            hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_1e_cut_BySliceOf",
+                                                         "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
+
             TH1D *h_Vz_e_BC_zoomin_1e_cut, *h_Vz_e_AC_zoomin_1e_cut;
+            hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf;
 
             if (target_status == "Ar40") {
                 h_Vz_e_BC_zoomin_1e_cut =
@@ -201,6 +206,10 @@ void HipoLooper() {
                 h_Vz_e_AC_zoomin_1e_cut =
                     new TH1D("Vz_e_AC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -8, -4);
                 HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
+
+                h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
+                    hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
+                            "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -8, -4, 75, -8, -4, "#theta_{e} [#circ]");
             } else if (target_status == "C12") {
                 h_Vz_e_BC_zoomin_1e_cut =
                     new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
@@ -208,6 +217,10 @@ void HipoLooper() {
                 h_Vz_e_AC_zoomin_1e_cut =
                     new TH1D("Vz_e_AC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
                 HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
+
+                h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
+                    hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
+                            "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -4, 1, 75, -4, 1, "#theta_{e} [#circ]");
             }
 
             TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
