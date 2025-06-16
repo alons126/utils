@@ -42,14 +42,14 @@ void HipoLooper() {
 
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    int version = 18;  // Version of the code
+    int version = 19;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "__corrected_Vz__test";  // General status of the analysis
+    std::string General_status = "__corrected_Vz__testCDpions";  // General status of the analysis
     General_status = "_" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -72,23 +72,23 @@ void HipoLooper() {
 
     std::vector<std::string> InputFiles;
 
-    // // Data samples:
+    // Data samples:
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
     InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
-    // // Simulation samples:
+    // Simulation samples:
 
-    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
 
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
 
     // for (int theta_slice = 0; theta_slice < theta_slices.size(); theta_slice++) {
     //     if (theta_slices.size() != 0) {
@@ -199,10 +199,10 @@ void HipoLooper() {
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean}
         Beam_Coordinates["C12_data_2GeV_run_015664"] = {0.1704, 0.08638};   // pipCD
         Beam_Coordinates["C12_data_4GeV_run_015778"] = {0.1723, 0.1320};    // pimCD
-        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1389, 0.06858};   // pipFD
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
-        Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};   // pimCD
-        Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};   // pimCD
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1389, 0.06858};  // pipFD
+        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
+        Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};  // pimCD
+        Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};  // pimCD
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor) -> double {
@@ -265,12 +265,10 @@ void HipoLooper() {
         //             75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
         TH1D *h_Vz_corrected_e_BC_1e_cut =
-            new TH1D("Vz_corrected_e_BC_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(),
-                     75, -9, 2);
+            new TH1D("Vz_corrected_e_BC_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_corrected_e_BC_1e_cut);
         TH1D *h_Vz_corrected_e_AC_1e_cut =
-            new TH1D("Vz_corrected_e_AC_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(),
-                     75, -9, 2);
+            new TH1D("Vz_corrected_e_AC_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_corrected_e_AC_1e_cut);
 
         TH1D *h_Vz_corrected_e_BC_zoomin_1e_cut, *h_Vz_corrected_e_AC_zoomin_1e_cut;
@@ -281,8 +279,8 @@ void HipoLooper() {
                          ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
             HistoList.push_back(h_Vz_corrected_e_BC_zoomin_1e_cut);
             h_Vz_corrected_e_AC_zoomin_1e_cut =
-                new TH1D("Vz_corrected_e_AC_zoomin_1e_cut",
-                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+                new TH1D("Vz_corrected_e_AC_zoomin_1e_cut", ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(),
+                         75, -8, -4);
             HistoList.push_back(h_Vz_corrected_e_AC_zoomin_1e_cut);
         } else if (target_status == "C12") {
             h_Vz_corrected_e_BC_zoomin_1e_cut =
@@ -290,11 +288,10 @@ void HipoLooper() {
                          ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_corrected_e_BC_zoomin_1e_cut);
             h_Vz_corrected_e_AC_zoomin_1e_cut =
-                new TH1D("Vz_corrected_e_AC_zoomin_1e_cut",
-                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+                new TH1D("Vz_corrected_e_AC_zoomin_1e_cut", ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(),
+                         75, -4, 1);
             HistoList.push_back(h_Vz_corrected_e_AC_zoomin_1e_cut);
         }
-
 
         TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_1e_cut);
@@ -411,6 +408,35 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector1_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector1_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector1_1e_cut);
+        }
+
+        TH1D *h_Vz_corrected_e_BC_sector1_1e_cut = new TH1D(
+            "Vz_corrected_e_BC_sector1_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_sector1_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_sector1_1e_cut = new TH1D(
+            "Vz_corrected_e_AC_sector1_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_sector1_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_sector1_1e_cut, *h_Vz_corrected_e_AC_zoomin_sector1_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_sector1_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector1_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector1_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector1_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector1_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector1_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_sector1_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector1_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector1_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector1_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector1_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector1_1e_cut);
         }
 
         TH1D *h_Vx_e_BC_sector1_1e_cut =
@@ -541,6 +567,35 @@ void HipoLooper() {
             HistoList.push_back(h_Vz_e_AC_zoomin_sector2_1e_cut);
         }
 
+        TH1D *h_Vz_corrected_e_BC_sector2_1e_cut = new TH1D(
+            "Vz_corrected_e_BC_sector2_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_sector2_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_sector2_1e_cut = new TH1D(
+            "Vz_corrected_e_AC_sector2_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_sector2_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_sector2_1e_cut, *h_Vz_corrected_e_AC_zoomin_sector2_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_sector2_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector2_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector2_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector2_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector2_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector2_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_sector2_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector2_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector2_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector2_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector2_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector2_1e_cut);
+        }
+
         TH1D *h_Vx_e_BC_sector2_1e_cut =
             new TH1D("Vx_e_BC_sector2_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector2);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_sector2_1e_cut);
@@ -667,6 +722,35 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector3_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector3_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector3_1e_cut);
+        }
+
+        TH1D *h_Vz_corrected_e_BC_sector3_1e_cut = new TH1D(
+            "Vz_corrected_e_BC_sector3_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_sector3_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_sector3_1e_cut = new TH1D(
+            "Vz_corrected_e_AC_sector3_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_sector3_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_sector3_1e_cut, *h_Vz_corrected_e_AC_zoomin_sector3_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_sector3_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector3_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector3_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector3_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector3_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector3_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_sector3_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector3_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector3_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector3_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector3_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector3_1e_cut);
         }
 
         TH1D *h_Vx_e_BC_sector3_1e_cut =
@@ -797,6 +881,35 @@ void HipoLooper() {
             HistoList.push_back(h_Vz_e_AC_zoomin_sector4_1e_cut);
         }
 
+        TH1D *h_Vz_corrected_e_BC_sector4_1e_cut = new TH1D(
+            "Vz_corrected_e_BC_sector4_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_sector4_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_sector4_1e_cut = new TH1D(
+            "Vz_corrected_e_AC_sector4_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_sector4_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_sector4_1e_cut, *h_Vz_corrected_e_AC_zoomin_sector4_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_sector4_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector4_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector4_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector4_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector4_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector4_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_sector4_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector4_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector4_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector4_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector4_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector4_1e_cut);
+        }
+
         TH1D *h_Vx_e_BC_sector4_1e_cut =
             new TH1D("Vx_e_BC_sector4_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector4);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_sector4_1e_cut);
@@ -925,6 +1038,35 @@ void HipoLooper() {
             HistoList.push_back(h_Vz_e_AC_zoomin_sector5_1e_cut);
         }
 
+        TH1D *h_Vz_corrected_e_BC_sector5_1e_cut = new TH1D(
+            "Vz_corrected_e_BC_sector5_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_sector5_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_sector5_1e_cut = new TH1D(
+            "Vz_corrected_e_AC_sector5_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_sector5_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_sector5_1e_cut, *h_Vz_corrected_e_AC_zoomin_sector5_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_sector5_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector5_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector5_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector5_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector5_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector5_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_sector5_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector5_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector5_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector5_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector5_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector5_1e_cut);
+        }
+
         TH1D *h_Vx_e_BC_sector5_1e_cut =
             new TH1D("Vx_e_BC_sector5_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector5);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_sector5_1e_cut);
@@ -1051,6 +1193,35 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector6_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector6_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{z}}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector6_1e_cut);
+        }
+
+        TH1D *h_Vz_corrected_e_BC_sector6_1e_cut = new TH1D(
+            "Vz_corrected_e_BC_sector6_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_sector6_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_sector6_1e_cut = new TH1D(
+            "Vz_corrected_e_AC_sector6_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_sector6_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_sector6_1e_cut, *h_Vz_corrected_e_AC_zoomin_sector6_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_sector6_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector6_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector6_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector6_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector6_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector6_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_sector6_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_sector6_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_sector6_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_sector6_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_sector6_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_sector6_1e_cut);
         }
 
         TH1D *h_Vx_e_BC_sector6_1e_cut =
@@ -3543,16 +3714,25 @@ void HipoLooper() {
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
 #pragma region Electrons APID
-            h_Vx_e_AC_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-            h_Vy_e_AC_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-            h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-            h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+            double Vx_e = electrons[0]->par()->getVx();
+            double Vy_e = electrons[0]->par()->getVy();
+            double Vz_e = electrons[0]->par()->getVz();
 
-            // h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
-            // h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
+            auto Vz_e_corrected = correct_Vz(Vz_e, r, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_rad);
 
-            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-            h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+            h_Vx_e_AC_1e_cut->Fill(Vx_e, weight);
+            h_Vy_e_AC_1e_cut->Fill(Vy_e, weight);
+            h_Vz_e_AC_1e_cut->Fill(Vz_e, weight);
+            h_Vz_e_AC_zoomin_1e_cut->Fill(Vz_e, weight);
+
+            h_Vz_corrected_e_AC_1e_cut->Fill(Vz_e_corrected, weight);
+            h_Vz_corrected_e_AC_zoomin_1e_cut->Fill(Vz_e_corrected, weight);
+
+            // h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, 0, weight);
+            // h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, 0, weight);
+
+            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+            h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, weight);
 
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
@@ -3570,13 +3750,16 @@ void HipoLooper() {
             h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
 
             if (electrons[0]->getSector() == 1) {
-                h_Vx_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-                h_Vy_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-                h_Vz_e_AC_sector1_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-                h_Vz_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+                h_Vx_e_AC_sector1_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector1_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector1_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector1_1e_cut->Fill(Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                h_Vz_corrected_e_AC_sector1_1e_cut->Fill(Vz_e_corrected, weight);
+                h_Vz_corrected_e_AC_zoomin_sector1_1e_cut->Fill(Vz_e_corrected, weight);
+
+                h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector1_1e_cut, weight);
 
@@ -3593,13 +3776,16 @@ void HipoLooper() {
 
                 h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector1_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
             } else if (electrons[0]->getSector() == 2) {
-                h_Vx_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-                h_Vy_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-                h_Vz_e_AC_sector2_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-                h_Vz_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+                h_Vx_e_AC_sector2_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector2_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector2_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector2_1e_cut->Fill(Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                h_Vz_corrected_e_AC_sector2_1e_cut->Fill(Vz_e_corrected, weight);
+                h_Vz_corrected_e_AC_zoomin_sector2_1e_cut->Fill(Vz_e_corrected, weight);
+
+                h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector2_1e_cut, weight);
 
@@ -3616,13 +3802,16 @@ void HipoLooper() {
 
                 h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector2_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
             } else if (electrons[0]->getSector() == 3) {
-                h_Vx_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-                h_Vy_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-                h_Vz_e_AC_sector3_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-                h_Vz_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+                h_Vx_e_AC_sector3_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector3_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector3_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector3_1e_cut->Fill(Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                h_Vz_corrected_e_AC_sector3_1e_cut->Fill(Vz_e_corrected, weight);
+                h_Vz_corrected_e_AC_zoomin_sector3_1e_cut->Fill(Vz_e_corrected, weight);
+
+                h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector3_1e_cut, weight);
 
@@ -3639,13 +3828,16 @@ void HipoLooper() {
 
                 h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector3_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
             } else if (electrons[0]->getSector() == 4) {
-                h_Vx_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-                h_Vy_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-                h_Vz_e_AC_sector4_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-                h_Vz_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+                h_Vx_e_AC_sector4_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector4_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector4_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector4_1e_cut->Fill(Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                h_Vz_corrected_e_AC_sector4_1e_cut->Fill(Vz_e_corrected, weight);
+                h_Vz_corrected_e_AC_zoomin_sector4_1e_cut->Fill(Vz_e_corrected, weight);
+
+                h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector4_1e_cut, weight);
 
@@ -3662,13 +3854,16 @@ void HipoLooper() {
 
                 h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector4_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
             } else if (electrons[0]->getSector() == 5) {
-                h_Vx_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-                h_Vy_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-                h_Vz_e_AC_sector5_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-                h_Vz_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+                h_Vx_e_AC_sector5_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector5_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector5_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector5_1e_cut->Fill(Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                h_Vz_corrected_e_AC_sector5_1e_cut->Fill(Vz_e_corrected, weight);
+                h_Vz_corrected_e_AC_zoomin_sector5_1e_cut->Fill(Vz_e_corrected, weight);
+
+                h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector5_1e_cut, weight);
 
@@ -3685,13 +3880,16 @@ void HipoLooper() {
 
                 h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector5_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
             } else if (electrons[0]->getSector() == 6) {
-                h_Vx_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVx(), weight);
-                h_Vy_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVy(), weight);
-                h_Vz_e_AC_sector6_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
-                h_Vz_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
+                h_Vx_e_AC_sector6_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector6_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector6_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector6_1e_cut->Fill(Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                h_Vz_corrected_e_AC_sector6_1e_cut->Fill(Vz_e_corrected, weight);
+                h_Vz_corrected_e_AC_zoomin_sector6_1e_cut->Fill(Vz_e_corrected, weight);
+
+                h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
 
                 reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector6_1e_cut, weight);
 
@@ -4584,114 +4782,128 @@ void HipoLooper() {
             {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut}, OutputDir,
             "Histogram_Comparisons", "06_Vz_e_AC_BySector_1e_cut");
 
+        histogram_functions::CompareHistograms({h_Vz_e_corrected_BC_sector1_1e_cut, h_Vz_e_corrected_BC_sector2_1e_cut, h_Vz_e_corrected_BC_sector3_1e_cut,
+                                                h_Vz_e_corrected_BC_sector4_1e_cut, h_Vz_e_corrected_BC_sector5_1e_cut, h_Vz_e_corrected_BC_sector6_1e_cut},
+                                               OutputDir, "Histogram_Comparisons", "07_Vz_e_corrected_BC_BySector_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_e_corrected_AC_sector1_1e_cut, h_Vz_e_corrected_AC_sector2_1e_cut, h_Vz_e_corrected_AC_sector3_1e_cut,
+                                                h_Vz_e_corrected_AC_sector4_1e_cut, h_Vz_e_corrected_AC_sector5_1e_cut, h_Vz_e_corrected_AC_sector6_1e_cut},
+                                               OutputDir, "Histogram_Comparisons", "08_Vz_e_corrected_AC_BySector_1e_cut");
+
         histogram_functions::CompareHistograms({h_Vz_e_BC_zoomin_sector1_1e_cut, h_Vz_e_BC_zoomin_sector2_1e_cut, h_Vz_e_BC_zoomin_sector3_1e_cut, h_Vz_e_BC_zoomin_sector4_1e_cut,
                                                 h_Vz_e_BC_zoomin_sector5_1e_cut, h_Vz_e_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "07_Vz_e_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "09_Vz_e_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut,
                                                 h_Vz_e_AC_zoomin_sector5_1e_cut, h_Vz_e_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "08_Vz_e_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "10_Vz_e_AC_zoomin_BySector_1e_cut");
+
+        histogram_functions::CompareHistograms({h_Vz_e_corrected_BC_zoomin_sector1_1e_cut, h_Vz_e_corrected_BC_zoomin_sector2_1e_cut, h_Vz_e_corrected_BC_zoomin_sector3_1e_cut, h_Vz_e_corrected_BC_zoomin_sector4_1e_cut,
+                                                h_Vz_e_corrected_BC_zoomin_sector5_1e_cut, h_Vz_e_corrected_BC_zoomin_sector6_1e_cut},
+                                               OutputDir, "Histogram_Comparisons", "11_Vz_e_corrected_BC_zoomin_BySector_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_e_corrected_AC_zoomin_sector1_1e_cut, h_Vz_e_corrected_AC_zoomin_sector2_1e_cut, h_Vz_e_corrected_AC_zoomin_sector3_1e_cut, h_Vz_e_corrected_AC_zoomin_sector4_1e_cut,
+                                                h_Vz_e_corrected_AC_zoomin_sector5_1e_cut, h_Vz_e_corrected_AC_zoomin_sector6_1e_cut},
+                                               OutputDir, "Histogram_Comparisons", "12_Vz_e_corrected_AC_zoomin_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut,
                                                 h_Vz_pipFD_BC_sector5_1e_cut, h_Vz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "09_Vz_pipFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "13_Vz_pipFD_BC_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut,
                                                 h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "10_Vz_pipFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "14_Vz_pipFD_AC_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_corrected_pipFD_BC_sector1_1e_cut, h_Vz_corrected_pipFD_BC_sector2_1e_cut, h_Vz_corrected_pipFD_BC_sector3_1e_cut,
                                                 h_Vz_corrected_pipFD_BC_sector4_1e_cut, h_Vz_corrected_pipFD_BC_sector5_1e_cut, h_Vz_corrected_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "11_Vz_corrected_pipFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "15_Vz_corrected_pipFD_BC_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_corrected_pipFD_AC_sector1_1e_cut, h_Vz_corrected_pipFD_AC_sector2_1e_cut, h_Vz_corrected_pipFD_AC_sector3_1e_cut,
                                                 h_Vz_corrected_pipFD_AC_sector4_1e_cut, h_Vz_corrected_pipFD_AC_sector5_1e_cut, h_Vz_corrected_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "12_Vz_corrected_pipFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "16_Vz_corrected_pipFD_AC_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut,
                                                 h_dVz_pipFD_BC_sector5_1e_cut, h_dVz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "13_DeltaVz_pipFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "17_DeltaVz_pipFD_BC_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut,
                                                 h_dVz_pipFD_AC_sector5_1e_cut, h_dVz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "14_DeltaVz_pipFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "18_DeltaVz_pipFD_AC_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut,
                                                 h_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "15_Vz_pipFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "19_Vz_pipFD_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut,
                                                 h_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "16_Vz_pipFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "20_Vz_pipFD_AC_zoomin_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_corrected_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_corrected_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_corrected_pipFD_BC_zoomin_sector3_1e_cut,
                                                 h_Vz_corrected_pipFD_BC_zoomin_sector4_1e_cut, h_Vz_corrected_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_corrected_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "17_Vz_corrected_pipFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "21_Vz_corrected_pipFD_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_corrected_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_corrected_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_corrected_pipFD_AC_zoomin_sector3_1e_cut,
                                                 h_Vz_corrected_pipFD_AC_zoomin_sector4_1e_cut, h_Vz_corrected_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_corrected_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "18_Vz_corrected_pipFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "22_Vz_corrected_pipFD_AC_zoomin_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut,
                                                 h_dVz_pipFD_BC_zoomin_sector4_1e_cut, h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "19_DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "23_DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut,
                                                 h_dVz_pipFD_AC_zoomin_sector4_1e_cut, h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "20_DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "24_DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut,
                                                 h_Vz_pimFD_BC_sector5_1e_cut, h_Vz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "21_Vz_pimFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "25_Vz_pimFD_BC_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut,
                                                 h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "22_Vz_pimFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "26_Vz_pimFD_AC_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_corrected_pimFD_BC_sector1_1e_cut, h_Vz_corrected_pimFD_BC_sector2_1e_cut, h_Vz_corrected_pimFD_BC_sector3_1e_cut,
                                                 h_Vz_corrected_pimFD_BC_sector4_1e_cut, h_Vz_corrected_pimFD_BC_sector5_1e_cut, h_Vz_corrected_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "23_Vz_corrected_pimFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "27_Vz_corrected_pimFD_BC_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_corrected_pimFD_AC_sector1_1e_cut, h_Vz_corrected_pimFD_AC_sector2_1e_cut, h_Vz_corrected_pimFD_AC_sector3_1e_cut,
                                                 h_Vz_corrected_pimFD_AC_sector4_1e_cut, h_Vz_corrected_pimFD_AC_sector5_1e_cut, h_Vz_corrected_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "24_Vz_corrected_pimFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "28_Vz_corrected_pimFD_AC_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut,
                                                 h_dVz_pimFD_BC_sector5_1e_cut, h_dVz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "25_DeltaVz_pimFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "29_DeltaVz_pimFD_BC_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut,
                                                 h_dVz_pimFD_AC_sector5_1e_cut, h_dVz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "26_DeltaVz_pimFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "30_DeltaVz_pimFD_AC_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut,
                                                 h_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "27_Vz_pimFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "31_Vz_pimFD_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut,
                                                 h_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "28_Vz_pimFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "32_Vz_pimFD_AC_zoomin_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_Vz_corrected_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_corrected_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_corrected_pimFD_BC_zoomin_sector3_1e_cut,
                                                 h_Vz_corrected_pimFD_BC_zoomin_sector4_1e_cut, h_Vz_corrected_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_corrected_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "29_Vz_corrected_pimFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "33_Vz_corrected_pimFD_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_Vz_corrected_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_corrected_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_corrected_pimFD_AC_zoomin_sector3_1e_cut,
                                                 h_Vz_corrected_pimFD_AC_zoomin_sector4_1e_cut, h_Vz_corrected_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_corrected_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "30_Vz_corrected_pimFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "34_Vz_corrected_pimFD_AC_zoomin_BySector_1e_cut");
 
         histogram_functions::CompareHistograms({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut,
                                                 h_dVz_pimFD_BC_zoomin_sector4_1e_cut, h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "31_DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "35_DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
         histogram_functions::CompareHistograms({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut,
                                                 h_dVz_pimFD_AC_zoomin_sector4_1e_cut, h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", "32_DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", "36_DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
 
-        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "33_Vz_pions_FD_BC_1e_cut");
-        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "34_Vz_pions_FD_AC_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "37_Vz_pions_FD_BC_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "38_Vz_pions_FD_AC_1e_cut");
 
-        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "35_Vz_pions_FD_BC_zoomin_1e_cut");
-        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "36_Vz_pions_FD_AC_zoomin_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "39_Vz_pions_FD_BC_zoomin_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "40_Vz_pions_FD_AC_zoomin_1e_cut");
 
-        histogram_functions::CompareHistograms({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "37_DeltaVz_pions_FD_BC_1e_cut");
-        histogram_functions::CompareHistograms({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "38_DeltaVz_pions_FD_AC_1e_cut");
+        histogram_functions::CompareHistograms({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "41_DeltaVz_pions_FD_BC_1e_cut");
+        histogram_functions::CompareHistograms({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "42_DeltaVz_pions_FD_AC_1e_cut");
 
-        histogram_functions::CompareHistograms({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "39_Vz_pions_CD_BC_1e_cut");
-        histogram_functions::CompareHistograms({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "40_Vz_pions_CD_AC_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "43_Vz_pions_CD_BC_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "44_Vz_pions_CD_AC_1e_cut");
 
-        histogram_functions::CompareHistograms({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "41_Vz_pions_CD_BC_zoomin_1e_cut");
-        histogram_functions::CompareHistograms({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "42_Vz_pions_CD_AC_zoomin_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "45_Vz_pions_CD_BC_zoomin_1e_cut");
+        histogram_functions::CompareHistograms({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons", "46_Vz_pions_CD_AC_zoomin_1e_cut");
 
-        histogram_functions::CompareHistograms({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "43_DeltaVz_pions_CD_BC_1e_cut");
-        histogram_functions::CompareHistograms({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "44_DeltaVz_pions_CD_AC_1e_cut");
+        histogram_functions::CompareHistograms({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons", "47_DeltaVz_pions_CD_BC_1e_cut");
+        histogram_functions::CompareHistograms({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons", "48_DeltaVz_pions_CD_AC_1e_cut");
 
         outFile->cd();
         for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
