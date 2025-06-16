@@ -3696,7 +3696,7 @@ void HipoLooper() {
         // Now create the output PDFs
         /////////////////////////////////////////////////////
         auto GeneratePDFOutput = [&](std::string TempOutputDir, std::string TempOutFolderName, std::string TempBaseDir, std::vector<std::string> TempInputFiles, int Tempsample,
-                                     std::vector<TH1 *> TempHistoList, int TempNumOfEvents, int TempNumOfEvents_wAny_e_det, int TempNumOfEvents_wOne_e_det, int TempNumOfEvents_wAny_e,
+                                     std::vector<TObject *> TempHistoList, int TempNumOfEvents, int TempNumOfEvents_wAny_e_det, int TempNumOfEvents_wOne_e_det, int TempNumOfEvents_wAny_e,
                                      int TempNumOfEvents_wOne_e, std::string TempCodeRun_status, bool TempIsData, std::string Temptarget_status) {
             int pixelx = 1980;
             int pixely = 1530;
@@ -3940,7 +3940,7 @@ void HipoLooper() {
                 }
 
                 if (basic_tools::FindSubstring(TempHistoList[i]->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(TempHistoList[i]->GetTitle(), "sector")) {
-                    std::string Individual_PDF_fileName = IndividualPlotsTempOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
+                    std::string Individual_PDF_fileName = IndividualPlotsOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
                     myCanvas->SaveAs(Individual_PDF_fileName.c_str());
                     histogram_functions::FixPDFOrientation(Individual_PDF_fileName);
                 }
