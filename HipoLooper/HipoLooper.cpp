@@ -203,6 +203,42 @@ void HipoLooper() {
         Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};   // pimCD
         Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};   // pimCD
 
+        // Lambda to compute r = sqrt(Vx² + Vy²)
+        auto compute_r = [](std::map<std::string, std::pair<double, double>> Beam_Coordinates) -> double {
+            double Vx_peak = Beam_Coordinates[CodeRun_status].first;
+            double Vy_peak = Beam_Coordinates[CodeRun_status].second;
+
+            if (IsData) {
+                if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
+                if (Vy_peak == 0.) { std::cerr << "\n\nError! Vy_peak is zero! Aborting...\n\n"; }
+                std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
+            }
+
+            return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak);
+        };
+
+        // Lambda to compute phi_beam in degrees, using atan2 for correct quadrant
+        auto compute_phi_beam_rad = [](std::map<std::string, std::pair<double, double>> Beam_Coordinates) -> double {
+            double Vx_peak = Beam_Coordinates[CodeRun_status].first;
+            double Vy_peak = Beam_Coordinates[CodeRun_status].second;
+
+            if (IsData) {
+                if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
+                if (Vy_peak == 0.) { std::cerr << "\n\nError! Vy_peak is zero! Aborting...\n\n"; }
+                std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
+            }
+
+            return std::atan2(Vy_peak, Vx_peak);
+        };
+
+        // Lambda to compute corrected Vz
+        auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
+            return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
+        };
+
+        auto r = compute_r(Beam_Coordinates[CodeRun_status].first, Beam_Coordinates[CodeRun_status].second);
+        auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates[CodeRun_status].first, Beam_Coordinates[CodeRun_status].second);
+
 #pragma region electron histograms
 
 #pragma region electron histograms - all sectors
@@ -212,7 +248,8 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_e_AC_1e_cut);
 
         // hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_1e_cut_BySliceOf",
-        //                                              "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
+        //                                              "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e}
+        //                                              [#circ]");
 
         TH1D *h_Vz_e_BC_zoomin_1e_cut = new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75,
                                                  HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
@@ -223,8 +260,8 @@ void HipoLooper() {
 
         // hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
         //     hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
-        //             "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
-        //             HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
+        //             "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1),
+        //             75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
         TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_1e_cut);
@@ -3252,20 +3289,6 @@ void HipoLooper() {
             bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
             auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
 
-            // Lambda to compute r = sqrt(Vx² + Vy²)
-            auto compute_r = [](double Vx_peak, double Vy_peak) -> double { return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak); };
-
-            // Lambda to compute phi_beam in degrees, using atan2 for correct quadrant
-            auto compute_phi_beam_rad = [](double Vx_peak, double Vy_peak) -> double { return std::atan2(Vy_peak, Vx_peak); };
-
-            // Lambda to compute corrected Vz
-            auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
-                return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
-            };
-
-            auto r = compute_r(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
-            auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
-
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
             //  =======================================================================================================================================================================
@@ -4503,7 +4526,8 @@ void HipoLooper() {
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
-        // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
+        // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det,
+        // NumOfEvents_wOne_e_det,
         //                   NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
