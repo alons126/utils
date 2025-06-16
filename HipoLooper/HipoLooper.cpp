@@ -30,7 +30,7 @@
 // Include classes:
 #include "framework/classes/clas12ana/clas12ana.cpp"
 // #include "framework/classes/clas12ana/clas12ana.h"
-#include "framework/classes/hPlots/hsPlots.cpp"
+// #include "framework/classes/hPlots/hsPlots.cpp"
 
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
@@ -56,17 +56,17 @@ void HipoLooper() {
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
-    std::vector<std::vector<double>> theta_slices;
-    // theta_slices.push_back({-9999.0, 9999.0});
-    // theta_slices.push_back({0.0, 180.0});
-    theta_slices.push_back({0.0, 5.0});
-    theta_slices.push_back({5.0, 10.0});
-    theta_slices.push_back({10.0, 15.0});
-    theta_slices.push_back({15.0, 20.0});
-    theta_slices.push_back({20.0, 25.0});
-    theta_slices.push_back({25.0, 30.0});
-    theta_slices.push_back({30.0, 35.0});
-    theta_slices.push_back({35.0, 40.0});
+    // std::vector<std::vector<double>> theta_slices;
+    // // theta_slices.push_back({-9999.0, 9999.0});
+    // // theta_slices.push_back({0.0, 180.0});
+    // theta_slices.push_back({0.0, 5.0});
+    // theta_slices.push_back({5.0, 10.0});
+    // theta_slices.push_back({10.0, 15.0});
+    // theta_slices.push_back({15.0, 20.0});
+    // theta_slices.push_back({20.0, 25.0});
+    // theta_slices.push_back({25.0, 30.0});
+    // theta_slices.push_back({30.0, 35.0});
+    // theta_slices.push_back({35.0, 40.0});
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
@@ -158,7 +158,7 @@ void HipoLooper() {
         system(("mkdir -p " + IndividualPlotsOutputDir).c_str());
 
         TFile *outFile = new TFile((OutputDir + "/" + OutFileName + ".root").c_str(), "RECREATE");
-        TFile *outFile_ByThetaSlices = new TFile((OutputDir + "/" + OutFileName + "_ByThetaSlices.root").c_str(), "RECREATE");
+        // TFile *outFile_ByThetaSlices = new TFile((OutputDir + "/" + OutFileName + "_ByThetaSlices.root").c_str(), "RECREATE");
 
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
         TString Beam_energy_TString = Ebeam_status_1;
@@ -197,11 +197,11 @@ void HipoLooper() {
         }
 
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean}
-        // Beam_Coordinates["C12_data_2GeV_run_015664"] = {-6.0, -5.0};
-        // Beam_Coordinates["C12_data_4GeV_run_015778"] = {-6.0, -5.0};
-        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};
-        // Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {-6.0, -5.0};
-        // Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {-6.0, -5.0};
+        Beam_Coordinates["C12_data_2GeV_run_015664"] = {0.1704, 0.08638};   // pipCD
+        Beam_Coordinates["C12_data_4GeV_run_015778"] = {0.1723, 0.1320};    // pimCD
+        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
+        Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};   // pimCD
+        Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};   // pimCD
 
 #pragma region electron histograms
 
@@ -211,8 +211,8 @@ void HipoLooper() {
         TH1D *h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_AC_1e_cut);
 
-        hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_1e_cut_BySliceOf",
-                                                     "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
+        // hsPlots h_Vz_e_AC_1e_cut_BySliceOf = hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_1e_cut_BySliceOf",
+        //                                              "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
 
         TH1D *h_Vz_e_BC_zoomin_1e_cut = new TH1D("Vz_e_BC_zoomin_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75,
                                                  HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
@@ -221,10 +221,10 @@ void HipoLooper() {
                                                  HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
         HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
 
-        hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
-                    "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
-                    HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
+        // hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOf =
+        //     hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
+        //             "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
+        //             HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
         TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_1e_cut);
@@ -3256,80 +3256,85 @@ void HipoLooper() {
             auto compute_r = [](double Vx_peak, double Vy_peak) -> double { return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak); };
 
             // Lambda to compute phi_beam in degrees, using atan2 for correct quadrant
-            auto compute_phi_beam = [](double Vx_peak, double Vy_peak) -> double { return std::atan2(Vy_peak, Vx_peak) * 180 / analysis_math::pi; };
+            auto compute_phi_beam_deg = [](double Vx_peak, double Vy_peak) -> double { return std::atan2(Vy_peak, Vx_peak) * 180 / analysis_math::pi; };
 
             // Lambda to compute corrected Vz
-            auto correct_Vz = [](double Vz_meas, double r, double theta_deg, double phi_particle_deg, double phi_beam_deg) -> double {
-                double theta_rad = theta_deg * 180 / analysis_math::pi;
-                double delta_phi_rad = (phi_particle_deg - phi_beam_deg) * 180 / analysis_math::pi;
+            auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_particle_rad) -> double {
+                return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_particle_rad);
+                // auto correct_Vz = [](double Vz_rec, double r, double theta_deg, double phi_particle_deg, double phi_beam_deg) -> double {
+                //     double theta_rad = theta_deg * 180 / analysis_math::pi;
+                //     double delta_phi_rad = (phi_particle_deg - phi_beam_deg) * 180 / analysis_math::pi;
 
-                return Vz_meas + (r / std::tan(theta_rad)) * std::cos(delta_phi_rad);
+                // return Vz_rec + (r / std::tan(theta_rad)) * std::cos(delta_phi_rad);
             };
 
             auto r = compute_r(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
-            auto phi_beam = compute_phi_beam(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
+            auto phi_beam_deg = compute_phi_beam_deg(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
             //  =======================================================================================================================================================================
 
-            //  - Apply dVz cuts on both e and FD/CD pions ----------------------------------------------------------------------------------------------------------------------------
+            /*
+            //  - Apply dVz cuts on both e and FD/CD pions
+               ----------------------------------------------------------------------------------------------------------------------------
 
-            // vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
-            // vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
+                        // vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
+                        // vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
 
-            // std::vector<region_part_ptr> piplus_cd, piminus_cd, piplus_fd, piminus_fd;
+                        // std::vector<region_part_ptr> piplus_cd, piminus_cd, piplus_fd, piminus_fd;
 
-            // for (auto &p : piplus) {
-            //     if (p->getRegion() == clas12::CD) {
-            //         piplus_cd.push_back(p);
-            //     } else if (p->getRegion() == clas12::FD) {
-            //         piplus_fd.push_back(p);
-            //     }
-            // }
+                        // for (auto &p : piplus) {
+                        //     if (p->getRegion() == clas12::CD) {
+                        //         piplus_cd.push_back(p);
+                        //     } else if (p->getRegion() == clas12::FD) {
+                        //         piplus_fd.push_back(p);
+                        //     }
+                        // }
 
-            // for (auto &p : piminus) {
-            //     if (p->getRegion() == clas12::CD) {
-            //         piminus_cd.push_back(p);
-            //     } else if (p->getRegion() == clas12::FD) {
-            //         piminus_fd.push_back(p);
-            //     }
-            // }
+                        // for (auto &p : piminus) {
+                        //     if (p->getRegion() == clas12::CD) {
+                        //         piminus_cd.push_back(p);
+                        //     } else if (p->getRegion() == clas12::FD) {
+                        //         piminus_fd.push_back(p);
+                        //     }
+                        // }
 
-            // bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
-            // bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
+                        // bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
+                        // bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
 
-            // for (int i = 0; i < piplus.size(); i++) {
-            //     double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
+                        // for (int i = 0; i < piplus.size(); i++) {
+                        //     double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
 
-            //     if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
-            //         Both_e_and_pipFD_passed_dVz_cuts = false;
-            //     } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
-            //         Both_e_and_pipCD_passed_dVz_cuts = false;
-            //     }
-            // }
+                        //     if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
+                        //         Both_e_and_pipFD_passed_dVz_cuts = false;
+                        //     } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
+                        //         Both_e_and_pipCD_passed_dVz_cuts = false;
+                        //     }
+                        // }
 
-            // for (int i = 0; i < piminus.size(); i++) {
-            //     double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
+                        // for (int i = 0; i < piminus.size(); i++) {
+                        //     double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
 
-            //     if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
-            //         Both_e_and_pimFD_passed_dVz_cuts = false;
-            //     } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
-            //         Both_e_and_pimCD_passed_dVz_cuts = false;
-            //     }
-            // }
+                        //     if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
+                        //         Both_e_and_pimFD_passed_dVz_cuts = false;
+                        //     } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
+                        //         Both_e_and_pimCD_passed_dVz_cuts = false;
+                        //     }
+                        // }
 
-            // // bool Both_e_and_pions_passed_dVz_cuts = (piminus_cd.size() > 0 && piminus_fd.size() == 0 && piplus.size() == 0);
-            // // bool Both_e_and_pions_passed_dVz_cuts = (piplus_cd.size() > 0 && piplus_fd.size() == 0 && piminus.size() == 0);
-            // // bool Both_e_and_pions_passed_dVz_cuts = (piminus_fd.size() > 0 && piminus_cd.size() == 0 && piplus.size() == 0);
-            // bool Both_e_and_pions_passed_dVz_cuts = (piplus_fd.size() > 0 && piplus_cd.size() == 0 && piminus.size() == 0);
-            // // bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
-            // // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
-            // // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
-            // // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
+                        // // bool Both_e_and_pions_passed_dVz_cuts = (piminus_cd.size() > 0 && piminus_fd.size() == 0 && piplus.size() == 0);
+                        // // bool Both_e_and_pions_passed_dVz_cuts = (piplus_cd.size() > 0 && piplus_fd.size() == 0 && piminus.size() == 0);
+                        // // bool Both_e_and_pions_passed_dVz_cuts = (piminus_fd.size() > 0 && piminus_cd.size() == 0 && piplus.size() == 0);
+                        // bool Both_e_and_pions_passed_dVz_cuts = (piplus_fd.size() > 0 && piplus_cd.size() == 0 && piminus.size() == 0);
+                        // // bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
+                        // // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
+                        // // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
+                        // // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
 
-            // // skip event if e and pions do not pass dVz cuts
-            // if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
+                        // // skip event if e and pions do not pass dVz cuts
+                        // if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
+             */
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
@@ -3492,8 +3497,8 @@ void HipoLooper() {
             h_Vz_e_AC_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
-            h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
-            h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
+            // h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
+            // h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), 0, weight);
 
             h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
             h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
@@ -3753,7 +3758,7 @@ void HipoLooper() {
                 double Vz_pip = piplus[i]->par()->getVz();
 
                 if (piplus[i]->getRegion() == FD) {
-                    auto Vz_pip_corrected = correct_Vz(Vz_pip, r, piplus[i]->getTheta() * 180 / analysis_math::pi, piplus[i]->getPhi() * 180 / analysis_math::pi, phi_beam);
+                    auto Vz_pip_corrected = correct_Vz(Vz_pip, r, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_deg * analysis_math::pi / 180);
 
                     h_Vx_pipFD_AC_1e_cut->Fill(Vx_pip, weight);
                     h_Vy_pipFD_AC_1e_cut->Fill(Vy_pip, weight);
@@ -3985,7 +3990,7 @@ void HipoLooper() {
                 double Vz_pim = piminus[i]->par()->getVz();
 
                 if (piminus[i]->getRegion() == FD) {
-                    auto Vz_pim_corrected = correct_Vz(Vz_pim, r, piminus[i]->getTheta() * 180 / analysis_math::pi, piminus[i]->getPhi() * 180 / analysis_math::pi, phi_beam);
+                    auto Vz_pim_corrected = correct_Vz(Vz_pim, r, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_deg * analysis_math::pi / 180);
 
                     h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
                     h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
@@ -4422,7 +4427,8 @@ void HipoLooper() {
 
                     h->Draw();
 
-                    if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{")) {
+                    if (basic_tools::FindSubstring(h->GetTitle(), "V_{z,corrected}^{") ||
+                        (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{"))) {
                         gPad->Update();
                         TLine *speac_target_location_TLine;
                         double speac_target_location_value = 0.0;
@@ -4498,8 +4504,8 @@ void HipoLooper() {
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
-        GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
-                          NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
+        // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
+        //                   NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
                                                 h_SF_VS_Edep_PCAL_BC_sector4_1e_cut, h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
@@ -4635,9 +4641,9 @@ void HipoLooper() {
         for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
         outFile->Close();
 
-        outFile_ByThetaSlices->cd();
-        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
-        outFile_ByThetaSlices->Close();
+        // outFile_ByThetaSlices->cd();
+        // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
+        // outFile_ByThetaSlices->Close();
 
         // HistoList_ByThetaSlices.clear();
         // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
