@@ -199,7 +199,8 @@ void HipoLooper() {
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean}
         Beam_Coordinates["C12_data_2GeV_run_015664"] = {0.1704, 0.08638};   // pipCD
         Beam_Coordinates["C12_data_4GeV_run_015778"] = {0.1723, 0.1320};    // pimCD
-        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
+        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1389, 0.06858};   // pipFD
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
         Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};   // pimCD
         Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};   // pimCD
 
@@ -262,6 +263,38 @@ void HipoLooper() {
         //     hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, "Vz_e_AC_zoomin_1e_cut_BySliceOf",
         //             "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1),
         //             75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
+
+        TH1D *h_Vz_corrected_e_BC_1e_cut =
+            new TH1D("Vz_corrected_e_BC_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(),
+                     75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_BC_1e_cut);
+        TH1D *h_Vz_corrected_e_AC_1e_cut =
+            new TH1D("Vz_corrected_e_AC_1e_cut", ("V_{z,corrected}^{e} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(),
+                     75, -9, 2);
+        HistoList.push_back(h_Vz_corrected_e_AC_1e_cut);
+
+        TH1D *h_Vz_corrected_e_BC_zoomin_1e_cut, *h_Vz_corrected_e_AC_zoomin_1e_cut;
+
+        if (target_status == "Ar40") {
+            h_Vz_corrected_e_BC_zoomin_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_1e_cut);
+        } else if (target_status == "C12") {
+            h_Vz_corrected_e_BC_zoomin_1e_cut =
+                new TH1D("Vz_corrected_e_BC_zoomin_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_BC_zoomin_1e_cut);
+            h_Vz_corrected_e_AC_zoomin_1e_cut =
+                new TH1D("Vz_corrected_e_AC_zoomin_1e_cut",
+                         ("V_{z,corrected}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);V_{z,corrected}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            HistoList.push_back(h_Vz_corrected_e_AC_zoomin_1e_cut);
+        }
+
 
         TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
         HistoList.push_back(h_Vx_e_BC_1e_cut);
