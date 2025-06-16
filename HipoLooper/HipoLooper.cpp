@@ -37,6 +37,8 @@
 using namespace constants;
 
 void HipoLooper() {
+    auto start = std::chrono::system_clock::now();  // Start counting running time
+
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
     int version = 17;  // Version of the code
@@ -53,10 +55,11 @@ void HipoLooper() {
     // int Limiter = 10000;  // 1 file
 
     std::vector<std::vector<double>> theta_slices;
+    theta_slices.push_back({-9999.0, 9999.0});
     // theta_slices.push_back({0.0, 180.0});
     // theta_slices.push_back({5.0, 10.0});
     // theta_slices.push_back({10.0, 15.0});
-    theta_slices.push_back({15.0, 20.0});
+    // theta_slices.push_back({15.0, 20.0});
     // theta_slices.push_back({20.0, 25.0});
     // theta_slices.push_back({25.0, 30.0});
     // theta_slices.push_back({30.0, 35.0});
@@ -4084,5 +4087,15 @@ void HipoLooper() {
             cout << "\033[33mnCodeRun_status:\033[0m       " << CodeRun_status << endl;
             cout << "\033[33mOutputDir:\033[0m             " << OutputDir << "\n\n";
         }
+    }
+
+    auto end = std::chrono::system_clock::now();
+    auto elapsed_time_seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+    double elapsed_time_minutes = elapsed_time_seconds.count() / 60;
+
+    if (elapsed_time_seconds.count() < 60) {
+        std::cout << "\033[33m" << "Running time:" << "\033[0m" << "\t\t" << elapsed_time_seconds.count() << " seconds\n\n";
+    } else {
+        std::cout << "\033[33m" << "Running time:" << "\033[0m" << "\t\t" << basic_tools::ToStringWithPrecision(elapsed_time_minutes, 3) << " minutes\n\n";
     }
 }
