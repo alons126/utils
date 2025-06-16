@@ -58,8 +58,8 @@ void HipoLooper() {
     // theta_slices.push_back({-9999.0, 9999.0});
     // theta_slices.push_back({0.0, 180.0});
     // theta_slices.push_back({5.0, 10.0});
-    theta_slices.push_back({10.0, 15.0});
-    // theta_slices.push_back({15.0, 20.0});
+    // theta_slices.push_back({10.0, 15.0});
+    theta_slices.push_back({15.0, 20.0});
     // theta_slices.push_back({20.0, 25.0});
     // theta_slices.push_back({25.0, 30.0});
     // theta_slices.push_back({30.0, 35.0});
