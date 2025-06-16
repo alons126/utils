@@ -55,8 +55,8 @@ void HipoLooper() {
     // int Limiter = 10000;  // 1 file
 
     std::vector<std::vector<double>> theta_slices;
-    theta_slices.push_back({-9999.0, 9999.0});
-    // theta_slices.push_back({0.0, 180.0});
+    // theta_slices.push_back({-9999.0, 9999.0});
+    theta_slices.push_back({0.0, 180.0});
     // theta_slices.push_back({5.0, 10.0});
     // theta_slices.push_back({10.0, 15.0});
     // theta_slices.push_back({15.0, 20.0});
@@ -223,6 +223,11 @@ void HipoLooper() {
                 new TH2D("Vz_VS_phi_e_AC_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -180, 180,
                          100, -13, 2);
             HistoList.push_back(h_Vz_VS_phi_e_AC_1e_cut);
+
+            TH2D *h_Vz_VS_theta_e_AC_1e_cut =
+                new TH2D("Vz_VS_theta_e_AC_1e_cut", ("V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 0, 50,
+                         100, -13, 2);
+            HistoList.push_back(h_Vz_VS_theta_e_AC_1e_cut);
 
             TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
             TH2D *h_dc_electron_hit_map_AC_1e_cut[4];  // 3 regions
@@ -1153,6 +1158,12 @@ void HipoLooper() {
                          -180, 180, 100, -13, 2);
             HistoList.push_back(h_Vz_VS_phi_pipFD_AC_1e_cut);
 
+            TH2D *h_Vz_VS_theta_pipFD_AC_1e_cut =
+                new TH2D("Vz_VS_theta_pipFD_AC_1e_cut",
+                         ("V_{z}^{#pi^{+}FD} vs. #theta_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#theta_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
+                         100, 0, 50, 100, -13, 2);
+            HistoList.push_back(h_Vz_VS_theta_pipFD_AC_1e_cut);
+
             TH2D *h_dc_pipFD_hit_map_BC_1e_cut[4];  // 3 regions
             TH2D *h_dc_pipFD_hit_map_AC_1e_cut[4];  // 3 regions
 
@@ -1889,6 +1900,12 @@ void HipoLooper() {
                          ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 100,
                          -180, 180, 100, -13, 2);
             HistoList.push_back(h_Vz_VS_phi_pimFD_AC_1e_cut);
+
+            TH2D *h_Vz_VS_theta_pimFD_AC_1e_cut =
+                new TH2D("Vz_VS_theta_pimFD_AC_1e_cut",
+                         ("V_{z}^{#pi^{-}FD} vs. #theta_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#theta_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
+                         100, 0, 50, 100, -13, 2);
+            HistoList.push_back(h_Vz_VS_theta_pimFD_AC_1e_cut);
 
             TH2D *h_dc_pimFD_hit_map_BC_1e_cut[4];  // 3 regions
             TH2D *h_dc_pimFD_hit_map_AC_1e_cut[4];  // 3 regions
@@ -3037,6 +3054,7 @@ void HipoLooper() {
                     h_Vz_e_AC_zoomin_1e_cut->Fill(electrons[0]->par()->getVz(), weight);
 
                     h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
+                    h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, electrons[0]->par()->getVz(), weight);
 
                     reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
@@ -3302,6 +3320,7 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(piplus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
                         h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
+                        h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / analysis_math::pi, piplus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
@@ -3508,6 +3527,7 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(piminus[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
                         h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
+                        h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / analysis_math::pi, piminus[i]->par()->getVz(), weight);
 
                         reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
