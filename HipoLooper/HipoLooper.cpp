@@ -46,7 +46,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "__corrected_Vz__testFDpions";  // General status of the analysis
+    std::string General_status = "__corrected_Vz__test_e";  // General status of the analysis
     General_status = "_" + General_status;
 
     bool ApplyLimiter = false;
@@ -199,8 +199,8 @@ void HipoLooper() {
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean}
         Beam_Coordinates["C12_data_2GeV_run_015664"] = {0.1704, 0.08638};   // pipCD
         Beam_Coordinates["C12_data_4GeV_run_015778"] = {0.1723, 0.1320};    // pimCD
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1825, 0.1691};  // e
-        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1389, 0.06858};  // pipFD
+        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1825, 0.1691};  // e
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1389, 0.06858};  // pipFD
         // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
         Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};  // pimCD
         Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};  // pimCD
