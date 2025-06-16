@@ -3751,12 +3751,12 @@ void HipoLooper() {
 
             if (IsData) {
                 text.DrawLatex(0.05, 0.65, ("InputFiles: #font[42]{" + InputFiles.at(sample) + "}").c_str());
-                text.DrawLatex(0.05, 0.60, ("OutFolderName:");
+                text.DrawLatex(0.05, 0.60, "OutFolderName:");
                 text.DrawLatex(0.10, 0.55, ("#font[42]{" + OutFolderName + "}").c_str());
             } else {
                 text.DrawLatex(0.05, 0.65, ("BaseDir: #font[42]{" + BaseDir + "}").c_str());
                 text.DrawLatex(0.05, 0.60, ("InputFiles: #font[42]{BaseDir + " + InputFiles.at(sample).substr(BaseDir.length()) + "}").c_str());
-                text.DrawLatex(0.05, 0.55, ("OutFolderName:");
+                text.DrawLatex(0.05, 0.55, "OutFolderName:");
                 text.DrawLatex(0.10, 0.50, ("#font[42]{" + OutFolderName + "}").c_str());
             }
 
