@@ -3256,20 +3256,15 @@ void HipoLooper() {
             auto compute_r = [](double Vx_peak, double Vy_peak) -> double { return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak); };
 
             // Lambda to compute phi_beam in degrees, using atan2 for correct quadrant
-            auto compute_phi_beam_deg = [](double Vx_peak, double Vy_peak) -> double { return std::atan2(Vy_peak, Vx_peak) * 180 / analysis_math::pi; };
+            auto compute_phi_beam_rad = [](double Vx_peak, double Vy_peak) -> double { return std::atan2(Vy_peak, Vx_peak); };
 
             // Lambda to compute corrected Vz
             auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
                 return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
-                // auto correct_Vz = [](double Vz_rec, double r, double theta_deg, double phi_particle_deg, double phi_beam_deg) -> double {
-                //     double theta_rad = theta_deg * 180 / analysis_math::pi;
-                //     double delta_phi_rad = (phi_particle_deg - phi_beam_deg) * 180 / analysis_math::pi;
-
-                // return Vz_rec + (r / std::tan(theta_rad)) * std::cos(delta_phi_rad);
             };
 
             auto r = compute_r(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
-            auto phi_beam_deg = compute_phi_beam_deg(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
+            auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates[target_status].first, Beam_Coordinates[target_status].second);
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
@@ -3758,7 +3753,7 @@ void HipoLooper() {
                 double Vz_pip = piplus[i]->par()->getVz();
 
                 if (piplus[i]->getRegion() == FD) {
-                    auto Vz_pip_corrected = correct_Vz(Vz_pip, r, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_deg * analysis_math::pi / 180);
+                    auto Vz_pip_corrected = correct_Vz(Vz_pip, r, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_rad);
 
                     h_Vx_pipFD_AC_1e_cut->Fill(Vx_pip, weight);
                     h_Vy_pipFD_AC_1e_cut->Fill(Vy_pip, weight);
@@ -3990,7 +3985,7 @@ void HipoLooper() {
                 double Vz_pim = piminus[i]->par()->getVz();
 
                 if (piminus[i]->getRegion() == FD) {
-                    auto Vz_pim_corrected = correct_Vz(Vz_pim, r, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_deg * analysis_math::pi / 180);
+                    auto Vz_pim_corrected = correct_Vz(Vz_pim, r, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_rad);
 
                     h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
                     h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
