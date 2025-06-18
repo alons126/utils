@@ -62,19 +62,65 @@ void CompareHistogramsTester2() {
 
     std::vector<std::string> InputFiles;
 
-    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_C12_data_2GeV_run_015664/015_HipoLooper_v15_C12_data_2GeV_run_015664.root");
-    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_C12_data_4GeV_run_015778/015_HipoLooper_v15_C12_data_4GeV_run_015778.root");
+    // InputFiles.push_back(BaseDir + "015_HipoLooper_v15_C12_data_2GeV_run_015664/015_HipoLooper_v15_C12_data_2GeV_run_015664.root");
+    // InputFiles.push_back(BaseDir + "015_HipoLooper_v15_C12_data_4GeV_run_015778/015_HipoLooper_v15_C12_data_4GeV_run_015778.root");
 
-    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_2GeV_run_015672/015_HipoLooper_v15_Ar40_data_2GeV_run_015672.root");
-    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_4GeV_run_015743/015_HipoLooper_v15_Ar40_data_4GeV_run_015743.root");
-    InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_6GeV_run_015792/015_HipoLooper_v15_Ar40_data_6GeV_run_015792.root");
+    // InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_2GeV_run_015672/015_HipoLooper_v15_Ar40_data_2GeV_run_015672.root");
+    // InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_4GeV_run_015743/015_HipoLooper_v15_Ar40_data_4GeV_run_015743.root");
+    // InputFiles.push_back(BaseDir + "015_HipoLooper_v15_Ar40_data_6GeV_run_015792/015_HipoLooper_v15_Ar40_data_6GeV_run_015792.root");
 
     // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672RegTest/016_HipoLooper_v16_Ar40_data_2GeV_run_015672RegTest.root");
     // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test.root");
 
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices.root");
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices.root");
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices.root");
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices.root");
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices.root");
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices.root");
+    InputFiles.push_back(
+        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices.root");
+
     std::string SaveDirFolder = "/Users/alon/Downloads";
 
     for (auto sample = 0; sample < InputFiles.size(); ++sample) {
+        std::string TempGeneral_status = "";
+        std::pair<double, double> theta_slice;
+
+        if (basic_tools::FindSubstring(InputFiles.at(sample), "_to_")) {
+            std::string path = InputFiles.at(sample);
+            std::string filename = path.substr(path.find_last_of("/\\") + 1);  // isolate filename
+
+            size_t to_pos = filename.find("_to_");
+
+            if (to_pos != std::string::npos && to_pos >= 2) {
+                size_t slice_start = to_pos - 2;  // start two characters before "_to_" to get the range start
+                size_t slice_end = filename.find(".root");
+                if (slice_end != std::string::npos && slice_end > slice_start) { TempGeneral_status = General_status + "_" + filename.substr(slice_start, slice_end - slice_start); }
+            }
+
+            if (to_pos != std::string::npos && to_pos >= 1) {
+                // Find start of llim
+                size_t llim_start = filename.rfind('_', to_pos - 1);
+                if (llim_start != std::string::npos) {
+                    std::string llim_str = filename.substr(llim_start + 1, to_pos - llim_start - 1);
+                    size_t ulim_end = filename.find('_', to_pos + 4);  // after "_to_"
+                    std::string ulim_str = filename.substr(to_pos + 4, ulim_end - (to_pos + 4));
+                    double theta_slice_llim = std::stod(llim_str);
+                    double theta_slice_ulim = std::stod(ulim_str);
+                    theta_slice = {theta_slice_llim, theta_slice_ulim};
+                }
+            }
+        } else {
+            TempGeneral_status = General_status;
+        }
+
         bool IsData = basic_tools::FindSubstring(InputFiles.at(sample), "data");
 
         bool Is2GeV = (basic_tools::FindSubstring(InputFiles.at(sample), "2070MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "2gev") ||
@@ -124,7 +170,7 @@ void CompareHistogramsTester2() {
 
         std::string CodeRun_status = target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status;
 
-        std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status_2 + CodeRun_status + General_status;
+        std::string OutFolderName = OutFolderName_prefix + OutFolderName_ver_status_2 + CodeRun_status + TempGeneral_status;
         std::string OutFileName = OutFolderName;
 
         const std::string OutputDir = SaveDirFolder + "/" + OutFolderName;
@@ -145,10 +191,16 @@ void CompareHistogramsTester2() {
         const char *filename = InputFiles[sample].c_str();
 
         std::cout << "\033[33m\n\n===========================================================================================\n\n";
-        std::cout << "\033[33mCodeRun_status:    \t\033[0m" << CodeRun_status << "\n";
-        std::cout << "\033[33mSaveDirFolder:     \t\033[0m" << SaveDirFolder << "\n";
-        std::cout << "\033[33mOutputDir:\t\033[0m" << OutputDir << "\n";
-        std::cout << "\033[33mfilename:          \t\033[0m" << filename << "\n";
+        std::cout << "\033[33mCodeRun_status:        \t\033[0m" << CodeRun_status << "\n";
+        std::cout << "\033[33mSaveDirFolder:         \t\033[0m" << SaveDirFolder << "\n";
+        std::cout << "\033[33mOutputDir:             \t\033[0m" << OutputDir << "\n";
+        std::cout << "\033[33mfilename:              \t\033[0m" << filename << "\n";
+        std::cout << "\033[33mGeneral_status:        \t\033[0m" << General_status << "\n";
+        std::cout << "\033[33mTempGeneral_status:    \t\033[0m" << TempGeneral_status << "\n";
+
+        if (basic_tools::FindSubstring(InputFiles.at(sample), "_to_")) {
+            std::cout << "\033[33mtheta_slice:           \t\033[0m {" << theta_slice.first << ", " << theta_slice.second << "}\n";
+        }
 
         TFile *file = new TFile(filename);
         std::vector<TObject *> HistoList;
@@ -197,18 +249,18 @@ void CompareHistogramsTester2() {
         auto [h_Vz_e_AC_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "e");
 
         auto h_Vz_pipFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_1e_cut", "TH1D");
-        auto h_Vz_pipFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector1_1e_cut", "TH1D");
-        auto h_Vz_pipFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector2_1e_cut", "TH1D");
-        auto h_Vz_pipFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector3_1e_cut", "TH1D");
-        auto h_Vz_pipFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector4_1e_cut", "TH1D");
-        auto h_Vz_pipFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector5_1e_cut", "TH1D");
-        auto h_Vz_pipFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector6_1e_cut", "TH1D");
-        // auto [h_Vz_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pipFD");
-        // auto [h_Vz_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pipFD");
-        // auto [h_Vz_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pipFD");
-        // auto [h_Vz_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "pipFD");
-        // auto [h_Vz_pipFD_AC_sector5_1e_cut, h_phi_pipFD_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "pipFD");
-        // auto [h_Vz_pipFD_AC_sector6_1e_cut, h_phi_pipFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pipFD");
+        // auto h_Vz_pipFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector1_1e_cut", "TH1D");
+        // auto h_Vz_pipFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector2_1e_cut", "TH1D");
+        // auto h_Vz_pipFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector3_1e_cut", "TH1D");
+        // auto h_Vz_pipFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector4_1e_cut", "TH1D");
+        // auto h_Vz_pipFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector5_1e_cut", "TH1D");
+        // auto h_Vz_pipFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector6_1e_cut", "TH1D");
+        auto [h_Vz_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pipFD");
+        auto [h_Vz_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pipFD");
+        auto [h_Vz_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pipFD");
+        auto [h_Vz_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "pipFD");
+        auto [h_Vz_pipFD_AC_sector5_1e_cut, h_phi_pipFD_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "pipFD");
+        auto [h_Vz_pipFD_AC_sector6_1e_cut, h_phi_pipFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pipFD");
 
         auto h_Vz_pimFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_1e_cut", "TH1D");
         auto h_Vz_pimFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector1_1e_cut", "TH1D");
@@ -242,10 +294,25 @@ void CompareHistogramsTester2() {
             if (fitLimits.size() == 0) {
                 // If no limits are provided, use the histogram's peak center
                 double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
-                fitMin = -std::fabs(peakCenter * 1.1);
-                fitMax = -std::fabs(peakCenter * 0.9);
+
+                if (peakCenter < 0) {
+                    // If peak is negative, set limits accordingly
+                    fitMin = -std::fabs(peakCenter * 1.1);
+                    fitMax = -std::fabs(peakCenter * 0.9);
+                } else {
+                    // If peak is positive, set limits accordingly
+                    fitMin = std::fabs(peakCenter * 0.9);
+                    fitMax = std::fabs(peakCenter * 1.1);
+                }
+
+                // fitMin = -std::fabs(peakCenter * 1.1);
+                // fitMax = -std::fabs(peakCenter * 0.9);
                 // fitMin = -std::fabs(peakCenter * 1.2);
                 // fitMax = -std::fabs(peakCenter * 0.8);
+                // fitMin = -std::fabs(peakCenter * 1.1);
+                // fitMax = -std::fabs(peakCenter * 0.9);
+                // // fitMin = -std::fabs(peakCenter * 1.2);
+                // // fitMax = -std::fabs(peakCenter * 0.8);
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
                 fitMax = fitLimits[1];
@@ -285,26 +352,69 @@ void CompareHistogramsTester2() {
         // };
 
         // Usage:
-        double peak_sector1 = fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut);
-        double peak_sector2 = fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut);
-        double peak_sector3 = fit_peak_gaussian(h_Vz_e_AC_sector3_1e_cut);
-        double peak_sector4 = fit_peak_gaussian(h_Vz_e_AC_sector4_1e_cut);
-        double peak_sector5 = fit_peak_gaussian(h_Vz_e_AC_sector5_1e_cut);
-        double peak_sector6 = fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut);
-
-        std::vector<double> Vz_e_peaks_BySector = {peak_sector1, peak_sector2, peak_sector3, peak_sector4, peak_sector5, peak_sector6};
+        std::vector<double> Vz_e_peaks_BySector = {fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector3_1e_cut),
+                                                   fit_peak_gaussian(h_Vz_e_AC_sector4_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector5_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut)};
         std::vector<double> phi_e_peaks_BySector = {
             // fit_peak_gaussian(h_phi_e_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector2_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector3_1e_cut),
             // fit_peak_gaussian(h_phi_e_AC_sector4_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector6_1e_cut)};
             h_phi_e_AC_sector1_1e_cut->GetBinCenter(h_phi_e_AC_sector1_1e_cut->GetMaximumBin()), h_phi_e_AC_sector2_1e_cut->GetBinCenter(h_phi_e_AC_sector2_1e_cut->GetMaximumBin()),
             h_phi_e_AC_sector3_1e_cut->GetBinCenter(h_phi_e_AC_sector3_1e_cut->GetMaximumBin()), h_phi_e_AC_sector4_1e_cut->GetBinCenter(h_phi_e_AC_sector4_1e_cut->GetMaximumBin()),
             h_phi_e_AC_sector5_1e_cut->GetBinCenter(h_phi_e_AC_sector5_1e_cut->GetMaximumBin()), h_phi_e_AC_sector6_1e_cut->GetBinCenter(h_phi_e_AC_sector6_1e_cut->GetMaximumBin())};
-            auto [A, phi_beam, Z0, FittedParametersGraph] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector, phi_e_peaks_BySector);
+        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector, phi_e_peaks_BySector, theta_slice);
 
-        FittedParametersGraph->GetXaxis()->CenterTitle();
-        FittedParametersGraph->GetYaxis()->CenterTitle();
+        std::vector<double> Vz_pipFD_peaks_BySector = {fit_peak_gaussian(h_Vz_pipFD_AC_sector1_1e_cut), fit_peak_gaussian(h_Vz_pipFD_AC_sector2_1e_cut),
+                                                       fit_peak_gaussian(h_Vz_pipFD_AC_sector3_1e_cut), fit_peak_gaussian(h_Vz_pipFD_AC_sector4_1e_cut),
+                                                       fit_peak_gaussian(h_Vz_pipFD_AC_sector5_1e_cut), fit_peak_gaussian(h_Vz_pipFD_AC_sector6_1e_cut)};
+        std::vector<double> phi_pipFD_peaks_BySector = {fit_peak_gaussian(h_phi_pipFD_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_pipFD_AC_sector2_1e_cut),
+                                                        fit_peak_gaussian(h_phi_pipFD_AC_sector3_1e_cut), fit_peak_gaussian(h_phi_pipFD_AC_sector4_1e_cut),
+                                                        fit_peak_gaussian(h_phi_pipFD_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_pipFD_AC_sector6_1e_cut)};
+        // h_phi_pipFD_AC_sector1_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector1_1e_cut->GetMaximumBin()),
+        // h_phi_pipFD_AC_sector2_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector2_1e_cut->GetMaximumBin()),
+        // h_phi_pipFD_AC_sector3_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector3_1e_cut->GetMaximumBin()),
+        // h_phi_pipFD_AC_sector4_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector4_1e_cut->GetMaximumBin()),
+        // h_phi_pipFD_AC_sector5_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector5_1e_cut->GetMaximumBin()),
+        // h_phi_pipFD_AC_sector6_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector6_1e_cut->GetMaximumBin())};
+        auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
+            variable_correctors::FitVertexVsPhi("#pi^{+}FD", Ebeam_status_1, Vz_pipFD_peaks_BySector, phi_pipFD_peaks_BySector, theta_slice);
 
-        HistoList.insert(HistoList.begin(), FittedParametersGraph);
+        int insert_index_e = 0;
+        int insert_index_pipFD = 0;
+
+        for (int i = 0; i < HistoList.size(); i++) {
+            if (HistoList[i]->InheritsFrom("TH1")) {
+                auto *h1 = (TH1 *)HistoList[i];
+                h1->Sumw2();
+                h1->SetMinimum(0);
+                h1->SetLineWidth(2);
+                h1->SetLineColor(kRed);
+            }
+
+            if (HistoList[i]->InheritsFrom("TH1") || HistoList[i]->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)HistoList[i];
+                h->GetXaxis()->CenterTitle();
+                h->GetYaxis()->CenterTitle();
+            } else if (HistoList[i]->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)HistoList[i];
+                g->GetXaxis()->CenterTitle();
+                g->GetYaxis()->CenterTitle();
+            }
+
+            if (std::string(HistoList[i]->GetName()) == "Vz_e_AC_zoomin_1e_cut") {
+                insert_index_e = i;
+                // insert_index_e = i + 1;
+            } else if (std::string(HistoList[i]->GetName()) == "Vz_pipFD_AC_zoomin_1e_cut") {
+                insert_index_pipFD = i;
+                // insert_index_pipFD = i + 1;
+            }
+        }
+
+        FittedParametersGraph_e->GetXaxis()->CenterTitle();
+        FittedParametersGraph_e->GetYaxis()->CenterTitle();
+        FittedParametersGraph_pipFD->GetXaxis()->CenterTitle();
+        FittedParametersGraph_pipFD->GetYaxis()->CenterTitle();
+
+        HistoList.insert(HistoList.begin() + insert_index_e, FittedParametersGraph_e);
+        HistoList.insert(HistoList.begin() + insert_index_pipFD, FittedParametersGraph_pipFD);
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
@@ -431,39 +541,41 @@ void CompareHistogramsTester2() {
 
             std::string title = HistoList[i]->GetTitle();
 
-            // for (const auto &[particle_key, label] : particle_labels) {
-            //     if (basic_tools::FindSubstring(title, particle_key)) {
-            //         myText->cd();
-            //         titles.SetTextAlign(22);  // Center text both horizontally and vertically
+            for (const auto &[particle_key, label] : particle_labels) {
+                if (basic_tools::FindSubstring(title, particle_key)) {
+                    myText->cd();
+                    titles.SetTextAlign(22);  // Center text both horizontally and vertically
 
-            //         if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
-            //             std::string bookmark_title = label + " plots";
-            //             std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
-            //             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
-            //             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
-            //             myText->Clear();
-            //             *first_flags[particle_key] = false;
-            //             ++plot_counter;
-            //         } else {
-            //             for (int sector = 1; sector <= 6; ++sector) {
-            //                 std::string sector_str = "sector" + std::to_string(sector);
-            //                 std::string sector_title_str = "sector " + std::to_string(sector);
+                    if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
+                        std::string bookmark_title = label + " plots";
+                        std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
+                        titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
+                        myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
+                        myText->Clear();
+                        *first_flags[particle_key] = false;
+                        ++plot_counter;
+                    } else {
+                        for (int sector = 1; sector <= 6; ++sector) {
+                            std::string sector_str = "sector" + std::to_string(sector);
+                            std::string sector_title_str = "sector " + std::to_string(sector);
 
-            //                 if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
-            //                     std::string bookmark_title = label + " plots - " + sector_title_str;
-            //                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
-            //                     std::string hierarchical_title = histogram_functions::SanitizeForBookmark(label + " plots") + ">" +
-            //                     histogram_functions::SanitizeForBookmark(bookmark_title); titles.DrawLatex(0.5, 0.5, bookmark_title.c_str()); myText->Print(fileName, ("pdf Title:" +
-            //                     hierarchical_title).c_str()); myText->Clear(); *sector_flags[particle_key][sector] = false;
-            //                     ++plot_counter;
-            //                     break;
-            //                 }
-            //             }
-            //         }
+                            if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
+                                std::string bookmark_title = label + " plots - " + sector_title_str;
+                                // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
+                                std::string hierarchical_title = histogram_functions::SanitizeForBookmark(label + " plots") + ">" + histogram_functions::SanitizeForBookmark(bookmark_title);
+                                titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
+                                myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
+                                myText->Clear();
+                                *sector_flags[particle_key][sector] = false;
+                                ++plot_counter;
+                                break;
+                            }
+                        }
+                    }
 
-            //         break;  // Stop checking other particles after match
-            //     }
-            // }
+                    break;  // Stop checking other particles after match
+                }
+            }
 
             myCanvas->cd();
 
@@ -489,8 +601,9 @@ void CompareHistogramsTester2() {
 
                 h->Draw();
 
-                if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{")) {
+                if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "phi")) {
                     gPad->Update();
+
                     TLine *speac_target_location_TLine;
                     double speac_target_location_value = 0.0;
 
@@ -528,12 +641,12 @@ void CompareHistogramsTester2() {
                     ListOfFunctions->Add(speac_target_location_TLine);
                     ListOfFunctions->Add(measured_target_location_TLine);
                     ListOfFunctions->Add(Legend);
-                } else if (basic_tools::FindSubstring(h->GetName(), "phi_e")) {
+                } else if (basic_tools::FindSubstring(h->GetName(), "phi_")) {
                     gPad->Update();
 
                     TLine *measured_target_location_TLine;
-                    double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
-                    // double measured_target_location_value = fit_peak_gaussian(h);
+                    // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                    double measured_target_location_value = fit_peak_gaussian(h);
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);

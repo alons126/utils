@@ -100,13 +100,15 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     // Use phi_deg directly as x-values
     TGraph *g = new TGraph(6, phi_deg, z_vals);
+
     if (useThetaSlice) {
-        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} for " + basic_tools::ToStringWithPrecision(theta_slice.first) + "#circ #leq #theta_{" + Particle +
+        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} peaks for " + basic_tools::ToStringWithPrecision(theta_slice.first) + "#circ #leq #theta_{" + Particle +
                      "} #leq " + basic_tools::ToStringWithPrecision(theta_slice.second) + "#circ;#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]")
-                       .c_str());
+                        .c_str());
     } else {
-        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "};#phi_{" + Particle + "} [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]").c_str());
+        g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} peaks;#phi_{" + Particle + "} peaks [#circ];V_{z,rec}^{" + Particle + "} peaks [cm]").c_str());
     }
+
     g->SetMarkerStyle(21);
     g->SetMarkerSize(1.5);
     g->GetXaxis()->CenterTitle();
@@ -114,8 +116,10 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     g->GetXaxis()->SetLimits(-180, 180);
 
+    // double margin = 0.5 * std::abs(maxZ - minZ);
     double margin = 0.1 * std::abs(maxZ - minZ);
-    g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + margin);
+    g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + 10 * margin);
+    // g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + margin);
 
     // if (basic_tools::FindSubstring(SampleName, "2GeV")) {
     //     if (basic_tools::FindSubstring(SampleName, "Ar40")) {
@@ -131,6 +135,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     // Fit function: argument in degrees, convert to radians in the formula
     TF1 *fitFunc = nullptr;
+
     if (!useThetaSlice) {
         fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
         fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_true");
@@ -149,8 +154,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     // double minAmp = -6.55;
     // fitFunc->SetParLimits(0, 0.5 * (maxAmp - minAmp) * 0.9, 0.5 * (maxAmp - minAmp) * 1.1);
 
-    // g->Fit(fitFunc);
-    g->Fit(fitFunc, "F");
+    g->Fit(fitFunc);
+    // g->Fit(fitFunc, "F");
 
     double A = fitFunc->GetParameter(0);
     double phi_beam = fitFunc->GetParameter(1);
@@ -170,26 +175,28 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     std::ostringstream legendText;
 
     if (useThetaSlice) {
-        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = (r/tan(#theta = " << basic_tools::ToStringWithPrecision(mean_theta) << "#circ))*cos(#phi_{" << Particle
-                   << "} - #phi_{beam}) + V_{z,true}";
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = V_{z,true}^{" << Particle << "} + #left[#frac{r #times cos(#phi_{" << Particle
+                   << "} - #phi_{beam})}{tan(#theta_{" << Particle << "}^{average})}#right]_{#theta_{" << Particle << "}^{average} = " << basic_tools::ToStringWithPrecision(mean_theta)
+                   << "#circ}";
     } else {
-        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,true}";
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,true}^{" << Particle << "}";
     }
 
-    TLegend *legend = new TLegend(0.18, 0.81, 0.59, 0.88);
+    TLegend *legend = new TLegend(0.18, 0.77, 0.775, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
-    legend->SetTextSize(0.03);
+    legend->SetTextAlign(12);
+    legend->SetTextSize(0.025);
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.68, 0.35, 0.78, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.35, 0.68, 0.51, 0.78, "NDC");
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.65, 0.375, 0.75, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.375, 0.65, 0.56, 0.75, "NDC");
 
     for (auto *box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
         box->SetFillColor(0);
         box->SetTextAlign(12);
         box->SetTextFont(42);
-        box->SetTextSize(0.03);
+        box->SetTextSize(0.025);
     }
 
     FitParam1->AddText(("Fit #chi^{2} = " + basic_tools::ToStringWithPrecision(fitFunc->GetChisquare())).c_str());
@@ -201,7 +208,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     }
 
     FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
-    FitParam2->AddText(("V_{z,true} = " + basic_tools::ToStringWithPrecision(Vz_true) + " cm").c_str());
+    FitParam2->AddText(("V_{z,true}^{" + Particle + "} = " + basic_tools::ToStringWithPrecision(Vz_true) + " cm").c_str());
 
     g->GetListOfFunctions()->Add(FitParam1);
     g->GetListOfFunctions()->Add(FitParam2);
