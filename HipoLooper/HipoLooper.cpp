@@ -46,9 +46,9 @@ void HipoLooper() {
     std::string OutFolderName_prefix = basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "_slice_fit_test_5";  // General status of the analysis
+    std::string General_status = "slice_fit_test_5";  // General status of the analysis
     // std::string General_status = "__corrected_Vz__theta_slice_fit_test";  // General status of the analysis
-    General_status = "_" + General_status;
+    General_status = "__" + General_status;
 
     bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
