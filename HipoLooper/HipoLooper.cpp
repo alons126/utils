@@ -43,7 +43,7 @@ void HipoLooper() {
     std::cout << "\033[33m\n\nInitiating HipoLooper.cpp\n\033[0m";
 
     int version = 20;  // Version of the code
-    std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
+    std::string OutFolderName_prefix = basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
     std::string General_status = "_slice_fit_test";  // General status of the analysis
@@ -52,10 +52,10 @@ void HipoLooper() {
 
     bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
-    // int Limiter = 10000000;  // 10M events (fo the data)
+    int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
-    int Limiter = 10000;  // 1 file
+    // int Limiter = 10000;  // 1 file
 
     // std::vector<std::vector<double>> theta_slices;
     // // theta_slices.push_back({-9999.0, 9999.0});
@@ -313,6 +313,16 @@ void HipoLooper() {
         TH2D *h_Vz_VS_theta_e_AC_1e_cut = new TH2D(
             "Vz_VS_theta_e_AC_1e_cut", ("V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 0, 50, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_theta_e_AC_1e_cut);
+
+        TH2D *h_corrected_Vz_VS_phi_e_AC_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_1e_cut", ("V_{z,corrected}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z,corrected}^{e} [cm]").c_str(),
+            100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_1e_cut);
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_1e_cut",
+            ("V_{z,corrected}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];V_{z,corrected}^{e} [cm]").c_str(), 100, 0, 50, 100, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_1e_cut[4];  // 3 regions
@@ -1447,6 +1457,19 @@ void HipoLooper() {
                      50, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_theta_pipFD_AC_1e_cut);
 
+        TH2D *h_corrected_Vz_VS_phi_pipFD_AC_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_pipFD_AC_1e_cut",
+            ("V_{z,corrected}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z,corrected}^{#pi^{+}FD} [cm]").c_str(),
+            100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_pipFD_AC_1e_cut);
+
+        TH2D *h_corrected_Vz_VS_theta_pipFD_AC_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_pipFD_AC_1e_cut",
+            ("V_{z,corrected}^{#pi^{+}FD} vs. #theta_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#theta_{#pi^{+}FD} [#circ];V_{z,corrected}^{#pi^{+}FD} [cm]")
+                .c_str(),
+            100, 0, 50, 100, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_pipFD_AC_1e_cut);
+
         TH2D *h_dc_pipFD_hit_map_BC_1e_cut[4];  // 3 regions
         TH2D *h_dc_pipFD_hit_map_AC_1e_cut[4];  // 3 regions
 
@@ -2400,6 +2423,19 @@ void HipoLooper() {
                      ("V_{z}^{#pi^{-}FD} vs. #theta_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#theta_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 100, 0,
                      50, 100, -13, 2);
         HistoList.push_back(h_Vz_VS_theta_pimFD_AC_1e_cut);
+
+        TH2D *h_corrected_Vz_VS_phi_pimFD_AC_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_pimFD_AC_1e_cut",
+            ("V_{z,corrected}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z,corrected}^{#pi^{-}FD} [cm]").c_str(),
+            100, -180, 180, 100, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_pimFD_AC_1e_cut);
+
+        TH2D *h_corrected_Vz_VS_theta_pimFD_AC_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_pimFD_AC_1e_cut",
+            ("V_{z,corrected}^{#pi^{-}FD} vs. #theta_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#theta_{#pi^{-}FD} [#circ];V_{z,corrected}^{#pi^{-}FD} [cm]")
+                .c_str(),
+            100, 0, 50, 100, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_pimFD_AC_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_1e_cut[4];  // 3 regions
         TH2D *h_dc_pimFD_hit_map_AC_1e_cut[4];  // 3 regions
@@ -3738,6 +3774,9 @@ void HipoLooper() {
             h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
             h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, weight);
 
+            h_corrected_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, corrected_Vz_e, weight);
+            h_corrected_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, corrected_Vz_e, weight);
+
             reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
             h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -4031,6 +4070,9 @@ void HipoLooper() {
                     h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
                     h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / analysis_math::pi, Vz_pip, weight);
 
+                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip_corrected, weight);
+                    h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / analysis_math::pi, Vz_pip_corrected, weight);
+
                     reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
@@ -4262,6 +4304,9 @@ void HipoLooper() {
 
                     h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
                     h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / analysis_math::pi, Vz_pim, weight);
+
+                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim_corrected, weight);
+                    h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / analysis_math::pi, Vz_pim_corrected, weight);
 
                     reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
