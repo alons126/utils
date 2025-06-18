@@ -73,19 +73,26 @@ void CompareHistogramsTester2() {
     // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test.root");
 
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices.root");
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices.root");
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices.root");
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices.root");
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices.root");
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices.root");
     InputFiles.push_back(
-        "/Users/alon/Downloads/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices.root");
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices.root");
 
     std::string SaveDirFolder = "/Users/alon/Downloads";
 

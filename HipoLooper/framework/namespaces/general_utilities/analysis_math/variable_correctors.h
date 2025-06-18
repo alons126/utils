@@ -32,14 +32,14 @@ namespace variable_correctors {
  * the reconstructed z-vertex depends on the azimuthal angle of the detected particle.
  * This introduces a sector-dependent bias in Z_rec that follows a cosine dependence.
  * By fitting the peak Z_rec values across the 6 sectors to the form:
- *     Z_rec(φ) = A * cos(φ - φ_beam) + Vz_true
+ *     Z_rec(φ) = Vz_true - A * cos(φ - φ_beam)
  * one can extract:
  *   - A             : amplitude ∝ beam offset magnitude
  *   - φ_beam        : direction of the beam offset
  *   - Vz_true       : average z-position of the target center
  *
  * Optionally, if a theta slice is provided, the fit is performed using:
- *     Z_rec(φ) = (r / tan(mean_theta)) * cos(φ - φ_beam) + Vz_true
+ *     Z_rec(φ) = Vz_true - (r / tan(mean_theta)) * cos(φ - φ_beam)
  * which reflects the relation A = r / tan(theta) for transversely offset beams.
  *
  * The function returns a tuple with (Amplitude A or offset r, Beam direction φ_beam [deg],
@@ -137,11 +137,11 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     TF1 *fitFunc = nullptr;
 
     if (!useThetaSlice) {
-        fitFunc = new TF1("fitFunc", "[0]*cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
+        fitFunc = new TF1("fitFunc", "(-[0]) * cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
         fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_true");
     } else {
         // mean_theta is provided in degrees; convert to radians for trigonometric use
-        fitFunc = new TF1("fitFunc", ([=](double *x, double *par) { return (par[0] / tan(mean_theta_rad)) * cos((x[0] - par[1]) * TMath::DegToRad()) + par[2]; }), -180, 180, 3);
+        fitFunc = new TF1("fitFunc", ([=](double *x, double *par) { return (-par[0] / tan(mean_theta_rad)) * cos((x[0] - par[1]) * TMath::DegToRad()) + par[2]; }), -180, 180, 3);
         fitFunc->SetParNames("r", "Phi_beam", "Vz_true");
     }
 
@@ -175,11 +175,11 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     std::ostringstream legendText;
 
     if (useThetaSlice) {
-        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = V_{z,true}^{" << Particle << "} + #left[#frac{r #times cos(#phi_{" << Particle
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = V_{z,true}^{" << Particle << "} - #left[#frac{r #times cos(#phi_{" << Particle
                    << "} - #phi_{beam})}{tan(#theta_{" << Particle << "}^{average})}#right]_{#theta_{" << Particle << "}^{average} = " << basic_tools::ToStringWithPrecision(mean_theta)
                    << "#circ}";
     } else {
-        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = A*cos(#phi_{" << Particle << "} - #phi_{beam}) + V_{z,true}^{" << Particle << "}";
+        legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = V_{z,true}^{" << Particle << "} - A*cos(#phi_{" << Particle << "} - #phi_{beam})";
     }
 
     TLegend *legend = new TLegend(0.18, 0.77, 0.775, 0.88);

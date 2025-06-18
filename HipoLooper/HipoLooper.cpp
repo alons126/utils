@@ -40,13 +40,13 @@ using namespace constants;
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
 
-    std::cout << "\033[33m\n\nInitiating HipoLooper.cpp\n\033[0m";
+    std::cout << "\033[33m\n\nInitiating HipoLooper.cpp...\n\n\033[0m";
 
     int version = 20;  // Version of the code
     std::string OutFolderName_prefix = basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "_slice_fit_test_2";  // General status of the analysis
+    std::string General_status = "_slice_fit_test_3";  // General status of the analysis
     // std::string General_status = "__corrected_Vz__theta_slice_fit_test";  // General status of the analysis
     General_status = "_" + General_status;
 
@@ -236,11 +236,11 @@ void HipoLooper() {
 
         // Lambda to compute corrected Vz
         auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
-            return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
+            return Vz_rec - (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
         auto r = 0.5;
-        auto phi_beam_rad = analysis_math::pi / 6;
+        auto phi_beam_rad = -5 * analysis_math::pi / 6;
         // auto r = compute_r(Beam_Coordinates);
         // auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
@@ -3479,7 +3479,7 @@ void HipoLooper() {
         while (chain.Next() == true) {
             // Display completed
             ++NumOfEvents;
-            if ((NumOfEvents % 1000000) == 0) { std::cerr << "\n\n" << NumOfEvents / 1000000 << " million completed\n\n"; }
+            if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m\n\n" << NumOfEvents / 1000000 << " million completed\n\n\033[0m"; }
             if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
 
             if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
