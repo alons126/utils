@@ -40,7 +40,7 @@ using namespace constants;
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
 
-    std::cout << "\n\nInitiating HipoLooper.cpp\n";
+    std::cout << "\033[33m\n\nInitiating HipoLooper.cpp\n\033[0m";
 
     int version = 20;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
@@ -3433,7 +3433,7 @@ void HipoLooper() {
 
         // clasAna.printParams();
 
-        std::cout << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n";
+        std::cout << "\033[33m\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n\033[0m";
 
 #pragma region Loop over events
         int NumOfEvents = 0;
@@ -4382,7 +4382,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region nExtracting Vz correction parameters
-        std::cout << "\n\nExtracting Vz correction parameters..." << "\n\n";
+        std::cout << "\033[33m\n\nExtracting Vz correction parameters..." << "\n\n\033[0m";
 
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
@@ -4438,7 +4438,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region Plotting and saving histograms
-        std::cout << "\n\nPlotting and saving histograms..." << "\n\n";
+        std::cout << "\033[33m\n\nPlotting and saving histograms..." << "\n\n\033[0m";
 
         /////////////////////////////////////////////////////
         // Organize histograms
@@ -5003,14 +5003,14 @@ void HipoLooper() {
         // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
         if (InputFiles.size() > 1) { gDirectory->Clear(); }
 
-        cout << "\033[33m\n=============================================================\n\033[0m";
-        cout << "\033[33m= HipoLooper summary                                         \n\033[0m";
-        cout << "\033[33m=============================================================\n\033[0m";
+        std::cout << "\033[33m\n=============================================================\n\033[0m";
+        std::cout << "\033[33m= HipoLooper summary                                         \n\033[0m";
+        std::cout << "\033[33m=============================================================\n\033[0m";
 
-        cout << "\033[33m\n- Input variables -------------------------------------------\n\033[0m";
-        cout << "\033[33mInputFiles.at(sample):\033[0m " << InputFiles.at(sample) << endl;
-        cout << "\033[33mnCodeRun_status:\033[0m       " << CodeRun_status << endl;
-        cout << "\033[33mOutputDir:\033[0m             " << OutputDir << "\n\n";
+        std::cout << "\033[33m\n- Input variables -------------------------------------------\n\033[0m";
+        std::cout << "\033[33mInputFiles.at(sample):\033[0m " << InputFiles.at(sample) << endl;
+        std::cout << "\033[33mnCodeRun_status:\033[0m       " << CodeRun_status << endl;
+        std::cout << "\033[33mOutputDir:\033[0m             " << OutputDir << "\n\n";
     }
     // }
 
