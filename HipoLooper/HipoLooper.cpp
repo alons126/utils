@@ -42,14 +42,14 @@ void HipoLooper() {
 
     std::cout << "\n\nInitiating HipoLooper.cpp\n";
 
-    int version = 19;  // Version of the code
+    int version = 20;  // Version of the code
     std::string OutFolderName_prefix = "0" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "__corrected_Vz__test_e";  // General status of the analysis
+    std::string General_status = "__corrected_Vz__theta_slice_fit_test";  // General status of the analysis
     General_status = "_" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -238,8 +238,10 @@ void HipoLooper() {
             return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
-        auto r = compute_r(Beam_Coordinates);
-        auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
+        auto r = 0.5;
+        auto phi_beam_rad = analysis_math::pi / 6;
+        // auto r = compute_r(Beam_Coordinates);
+        // auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
 #pragma region electron histograms
 
