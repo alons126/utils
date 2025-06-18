@@ -4546,15 +4546,15 @@ void HipoLooper() {
                             basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
                                .c_str());
 
-            text.DrawLatex(0.05, 0.15, "Beam position parameters for V_{z,corrected}:");
-            text.DrawLatex(0.10, 0.10,
-                           ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + basic_tools::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
-                            basic_tools::ToStringWithPrecision(Beam_Coordinates.at(Run_status).second) + " cm)}")
-                               .c_str());
-            text.DrawLatex(0.10, 0.05,
-                           ("Polar: #font[42]{(r,#phi_{beam}) = (" + basic_tools::ToStringWithPrecision(r) + " cm, " +
-                            basic_tools::ToStringWithPrecision(phi_beam_rad * 180 / analysis_math::pi) + "#circ)}")
-                               .c_str());
+            // text.DrawLatex(0.05, 0.15, "Beam position parameters for V_{z,corrected}:");
+            // text.DrawLatex(0.10, 0.10,
+            //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + basic_tools::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
+            //                 basic_tools::ToStringWithPrecision(Beam_Coordinates.at(Run_status).second) + " cm)}")
+            //                    .c_str());
+            // text.DrawLatex(0.10, 0.05,
+            //                ("Polar: #font[42]{(r,#phi_{beam}) = (" + basic_tools::ToStringWithPrecision(r) + " cm, " +
+            //                 basic_tools::ToStringWithPrecision(phi_beam_rad * 180 / analysis_math::pi) + "#circ)}")
+            //                    .c_str());
 
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
