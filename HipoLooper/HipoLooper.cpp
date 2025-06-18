@@ -46,7 +46,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "_slice_fit_test_3";  // General status of the analysis
+    std::string General_status = "_slice_fit_test_4";  // General status of the analysis
     // std::string General_status = "__corrected_Vz__theta_slice_fit_test";  // General status of the analysis
     General_status = "_" + General_status;
 
@@ -236,7 +236,7 @@ void HipoLooper() {
 
         // Lambda to compute corrected Vz
         auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
-            return Vz_rec - (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
+            return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
         auto r = 0.5;
