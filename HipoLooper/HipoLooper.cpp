@@ -50,7 +50,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "slice_fit_test__pipCDr";  // General status of the analysis
+    std::string General_status = "slice_fit_test__pipCD_rAndPhi_beam_rad";  // General status of the analysis
 
     General_status = "__" + General_status;
 
@@ -201,7 +201,7 @@ void HipoLooper() {
             HistoList_zoomin_limits = {-4.0, 1.0};
         }
 
-        std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean}
+        std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean} in cm
         Beam_Coordinates["C12_data_2GeV_run_015664"] = {0.1704, 0.08638};   // pipCD
         Beam_Coordinates["C12_data_4GeV_run_015778"] = {0.1723, 0.1320};    // pimCD
         // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1825, 0.1691};   // e
@@ -246,9 +246,9 @@ void HipoLooper() {
         // auto r = 0.5 * 3;
         // auto r = 0.5 / 2;
         // auto r = 0.5;
-        auto phi_beam_rad = -5 * am::pi / 6;
+        // auto phi_beam_rad = -5 * am::pi / 6;
         auto r = compute_r(Beam_Coordinates);
-        // auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
+        auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
 #pragma region electron histograms
 
@@ -4465,7 +4465,8 @@ void HipoLooper() {
             TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
             hist->Fit(fit, "RQ");  // R = use range, Q = quiet
 
-            fit->SetLineColor(kMagenta);
+            fit->SetLineColor(kViolet);
+            // fit->SetLineColor(kMagenta);
 
             hist->GetListOfFunctions()->Clear();
             hist->GetListOfFunctions()->Add(fit);  // Add fit to the histogram's function list
@@ -4604,7 +4605,7 @@ void HipoLooper() {
 
             text.DrawLatex(0.05, 0.10, "Beam position parameters for corrected V_{z}:");
             text.DrawLatex(0.10, 0.05,
-                           ("Polar: #font[42]{(r,#phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
+                           ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
             // text.DrawLatex(0.05, 0.15, "Beam position parameters for Corrected V_{z}:");
             // text.DrawLatex(0.10, 0.10,
             //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +

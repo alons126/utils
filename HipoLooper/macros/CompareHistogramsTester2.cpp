@@ -331,7 +331,8 @@ void CompareHistogramsTester2() {
             TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
             hist->Fit(fit, "RQ");  // R = use range, Q = quiet
 
-            fit->SetLineColor(kMagenta);
+            fit->SetLineColor(kViolet);
+            // fit->SetLineColor(kMagenta);
 
             hist->GetListOfFunctions()->Clear();
             hist->GetListOfFunctions()->Add(fit);  // Add fit to the histogram's function list
