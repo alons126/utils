@@ -50,11 +50,11 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "slice_fit_test__pipCD_rAndPhi_beam_rad";  // General status of the analysis
+    std::string General_status = "slice_fit_test__pipCD_rAndPhi_beam_rad__full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
