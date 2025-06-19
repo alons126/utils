@@ -50,7 +50,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "pipFD_rAnd__new_Phi_beam_rad_test";  // General status of the analysis
+    std::string General_status = "pipFD_rAnd__new_Phi_beam_rad_test_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
@@ -235,7 +235,8 @@ void HipoLooper() {
                 std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
             }
 
-            return std::atan2(Vy_peak, Vx_peak) - am::pi;  // Adjusted to match the original code's atan2 usage
+            // Adjusted phi_beam_rad from a coordinate system where phi_beam_rad is in the [0, 2pi] range to a system where it is in the [-pi, pi] range
+            return std::atan2(Vy_peak, Vx_peak) - am::pi;  
             // return std::atan2(Vy_peak, Vx_peak);
         };
 
