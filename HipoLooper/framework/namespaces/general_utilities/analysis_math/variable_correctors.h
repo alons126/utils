@@ -147,12 +147,17 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
 
     double ampGuess = 0.5 * (maxZ - minZ);
     double meanGuess = 0.5 * (maxZ + minZ);
-
     fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
 
-    // double maxAmp = -6.0;
-    // double minAmp = -6.55;
-    // fitFunc->SetParLimits(0, 0.5 * (maxAmp - minAmp) * 0.9, 0.5 * (maxAmp - minAmp) * 1.1);
+    fitFunc->SetParLimits(0, 0, 1); // Set amplitude (or r) limits to be non-negative
+
+    // double minPhi_beam = 30;
+    // double maxPhi_beam = 45;
+    // fitFunc->SetParLimits(1, minPhi_beam, maxPhi_beam);
+
+    // double minVz_true = -5.6;
+    // double maxVz_true = -5.4;
+    // fitFunc->SetParLimits(2, minVz_true, maxVz_true);
 
     g->Fit(fitFunc);
     // g->Fit(fitFunc, "F");
@@ -165,12 +170,12 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         A = A / tan(mean_theta_rad);  // convert back from r to amplitude
     }
 
-    phi_beam = fmod(phi_beam, 360.0);
-    if (phi_beam < -180.0) {
-        phi_beam += 360.0;
-    } else if (phi_beam > 180.0) {
-        phi_beam -= 360.0;
-    }
+    // phi_beam = fmod(phi_beam, 360.0);
+    // if (phi_beam < -180.0) {
+    //     phi_beam += 360.0;
+    // } else if (phi_beam > 180.0) {
+    //     phi_beam -= 360.0;
+    // }
 
     std::ostringstream legendText;
 
