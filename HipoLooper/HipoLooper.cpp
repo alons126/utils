@@ -50,7 +50,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "slice_fit_test__halfFittedr";  // General status of the analysis
+    std::string General_status = "slice_fit_test__threeTimesFittedr";  // General status of the analysis
     // std::string General_status = "__corrected_Vz__theta_slice_fit_test";  // General status of the analysis
     General_status = "__" + General_status;
 
@@ -243,7 +243,8 @@ void HipoLooper() {
             return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
-        auto r = 0.5 / 2;
+        auto r = 0.5 * 3;
+        // auto r = 0.5 / 2;
         // auto r = 0.5;
         auto phi_beam_rad = -5 * am::pi / 6;
         // auto r = compute_r(Beam_Coordinates);
