@@ -37,20 +37,24 @@
 
 using namespace constants;
 
+namespace bt = basic_tools;
+namespace am = analysis_math;
+namespace raf = reco_analysis_functions;
+
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
 
     std::cout << "\033[33m\n\nInitiating HipoLooper.cpp...\n\n\033[0m";
 
-    int version = 20;  // Version of the code
-    std::string OutFolderName_prefix = basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
-    std::string OutFolderName_ver_status = "_v" + basic_tools::ToStringWithPrecision(version, 0) + "_";
+    int version = 21;  // Version of the code
+    std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
+    std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "slice_fit_test_5";  // General status of the analysis
+    std::string General_status = "slice_fit_test__halfFittedr";  // General status of the analysis
     // std::string General_status = "__corrected_Vz__theta_slice_fit_test";  // General status of the analysis
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -93,30 +97,30 @@ void HipoLooper() {
 
     // for (int theta_slice = 0; theta_slice < theta_slices.size(); theta_slice++) {
     //     if (theta_slices.size() != 0) {
-    //         General_status = "_" + basic_tools::ReplaceSubstring(basic_tools::ToStringWithPrecision(theta_slices.at(theta_slice).at(0), 0), ".", "_") + "_to_" +
-    //                          basic_tools::ReplaceSubstring(basic_tools::ToStringWithPrecision(theta_slices.at(theta_slice).at(1), 0), ".", "_") + "_deg" + General_status;
+    //         General_status = "_" + bt::ReplaceSubstring(bt::ToStringWithPrecision(theta_slices.at(theta_slice).at(0), 0), ".", "_") + "_to_" +
+    //                          bt::ReplaceSubstring(bt::ToStringWithPrecision(theta_slices.at(theta_slice).at(1), 0), ".", "_") + "_deg" + General_status;
     //     }
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
-        bool IsData = basic_tools::FindSubstring(InputFiles.at(sample), "cache");
+        bool IsData = bt::FindSubstring(InputFiles.at(sample), "cache");
 
-        double Ebeam = (basic_tools::FindSubstring(InputFiles.at(sample), "2070MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "2gev"))   ? 2.07052
-                       : (basic_tools::FindSubstring(InputFiles.at(sample), "4029MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "4gev")) ? 4.02962
-                       : (basic_tools::FindSubstring(InputFiles.at(sample), "5986MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "6gev")) ? 5.98636
-                                                                                                                                                     : 0.0;
+        double Ebeam = (bt::FindSubstring(InputFiles.at(sample), "2070MeV") || bt::FindSubstring(InputFiles.at(sample), "2gev"))   ? 2.07052
+                       : (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev")) ? 4.02962
+                       : (bt::FindSubstring(InputFiles.at(sample), "5986MeV") || bt::FindSubstring(InputFiles.at(sample), "6gev")) ? 5.98636
+                                                                                                                                   : 0.0;
         if (Ebeam == 0.0) {
             std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
             exit(1);
         }
 
-        bool Is2GeV = (basic_tools::FindSubstring(InputFiles.at(sample), "2070MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "2gev"));
-        bool Is4GeV = (basic_tools::FindSubstring(InputFiles.at(sample), "4029MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "4gev"));
-        bool Is6GeV = (basic_tools::FindSubstring(InputFiles.at(sample), "5986MeV") || basic_tools::FindSubstring(InputFiles.at(sample), "6gev"));
+        bool Is2GeV = (bt::FindSubstring(InputFiles.at(sample), "2070MeV") || bt::FindSubstring(InputFiles.at(sample), "2gev"));
+        bool Is4GeV = (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev"));
+        bool Is6GeV = (bt::FindSubstring(InputFiles.at(sample), "5986MeV") || bt::FindSubstring(InputFiles.at(sample), "6gev"));
 
-        std::string target_status = (basic_tools::FindSubstring(InputFiles.at(sample), "/C12/") || basic_tools::FindSubstring(InputFiles.at(sample), "/C/"))     ? "C12"
-                                    : (basic_tools::FindSubstring(InputFiles.at(sample), "/Ar40/") || basic_tools::FindSubstring(InputFiles.at(sample), "/Ar/")) ? "Ar40"
-                                                                                                                                                                 : "_Unknown";
+        std::string target_status = (bt::FindSubstring(InputFiles.at(sample), "/C12/") || bt::FindSubstring(InputFiles.at(sample), "/C/"))     ? "C12"
+                                    : (bt::FindSubstring(InputFiles.at(sample), "/Ar40/") || bt::FindSubstring(InputFiles.at(sample), "/Ar/")) ? "Ar40"
+                                                                                                                                               : "_Unknown";
 
         if (target_status == "_Unknown") {
             std::cerr << "\n\nError! Target not found in InputFiles string! Aborting...\n\n";
@@ -138,12 +142,12 @@ void HipoLooper() {
             exit(1);
         }
 
-        std::string Run_status = basic_tools::FindSubstring(InputFiles.at(sample), "015664")   ? "_run_015664"
-                                 : basic_tools::FindSubstring(InputFiles.at(sample), "015778") ? "_run_015778"
-                                 : basic_tools::FindSubstring(InputFiles.at(sample), "015672") ? "_run_015672"
-                                 : basic_tools::FindSubstring(InputFiles.at(sample), "015743") ? "_run_015743"
-                                 : basic_tools::FindSubstring(InputFiles.at(sample), "015792") ? "_run_015792"
-                                                                                               : "";
+        std::string Run_status = bt::FindSubstring(InputFiles.at(sample), "015664")   ? "_run_015664"
+                                 : bt::FindSubstring(InputFiles.at(sample), "015778") ? "_run_015778"
+                                 : bt::FindSubstring(InputFiles.at(sample), "015672") ? "_run_015672"
+                                 : bt::FindSubstring(InputFiles.at(sample), "015743") ? "_run_015743"
+                                 : bt::FindSubstring(InputFiles.at(sample), "015792") ? "_run_015792"
+                                                                                      : "";
 
         std::string CodeRun_status = target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status;
 
@@ -239,8 +243,9 @@ void HipoLooper() {
             return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
-        auto r = 0.5;
-        auto phi_beam_rad = -5 * analysis_math::pi / 6;
+        auto r = 0.5 / 2;
+        // auto r = 0.5;
+        auto phi_beam_rad = -5 * am::pi / 6;
         // auto r = compute_r(Beam_Coordinates);
         // auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
@@ -3610,7 +3615,7 @@ void HipoLooper() {
             h_Vz_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
             h_Vz_e_BC_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-            reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_1e_cut, weight);
+            raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_1e_cut, weight);
 
             h_nphe_BC_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3631,7 +3636,7 @@ void HipoLooper() {
                 h_Vz_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
                 h_Vz_e_BC_zoomin_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector1_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector1_1e_cut, weight);
 
                 h_nphe_BC_sector1_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3651,7 +3656,7 @@ void HipoLooper() {
                 h_Vz_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
                 h_Vz_e_BC_zoomin_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector2_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector2_1e_cut, weight);
 
                 h_nphe_BC_sector2_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3671,7 +3676,7 @@ void HipoLooper() {
                 h_Vz_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
                 h_Vz_e_BC_zoomin_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector3_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector3_1e_cut, weight);
 
                 h_nphe_BC_sector3_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3691,7 +3696,7 @@ void HipoLooper() {
                 h_Vz_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
                 h_Vz_e_BC_zoomin_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector4_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector4_1e_cut, weight);
 
                 h_nphe_BC_sector4_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3711,7 +3716,7 @@ void HipoLooper() {
                 h_Vz_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
                 h_Vz_e_BC_zoomin_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector5_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector5_1e_cut, weight);
 
                 h_nphe_BC_sector5_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3731,7 +3736,7 @@ void HipoLooper() {
                 h_Vz_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
                 h_Vz_e_BC_zoomin_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                reco_analysis_functions::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector6_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_electron_hit_map_BC_sector6_1e_cut, weight);
 
                 h_nphe_BC_sector6_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3768,16 +3773,16 @@ void HipoLooper() {
             h_corrected_Vz_e_AC_1e_cut->Fill(corrected_Vz_e, weight);
             h_corrected_Vz_e_AC_zoomin_1e_cut->Fill(corrected_Vz_e, weight);
 
-            // h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, 0, weight);
-            // h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, 0, weight);
+            // h_Vz_e_AC_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, 0, weight);
+            // h_Vz_e_AC_zoomin_1e_cut_BySliceOf.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, 0, weight);
 
-            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-            h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, Vz_e, weight);
+            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+            h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
 
-            h_corrected_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, corrected_Vz_e, weight);
-            h_corrected_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / analysis_math::pi, corrected_Vz_e, weight);
+            h_corrected_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+            h_corrected_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
 
-            reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
+            raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
             h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3801,10 +3806,10 @@ void HipoLooper() {
                 h_corrected_Vz_e_AC_sector1_1e_cut->Fill(corrected_Vz_e, weight);
                 h_corrected_Vz_e_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector1_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector1_1e_cut, weight);
 
                 h_nphe_AC_sector1_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3827,10 +3832,10 @@ void HipoLooper() {
                 h_corrected_Vz_e_AC_sector2_1e_cut->Fill(corrected_Vz_e, weight);
                 h_corrected_Vz_e_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector2_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector2_1e_cut, weight);
 
                 h_nphe_AC_sector2_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3853,10 +3858,10 @@ void HipoLooper() {
                 h_corrected_Vz_e_AC_sector3_1e_cut->Fill(corrected_Vz_e, weight);
                 h_corrected_Vz_e_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector3_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector3_1e_cut, weight);
 
                 h_nphe_AC_sector3_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3879,10 +3884,10 @@ void HipoLooper() {
                 h_corrected_Vz_e_AC_sector4_1e_cut->Fill(corrected_Vz_e, weight);
                 h_corrected_Vz_e_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector4_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector4_1e_cut, weight);
 
                 h_nphe_AC_sector4_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3905,10 +3910,10 @@ void HipoLooper() {
                 h_corrected_Vz_e_AC_sector5_1e_cut->Fill(corrected_Vz_e, weight);
                 h_corrected_Vz_e_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector5_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector5_1e_cut, weight);
 
                 h_nphe_AC_sector5_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3931,10 +3936,10 @@ void HipoLooper() {
                 h_corrected_Vz_e_AC_sector6_1e_cut->Fill(corrected_Vz_e, weight);
                 h_corrected_Vz_e_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
-                h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / analysis_math::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                reco_analysis_functions::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector6_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector6_1e_cut, weight);
 
                 h_nphe_AC_sector6_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
@@ -3964,7 +3969,7 @@ void HipoLooper() {
                     h_dVz_pipFD_BC_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_BC_zoomin_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_1e_cut, weight);
+                    raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_1e_cut, weight);
 
                     h_Chi2_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
 
@@ -3977,7 +3982,7 @@ void HipoLooper() {
                         h_dVz_pipFD_BC_sector1_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_BC_zoomin_sector1_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector1_1e_cut, weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector1_1e_cut, weight);
                     } else if (piplus_det[i]->getSector() == 2) {
                         h_Vx_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                         h_Vy_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
@@ -3987,7 +3992,7 @@ void HipoLooper() {
                         h_dVz_pipFD_BC_sector2_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_BC_zoomin_sector2_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector2_1e_cut, weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector2_1e_cut, weight);
                     } else if (piplus_det[i]->getSector() == 3) {
                         h_Vx_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                         h_Vy_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
@@ -3997,7 +4002,7 @@ void HipoLooper() {
                         h_dVz_pipFD_BC_sector3_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_BC_zoomin_sector3_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector3_1e_cut, weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector3_1e_cut, weight);
                     } else if (piplus_det[i]->getSector() == 4) {
                         h_Vx_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                         h_Vy_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
@@ -4007,7 +4012,7 @@ void HipoLooper() {
                         h_dVz_pipFD_BC_sector4_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_BC_zoomin_sector4_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector4_1e_cut, weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector4_1e_cut, weight);
                     } else if (piplus_det[i]->getSector() == 5) {
                         h_Vx_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                         h_Vy_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
@@ -4017,7 +4022,7 @@ void HipoLooper() {
                         h_dVz_pipFD_BC_sector5_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_BC_zoomin_sector5_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector5_1e_cut, weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector5_1e_cut, weight);
                     } else if (piplus_det[i]->getSector() == 6) {
                         h_Vx_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
                         h_Vy_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
@@ -4027,7 +4032,7 @@ void HipoLooper() {
                         h_dVz_pipFD_BC_sector6_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_BC_zoomin_sector6_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector6_1e_cut, weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector6_1e_cut, weight);
                     }
                 } else if (piplus_det[i]->getRegion() == CD) {
                     h_Chi2_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
@@ -4067,13 +4072,13 @@ void HipoLooper() {
                     h_dVz_pipFD_AC_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                    h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / analysis_math::pi, Vz_pip, weight);
+                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                    h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
 
-                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip_corrected, weight);
-                    h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / analysis_math::pi, Vz_pip_corrected, weight);
+                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip_corrected, weight);
+                    h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip_corrected, weight);
 
-                    reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
+                    raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
 
@@ -4089,10 +4094,10 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector1_1e_cut, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector1_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 2) {
                         h_Vx_pipFD_AC_sector2_1e_cut->Fill(Vx_pip, weight);
                         h_Vy_pipFD_AC_sector2_1e_cut->Fill(Vy_pip, weight);
@@ -4105,10 +4110,10 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector2_1e_cut, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector2_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 3) {
                         h_Vx_pipFD_AC_sector3_1e_cut->Fill(Vx_pip, weight);
                         h_Vy_pipFD_AC_sector3_1e_cut->Fill(Vy_pip, weight);
@@ -4121,10 +4126,10 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector3_1e_cut, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector3_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 4) {
                         h_Vx_pipFD_AC_sector4_1e_cut->Fill(Vx_pip, weight);
                         h_Vy_pipFD_AC_sector4_1e_cut->Fill(Vy_pip, weight);
@@ -4137,10 +4142,10 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector4_1e_cut, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector4_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 5) {
                         h_Vx_pipFD_AC_sector5_1e_cut->Fill(Vx_pip, weight);
                         h_Vy_pipFD_AC_sector5_1e_cut->Fill(Vy_pip, weight);
@@ -4153,10 +4158,10 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector5_1e_cut, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector5_1e_cut, weight);
                     } else if (piplus[i]->getSector() == 6) {
                         h_Vx_pipFD_AC_sector6_1e_cut->Fill(Vx_pip, weight);
                         h_Vy_pipFD_AC_sector6_1e_cut->Fill(Vy_pip, weight);
@@ -4169,10 +4174,10 @@ void HipoLooper() {
                         h_dVz_pipFD_AC_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / analysis_math::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                        reco_analysis_functions::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector6_1e_cut, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector6_1e_cut, weight);
                     }
                 } else if (piplus[i]->getRegion() == CD) {
                     h_Chi2_pipCD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
@@ -4203,7 +4208,7 @@ void HipoLooper() {
                     h_dVz_pimFD_BC_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_BC_zoomin_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                    reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_1e_cut, weight);
+                    raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_1e_cut, weight);
 
                     h_Chi2_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
 
@@ -4216,7 +4221,7 @@ void HipoLooper() {
                         h_dVz_pimFD_BC_sector1_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_BC_zoomin_sector1_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector1_1e_cut, weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector1_1e_cut, weight);
                     } else if (piminus_det[i]->getSector() == 2) {
                         h_Vx_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
                         h_Vy_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
@@ -4226,7 +4231,7 @@ void HipoLooper() {
                         h_dVz_pimFD_BC_sector2_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_BC_zoomin_sector2_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector2_1e_cut, weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector2_1e_cut, weight);
                     } else if (piminus_det[i]->getSector() == 3) {
                         h_Vx_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
                         h_Vy_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
@@ -4236,7 +4241,7 @@ void HipoLooper() {
                         h_dVz_pimFD_BC_sector3_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_BC_zoomin_sector3_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector3_1e_cut, weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector3_1e_cut, weight);
                     } else if (piminus_det[i]->getSector() == 4) {
                         h_Vx_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
                         h_Vy_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
@@ -4246,7 +4251,7 @@ void HipoLooper() {
                         h_dVz_pimFD_BC_sector4_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_BC_zoomin_sector4_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector4_1e_cut, weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector4_1e_cut, weight);
                     } else if (piminus_det[i]->getSector() == 5) {
                         h_Vx_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
                         h_Vy_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
@@ -4256,7 +4261,7 @@ void HipoLooper() {
                         h_dVz_pimFD_BC_sector5_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_BC_zoomin_sector5_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector5_1e_cut, weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector5_1e_cut, weight);
                     } else if (piminus_det[i]->getSector() == 6) {
                         h_Vx_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
                         h_Vy_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
@@ -4266,7 +4271,7 @@ void HipoLooper() {
                         h_dVz_pimFD_BC_sector6_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_BC_zoomin_sector6_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector6_1e_cut, weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector6_1e_cut, weight);
                     }
                 } else if (piminus_det[i]->getRegion() == CD) {
                     h_Chi2_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
@@ -4302,13 +4307,13 @@ void HipoLooper() {
                     h_dVz_pimFD_AC_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                    h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / analysis_math::pi, Vz_pim, weight);
+                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                    h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
 
-                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim_corrected, weight);
-                    h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / analysis_math::pi, Vz_pim_corrected, weight);
+                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim_corrected, weight);
+                    h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim_corrected, weight);
 
-                    reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
+                    raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
 
@@ -4324,10 +4329,10 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector1_1e_cut, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector1_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 2) {
                         h_Vx_pimFD_AC_sector2_1e_cut->Fill(Vx_pim, weight);
                         h_Vy_pimFD_AC_sector2_1e_cut->Fill(Vy_pim, weight);
@@ -4340,10 +4345,10 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector2_1e_cut, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector2_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 3) {
                         h_Vx_pimFD_AC_sector3_1e_cut->Fill(Vx_pim, weight);
                         h_Vy_pimFD_AC_sector3_1e_cut->Fill(Vy_pim, weight);
@@ -4356,10 +4361,10 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector3_1e_cut, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector3_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 4) {
                         h_Vx_pimFD_AC_sector4_1e_cut->Fill(Vx_pim, weight);
                         h_Vy_pimFD_AC_sector4_1e_cut->Fill(Vy_pim, weight);
@@ -4372,10 +4377,10 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector4_1e_cut, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector4_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 5) {
                         h_Vx_pimFD_AC_sector5_1e_cut->Fill(Vx_pim, weight);
                         h_Vy_pimFD_AC_sector5_1e_cut->Fill(Vy_pim, weight);
@@ -4388,10 +4393,10 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector5_1e_cut, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector5_1e_cut, weight);
                     } else if (piminus[i]->getSector() == 6) {
                         h_Vx_pimFD_AC_sector6_1e_cut->Fill(Vx_pim, weight);
                         h_Vy_pimFD_AC_sector6_1e_cut->Fill(Vy_pim, weight);
@@ -4404,10 +4409,10 @@ void HipoLooper() {
                         h_dVz_pimFD_AC_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / analysis_math::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                        reco_analysis_functions::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector6_1e_cut, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector6_1e_cut, weight);
                     }
                 } else if (piminus[i]->getRegion() == CD) {
                     h_Chi2_pimCD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
@@ -4479,7 +4484,7 @@ void HipoLooper() {
             h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
             h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
             h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A, phi_beam, Z0, FittedParametersGraph] = analysis_math::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector);
+        auto [A, phi_beam, Z0, FittedParametersGraph] = am::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector);
 #pragma endregion
 
 #pragma region Plotting and saving histograms
@@ -4578,32 +4583,35 @@ void HipoLooper() {
                 text.DrawLatex(0.10, 0.50, ("#font[42]{" + TempOutFolderName + "}").c_str());
             }
 
-            text.DrawLatex(0.05, 0.45, "Event counts:");
+            if (ApplyLimiter) {
+                text.DrawLatex(0.05, 0.45, ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + ", Limiter = " + bt::ToStringWithPrecision(Limiter, 0) + "):").c_str());
+            } else {
+                text.DrawLatex(0.05, 0.45, ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + "):").c_str());
+            }
+
             text.DrawLatex(0.10, 0.40, ("Total #(events):            #font[42]{" + std::to_string(TempNumOfEvents) + "}").c_str());
             text.DrawLatex(0.10, 0.35, ("#(Events) with any e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wAny_e_det) + "}").c_str());
             text.DrawLatex(0.10, 0.30,
                            ("#(Events) with one e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wOne_e_det) + " (" +
-                            basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e_det / TempNumOfEvents_wAny_e_det), 2) + "%)}")
+                            bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e_det / TempNumOfEvents_wAny_e_det), 2) + "%)}")
                                .c_str());
             text.DrawLatex(0.10, 0.25, ("#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}").c_str());
             text.DrawLatex(0.10, 0.20,
                            ("#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
-                            basic_tools::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
+                            bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
                                .c_str());
 
             text.DrawLatex(0.05, 0.10, "Beam position parameters for corrected V_{z}:");
             text.DrawLatex(0.10, 0.05,
-                           ("Polar: #font[42]{(r,#phi_{beam}) = (" + basic_tools::ToStringWithPrecision(r) + " cm, " +
-                            basic_tools::ToStringWithPrecision(phi_beam_rad * 180 / analysis_math::pi) + "#circ)}")
-                               .c_str());
+                           ("Polar: #font[42]{(r,#phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
             // text.DrawLatex(0.05, 0.15, "Beam position parameters for Corrected V_{z}:");
             // text.DrawLatex(0.10, 0.10,
-            //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + basic_tools::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
-            //                 basic_tools::ToStringWithPrecision(Beam_Coordinates.at(Run_status).second) + " cm)}")
+            //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
+            //                 bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).second) + " cm)}")
             //                    .c_str());
             // text.DrawLatex(0.10, 0.05,
-            //                ("Polar: #font[42]{(r,#phi_{beam}) = (" + basic_tools::ToStringWithPrecision(r) + " cm, " +
-            //                 basic_tools::ToStringWithPrecision(phi_beam_rad * 180 / analysis_math::pi) + "#circ)}")
+            //                ("Polar: #font[42]{(r,#phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " +
+            //                 bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}")
             //                    .c_str());
 
             myText->Print(fileName, "pdf Title: Cover");
@@ -4686,11 +4694,11 @@ void HipoLooper() {
                 std::string title = TempHistoList[i]->GetTitle();
 
                 for (const auto &[particle_key, label] : particle_labels) {
-                    if (basic_tools::FindSubstring(title, particle_key)) {
+                    if (bt::FindSubstring(title, particle_key)) {
                         myText->cd();
                         titles.SetTextAlign(22);  // Center text both horizontally and vertically
 
-                        if (*first_flags[particle_key] && !basic_tools::FindSubstring(title, "sector")) {
+                        if (*first_flags[particle_key] && !bt::FindSubstring(title, "sector")) {
                             std::string bookmark_title = label + " plots";
                             std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
@@ -4703,7 +4711,7 @@ void HipoLooper() {
                                 std::string sector_str = "sector" + std::to_string(sector);
                                 std::string sector_title_str = "sector " + std::to_string(sector);
 
-                                if (*sector_flags[particle_key][sector] && basic_tools::FindSubstring(title, sector_str)) {
+                                if (*sector_flags[particle_key][sector] && bt::FindSubstring(title, sector_str)) {
                                     std::string bookmark_title = label + " plots - " + sector_title_str;
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
                                     std::string hierarchical_title =
@@ -4744,8 +4752,7 @@ void HipoLooper() {
 
                     h->Draw();
 
-                    if (basic_tools::FindSubstring(h->GetTitle(), "Corrected V_{z}^{") ||
-                        (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{"))) {
+                    if (bt::FindSubstring(h->GetTitle(), "Corrected V_{z}^{") || (bt::FindSubstring(h->GetTitle(), "V_{z}^{") && !bt::FindSubstring(h->GetTitle(), "dV_{z}^{"))) {
                         gPad->Update();
                         TLine *speac_target_location_TLine;
                         double speac_target_location_value = 0.0;
@@ -4771,9 +4778,9 @@ void HipoLooper() {
 
                         auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
                         TLegendEntry *speac_target_location_TLine_entry =
-                            Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
-                        TLegendEntry *measured_target_location_TLine_entry = Legend->AddEntry(
-                            measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                            Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + bt::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
+                        TLegendEntry *measured_target_location_TLine_entry =
+                            Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
 
                         Legend->Draw("same");
 
@@ -4788,7 +4795,7 @@ void HipoLooper() {
                     h->Draw("colz");
 
                     myCanvas->SetLogz(0);
-                    if (basic_tools::FindSubstring(h->GetName(), "PCAL") && !basic_tools::FindSubstring(h->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
+                    if (bt::FindSubstring(h->GetName(), "PCAL") && !bt::FindSubstring(h->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
 
                     if (h->GetEntries() != 0) {
                         gPad->Update();
@@ -4801,7 +4808,7 @@ void HipoLooper() {
                     ((TGraph *)TempHistoList[i])->Draw("ap");
                 }
 
-                if (basic_tools::FindSubstring(TempHistoList[i]->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(TempHistoList[i]->GetTitle(), "sector")) {
+                if (bt::FindSubstring(TempHistoList[i]->GetTitle(), "V_{z}^{") && !bt::FindSubstring(TempHistoList[i]->GetTitle(), "sector")) {
                     std::string Individual_PDF_fileName = IndividualPlotsOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
                     myCanvas->SaveAs(Individual_PDF_fileName.c_str());
                     histogram_functions::FixPDFOrientation(Individual_PDF_fileName);
@@ -4815,8 +4822,8 @@ void HipoLooper() {
             sprintf(fileName, "%s]", PDF_fileName.c_str());
             myCanvas->Print(fileName, "pdf");
 
-            histogram_functions::FixPDFOrientation(PDF_fileName);                                                             // Fix orientation
-            histogram_functions::ReassignPDFBookmarks(basic_tools::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+            histogram_functions::FixPDFOrientation(PDF_fileName);                                                    // Fix orientation
+            histogram_functions::ReassignPDFBookmarks(bt::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
         };
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
@@ -4830,212 +4837,206 @@ void HipoLooper() {
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
                                                 h_SF_VS_Edep_PCAL_BC_sector4_1e_cut, h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_AC_sector1_1e_cut, h_SF_VS_Edep_PCAL_AC_sector2_1e_cut, h_SF_VS_Edep_PCAL_AC_sector3_1e_cut,
                                                 h_SF_VS_Edep_PCAL_AC_sector4_1e_cut, h_SF_VS_Edep_PCAL_AC_sector5_1e_cut, h_SF_VS_Edep_PCAL_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_SF_VS_P_e_BC_sector1_1e_cut, h_SF_VS_P_e_BC_sector2_1e_cut, h_SF_VS_P_e_BC_sector3_1e_cut, h_SF_VS_P_e_BC_sector4_1e_cut,
                                                 h_SF_VS_P_e_BC_sector5_1e_cut, h_SF_VS_P_e_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_SF_VS_P_e_AC_sector1_1e_cut, h_SF_VS_P_e_AC_sector2_1e_cut, h_SF_VS_P_e_AC_sector3_1e_cut, h_SF_VS_P_e_AC_sector4_1e_cut,
                                                 h_SF_VS_P_e_AC_sector5_1e_cut, h_SF_VS_P_e_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms(
             {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut}, OutputDir,
-            "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_BySector_1e_cut");
+            "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms(
             {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut}, OutputDir,
-            "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_BySector_1e_cut");
+            "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_e_BC_sector1_1e_cut, h_corrected_Vz_e_BC_sector2_1e_cut, h_corrected_Vz_e_BC_sector3_1e_cut,
                                                 h_corrected_Vz_e_BC_sector4_1e_cut, h_corrected_Vz_e_BC_sector5_1e_cut, h_corrected_Vz_e_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut,
                                                 h_corrected_Vz_e_AC_sector4_1e_cut, h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_e_BC_zoomin_sector1_1e_cut, h_Vz_e_BC_zoomin_sector2_1e_cut, h_Vz_e_BC_zoomin_sector3_1e_cut, h_Vz_e_BC_zoomin_sector4_1e_cut,
                                                 h_Vz_e_BC_zoomin_sector5_1e_cut, h_Vz_e_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut,
                                                 h_Vz_e_AC_zoomin_sector5_1e_cut, h_Vz_e_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_e_BC_zoomin_sector1_1e_cut, h_corrected_Vz_e_BC_zoomin_sector2_1e_cut, h_corrected_Vz_e_BC_zoomin_sector3_1e_cut,
                                                 h_corrected_Vz_e_BC_zoomin_sector4_1e_cut, h_corrected_Vz_e_BC_zoomin_sector5_1e_cut, h_corrected_Vz_e_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_e_AC_zoomin_sector1_1e_cut, h_corrected_Vz_e_AC_zoomin_sector2_1e_cut, h_corrected_Vz_e_AC_zoomin_sector3_1e_cut,
                                                 h_corrected_Vz_e_AC_zoomin_sector4_1e_cut, h_corrected_Vz_e_AC_zoomin_sector5_1e_cut, h_corrected_Vz_e_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut,
                                                 h_Vz_pipFD_BC_sector5_1e_cut, h_Vz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut,
                                                 h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_BC_sector1_1e_cut, h_corrected_Vz_pipFD_BC_sector2_1e_cut, h_corrected_Vz_pipFD_BC_sector3_1e_cut,
                                                 h_corrected_Vz_pipFD_BC_sector4_1e_cut, h_corrected_Vz_pipFD_BC_sector5_1e_cut, h_corrected_Vz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_AC_sector1_1e_cut, h_corrected_Vz_pipFD_AC_sector2_1e_cut, h_corrected_Vz_pipFD_AC_sector3_1e_cut,
                                                 h_corrected_Vz_pipFD_AC_sector4_1e_cut, h_corrected_Vz_pipFD_AC_sector5_1e_cut, h_corrected_Vz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut,
                                                 h_dVz_pipFD_BC_sector5_1e_cut, h_dVz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut,
                                                 h_dVz_pipFD_AC_sector5_1e_cut, h_dVz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut,
                                                 h_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut,
                                                 h_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector3_1e_cut,
                                                 h_corrected_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut,
                                                 h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut,
                                                 h_dVz_pipFD_BC_zoomin_sector4_1e_cut, h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut,
                                                 h_dVz_pipFD_AC_zoomin_sector4_1e_cut, h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut,
                                                 h_Vz_pimFD_BC_sector5_1e_cut, h_Vz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut,
                                                 h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_BC_sector1_1e_cut, h_corrected_Vz_pimFD_BC_sector2_1e_cut, h_corrected_Vz_pimFD_BC_sector3_1e_cut,
                                                 h_corrected_Vz_pimFD_BC_sector4_1e_cut, h_corrected_Vz_pimFD_BC_sector5_1e_cut, h_corrected_Vz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_AC_sector1_1e_cut, h_corrected_Vz_pimFD_AC_sector2_1e_cut, h_corrected_Vz_pimFD_AC_sector3_1e_cut,
                                                 h_corrected_Vz_pimFD_AC_sector4_1e_cut, h_corrected_Vz_pimFD_AC_sector5_1e_cut, h_corrected_Vz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut,
                                                 h_dVz_pimFD_BC_sector5_1e_cut, h_dVz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut,
                                                 h_dVz_pimFD_AC_sector5_1e_cut, h_dVz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut,
                                                 h_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut,
                                                 h_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector3_1e_cut,
                                                 h_corrected_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut,
                                                 h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut,
                                                 h_dVz_pimFD_BC_zoomin_sector4_1e_cut, h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut,
                                                 h_dVz_pimFD_AC_zoomin_sector4_1e_cut, h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
+                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_zoomin_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_zoomin_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_zoomin_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_zoomin_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_BC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_BC_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_AC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_AC_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_zoomin_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_zoomin_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_zoomin_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_zoomin_1e_cut");
 
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_BC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_BC_1e_cut");
         ++ComparisonNumber;
         histogram_functions::CompareHistograms({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               basic_tools::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_AC_1e_cut");
+                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_AC_1e_cut");
 
         outFile->cd();
         for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
@@ -5071,6 +5072,6 @@ void HipoLooper() {
     if (elapsed_time_seconds.count() < 60) {
         std::cout << "\033[33m" << "Running time:" << "\033[0m" << "\t\t" << elapsed_time_seconds.count() << " seconds\n\n";
     } else {
-        std::cout << "\033[33m" << "Running time:" << "\033[0m" << "\t\t" << basic_tools::ToStringWithPrecision(elapsed_time_minutes, 3) << " minutes\n\n";
+        std::cout << "\033[33m" << "Running time:" << "\033[0m" << "\t\t" << bt::ToStringWithPrecision(elapsed_time_minutes, 3) << " minutes\n\n";
     }
 }
