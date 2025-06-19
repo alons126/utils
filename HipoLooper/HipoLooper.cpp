@@ -50,7 +50,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "slice_fit_test__pipFD_rAndPhi_beam_rad__full_redo";  // General status of the analysis
+    std::string General_status = "slice_fit_test__pipFD_rAndPhi_beam_rad__full_minus_test";  // General status of the analysis
 
     General_status = "__" + General_status;
 
@@ -79,12 +79,12 @@ void HipoLooper() {
 
     // // Data samples:
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
     // // Simulation samples:
 
@@ -240,7 +240,8 @@ void HipoLooper() {
 
         // Lambda to compute corrected Vz
         auto correct_Vz = [](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad) -> double {
-            return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
+            return Vz_rec - (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
+            // return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
         // auto r = 0.5 * 3;
