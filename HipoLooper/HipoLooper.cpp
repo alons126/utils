@@ -50,7 +50,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "slice_fit_test__pipFD_rAndPhi_beam_rad__full";  // General status of the analysis
+    std::string General_status = "slice_fit_test__pipFD_rAndPhi_beam_rad__full_redo";  // General status of the analysis
 
     General_status = "__" + General_status;
 
@@ -303,13 +303,13 @@ void HipoLooper() {
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_1e_cut);
         }
 
-        TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+        TH1D *h_Vx_e_BC_1e_cut = new TH1D("Vx_e_BC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_1e_cut);
-        TH1D *h_Vx_e_AC_1e_cut = new TH1D("Vx_e_AC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+        TH1D *h_Vx_e_AC_1e_cut = new TH1D("Vx_e_AC_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_1e_cut);
-        TH1D *h_Vy_e_BC_1e_cut = new TH1D("Vy_e_BC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+        TH1D *h_Vy_e_BC_1e_cut = new TH1D("Vy_e_BC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_1e_cut);
-        TH1D *h_Vy_e_AC_1e_cut = new TH1D("Vy_e_AC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+        TH1D *h_Vy_e_AC_1e_cut = new TH1D("Vy_e_AC_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D(
@@ -460,16 +460,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_e_BC_sector1_1e_cut =
-            new TH1D("Vx_e_BC_sector1_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector1);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_BC_sector1_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector1);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_sector1_1e_cut);
         TH1D *h_Vx_e_AC_sector1_1e_cut =
-            new TH1D("Vx_e_AC_sector1_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_AC_sector1_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_sector1_1e_cut);
         TH1D *h_Vy_e_BC_sector1_1e_cut =
-            new TH1D("Vy_e_BC_sector1_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector1);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_BC_sector1_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector1);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_sector1_1e_cut);
         TH1D *h_Vy_e_AC_sector1_1e_cut =
-            new TH1D("Vy_e_AC_sector1_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_AC_sector1_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector1_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector1_1e_cut =
@@ -617,16 +617,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_e_BC_sector2_1e_cut =
-            new TH1D("Vx_e_BC_sector2_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector2);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_BC_sector2_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector2);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_sector2_1e_cut);
         TH1D *h_Vx_e_AC_sector2_1e_cut =
-            new TH1D("Vx_e_AC_sector2_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_AC_sector2_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_sector2_1e_cut);
         TH1D *h_Vy_e_BC_sector2_1e_cut =
-            new TH1D("Vy_e_BC_sector2_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector2);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_BC_sector2_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector2);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_sector2_1e_cut);
         TH1D *h_Vy_e_AC_sector2_1e_cut =
-            new TH1D("Vy_e_AC_sector2_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_AC_sector2_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector2_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector2_1e_cut =
@@ -774,16 +774,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_e_BC_sector3_1e_cut =
-            new TH1D("Vx_e_BC_sector3_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector3);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_BC_sector3_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector3);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_sector3_1e_cut);
         TH1D *h_Vx_e_AC_sector3_1e_cut =
-            new TH1D("Vx_e_AC_sector3_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_AC_sector3_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_sector3_1e_cut);
         TH1D *h_Vy_e_BC_sector3_1e_cut =
-            new TH1D("Vy_e_BC_sector3_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector3);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_BC_sector3_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector3);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_sector3_1e_cut);
         TH1D *h_Vy_e_AC_sector3_1e_cut =
-            new TH1D("Vy_e_AC_sector3_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_AC_sector3_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector3_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector3_1e_cut =
@@ -931,16 +931,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_e_BC_sector4_1e_cut =
-            new TH1D("Vx_e_BC_sector4_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector4);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_BC_sector4_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector4);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_sector4_1e_cut);
         TH1D *h_Vx_e_AC_sector4_1e_cut =
-            new TH1D("Vx_e_AC_sector4_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_AC_sector4_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_sector4_1e_cut);
         TH1D *h_Vy_e_BC_sector4_1e_cut =
-            new TH1D("Vy_e_BC_sector4_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector4);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_BC_sector4_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector4);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_sector4_1e_cut);
         TH1D *h_Vy_e_AC_sector4_1e_cut =
-            new TH1D("Vy_e_AC_sector4_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_AC_sector4_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector4_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector4_1e_cut =
@@ -1088,16 +1088,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_e_BC_sector5_1e_cut =
-            new TH1D("Vx_e_BC_sector5_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector5);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_BC_sector5_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector5);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_sector5_1e_cut);
         TH1D *h_Vx_e_AC_sector5_1e_cut =
-            new TH1D("Vx_e_AC_sector5_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_AC_sector5_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_sector5_1e_cut);
         TH1D *h_Vy_e_BC_sector5_1e_cut =
-            new TH1D("Vy_e_BC_sector5_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector5);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_BC_sector5_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector5);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_sector5_1e_cut);
         TH1D *h_Vy_e_AC_sector5_1e_cut =
-            new TH1D("Vy_e_AC_sector5_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_AC_sector5_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector5_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector5_1e_cut =
@@ -1245,16 +1245,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_e_BC_sector6_1e_cut =
-            new TH1D("Vx_e_BC_sector6_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector6);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_BC_sector6_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector6);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_BC_sector6_1e_cut);
         TH1D *h_Vx_e_AC_sector6_1e_cut =
-            new TH1D("Vx_e_AC_sector6_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{x}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_e_AC_sector6_1e_cut", ("V_{x}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{x}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_e_AC_sector6_1e_cut);
         TH1D *h_Vy_e_BC_sector6_1e_cut =
-            new TH1D("Vy_e_BC_sector6_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector6);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_BC_sector6_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector6);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_BC_sector6_1e_cut);
         TH1D *h_Vy_e_AC_sector6_1e_cut =
-            new TH1D("Vy_e_AC_sector6_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{y}^{e} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_e_AC_sector6_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector6_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_sector6_1e_cut =
@@ -1408,16 +1408,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipFD_BC_1e_cut =
-            new TH1D("Vx_pipFD_BC_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_1e_cut);
         TH1D *h_Vx_pipFD_AC_1e_cut =
-            new TH1D("Vx_pipFD_AC_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_1e_cut);
         TH1D *h_Vy_pipFD_BC_1e_cut =
-            new TH1D("Vy_pipFD_BC_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_1e_cut);
         TH1D *h_Vy_pipFD_AC_1e_cut =
-            new TH1D("Vy_pipFD_AC_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_1e_cut =
@@ -1559,16 +1559,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipFD_BC_sector1_1e_cut =
-            new TH1D("Vx_pipFD_BC_sector1_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_sector1_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_sector1_1e_cut);
         TH1D *h_Vx_pipFD_AC_sector1_1e_cut =
-            new TH1D("Vx_pipFD_AC_sector1_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_sector1_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_sector1_1e_cut);
         TH1D *h_Vy_pipFD_BC_sector1_1e_cut =
-            new TH1D("Vy_pipFD_BC_sector1_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_sector1_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_sector1_1e_cut);
         TH1D *h_Vy_pipFD_AC_sector1_1e_cut =
-            new TH1D("Vy_pipFD_AC_sector1_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_sector1_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector1);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_sector1_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_sector1_1e_cut =
@@ -1695,16 +1695,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipFD_BC_sector2_1e_cut =
-            new TH1D("Vx_pipFD_BC_sector2_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_sector2_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_sector2_1e_cut);
         TH1D *h_Vx_pipFD_AC_sector2_1e_cut =
-            new TH1D("Vx_pipFD_AC_sector2_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_sector2_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_sector2_1e_cut);
         TH1D *h_Vy_pipFD_BC_sector2_1e_cut =
-            new TH1D("Vy_pipFD_BC_sector2_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_sector2_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_sector2_1e_cut);
         TH1D *h_Vy_pipFD_AC_sector2_1e_cut =
-            new TH1D("Vy_pipFD_AC_sector2_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_sector2_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector2);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_sector2_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_sector2_1e_cut =
@@ -1831,16 +1831,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipFD_BC_sector3_1e_cut =
-            new TH1D("Vx_pipFD_BC_sector3_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_sector3_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_sector3_1e_cut);
         TH1D *h_Vx_pipFD_AC_sector3_1e_cut =
-            new TH1D("Vx_pipFD_AC_sector3_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_sector3_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_sector3_1e_cut);
         TH1D *h_Vy_pipFD_BC_sector3_1e_cut =
-            new TH1D("Vy_pipFD_BC_sector3_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_sector3_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_sector3_1e_cut);
         TH1D *h_Vy_pipFD_AC_sector3_1e_cut =
-            new TH1D("Vy_pipFD_AC_sector3_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_sector3_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector3);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_sector3_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_sector3_1e_cut =
@@ -1976,16 +1976,16 @@ void HipoLooper() {
         HistoList.push_back(h_dVz_pipFD_AC_sector4_1e_cut);
 
         TH1D *h_Vx_pipFD_BC_sector4_1e_cut =
-            new TH1D("Vx_pipFD_BC_sector4_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_sector4_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_sector4_1e_cut);
         TH1D *h_Vx_pipFD_AC_sector4_1e_cut =
-            new TH1D("Vx_pipFD_AC_sector4_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_sector4_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_sector4_1e_cut);
         TH1D *h_Vy_pipFD_BC_sector4_1e_cut =
-            new TH1D("Vy_pipFD_BC_sector4_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_sector4_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_sector4_1e_cut);
         TH1D *h_Vy_pipFD_AC_sector4_1e_cut =
-            new TH1D("Vy_pipFD_AC_sector4_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_sector4_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector4);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_sector4_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_zoomin_sector4_1e_cut, *h_dVz_pipFD_AC_zoomin_sector4_1e_cut;
@@ -2103,16 +2103,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipFD_BC_sector5_1e_cut =
-            new TH1D("Vx_pipFD_BC_sector5_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_sector5_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_sector5_1e_cut);
         TH1D *h_Vx_pipFD_AC_sector5_1e_cut =
-            new TH1D("Vx_pipFD_AC_sector5_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_sector5_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_sector5_1e_cut);
         TH1D *h_Vy_pipFD_BC_sector5_1e_cut =
-            new TH1D("Vy_pipFD_BC_sector5_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_sector5_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_sector5_1e_cut);
         TH1D *h_Vy_pipFD_AC_sector5_1e_cut =
-            new TH1D("Vy_pipFD_AC_sector5_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_sector5_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector5);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_sector5_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_sector5_1e_cut =
@@ -2239,16 +2239,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipFD_BC_sector6_1e_cut =
-            new TH1D("Vx_pipFD_BC_sector6_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_BC_sector6_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_BC_sector6_1e_cut);
         TH1D *h_Vx_pipFD_AC_sector6_1e_cut =
-            new TH1D("Vx_pipFD_AC_sector6_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pipFD_AC_sector6_1e_cut", ("V_{x}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{x}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pipFD_AC_sector6_1e_cut);
         TH1D *h_Vy_pipFD_BC_sector6_1e_cut =
-            new TH1D("Vy_pipFD_BC_sector6_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_BC_sector6_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_BC_sector6_1e_cut);
         TH1D *h_Vy_pipFD_AC_sector6_1e_cut =
-            new TH1D("Vy_pipFD_AC_sector6_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pipFD_AC_sector6_1e_cut", ("V_{y}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+} cuts, sector6);V_{y}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pipFD_AC_sector6_1e_cut);
 
         TH1D *h_dVz_pipFD_BC_sector6_1e_cut =
@@ -2375,16 +2375,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_1e_cut =
-            new TH1D("Vx_pimFD_BC_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_1e_cut);
         TH1D *h_Vx_pimFD_AC_1e_cut =
-            new TH1D("Vx_pimFD_AC_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_1e_cut);
         TH1D *h_Vy_pimFD_BC_1e_cut =
-            new TH1D("Vy_pimFD_BC_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_1e_cut);
         TH1D *h_Vy_pimFD_AC_1e_cut =
-            new TH1D("Vy_pimFD_AC_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_1e_cut =
@@ -2526,16 +2526,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_sector1_1e_cut =
-            new TH1D("Vx_pimFD_BC_sector1_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector1);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_sector1_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector1);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_sector1_1e_cut);
         TH1D *h_Vx_pimFD_AC_sector1_1e_cut =
-            new TH1D("Vx_pimFD_AC_sector1_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector1);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_sector1_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector1);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_sector1_1e_cut);
         TH1D *h_Vy_pimFD_BC_sector1_1e_cut =
-            new TH1D("Vy_pimFD_BC_sector1_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector1);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_sector1_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector1);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_sector1_1e_cut);
         TH1D *h_Vy_pimFD_AC_sector1_1e_cut =
-            new TH1D("Vy_pimFD_AC_sector1_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector1);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_sector1_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector1);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_sector1_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_sector1_1e_cut =
@@ -2662,16 +2662,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_sector2_1e_cut =
-            new TH1D("Vx_pimFD_BC_sector2_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector2);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_sector2_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector2);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_sector2_1e_cut);
         TH1D *h_Vx_pimFD_AC_sector2_1e_cut =
-            new TH1D("Vx_pimFD_AC_sector2_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector2);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_sector2_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector2);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_sector2_1e_cut);
         TH1D *h_Vy_pimFD_BC_sector2_1e_cut =
-            new TH1D("Vy_pimFD_BC_sector2_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector2);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_sector2_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector2);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_sector2_1e_cut);
         TH1D *h_Vy_pimFD_AC_sector2_1e_cut =
-            new TH1D("Vy_pimFD_AC_sector2_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector2);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_sector2_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector2);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_sector2_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_sector2_1e_cut =
@@ -2798,16 +2798,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_sector3_1e_cut =
-            new TH1D("Vx_pimFD_BC_sector3_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector3);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_sector3_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector3);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_sector3_1e_cut);
         TH1D *h_Vx_pimFD_AC_sector3_1e_cut =
-            new TH1D("Vx_pimFD_AC_sector3_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector3);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_sector3_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector3);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_sector3_1e_cut);
         TH1D *h_Vy_pimFD_BC_sector3_1e_cut =
-            new TH1D("Vy_pimFD_BC_sector3_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector3);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_sector3_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector3);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_sector3_1e_cut);
         TH1D *h_Vy_pimFD_AC_sector3_1e_cut =
-            new TH1D("Vy_pimFD_AC_sector3_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector3);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_sector3_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector3);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_sector3_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_sector3_1e_cut =
@@ -2934,16 +2934,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_sector4_1e_cut =
-            new TH1D("Vx_pimFD_BC_sector4_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector4);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_sector4_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector4);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_sector4_1e_cut);
         TH1D *h_Vx_pimFD_AC_sector4_1e_cut =
-            new TH1D("Vx_pimFD_AC_sector4_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector4);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_sector4_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector4);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_sector4_1e_cut);
         TH1D *h_Vy_pimFD_BC_sector4_1e_cut =
-            new TH1D("Vy_pimFD_BC_sector4_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector4);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_sector4_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector4);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_sector4_1e_cut);
         TH1D *h_Vy_pimFD_AC_sector4_1e_cut =
-            new TH1D("Vy_pimFD_AC_sector4_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector4);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_sector4_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector4);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_sector4_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_sector4_1e_cut =
@@ -3070,16 +3070,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_sector5_1e_cut =
-            new TH1D("Vx_pimFD_BC_sector5_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector5);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_sector5_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector5);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_sector5_1e_cut);
         TH1D *h_Vx_pimFD_AC_sector5_1e_cut =
-            new TH1D("Vx_pimFD_AC_sector5_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector5);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_sector5_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector5);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_sector5_1e_cut);
         TH1D *h_Vy_pimFD_BC_sector5_1e_cut =
-            new TH1D("Vy_pimFD_BC_sector5_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector5);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_sector5_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector5);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_sector5_1e_cut);
         TH1D *h_Vy_pimFD_AC_sector5_1e_cut =
-            new TH1D("Vy_pimFD_AC_sector5_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector5);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_sector5_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector5);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_sector5_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_sector5_1e_cut =
@@ -3206,16 +3206,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimFD_BC_sector6_1e_cut =
-            new TH1D("Vx_pimFD_BC_sector6_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector6);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_BC_sector6_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector6);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_BC_sector6_1e_cut);
         TH1D *h_Vx_pimFD_AC_sector6_1e_cut =
-            new TH1D("Vx_pimFD_AC_sector6_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector6);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vx_pimFD_AC_sector6_1e_cut", ("V_{x}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector6);V_{x}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vx_pimFD_AC_sector6_1e_cut);
         TH1D *h_Vy_pimFD_BC_sector6_1e_cut =
-            new TH1D("Vy_pimFD_BC_sector6_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector6);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_BC_sector6_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector6);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_BC_sector6_1e_cut);
         TH1D *h_Vy_pimFD_AC_sector6_1e_cut =
-            new TH1D("Vy_pimFD_AC_sector6_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector6);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -3, 3);
+            new TH1D("Vy_pimFD_AC_sector6_1e_cut", ("V_{y}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-} cuts, sector6);V_{y}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_pimFD_AC_sector6_1e_cut);
 
         TH1D *h_dVz_pimFD_BC_sector6_1e_cut =
@@ -3307,16 +3307,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pipCD_BC_1e_cut =
-            new TH1D("Vx_pipCD_BC_1e_cut", ("V_{x}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{x}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vx_pipCD_BC_1e_cut", ("V_{x}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{x}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vx_pipCD_BC_1e_cut);
         TH1D *h_Vx_pipCD_AC_1e_cut =
-            new TH1D("Vx_pipCD_AC_1e_cut", ("V_{x}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{x}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vx_pipCD_AC_1e_cut", ("V_{x}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{x}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vx_pipCD_AC_1e_cut);
         TH1D *h_Vy_pipCD_BC_1e_cut =
-            new TH1D("Vy_pipCD_BC_1e_cut", ("V_{y}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{y}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vy_pipCD_BC_1e_cut", ("V_{y}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{y}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vy_pipCD_BC_1e_cut);
         TH1D *h_Vy_pipCD_AC_1e_cut =
-            new TH1D("Vy_pipCD_AC_1e_cut", ("V_{y}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{y}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vy_pipCD_AC_1e_cut", ("V_{y}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{y}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vy_pipCD_AC_1e_cut);
 
         TH1D *h_dVz_pipCD_BC_1e_cut =
@@ -3383,16 +3383,16 @@ void HipoLooper() {
         }
 
         TH1D *h_Vx_pimCD_BC_1e_cut =
-            new TH1D("Vx_pimCD_BC_1e_cut", ("V_{x}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{x}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vx_pimCD_BC_1e_cut", ("V_{x}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{x}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vx_pimCD_BC_1e_cut);
         TH1D *h_Vx_pimCD_AC_1e_cut =
-            new TH1D("Vx_pimCD_AC_1e_cut", ("V_{x}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{x}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vx_pimCD_AC_1e_cut", ("V_{x}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{x}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vx_pimCD_AC_1e_cut);
         TH1D *h_Vy_pimCD_BC_1e_cut =
-            new TH1D("Vy_pimCD_BC_1e_cut", ("V_{y}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{y}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vy_pimCD_BC_1e_cut", ("V_{y}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{y}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vy_pimCD_BC_1e_cut);
         TH1D *h_Vy_pimCD_AC_1e_cut =
-            new TH1D("Vy_pimCD_AC_1e_cut", ("V_{y}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{y}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.75, 0.75);
+            new TH1D("Vy_pimCD_AC_1e_cut", ("V_{y}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{y}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -0.4, 0.4);
         HistoList.push_back(h_Vy_pimCD_AC_1e_cut);
 
         TH1D *h_dVz_pimCD_BC_1e_cut =
