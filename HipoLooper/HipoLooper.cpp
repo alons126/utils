@@ -3464,8 +3464,6 @@ void HipoLooper() {
             auto piplus = clasAna.getByPid(211);
             auto piminus = clasAna.getByPid(-211);
 
-            cout << "\033[33melectrons.size() = " << electrons.size() << "\n\033[0m";
-
             // get particles by type
             auto allParticles = c12->getDetParticles();
             auto electrons_det = c12->getByID(11);
@@ -3664,6 +3662,8 @@ void HipoLooper() {
             cout << "\033[33mElectrons BPID xxx\033[0m";
 
             if (electrons.size() != 1) { continue; }
+
+            cout << "\033[33melectrons.size() = " << electrons.size() << "\n\033[0m";
 
             cout << "\033[33mElectrons BPID yyy\033[0m";
 
