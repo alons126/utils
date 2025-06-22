@@ -50,7 +50,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "updated_test";  // General status of the analysis
+    std::string General_status = "redo_Vx_Vy_sampling";  // General status of the analysis
 
     General_status = "__" + General_status;
 
@@ -201,7 +201,7 @@ void HipoLooper() {
             HistoList_zoomin_limits = {-4.0, 1.0};
         }
 
-        std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean} in cm
+        std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx peak, Vy peak} in cm
         Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.1719, 0.1134};
         Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.1265, 0.03724};
         Beam_Coordinates["C12_data_2GeV_run_015664_pimCD"] = {0.1, 0.1177};
