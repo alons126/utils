@@ -3663,7 +3663,9 @@ void HipoLooper() {
 
             if (electrons.size() != 1) { continue; }
 
-            // if (electrons[0]->par()->getBeta() > 1.2) { continue; }
+            cout << "\033[33mElectrons BPID yyy\033[0m";
+
+            if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
             cout << "\033[33mElectrons APID\033[0m";
 
