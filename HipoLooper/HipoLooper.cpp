@@ -46,15 +46,15 @@ void HipoLooper() {
 
     std::cout << "\033[33m\n\nInitiating HipoLooper.cpp...\n\n\033[0m";
 
-    int version = 21;  // Version of the code
+    int version = 22;  // Version of the code
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "pipFD_rAnd__new_Phi_beam_rad_test_full";  // General status of the analysis
+    std::string General_status = "updated_test";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -202,22 +202,34 @@ void HipoLooper() {
         }
 
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx mean, Vy mean} in cm
-        Beam_Coordinates["C12_data_2GeV_run_015664"] = {0.1704, 0.08638};   // pipCD
-        Beam_Coordinates["C12_data_4GeV_run_015778"] = {0.1723, 0.1320};    // pimCD
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1825, 0.1691};   // e
-        Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1389, 0.06858};  // pipFD
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672"] = {0.1534, 0.1232};   // pipCD
-        Beam_Coordinates["Ar40_data_4GeV_run_015743"] = {0.1736, 0.1338};  // pimCD
-        Beam_Coordinates["Ar40_data_6GeV_run_015792"] = {0.1604, 0.1350};  // pimCD
+        Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.1719, 0.1134};
+        Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.1265, 0.03724};
+        Beam_Coordinates["C12_data_2GeV_run_015664_pimCD"] = {0.1, 0.1177};
+
+        Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.1426, 0.1412};
+        Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1242, 0.05035};
+        Beam_Coordinates["C12_data_4GeV_run_015778_pimCD"] = {0.1159, 0.1287};
+
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1452, 0.1385};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.112, 0.06085};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.08396, 0.1312};
+
+        Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.1377, 0.1373};
+        Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.1226, 0.1338};
+        Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.1736, 0.1338};
+
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.1604, 0.1350};
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.1604, 0.1350};
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_pimCD"] = {0.1604, 0.1350};
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
-        auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor) -> double {
-            double Vx_peak = Beam_Coor.at(CodeRun_status).first;
-            double Vy_peak = Beam_Coor.at(CodeRun_status).second;
+        auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
+            double Vx_peak = Beam_Coor.at(CodeRun_status + "_" + particle).first;
+            double Vy_peak = Beam_Coor.at(CodeRun_status + "_" + particle).second;
 
             if (IsData) {
-                if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
-                if (Vy_peak == 0.) { std::cerr << "\n\nError! Vy_peak is zero! Aborting...\n\n"; }
+                if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n"; }
+                if (Vy_peak == 0.) { std::cerr << "\n\nError! Vy_peak is for " << particle << " zero! Aborting...\n\n"; }
                 std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
             }
 
@@ -225,18 +237,18 @@ void HipoLooper() {
         };
 
         // Lambda to compute phi_beam in radians, using atan2 for correct quadrant
-        auto compute_phi_beam_rad = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor) -> double {
-            double Vx_peak = Beam_Coor.at(CodeRun_status).first;
-            double Vy_peak = Beam_Coor.at(CodeRun_status).second;
+        auto compute_phi_beam_rad = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
+            double Vx_peak = Beam_Coor.at(CodeRun_status + "_" + particle).first;
+            double Vy_peak = Beam_Coor.at(CodeRun_status + "_" + particle).second;
 
             if (IsData) {
-                if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is zero! Aborting...\n\n"; }
-                if (Vy_peak == 0.) { std::cerr << "\n\nError! Vy_peak is zero! Aborting...\n\n"; }
+                if (Vx_peak == 0.) { std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n"; }
+                if (Vy_peak == 0.) { std::cerr << "\n\nError! Vy_peak is for " << particle << " zero! Aborting...\n\n"; }
                 std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
             }
 
             // Adjusted phi_beam_rad from a coordinate system where phi_beam_rad is in the [0, 2pi] range to a system where it is in the [-pi, pi] range
-            return std::atan2(Vy_peak, Vx_peak) - am::pi;  
+            return std::atan2(Vy_peak, Vx_peak) - am::pi;
             // return std::atan2(Vy_peak, Vx_peak);
         };
 
@@ -246,12 +258,12 @@ void HipoLooper() {
             return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
 
-        // auto r = 0.5 * 3;
-        // auto r = 0.5 / 2;
-        // auto r = 0.5;
-        // auto phi_beam_rad = -5 * am::pi / 6;
-        auto r = compute_r(Beam_Coordinates);
-        auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
+        // // auto r = 0.5 * 3;
+        // // auto r = 0.5 / 2;
+        // // auto r = 0.5;
+        // // auto phi_beam_rad = -5 * am::pi / 6;
+        // auto r = compute_r(Beam_Coordinates);
+        // auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
 #pragma region electron histograms
 
@@ -287,19 +299,19 @@ void HipoLooper() {
         TH1D *h_corrected_Vz_e_BC_zoomin_1e_cut, *h_corrected_Vz_e_AC_zoomin_1e_cut;
 
         if (target_status == "Ar40") {
-            h_corrected_Vz_e_BC_zoomin_1e_cut =
-                new TH1D("corrected_Vz_e_BC_zoomin_1e_cut",
-                         ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -8, -4);
-            HistoList.push_back(h_corrected_Vz_e_BC_zoomin_1e_cut);
+            // h_corrected_Vz_e_BC_zoomin_1e_cut =
+            //     new TH1D("corrected_Vz_e_BC_zoomin_1e_cut",
+            //              ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -8, -4);
+            // HistoList.push_back(h_corrected_Vz_e_BC_zoomin_1e_cut);
             h_corrected_Vz_e_AC_zoomin_1e_cut =
                 new TH1D("corrected_Vz_e_AC_zoomin_1e_cut", ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);Corrected V_{z}^{e} [cm];Counts").c_str(),
                          75, -8, -4);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_1e_cut);
         } else if (target_status == "C12") {
-            h_corrected_Vz_e_BC_zoomin_1e_cut =
-                new TH1D("corrected_Vz_e_BC_zoomin_1e_cut",
-                         ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
-            HistoList.push_back(h_corrected_Vz_e_BC_zoomin_1e_cut);
+            // h_corrected_Vz_e_BC_zoomin_1e_cut =
+            //     new TH1D("corrected_Vz_e_BC_zoomin_1e_cut",
+            //              ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
+            // HistoList.push_back(h_corrected_Vz_e_BC_zoomin_1e_cut);
             h_corrected_Vz_e_AC_zoomin_1e_cut =
                 new TH1D("corrected_Vz_e_AC_zoomin_1e_cut", ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);Corrected V_{z}^{e} [cm];Counts").c_str(),
                          75, -4, 1);
@@ -1391,19 +1403,19 @@ void HipoLooper() {
         TH1D *h_corrected_Vz_pipFD_BC_zoomin_1e_cut, *h_corrected_Vz_pipFD_AC_zoomin_1e_cut;
 
         if (target_status == "Ar40") {
-            h_corrected_Vz_pipFD_BC_zoomin_1e_cut =
-                new TH1D("corrected_Vz_pipFD_BC_zoomin_1e_cut",
-                         ("Corrected V_{z}^{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -8, -4);
-            HistoList.push_back(h_corrected_Vz_pipFD_BC_zoomin_1e_cut);
+            // h_corrected_Vz_pipFD_BC_zoomin_1e_cut =
+            //     new TH1D("corrected_Vz_pipFD_BC_zoomin_1e_cut",
+            //              ("Corrected V_{z}^{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -8, -4);
+            // HistoList.push_back(h_corrected_Vz_pipFD_BC_zoomin_1e_cut);
             h_corrected_Vz_pipFD_AC_zoomin_1e_cut =
                 new TH1D("corrected_Vz_pipFD_AC_zoomin_1e_cut",
                          ("Corrected V_{z}^{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);Corrected V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -8, -4);
             HistoList.push_back(h_corrected_Vz_pipFD_AC_zoomin_1e_cut);
         } else if (target_status == "C12") {
-            h_corrected_Vz_pipFD_BC_zoomin_1e_cut =
-                new TH1D("corrected_Vz_pipFD_BC_zoomin_1e_cut",
-                         ("Corrected V_{z}^{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -4, 1);
-            HistoList.push_back(h_corrected_Vz_pipFD_BC_zoomin_1e_cut);
+            // h_corrected_Vz_pipFD_BC_zoomin_1e_cut =
+            //     new TH1D("corrected_Vz_pipFD_BC_zoomin_1e_cut",
+            //              ("Corrected V_{z}^{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{+} cuts);Corrected V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -4, 1);
+            // HistoList.push_back(h_corrected_Vz_pipFD_BC_zoomin_1e_cut);
             h_corrected_Vz_pipFD_AC_zoomin_1e_cut =
                 new TH1D("corrected_Vz_pipFD_AC_zoomin_1e_cut",
                          ("Corrected V_{z}^{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+} cuts);Corrected V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 75, -4, 1);
@@ -2358,19 +2370,19 @@ void HipoLooper() {
         TH1D *h_corrected_Vz_pimFD_BC_zoomin_1e_cut, *h_corrected_Vz_pimFD_AC_zoomin_1e_cut;
 
         if (target_status == "Ar40") {
-            h_corrected_Vz_pimFD_BC_zoomin_1e_cut =
-                new TH1D("corrected_Vz_pimFD_BC_zoomin_1e_cut",
-                         ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -8, -4);
-            HistoList.push_back(h_corrected_Vz_pimFD_BC_zoomin_1e_cut);
+            // h_corrected_Vz_pimFD_BC_zoomin_1e_cut =
+            //     new TH1D("corrected_Vz_pimFD_BC_zoomin_1e_cut",
+            //              ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -8, -4);
+            // HistoList.push_back(h_corrected_Vz_pimFD_BC_zoomin_1e_cut);
             h_corrected_Vz_pimFD_AC_zoomin_1e_cut =
                 new TH1D("corrected_Vz_pimFD_AC_zoomin_1e_cut",
                          ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -8, -4);
             HistoList.push_back(h_corrected_Vz_pimFD_AC_zoomin_1e_cut);
         } else if (target_status == "C12") {
-            h_corrected_Vz_pimFD_BC_zoomin_1e_cut =
-                new TH1D("corrected_Vz_pimFD_BC_zoomin_1e_cut",
-                         ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -4, 1);
-            HistoList.push_back(h_corrected_Vz_pimFD_BC_zoomin_1e_cut);
+            // h_corrected_Vz_pimFD_BC_zoomin_1e_cut =
+            //     new TH1D("corrected_Vz_pimFD_BC_zoomin_1e_cut",
+            //              ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (before #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -4, 1);
+            // HistoList.push_back(h_corrected_Vz_pimFD_BC_zoomin_1e_cut);
             h_corrected_Vz_pimFD_AC_zoomin_1e_cut =
                 new TH1D("corrected_Vz_pimFD_AC_zoomin_1e_cut",
                          ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 75, -4, 1);
@@ -3767,7 +3779,9 @@ void HipoLooper() {
             double Vy_e = electrons[0]->par()->getVy();
             double Vz_e = electrons[0]->par()->getVz();
 
-            auto corrected_Vz_e = correct_Vz(Vz_e, r, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_rad);
+            auto r_e = compute_r(Beam_Coordinates, "e");
+            auto phi_beam_e_rad = compute_phi_beam_rad(Beam_Coordinates, "e");
+            auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad);
 
             h_Vx_e_AC_1e_cut->Fill(Vx_e, weight);
             h_Vy_e_AC_1e_cut->Fill(Vy_e, weight);
@@ -4059,9 +4073,11 @@ void HipoLooper() {
                 double Vz_pip = piplus[i]->par()->getVz();
 
                 if (piplus[i]->getRegion() == FD) {
-                    auto Vz_pip_corrected = correct_Vz(Vz_pip, r, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_rad);
+                    auto r_pip = compute_r(Beam_Coordinates, "pipFD");
+                    auto phi_beam_pip_rad = compute_phi_beam_rad(Beam_Coordinates, "pipFD");
+                    auto corrected_Vz_pip = correct_Vz(Vz_pip, r_pip, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_pip_rad);
 
-                    // std::cout << "Vz_pip: " << Vz_pip << ", Vz_pip_corrected: " << Vz_pip_corrected << std::endl;
+                    // std::cout << "Vz_pip: " << Vz_pip << ", corrected_Vz_pip: " << corrected_Vz_pip << std::endl;
                     // std::cout << "r: " << r << ", phi_beam_rad: " << phi_beam_rad << std::endl;
                     // std::cout << std::endl;
 
@@ -4070,8 +4086,8 @@ void HipoLooper() {
                     h_Vz_pipFD_AC_1e_cut->Fill(Vz_pip, weight);
                     h_Vz_pipFD_AC_zoomin_1e_cut->Fill(Vz_pip, weight);
 
-                    h_corrected_Vz_pipFD_AC_1e_cut->Fill(Vz_pip_corrected, weight);
-                    h_corrected_Vz_pipFD_AC_zoomin_1e_cut->Fill(Vz_pip_corrected, weight);
+                    h_corrected_Vz_pipFD_AC_1e_cut->Fill(corrected_Vz_pip, weight);
+                    h_corrected_Vz_pipFD_AC_zoomin_1e_cut->Fill(corrected_Vz_pip, weight);
 
                     h_dVz_pipFD_AC_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                     h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4079,8 +4095,8 @@ void HipoLooper() {
                     h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
                     h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
 
-                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip_corrected, weight);
-                    h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip_corrected, weight);
+                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
+                    h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
 
                     raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
@@ -4092,8 +4108,8 @@ void HipoLooper() {
                         h_Vz_pipFD_AC_sector1_1e_cut->Fill(Vz_pip, weight);
                         h_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_sector1_1e_cut->Fill(Vz_pip_corrected, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pip_corrected, weight);
+                        h_corrected_Vz_pipFD_AC_sector1_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_pip, weight);
 
                         h_dVz_pipFD_AC_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4108,8 +4124,8 @@ void HipoLooper() {
                         h_Vz_pipFD_AC_sector2_1e_cut->Fill(Vz_pip, weight);
                         h_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_sector2_1e_cut->Fill(Vz_pip_corrected, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pip_corrected, weight);
+                        h_corrected_Vz_pipFD_AC_sector2_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_pip, weight);
 
                         h_dVz_pipFD_AC_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4124,8 +4140,8 @@ void HipoLooper() {
                         h_Vz_pipFD_AC_sector3_1e_cut->Fill(Vz_pip, weight);
                         h_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_sector3_1e_cut->Fill(Vz_pip_corrected, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pip_corrected, weight);
+                        h_corrected_Vz_pipFD_AC_sector3_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_pip, weight);
 
                         h_dVz_pipFD_AC_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4140,8 +4156,8 @@ void HipoLooper() {
                         h_Vz_pipFD_AC_sector4_1e_cut->Fill(Vz_pip, weight);
                         h_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_sector4_1e_cut->Fill(Vz_pip_corrected, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pip_corrected, weight);
+                        h_corrected_Vz_pipFD_AC_sector4_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_pip, weight);
 
                         h_dVz_pipFD_AC_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4156,8 +4172,8 @@ void HipoLooper() {
                         h_Vz_pipFD_AC_sector5_1e_cut->Fill(Vz_pip, weight);
                         h_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_sector5_1e_cut->Fill(Vz_pip_corrected, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pip_corrected, weight);
+                        h_corrected_Vz_pipFD_AC_sector5_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_pip, weight);
 
                         h_dVz_pipFD_AC_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4172,8 +4188,8 @@ void HipoLooper() {
                         h_Vz_pipFD_AC_sector6_1e_cut->Fill(Vz_pip, weight);
                         h_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_sector6_1e_cut->Fill(Vz_pip_corrected, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pip_corrected, weight);
+                        h_corrected_Vz_pipFD_AC_sector6_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_pip, weight);
 
                         h_dVz_pipFD_AC_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                         h_dVz_pipFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
@@ -4298,15 +4314,17 @@ void HipoLooper() {
                 double Vz_pim = piminus[i]->par()->getVz();
 
                 if (piminus[i]->getRegion() == FD) {
-                    auto Vz_pim_corrected = correct_Vz(Vz_pim, r, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_rad);
+                    auto r_pim = compute_r(Beam_Coordinates, "pimFD");
+                    auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
+                    auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
 
                     h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
                     h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
                     h_Vz_pimFD_AC_1e_cut->Fill(Vz_pim, weight);
                     h_Vz_pimFD_AC_zoomin_1e_cut->Fill(Vz_pim, weight);
 
-                    h_corrected_Vz_pimFD_AC_1e_cut->Fill(Vz_pim_corrected, weight);
-                    h_corrected_Vz_pimFD_AC_zoomin_1e_cut->Fill(Vz_pim_corrected, weight);
+                    h_corrected_Vz_pimFD_AC_1e_cut->Fill(corrected_Vz_pim, weight);
+                    h_corrected_Vz_pimFD_AC_zoomin_1e_cut->Fill(corrected_Vz_pim, weight);
 
                     h_dVz_pimFD_AC_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                     h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4314,8 +4332,8 @@ void HipoLooper() {
                     h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
                     h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
 
-                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim_corrected, weight);
-                    h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim_corrected, weight);
+                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim, weight);
+                    h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
 
                     raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
@@ -4327,8 +4345,8 @@ void HipoLooper() {
                         h_Vz_pimFD_AC_sector1_1e_cut->Fill(Vz_pim, weight);
                         h_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_sector1_1e_cut->Fill(Vz_pim_corrected, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pim_corrected, weight);
+                        h_corrected_Vz_pimFD_AC_sector1_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_pim, weight);
 
                         h_dVz_pimFD_AC_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4343,8 +4361,8 @@ void HipoLooper() {
                         h_Vz_pimFD_AC_sector2_1e_cut->Fill(Vz_pim, weight);
                         h_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_sector2_1e_cut->Fill(Vz_pim_corrected, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pim_corrected, weight);
+                        h_corrected_Vz_pimFD_AC_sector2_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_pim, weight);
 
                         h_dVz_pimFD_AC_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4359,8 +4377,8 @@ void HipoLooper() {
                         h_Vz_pimFD_AC_sector3_1e_cut->Fill(Vz_pim, weight);
                         h_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_sector3_1e_cut->Fill(Vz_pim_corrected, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pim_corrected, weight);
+                        h_corrected_Vz_pimFD_AC_sector3_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_pim, weight);
 
                         h_dVz_pimFD_AC_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4375,8 +4393,8 @@ void HipoLooper() {
                         h_Vz_pimFD_AC_sector4_1e_cut->Fill(Vz_pim, weight);
                         h_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_sector4_1e_cut->Fill(Vz_pim_corrected, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pim_corrected, weight);
+                        h_corrected_Vz_pimFD_AC_sector4_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_pim, weight);
 
                         h_dVz_pimFD_AC_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4391,8 +4409,8 @@ void HipoLooper() {
                         h_Vz_pimFD_AC_sector5_1e_cut->Fill(Vz_pim, weight);
                         h_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_sector5_1e_cut->Fill(Vz_pim_corrected, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pim_corrected, weight);
+                        h_corrected_Vz_pimFD_AC_sector5_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_pim, weight);
 
                         h_dVz_pimFD_AC_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4407,8 +4425,8 @@ void HipoLooper() {
                         h_Vz_pimFD_AC_sector6_1e_cut->Fill(Vz_pim, weight);
                         h_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_sector6_1e_cut->Fill(Vz_pim_corrected, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pim_corrected, weight);
+                        h_corrected_Vz_pimFD_AC_sector6_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_pim, weight);
 
                         h_dVz_pimFD_AC_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                         h_dVz_pimFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
@@ -4791,6 +4809,35 @@ void HipoLooper() {
 
                         auto ListOfFunctions = h->GetListOfFunctions();
                         ListOfFunctions->Add(speac_target_location_TLine);
+                        ListOfFunctions->Add(measured_target_location_TLine);
+                        ListOfFunctions->Add(Legend);
+                    } else if ((bt::FindSubstring(h->GetTitle(), "V_{x}^{") || bt::FindSubstring(h->GetTitle(), "V_{y}^{")) && bt::FindSubstring(h->GetTitle(), "after")) {
+                        gPad->Update();
+                        TLine *measured_target_location_TLine;
+                        double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                        // double measured_target_location_value = fit_peak_gaussian(h);
+
+                        measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
+                        measured_target_location_TLine->SetLineColor(kGreen + 1);
+                        measured_target_location_TLine->SetLineWidth(3);
+                        measured_target_location_TLine->SetLineStyle(2);
+                        measured_target_location_TLine->Draw("same");
+
+                        auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.325 - yOffset);
+                        // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
+                        TLegendEntry *measured_target_location_TLine_entry;
+
+                        if (bt::FindSubstring(h->GetTitle(), "V_{x}^{")) {
+                            measured_target_location_TLine_entry =
+                                Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                        } else if (bt::FindSubstring(h->GetTitle(), "V_{y}^{")) {
+                            measured_target_location_TLine_entry =
+                                Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                        }
+
+                        Legend->Draw("same");
+
+                        auto ListOfFunctions = h->GetListOfFunctions();
                         ListOfFunctions->Add(measured_target_location_TLine);
                         ListOfFunctions->Add(Legend);
                     }
