@@ -208,7 +208,7 @@ void HipoLooper() {
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
             std::string key = CodeRun_status + "_" + particle;
             cout << "CodeRun_status: " << CodeRun_status << " particle: " << particle << std::endl;
-            cout << "key" << CodeRun_status << " particle: " << particle << std::endl;
+            cout << "key: " << key << std::endl;
             double Vx_peak = Beam_Coor.at(CodeRun_status + "_" + particle).first;
             double Vy_peak = Beam_Coor.at(CodeRun_status + "_" + particle).second;
 
