@@ -3512,7 +3512,7 @@ void HipoLooper() {
 
             //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
 
-            cout << "\033[33mElectrons BPID\033[0m";
+            cout << "\033[33mElectrons BPID\n\033[0m";
 
 #pragma region Electrons BPID
             h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -3659,18 +3659,18 @@ void HipoLooper() {
 
 #pragma endregion
 
-            cout << "\033[33mElectrons BPID xxx\033[0m";
+            cout << "\033[33mElectrons BPID xxx\n\033[0m";
 
             if (electrons.size() != 1) { continue; }
 
             cout << "\033[33melectrons.size() = " << electrons.size() << "\n\033[0m";
             cout << "\033[33melectrons[0]->par()->getBeta() = " << electrons[0]->par()->getBeta() << "\n\033[0m";
 
-            cout << "\033[33mElectrons BPID yyy\033[0m";
+            cout << "\033[33mElectrons BPID yyy\n\033[0m";
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
-            cout << "\033[33mElectrons APID\033[0m";
+            cout << "\033[33mElectrons APID\n\033[0m";
 
 #pragma region Electrons APID
             double Vx_e = electrons[0]->par()->getVx();
@@ -3874,7 +3874,7 @@ void HipoLooper() {
 
             //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
 
-            cout << "\033[33mPiplus BPID\033[0m";
+            cout << "\033[33mPiplus BPID\n\033[0m";
 
 #pragma region piplus BPID
             for (int i = 0; i < piplus_det.size(); i++) {
@@ -3966,7 +3966,7 @@ void HipoLooper() {
             }
 #pragma endregion
 
-            cout << "\033[33mPiplus APID\033[0m";
+            cout << "\033[33mPiplus APID\n\033[0m";
 
 #pragma region piplus APID
             for (int i = 0; i < piplus.size(); i++) {
@@ -4117,7 +4117,7 @@ void HipoLooper() {
 
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
-            cout << "\033[33mPiminus BPID\033[0m";
+            cout << "\033[33mPiminus BPID\n\033[0m";
 
 #pragma region piminus BPID
             for (int i = 0; i < piminus_det.size(); i++) {
@@ -4209,7 +4209,7 @@ void HipoLooper() {
             }
 #pragma endregion
 
-            cout << "\033[33mPiminus APID\033[0m";
+            cout << "\033[33mPiminus APID\n\033[0m";
 
 #pragma region piminus APID
             for (int i = 0; i < piminus.size(); i++) {
