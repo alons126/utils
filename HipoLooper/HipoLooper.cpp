@@ -206,8 +206,8 @@ void HipoLooper() {
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
-            double Vx_peak = Beam_Coor.at(CodeRun_status + "_" + particle).first;
-            double Vy_peak = Beam_Coor.at(CodeRun_status + "_" + particle).second;
+            double Vx_peak = Beam_Coor[CodeRun_status + "_" + particle].first;
+            double Vy_peak = Beam_Coor[CodeRun_status + "_" + particle].second;
 
             if (IsData && (Vx_peak == 0. || Vy_peak == 0.)) {
                 std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
