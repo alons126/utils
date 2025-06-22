@@ -4624,9 +4624,9 @@ void HipoLooper() {
                             bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
                                .c_str());
 
-            text.DrawLatex(0.05, 0.10, "Beam position parameters for corrected V_{z}:");
-            text.DrawLatex(0.10, 0.05,
-                           ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
+            // text.DrawLatex(0.05, 0.10, "Beam position parameters for corrected V_{z}:");
+            // text.DrawLatex(0.10, 0.05,
+            //                ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
             // text.DrawLatex(0.05, 0.15, "Beam position parameters for Corrected V_{z}:");
             // text.DrawLatex(0.10, 0.10,
             //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
