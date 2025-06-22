@@ -170,12 +170,12 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         A = A / tan(mean_theta_rad);  // convert back from r to amplitude
     }
 
-    // phi_beam = fmod(phi_beam, 360.0);
-    // if (phi_beam < -180.0) {
-    //     phi_beam += 360.0;
-    // } else if (phi_beam > 180.0) {
-    //     phi_beam -= 360.0;
-    // }
+    phi_beam = fmod(phi_beam, 360.0);
+    if (phi_beam < -180.0) {
+        phi_beam += 360.0;
+    } else if (phi_beam > 180.0) {
+        phi_beam -= 360.0;
+    }
 
     std::ostringstream legendText;
 

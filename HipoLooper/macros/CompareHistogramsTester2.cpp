@@ -81,6 +81,30 @@ void CompareHistogramsTester2() {
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
         "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_-9999_to_9999_deg_lastB4thetaSliceFit/"
         "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_-9999_to_9999_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_10_to_15_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_10_to_15_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_15_to_20_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_15_to_20_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_20_to_25_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_20_to_25_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_25_to_30_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_25_to_30_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_30_to_35_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_30_to_35_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_35_to_40_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_35_to_40_deg_lastB4thetaSliceFit.root");
     // InputFiles.push_back(
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/15_HipoLooper_v15/015_HipoLooper_v15_Ar40_data_2GeV_run_015672/015_HipoLooper_v15_Ar40_data_2GeV_run_015672.root");
     // InputFiles.push_back(
