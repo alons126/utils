@@ -3659,6 +3659,8 @@ void HipoLooper() {
 
 #pragma endregion
 
+            cout << "\033[33mElectrons BPID xxx\033[0m";
+
             if (electrons.size() != 1) { continue; }
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
