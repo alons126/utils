@@ -51,12 +51,12 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_4";  // General status of the analysis
+    std::string General_status = "after_sampling_test_4_full";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -69,12 +69,12 @@ void HipoLooper() {
 
     // Data samples:
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
     InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
     // // Simulation samples:
 
@@ -189,35 +189,41 @@ void HipoLooper() {
             HistoList_zoomin_limits = {-4.0, 1.0};
         }
 
-        std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx peak, Vy peak} in cm
-        Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.1629, 0.0560};
-        Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.1749, 0.0985};
-        Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.1707, 0.0997};
+        std::map<std::string, std::pair<double, double>> Beam_Coordinates;
+        Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.27, 80.49 * am::pi / 180.};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.41, -153.04 * am::pi / 180.};
+        Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.37, 158.04 * am::pi / 180.};
+        // Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.1629, 0.0560};  // {Vx peak, Vy peak} in cm
+        // Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.1749, 0.0985};
+        // Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.1707, 0.0997};
 
-        Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.1658, 0.1368};
-        Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1767, 0.1357};
-        Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1624, 0.1517};
+        Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.20, -135.79 * am::pi / 180.};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.29, -121.08 * am::pi / 180.};
+        Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.22, 161.87 * am::pi / 180.};
+        // Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.1658, 0.1368};  // {Vx peak, Vy peak} in cm
+        // Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1767, 0.1357};
+        // Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1624, 0.1517};
 
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1600, 0.1600};  // zoom-out peak
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1600, 0.1600};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1600, 0.1600};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1825, 0.1691}; // mean
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1389, 0.06858};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1102, 0.1984};
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275};  // zoom-in peak fit
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.17, 90.31 * am::pi / 180.};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.50, -150.10 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.39, 167.30 * am::pi / 180.};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275};  // zoom-in peak fit of {Vx peak, Vy peak} in cm
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
 
-        Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.21, -136.36 * am::pi / 180.};  // {A , phi_beam}
+        Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.21, -136.36 * am::pi / 180.};  // {A in cm, phi_beam in rad}
         Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.33, -127.83 * am::pi / 180.};
         Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.22, -152.82 * am::pi / 180.};
         // Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.1661, 0.1421};  // {Vx peak, Vy peak} in cm
         // Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.1785, 0.1400};
         // Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.1638, 0.1521};
 
-        Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.1564, 0.1469};
-        Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.1667, 0.1388};
-        Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.1455, 0.1524};
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.23, -124.10 * am::pi / 180.};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.32, -116.05 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.18, -147.50 * am::pi / 180.};
+        // Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.1564, 0.1469};  // {Vx peak, Vy peak} in cm
+        // Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.1667, 0.1388};
+        // Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.1455, 0.1524};
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
