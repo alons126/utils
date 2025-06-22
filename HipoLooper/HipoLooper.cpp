@@ -69,7 +69,7 @@ void HipoLooper() {
     // // Data samples:
 
     // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");  // X
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo"); // X
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");  // X
 
     // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo"); // V
     // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo"); // V
@@ -4213,11 +4213,17 @@ void HipoLooper() {
 
 #pragma region piminus APID
             for (int i = 0; i < piminus.size(); i++) {
+                cout << "\033[33mPiminus APID 1\n\033[0m";
+
                 double Vx_pim = piminus[i]->par()->getVx();
                 double Vy_pim = piminus[i]->par()->getVy();
                 double Vz_pim = piminus[i]->par()->getVz();
 
+                cout << "\033[33mPiminus APID 2\n\033[0m";
+
                 if (piminus[i]->getRegion() == FD) {
+                    cout << "\033[33mPiminus APID 3\n\033[0m";
+
                     auto r_pim = compute_r(Beam_Coordinates, "pimFD");
                     auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
                     auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
@@ -4242,6 +4248,8 @@ void HipoLooper() {
                     raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
+
+                    cout << "\033[33mPiminus APID 4\n\033[0m";
 
                     if (piminus[i]->getSector() == 1) {
                         h_Vx_pimFD_AC_sector1_1e_cut->Fill(Vx_pim, weight);
