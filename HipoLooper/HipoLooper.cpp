@@ -186,11 +186,11 @@ void HipoLooper() {
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;  // {Vx peak, Vy peak} in cm
         Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.1719, 0.1134};
         Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.1265, 0.03724};
-        Beam_Coordinates["C12_data_2GeV_run_015664_pimCD"] = {0.1, 0.1177};
+        Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.1, 0.1177};
 
         Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.1426, 0.1412};
         Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1242, 0.05035};
-        Beam_Coordinates["C12_data_4GeV_run_015778_pimCD"] = {0.1159, 0.1287};
+        Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1159, 0.1287};
 
         Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1452, 0.1385};
         Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.112, 0.06085};
@@ -202,15 +202,19 @@ void HipoLooper() {
 
         Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.1604, 0.1350};
         Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.1604, 0.1350};
-        Beam_Coordinates["Ar40_data_6GeV_run_015792_pimCD"] = {0.1604, 0.1350};
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.1604, 0.1350};
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
             std::string key = CodeRun_status + "_" + particle;
-            cout << "CodeRun_status: " << CodeRun_status << " particle: " << particle << std::endl;
-            cout << "key: " << key << std::endl;
-            double Vx_peak = Beam_Coor.at(CodeRun_status + "_" + particle).first;
-            double Vy_peak = Beam_Coor.at(CodeRun_status + "_" + particle).second;
+
+            if (Beam_Coor.count(key) == 0) {
+                std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            double Vx_peak = Beam_Coor.at(key).first;
+            double Vy_peak = Beam_Coor.at(key).second;
 
             if (IsData && (Vx_peak == 0. || Vy_peak == 0.)) {
                 std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
@@ -222,8 +226,15 @@ void HipoLooper() {
 
         // Lambda to compute phi_beam in radians, using atan2 for correct quadrant
         auto compute_phi_beam_rad = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
-            double Vx_peak = Beam_Coor.at(CodeRun_status + "_" + particle).first;
-            double Vy_peak = Beam_Coor.at(CodeRun_status + "_" + particle).second;
+            std::string key = CodeRun_status + "_" + particle;
+
+            if (Beam_Coor.count(key) == 0) {
+                std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+
+            double Vx_peak = Beam_Coor.at(key).first;
+            double Vy_peak = Beam_Coor.at(key).second;
 
             if (IsData && (Vx_peak == 0. || Vy_peak == 0.)) {
                 std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
