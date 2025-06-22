@@ -55,7 +55,7 @@ void HipoLooper() {
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -68,12 +68,12 @@ void HipoLooper() {
 
     // // Data samples:
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");  // X
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo"); // X
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo"); // V
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo"); // V
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo"); // X
 
     // // Simulation samples:
 
@@ -3449,6 +3449,8 @@ void HipoLooper() {
         int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
         while (chain.Next() == true) {
+            cout << "\033[32m" << "\n\nProcessing event " << NumOfEvents + 1 << "\033[0m";
+
             // Display completed
             ++NumOfEvents;
             if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m" << "\n\n" << NumOfEvents / 1000000 << " million completed\n\n" << "\033[0m"; }
@@ -3509,6 +3511,8 @@ void HipoLooper() {
             //  =======================================================================================================================================================================
 
             //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
+
+            cout << "\033[33mElectrons BPID\033[0m";
 
 #pragma region Electrons BPID
             h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -3658,6 +3662,8 @@ void HipoLooper() {
             if (electrons.size() != 1) { continue; }
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
+
+            cout << "\033[33mElectrons APID\033[0m";
 
 #pragma region Electrons APID
             double Vx_e = electrons[0]->par()->getVx();
@@ -3861,6 +3867,8 @@ void HipoLooper() {
 
             //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
 
+            cout << "\033[33mPiplus BPID\033[0m";
+
 #pragma region piplus BPID
             for (int i = 0; i < piplus_det.size(); i++) {
                 if (piplus_det[i]->getRegion() == FD) {
@@ -3950,6 +3958,8 @@ void HipoLooper() {
                 }
             }
 #pragma endregion
+
+            cout << "\033[33mPiplus APID\033[0m";
 
 #pragma region piplus APID
             for (int i = 0; i < piplus.size(); i++) {
@@ -4100,6 +4110,8 @@ void HipoLooper() {
 
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
+            cout << "\033[33mPiminus BPID\033[0m";
+
 #pragma region piminus BPID
             for (int i = 0; i < piminus_det.size(); i++) {
                 if (piminus_det[i]->getRegion() == FD) {
@@ -4189,6 +4201,8 @@ void HipoLooper() {
                 }
             }
 #pragma endregion
+
+            cout << "\033[33mPiminus APID\033[0m";
 
 #pragma region piminus APID
             for (int i = 0; i < piminus.size(); i++) {
