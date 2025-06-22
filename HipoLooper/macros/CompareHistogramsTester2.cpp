@@ -77,23 +77,27 @@ void CompareHistogramsTester2() {
     // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672RegTest/016_HipoLooper_v16_Ar40_data_2GeV_run_015672RegTest.root");
     // InputFiles.push_back("/Users/alon/Downloads/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test/016_HipoLooper_v16_Ar40_data_2GeV_run_015672Theta_e_test.root");
 
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_4GeV_run_015743_-9999_to_9999_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_4GeV_run_015743_-9999_to_9999_deg_lastB4thetaSliceFit.root");
     // InputFiles.push_back(
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/15_HipoLooper_v15/015_HipoLooper_v15_Ar40_data_2GeV_run_015672/015_HipoLooper_v15_Ar40_data_2GeV_run_015672.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root");
 
     std::string SaveDirFolder = "/Users/alon/Downloads";
 
@@ -271,18 +275,18 @@ void CompareHistogramsTester2() {
         auto h_Vz_pimFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_1e_cut", "TH1D");
         auto h_Vx_pimFD_AC_1e_cut = (TH1D *)load("Vx_pimFD_AC_1e_cut", "TH1D");
         auto h_Vy_pimFD_AC_1e_cut = (TH1D *)load("Vy_pimFD_AC_1e_cut", "TH1D");
-        auto h_Vz_pimFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector1_1e_cut", "TH1D");
-        auto h_Vz_pimFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector2_1e_cut", "TH1D");
-        auto h_Vz_pimFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector3_1e_cut", "TH1D");
-        auto h_Vz_pimFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector4_1e_cut", "TH1D");
-        auto h_Vz_pimFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector5_1e_cut", "TH1D");
-        auto h_Vz_pimFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector6_1e_cut", "TH1D");
-        // auto [h_Vz_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pimFD");
-        // auto [h_Vz_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pimFD");
-        // auto [h_Vz_pimFD_AC_sector3_1e_cut, h_phi_pimFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pimFD");
-        // auto [h_Vz_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "pimFD");
-        // auto [h_Vz_pimFD_AC_sector5_1e_cut, h_phi_pimFD_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "pimFD");
-        // auto [h_Vz_pimFD_AC_sector6_1e_cut, h_phi_pimFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pimFD");
+        // auto h_Vz_pimFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector1_1e_cut", "TH1D");
+        // auto h_Vz_pimFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector2_1e_cut", "TH1D");
+        // auto h_Vz_pimFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector3_1e_cut", "TH1D");
+        // auto h_Vz_pimFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector4_1e_cut", "TH1D");
+        // auto h_Vz_pimFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector5_1e_cut", "TH1D");
+        // auto h_Vz_pimFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector6_1e_cut", "TH1D");
+        auto [h_Vz_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pimFD");
+        auto [h_Vz_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pimFD");
+        auto [h_Vz_pimFD_AC_sector3_1e_cut, h_phi_pimFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pimFD");
+        auto [h_Vz_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "pimFD");
+        auto [h_Vz_pimFD_AC_sector5_1e_cut, h_phi_pimFD_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "pimFD");
+        auto [h_Vz_pimFD_AC_sector6_1e_cut, h_phi_pimFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pimFD");
 
         auto h_Vz_pipCD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pipCD_AC_zoomin_1e_cut", "TH1D");
         auto h_Vz_pimCD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pimCD_AC_zoomin_1e_cut", "TH1D");
@@ -386,8 +390,24 @@ void CompareHistogramsTester2() {
         auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             variable_correctors::FitVertexVsPhi("#pi^{+}FD", Ebeam_status_1, Vz_pipFD_peaks_BySector, phi_pipFD_peaks_BySector, theta_slice);
 
+        std::vector<double> Vz_pimFD_peaks_BySector = {fit_peak_gaussian(h_Vz_pimFD_AC_sector1_1e_cut), fit_peak_gaussian(h_Vz_pimFD_AC_sector2_1e_cut),
+                                                       fit_peak_gaussian(h_Vz_pimFD_AC_sector3_1e_cut), fit_peak_gaussian(h_Vz_pimFD_AC_sector4_1e_cut),
+                                                       fit_peak_gaussian(h_Vz_pimFD_AC_sector5_1e_cut), fit_peak_gaussian(h_Vz_pimFD_AC_sector6_1e_cut)};
+        std::vector<double> phi_pimFD_peaks_BySector = {fit_peak_gaussian(h_phi_pimFD_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_pimFD_AC_sector2_1e_cut),
+                                                        fit_peak_gaussian(h_phi_pimFD_AC_sector3_1e_cut), fit_peak_gaussian(h_phi_pimFD_AC_sector4_1e_cut),
+                                                        fit_peak_gaussian(h_phi_pimFD_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_pimFD_AC_sector6_1e_cut)};
+        // h_phi_pimFD_AC_sector1_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector1_1e_cut->GetMaximumBin()),
+        // h_phi_pimFD_AC_sector2_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector2_1e_cut->GetMaximumBin()),
+        // h_phi_pimFD_AC_sector3_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector3_1e_cut->GetMaximumBin()),
+        // h_phi_pimFD_AC_sector4_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector4_1e_cut->GetMaximumBin()),
+        // h_phi_pimFD_AC_sector5_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector5_1e_cut->GetMaximumBin()),
+        // h_phi_pimFD_AC_sector6_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector6_1e_cut->GetMaximumBin())};
+        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
+            variable_correctors::FitVertexVsPhi("#pi^{-}FD", Ebeam_status_1, Vz_pimFD_peaks_BySector, phi_pimFD_peaks_BySector, theta_slice);
+
         int insert_index_e = 0;
         int insert_index_pipFD = 0;
+        int insert_index_pimFD = 0;
 
         for (int i = 0; i < HistoList.size(); i++) {
             if (HistoList[i]->InheritsFrom("TH1")) {
@@ -414,6 +434,9 @@ void CompareHistogramsTester2() {
             } else if (std::string(HistoList[i]->GetName()) == "Vz_pipFD_AC_zoomin_1e_cut") {
                 insert_index_pipFD = i;
                 // insert_index_pipFD = i + 1;
+            } else if (std::string(HistoList[i]->GetName()) == "Vz_pimFD_AC_zoomin_1e_cut") {
+                insert_index_pimFD = i;
+                // insert_index_pimFD = i + 1;
             }
         }
 
@@ -421,9 +444,12 @@ void CompareHistogramsTester2() {
         FittedParametersGraph_e->GetYaxis()->CenterTitle();
         FittedParametersGraph_pipFD->GetXaxis()->CenterTitle();
         FittedParametersGraph_pipFD->GetYaxis()->CenterTitle();
+        FittedParametersGraph_pimFD->GetXaxis()->CenterTitle();
+        FittedParametersGraph_pimFD->GetYaxis()->CenterTitle();
 
         HistoList.insert(HistoList.begin() + insert_index_e, FittedParametersGraph_e);
         HistoList.insert(HistoList.begin() + insert_index_pipFD, FittedParametersGraph_pipFD);
+        HistoList.insert(HistoList.begin() + insert_index_pimFD, FittedParametersGraph_pimFD);
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
