@@ -51,7 +51,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_2";  // General status of the analysis
+    std::string General_status = "after_sampling_test_3";  // General status of the analysis
     // std::string General_status = "Ar40_test_2";  // General status of the analysis
 
     General_status = "__" + General_status;
@@ -4501,6 +4501,7 @@ void HipoLooper() {
             myText->SaveAs(fileName);
             sprintf(fileName, "%s", PDF_fileName.c_str());
 
+            // First page:
             myText->cd();
             titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
             text.DrawLatex(0.05, 0.80, "This output is for the Ar40 implementation in GEMC");
@@ -4538,17 +4539,36 @@ void HipoLooper() {
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
 
-            text.DrawLatex(0.05, 0.9, "Beam position parameters for corrected Vz");
-            // text.DrawLatex(0.05, 0.7,
-            //                ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) +
-            //                "#circ)}").c_str());
-            // text.DrawLatex(0.05, 0.15, "Beam position parameters for Corrected V_{z}:");
-            // text.DrawLatex(0.10, 0.10,
-            //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
-            //                 bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).second) + " cm)}")
-            //                    .c_str());
-            // text.DrawLatex(0.10, 0.05,
-            //                ("Polar: #font[42]{(r,#phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
+            // Second page:
+            titles.SetTextSize(0.075);
+            titles.DrawLatex(0.05, 0.90, "Beam position parameters for corrected Vz");
+            text.DrawLatex(0.05, 0.70, "e^{-}:");
+            text.DrawLatex(0.10, 0.65,
+                           ("Cartesian: #font[42]{(V_{x}^{e},V_{y}^{e}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_e").first) + " cm, " +
+                            bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_e").second) + " cm)}")
+                               .c_str());
+            text.DrawLatex(0.10, 0.60,
+                           ("Polar: #font[42]{(r_{e}, #phi_{beam}^{e}) = (" + bt::ToStringWithPrecision(compute_r(Beam_Coordinates, "e")) + " cm, " +
+                            bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, "e") * 180 / am::pi) + "#circ)}")
+                               .c_str());
+            text.DrawLatex(0.05, 0.55, "#pi^{+}FD:");
+            text.DrawLatex(0.10, 0.50,
+                           ("Cartesian: #font[42]{(V_{x}^{#pi^{+}FD},V_{y}^{#pi^{+}FD}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pipFD").first) + " cm, " +
+                            bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pipFD").second) + " cm)}")
+                               .c_str());
+            text.DrawLatex(0.10, 0.45,
+                           ("Polar: #font[42]{(r_{#pi^{+}FD}, #phi_{beam}^{#pi^{+}FD}) = (" + bt::ToStringWithPrecision(compute_r(Beam_Coordinates, "pipFD")) + " cm, " +
+                            bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, "pipFD") * 180 / am::pi) + "#circ)}")
+                               .c_str());
+            text.DrawLatex(0.05, 0.40, "#pi^{-}FD:");
+            text.DrawLatex(0.10, 0.35,
+                           ("Cartesian: #font[42]{(V_{x}^{#pi^{-}FD},V_{y}^{#pi^{-}FD}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pimFD").first) + " cm, " +
+                            bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pimFD").second) + " cm)}")
+                               .c_str());
+            text.DrawLatex(0.10, 0.30,
+                           ("Polar: #font[42]{(r_{#pi^{-}FD}, #phi_{beam}^{#pi^{-}FD}) = (" + bt::ToStringWithPrecision(compute_r(Beam_Coordinates, "pimFD")) + " cm, " +
+                            bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, "pimFD") * 180 / am::pi) + "#circ)}")
+                               .c_str());
 
             myText->Print(fileName, "pdf Title: Parameters");
             myText->Clear();
