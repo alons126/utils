@@ -221,12 +221,16 @@ void HipoLooper() {
             double Vx_peak = Beam_Coor.at(key).first;
             double Vy_peak = Beam_Coor.at(key).second;
 
-            if (IsData && (Vx_peak == 0. || Vy_peak == 0.)) {
-                std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
-                std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
-            }
+            if (IsData) {
+                if (Vx_peak == 0. || Vy_peak == 0.) {
+                    std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
+                    std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
+                }
 
-            return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak);
+                return std::sqrt(Vx_peak * Vx_peak + Vy_peak * Vy_peak);
+            } else {
+                return 0;
+            }
         };
 
         // Lambda to compute phi_beam in radians, using atan2 for correct quadrant
@@ -241,14 +245,18 @@ void HipoLooper() {
             double Vx_peak = Beam_Coor.at(key).first;
             double Vy_peak = Beam_Coor.at(key).second;
 
-            if (IsData && (Vx_peak == 0. || Vy_peak == 0.)) {
-                std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
-                std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
-            }
+            if (IsData) {
+                if (Vx_peak == 0. || Vy_peak == 0.) {
+                    std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
+                    std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
+                }
 
-            // Adjusted phi_beam_rad from a coordinate system where phi_beam_rad is in the [0, 2pi] range to a system where it is in the [-pi, pi] range
-            return std::atan2(Vy_peak, Vx_peak) - am::pi;
-            // return std::atan2(Vy_peak, Vx_peak);
+                // Adjusted phi_beam_rad from a coordinate system where phi_beam_rad is in the [0, 2pi] range to a system where it is in the [-pi, pi] range
+                return std::atan2(Vy_peak, Vx_peak) - am::pi;
+                // return std::atan2(Vy_peak, Vx_peak);
+            } else {
+                return 0;
+            }
         };
 
         // Lambda to compute corrected Vz
@@ -4531,7 +4539,8 @@ void HipoLooper() {
 
             text.DrawLatex(0.05, 0.9, "Beam position parameters for corrected Vz");
             // text.DrawLatex(0.05, 0.7,
-            //                ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
+            //                ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) +
+            //                "#circ)}").c_str());
             // text.DrawLatex(0.05, 0.15, "Beam position parameters for Corrected V_{z}:");
             // text.DrawLatex(0.10, 0.10,
             //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
