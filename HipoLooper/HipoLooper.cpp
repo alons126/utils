@@ -4225,10 +4225,16 @@ void HipoLooper() {
                     cout << "\033[33mPiminus APID 3\n\033[0m";
 
                     auto r_pim = compute_r(Beam_Coordinates, "pimFD");
-                    auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
-                    auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
 
                     cout << "\033[33mPiminus APID 4\n\033[0m";
+
+                    auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
+
+                    cout << "\033[33mPiminus APID 5\n\033[0m";
+
+                    auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
+
+                    cout << "\033[33mPiminus APID 6\n\033[0m";
 
                     h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
                     h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
