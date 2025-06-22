@@ -51,12 +51,12 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_3_ZoomOutPeakTest";  // General status of the analysis
+    std::string General_status = "after_sampling_test_3_full";  // General status of the analysis
     // std::string General_status = "Ar40_test_2";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -67,14 +67,14 @@ void HipoLooper() {
 
     std::vector<std::string> InputFiles;
 
-    // // Data samples:
+    // Data samples:
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
     InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
     // // Simulation samples:
 
@@ -198,15 +198,15 @@ void HipoLooper() {
         Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1767, 0.1357};
         Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1624, 0.1517};
 
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1600, 0.1600};  // zoom-out peak
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1600, 0.1600};
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1600, 0.1600};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1600, 0.1600};  // zoom-out peak
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1600, 0.1600};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1600, 0.1600};
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1825, 0.1691}; // mean
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1389, 0.06858};
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1102, 0.1984};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275}; // zoom-in peak fit
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275}; // zoom-in peak fit
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
 
         Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.1661, 0.1421};
         Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.1785, 0.1400};
