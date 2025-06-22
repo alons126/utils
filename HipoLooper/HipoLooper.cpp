@@ -3449,7 +3449,7 @@ void HipoLooper() {
         int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
         while (chain.Next() == true) {
-            cout << "\033[32m" << "\n\nProcessing event " << NumOfEvents + 1 << "\033[0m";
+            cout << "\033[32m" << "\n\nProcessing event " << NumOfEvents + 1 << "\n\033[0m";
 
             // Display completed
             ++NumOfEvents;
@@ -3464,7 +3464,7 @@ void HipoLooper() {
             auto piplus = clasAna.getByPid(211);
             auto piminus = clasAna.getByPid(-211);
 
-            cout << "\033[33melectrons.size() = " << electrons.size() << "\033[0m";
+            cout << "\033[33melectrons.size() = " << electrons.size() << "\n\033[0m";
 
             // get particles by type
             auto allParticles = c12->getDetParticles();
