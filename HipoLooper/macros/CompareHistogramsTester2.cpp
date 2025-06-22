@@ -42,12 +42,17 @@
 
 // To run: root -q -b /Users/alon/Projects/utils/HipoLooper/macros/CompareHistogramsTester2.cpp
 
-using namespace std;
+// using namespace std;
+
+namespace bt = basic_tools;
+// namespace am = analysis_math;
+// namespace raf = reco_analysis_functions;
+namespace hf = histogram_functions;
 
 // CompareHistogramsTester ------------------------------------------------------------------
 
 void CompareHistogramsTester2() {
-    int version = 16;  // Version of the code
+    int version = 22;  // Version of the code
     std::string OutFolderName_prefix = "ReRun_HipoLooper";
     // std::string OutFolderName_prefix = "ReRun" + basic_tools::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status_1 = "_v" + basic_tools::ToStringWithPrecision(version, 0);
@@ -74,25 +79,19 @@ void CompareHistogramsTester2() {
 
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_5_to_10_theta_slices.root");
+        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_10_to_15_theta_slices.root");
+        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_15_to_20_theta_slices.root");
+        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_20_to_25_theta_slices.root");
+        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_25_to_30_theta_slices.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_30_to_35_theta_slices.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/16_HipoLooper_v16/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices/016_HipoLooper_v16_Ar40_data_2GeV_run_015672_35_to_40_theta_slices.root");
+        "imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root");
 
     std::string SaveDirFolder = "/Users/alon/Downloads";
 
@@ -248,6 +247,8 @@ void CompareHistogramsTester2() {
         };
 
         auto h_Vz_e_AC_zoomin_1e_cut = (TH1D *)load("Vz_e_AC_zoomin_1e_cut", "TH1D");
+        auto h_Vx_e_AC_1e_cut = (TH1D *)load("Vx_e_AC_1e_cut", "TH1D");
+        auto h_Vy_e_AC_1e_cut = (TH1D *)load("Vy_e_AC_1e_cut", "TH1D");
         auto [h_Vz_e_AC_sector1_1e_cut, h_phi_e_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "e");
         auto [h_Vz_e_AC_sector2_1e_cut, h_phi_e_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "e");
         auto [h_Vz_e_AC_sector3_1e_cut, h_phi_e_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "e");
@@ -256,12 +257,8 @@ void CompareHistogramsTester2() {
         auto [h_Vz_e_AC_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "e");
 
         auto h_Vz_pipFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_1e_cut", "TH1D");
-        // auto h_Vz_pipFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector1_1e_cut", "TH1D");
-        // auto h_Vz_pipFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector2_1e_cut", "TH1D");
-        // auto h_Vz_pipFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector3_1e_cut", "TH1D");
-        // auto h_Vz_pipFD_AC_zoomin_sector4_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector4_1e_cut", "TH1D");
-        // auto h_Vz_pipFD_AC_zoomin_sector5_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector5_1e_cut", "TH1D");
-        // auto h_Vz_pipFD_AC_zoomin_sector6_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_sector6_1e_cut", "TH1D");
+        auto h_Vx_pipFD_AC_1e_cut = (TH1D *)load("Vx_pipFD_AC_1e_cut", "TH1D");
+        auto h_Vy_pipFD_AC_1e_cut = (TH1D *)load("Vy_pipFD_AC_1e_cut", "TH1D");
         auto [h_Vz_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "pipFD");
         auto [h_Vz_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "pipFD");
         auto [h_Vz_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "pipFD");
@@ -270,6 +267,8 @@ void CompareHistogramsTester2() {
         auto [h_Vz_pipFD_AC_sector6_1e_cut, h_phi_pipFD_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "pipFD");
 
         auto h_Vz_pimFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_1e_cut", "TH1D");
+        auto h_Vx_pimFD_AC_1e_cut = (TH1D *)load("Vx_pimFD_AC_1e_cut", "TH1D");
+        auto h_Vy_pimFD_AC_1e_cut = (TH1D *)load("Vy_pimFD_AC_1e_cut", "TH1D");
         auto h_Vz_pimFD_AC_zoomin_sector1_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector1_1e_cut", "TH1D");
         auto h_Vz_pimFD_AC_zoomin_sector2_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector2_1e_cut", "TH1D");
         auto h_Vz_pimFD_AC_zoomin_sector3_1e_cut = (TH1D *)load("Vz_pimFD_AC_zoomin_sector3_1e_cut", "TH1D");
@@ -666,6 +665,41 @@ void CompareHistogramsTester2() {
                     auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.325 - yOffset);
                     TLegendEntry *measured_target_location_TLine_entry =
                         Legend->AddEntry(measured_target_location_TLine, ("phi_e peak = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + "#circ").c_str(), "l");
+
+                    Legend->Draw("same");
+
+                    auto ListOfFunctions = h->GetListOfFunctions();
+                    ListOfFunctions->Add(measured_target_location_TLine);
+                    ListOfFunctions->Add(Legend);
+                } else if ((bt::FindSubstring(h->GetTitle(), "V_{x}^{") || bt::FindSubstring(h->GetTitle(), "V_{y}^{")) && bt::FindSubstring(h->GetTitle(), "after")) {
+                    gPad->Update();
+
+                    std::vector<double> fitLimits = {h->GetBinCenter(h->GetMaximumBin()) * 0.7, h->GetBinCenter(h->GetMaximumBin()) * 1.3};
+
+                    TLine *measured_target_location_TLine;
+                    // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
+                    double measured_target_location_value = fit_peak_gaussian(h, fitLimits);
+                    // double measured_target_location_value = fit_peak_gaussian(h);
+
+                    measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
+                    measured_target_location_TLine->SetLineColor(kGreen + 1);
+                    measured_target_location_TLine->SetLineWidth(3);
+                    measured_target_location_TLine->SetLineStyle(2);
+                    measured_target_location_TLine->Draw("same");
+
+                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.325 - yOffset);
+                    // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
+                    TLegendEntry *measured_target_location_TLine_entry;
+
+                    if (bt::FindSubstring(h->GetTitle(), "V_{x}^{")) {
+                        measured_target_location_TLine_entry =
+                            Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " cm").c_str(), "l");
+                        // Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                    } else if (bt::FindSubstring(h->GetTitle(), "V_{y}^{")) {
+                        measured_target_location_TLine_entry =
+                            Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " cm").c_str(), "l");
+                        // Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                    }
 
                     Legend->Draw("same");
 
