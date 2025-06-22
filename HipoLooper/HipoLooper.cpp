@@ -270,7 +270,8 @@ void HipoLooper() {
         };
 
         // Lambda to compute corrected Vz
-        auto correct_Vz = [&CodeRun_status](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad, const std::string &particle = "") -> double {
+        auto correct_Vz = [&CodeRun_status, &Beam_Coordinates](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad,
+                                                               const std::string &particle = "") -> double {
             if (particle != "") {
                 std::string key = CodeRun_status + "_" + particle;
 
@@ -279,7 +280,7 @@ void HipoLooper() {
                     return std::numeric_limits<double>::quiet_NaN();
                 }
 
-                return Vz_rec + Beam_Coor.at(key).first * std::cos(phi_particle_rad - Beam_Coor.at(key).second);
+                return Vz_rec + Beam_Coordinates.at(key).first * std::cos(phi_particle_rad - Beam_Coordinates.at(key).second);
             } else {
                 return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
             }
