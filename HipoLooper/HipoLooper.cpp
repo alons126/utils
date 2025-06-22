@@ -211,17 +211,17 @@ void HipoLooper() {
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
-            std::string key = CodeRun_status + "_" + particle;
-
-            if (Beam_Coor.count(key) == 0) {
-                std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
-                return std::numeric_limits<double>::quiet_NaN();
-            }
-
-            double Vx_peak = Beam_Coor.at(key).first;
-            double Vy_peak = Beam_Coor.at(key).second;
-
             if (IsData) {
+                std::string key = CodeRun_status + "_" + particle;
+
+                if (Beam_Coor.count(key) == 0) {
+                    std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                    return std::numeric_limits<double>::quiet_NaN();
+                }
+
+                double Vx_peak = Beam_Coor.at(key).first;
+                double Vy_peak = Beam_Coor.at(key).second;
+
                 if (Vx_peak == 0. || Vy_peak == 0.) {
                     std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
                     std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
@@ -235,17 +235,17 @@ void HipoLooper() {
 
         // Lambda to compute phi_beam in radians, using atan2 for correct quadrant
         auto compute_phi_beam_rad = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>> &Beam_Coor, const std::string &particle) -> double {
-            std::string key = CodeRun_status + "_" + particle;
-
-            if (Beam_Coor.count(key) == 0) {
-                std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
-                return std::numeric_limits<double>::quiet_NaN();
-            }
-
-            double Vx_peak = Beam_Coor.at(key).first;
-            double Vy_peak = Beam_Coor.at(key).second;
-
             if (IsData) {
+                std::string key = CodeRun_status + "_" + particle;
+
+                if (Beam_Coor.count(key) == 0) {
+                    std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                    return std::numeric_limits<double>::quiet_NaN();
+                }
+
+                double Vx_peak = Beam_Coor.at(key).first;
+                double Vy_peak = Beam_Coor.at(key).second;
+
                 if (Vx_peak == 0. || Vy_peak == 0.) {
                     std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
                     std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
