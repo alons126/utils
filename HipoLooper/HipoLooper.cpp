@@ -40,11 +40,12 @@ using namespace constants;
 namespace bt = basic_tools;
 namespace am = analysis_math;
 namespace raf = reco_analysis_functions;
+namespace hf = histogram_functions;
 
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
 
-    std::cout << "\033[33m\n\nInitiating HipoLooper.cpp...\n\n\033[0m";
+    std::cout << "\033[33m" << "\n\nInitiating HipoLooper.cpp...\n\n" << "\033[0m";
 
     int version = 22;  // Version of the code
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
@@ -54,24 +55,12 @@ void HipoLooper() {
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
-
-    // std::vector<std::vector<double>> theta_slices;
-    // // theta_slices.push_back({-9999.0, 9999.0});
-    // // theta_slices.push_back({0.0, 180.0});
-    // theta_slices.push_back({0.0, 5.0});
-    // theta_slices.push_back({5.0, 10.0});
-    // theta_slices.push_back({10.0, 15.0});
-    // theta_slices.push_back({15.0, 20.0});
-    // theta_slices.push_back({20.0, 25.0});
-    // theta_slices.push_back({25.0, 30.0});
-    // theta_slices.push_back({30.0, 35.0});
-    // theta_slices.push_back({35.0, 40.0});
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
@@ -80,9 +69,9 @@ void HipoLooper() {
     // // Data samples:
 
     // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
     // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
     // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
@@ -94,12 +83,6 @@ void HipoLooper() {
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_Ar40_test/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
-
-    // for (int theta_slice = 0; theta_slice < theta_slices.size(); theta_slice++) {
-    //     if (theta_slices.size() != 0) {
-    //         General_status = "_" + bt::ReplaceSubstring(bt::ToStringWithPrecision(theta_slices.at(theta_slice).at(0), 0), ".", "_") + "_to_" +
-    //                          bt::ReplaceSubstring(bt::ToStringWithPrecision(theta_slices.at(theta_slice).at(1), 0), ".", "_") + "_deg" + General_status;
-    //     }
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
@@ -182,7 +165,6 @@ void HipoLooper() {
         /////////////////////////////////////
         vector<TObject *> HistoList;
         vector<TObject *> HistoList_ByThetaSlices;
-        // vector<TH1 *> HistoList;
 
         gStyle->SetTitleXSize(0.05);
         gStyle->SetTitleYSize(0.05);
@@ -3453,42 +3435,13 @@ void HipoLooper() {
 
         clasAna.setVertexCorrCuts(true);  // making f_corr_vertexCuts = true
 
+        // Set vertex correlation cuts for 2 GeV samples
         if (Is2GeV) {
             clasAna.setVertexCorrCuts_FD(-6, 4);
             clasAna.setVertexCorrCuts_CD(-5, 3);
         }
 
-        // clasAna.readEcalSFPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsSF_40Ca_x2.dat").c_str());
-        // clasAna.setEcalSFCuts();
-
-        // clasAna.readEcalPPar((path_definitions::PathDefinitions.PIDCutsDirectory + "paramsPI_40Ca_x2.dat").c_str());
-        // // clasAna.setEcalPCuts();
-
-        // clasAna.setEcalEdgeCuts();
-
-        // clasAna.setNpheCuts();
-
-        // clasAna.readInputParam(
-        //     (path_definitions::PathDefinitions.PIDCutsDirectory + "Fitted_PID_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
-        // clasAna.setPidCuts();                                                                                            // making f_pidCuts = true
-
-        // // clasAna.set_e_VertexCuts();  // making f_e_vertexCuts = true
-        // // clasAna.setVertexCuts();  // making f_vertexCuts = true
-
-        // clasAna.set_e_DCEdgeCuts();
-        // clasAna.setDCEdgeCuts();
-
-        // // clasAna.setVertexCorrCuts();                                                                                 // making f_corr_vertexCuts = true
-        // // clasAna.setVertexCorrCutsLim(CutManager.dVz_cuts.GetLowerCut(), CutManager.dVz_cuts.GetUpperCut());          // setting dVz cuts (general)
-        // // clasAna.setVertexCorrCutsLimFD(CutManager.dVz_cuts_FD.GetLowerCut(), CutManager.dVz_cuts_FD.GetUpperCut());  // setting dVz cuts (FD only)
-        // // clasAna.setVertexCorrCutsLimCD(CutManager.dVz_cuts_CD.GetLowerCut(), CutManager.dVz_cuts_CD.GetUpperCut());  // setting dVz cuts (CD only)
-
-        // clasAna.readInputParam(
-        //     (path_definitions::PathDefinitions.NucleonCutsDirectory + "Nucleon_Cuts_-_" + SampleName + ".par").c_str());  // load sample-appropreate cuts file from CutsDirectory
-
-        // clasAna.printParams();
-
-        std::cout << "\033[33m\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n\033[0m";
+        std::cout << "\033[33m" << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n" << "\033[0m";
 
 #pragma region Loop over events
         int NumOfEvents = 0;
@@ -3498,7 +3451,7 @@ void HipoLooper() {
         while (chain.Next() == true) {
             // Display completed
             ++NumOfEvents;
-            if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m\n\n" << NumOfEvents / 1000000 << " million completed\n\n\033[0m"; }
+            if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m" << "\n\n" << NumOfEvents / 1000000 << " million completed\n\n" << "\033[0m"; }
             if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
 
             if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
@@ -3532,7 +3485,6 @@ void HipoLooper() {
             reco_P_e.SetMagThetaPhi(electrons_det[0]->getP(), electrons_det[0]->getTheta(), electrons_det[0]->getPhi());
 
             double vtz_e_det = electrons_det[0]->par()->getVz();
-            // double vtz_e = electrons[0]->par()->getVz();
 
             TVector3 P_q = P_b - reco_P_e;
 
@@ -3551,71 +3503,6 @@ void HipoLooper() {
             bool ElectronInECIN = (electrons_det[0]->cal(clas12::ECIN)->getDetector() == 7);                              // ECIN hit
             bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
             auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
-
-            //  =======================================================================================================================================================================
-            //  (e,e') (reco)
-            //  =======================================================================================================================================================================
-
-            /*
-            //  - Apply dVz cuts on both e and FD/CD pions
-               ----------------------------------------------------------------------------------------------------------------------------
-
-                        // vector<double> vertex_corr_cuts_cd = {-1.8, 3.1};  // electron vertex <-> particle vertex correlation cuts
-                        // vector<double> vertex_corr_cuts_fd = {-3.5, 5.8};  // electron vertex <-> particle vertex correlation cuts
-
-                        // std::vector<region_part_ptr> piplus_cd, piminus_cd, piplus_fd, piminus_fd;
-
-                        // for (auto &p : piplus) {
-                        //     if (p->getRegion() == clas12::CD) {
-                        //         piplus_cd.push_back(p);
-                        //     } else if (p->getRegion() == clas12::FD) {
-                        //         piplus_fd.push_back(p);
-                        //     }
-                        // }
-
-                        // for (auto &p : piminus) {
-                        //     if (p->getRegion() == clas12::CD) {
-                        //         piminus_cd.push_back(p);
-                        //     } else if (p->getRegion() == clas12::FD) {
-                        //         piminus_fd.push_back(p);
-                        //     }
-                        // }
-
-                        // bool Both_e_and_pipFD_passed_dVz_cuts = true, Both_e_and_pipCD_passed_dVz_cuts = true;
-                        // bool Both_e_and_pimFD_passed_dVz_cuts = true, Both_e_and_pimCD_passed_dVz_cuts = true;
-
-                        // for (int i = 0; i < piplus.size(); i++) {
-                        //     double temp_dVz_pip = electrons[0]->par()->getVz() - piplus[i]->par()->getVz();
-
-                        //     if ((piplus[i]->getRegion() == clas12::FD) && !(temp_dVz_pip > vertex_corr_cuts_fd.at(0) && temp_dVz_pip < vertex_corr_cuts_fd.at(1))) {
-                        //         Both_e_and_pipFD_passed_dVz_cuts = false;
-                        //     } else if ((piplus[i]->getRegion() == clas12::CD) && !(temp_dVz_pip > vertex_corr_cuts_cd.at(0) && temp_dVz_pip < vertex_corr_cuts_cd.at(1))) {
-                        //         Both_e_and_pipCD_passed_dVz_cuts = false;
-                        //     }
-                        // }
-
-                        // for (int i = 0; i < piminus.size(); i++) {
-                        //     double temp_dVz_pim = electrons[0]->par()->getVz() - piminus[i]->par()->getVz();
-
-                        //     if ((piminus[i]->getRegion() == clas12::FD) && !(temp_dVz_pim > vertex_corr_cuts_fd.at(0) && temp_dVz_pim < vertex_corr_cuts_fd.at(1))) {
-                        //         Both_e_and_pimFD_passed_dVz_cuts = false;
-                        //     } else if ((piminus[i]->getRegion() == clas12::CD) && !(temp_dVz_pim > vertex_corr_cuts_cd.at(0) && temp_dVz_pim < vertex_corr_cuts_cd.at(1))) {
-                        //         Both_e_and_pimCD_passed_dVz_cuts = false;
-                        //     }
-                        // }
-
-                        // // bool Both_e_and_pions_passed_dVz_cuts = (piminus_cd.size() > 0 && piminus_fd.size() == 0 && piplus.size() == 0);
-                        // // bool Both_e_and_pions_passed_dVz_cuts = (piplus_cd.size() > 0 && piplus_fd.size() == 0 && piminus.size() == 0);
-                        // // bool Both_e_and_pions_passed_dVz_cuts = (piminus_fd.size() > 0 && piminus_cd.size() == 0 && piplus.size() == 0);
-                        // bool Both_e_and_pions_passed_dVz_cuts = (piplus_fd.size() > 0 && piplus_cd.size() == 0 && piminus.size() == 0);
-                        // // bool Both_e_and_pions_passed_dVz_cuts = (piminus.size() > 0);
-                        // // bool Both_e_and_pions_passed_dVz_cuts = (piplus.size() > 0);
-                        // // bool Both_e_and_pions_passed_dVz_cuts = ((piplus.size() > 0) || (piminus.size() > 0));
-                        // // (Both_e_and_pipFD_passed_dVz_cuts && Both_e_and_pipCD_passed_dVz_cuts && Both_e_and_pimFD_passed_dVz_cuts && Both_e_and_pimCD_passed_dVz_cuts);
-
-                        // // skip event if e and pions do not pass dVz cuts
-                        // if (!Both_e_and_pions_passed_dVz_cuts) { continue; }
-             */
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
@@ -4213,8 +4100,6 @@ void HipoLooper() {
 
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
-            //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
-
 #pragma region piminus BPID
             for (int i = 0; i < piminus_det.size(); i++) {
                 if (piminus_det[i]->getRegion() == FD) {
@@ -4452,7 +4337,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region nExtracting Vz correction parameters
-        std::cout << "\033[33m\n\nExtracting Vz correction parameters..." << "\n\n\033[0m";
+        std::cout << "\033[33m" << "\n\nExtracting Vz correction parameters..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
@@ -4471,8 +4356,6 @@ void HipoLooper() {
                 double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
                 fitMin = -std::fabs(peakCenter * 1.1);
                 fitMax = -std::fabs(peakCenter * 0.9);
-                // fitMin = -std::fabs(peakCenter * 1.2);
-                // fitMax = -std::fabs(peakCenter * 0.8);
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
                 fitMax = fitLimits[1];
@@ -4509,7 +4392,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region Plotting and saving histograms
-        std::cout << "\033[33m\n\nPlotting and saving histograms..." << "\n\n\033[0m";
+        std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
         // Organize histograms
@@ -4722,7 +4605,7 @@ void HipoLooper() {
 
                         if (*first_flags[particle_key] && !bt::FindSubstring(title, "sector")) {
                             std::string bookmark_title = label + " plots";
-                            std::string sanitized_bookmark_title = histogram_functions::SanitizeForBookmark(bookmark_title);
+                            std::string sanitized_bookmark_title = hf::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
                             myText->Clear();
@@ -4736,8 +4619,7 @@ void HipoLooper() {
                                 if (*sector_flags[particle_key][sector] && bt::FindSubstring(title, sector_str)) {
                                     std::string bookmark_title = label + " plots - " + sector_title_str;
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
-                                    std::string hierarchical_title =
-                                        histogram_functions::SanitizeForBookmark(label + " plots") + ">" + histogram_functions::SanitizeForBookmark(bookmark_title);
+                                    std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title);
                                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                                     myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
                                     myText->Clear();
@@ -4862,7 +4744,7 @@ void HipoLooper() {
                 if (bt::FindSubstring(TempHistoList[i]->GetTitle(), "V_{z}^{") && !bt::FindSubstring(TempHistoList[i]->GetTitle(), "sector")) {
                     std::string Individual_PDF_fileName = IndividualPlotsOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
                     myCanvas->SaveAs(Individual_PDF_fileName.c_str());
-                    histogram_functions::FixPDFOrientation(Individual_PDF_fileName);
+                    hf::FixPDFOrientation(Individual_PDF_fileName);
                 }
 
                 myCanvas->Print(fileName, "pdf");
@@ -4873,246 +4755,234 @@ void HipoLooper() {
             sprintf(fileName, "%s]", PDF_fileName.c_str());
             myCanvas->Print(fileName, "pdf");
 
-            histogram_functions::FixPDFOrientation(PDF_fileName);                                                    // Fix orientation
-            histogram_functions::ReassignPDFBookmarks(bt::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
+            hf::FixPDFOrientation(PDF_fileName);                                                    // Fix orientation
+            hf::ReassignPDFBookmarks(bt::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
         };
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
-        // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det,
-        // NumOfEvents_wOne_e_det,
-        //                   NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         int ComparisonNumber = 0;
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut,
-                                                h_SF_VS_Edep_PCAL_BC_sector4_1e_cut, h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut, h_SF_VS_Edep_PCAL_BC_sector4_1e_cut,
+                               h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_SF_VS_Edep_PCAL_AC_sector1_1e_cut, h_SF_VS_Edep_PCAL_AC_sector2_1e_cut, h_SF_VS_Edep_PCAL_AC_sector3_1e_cut,
-                                                h_SF_VS_Edep_PCAL_AC_sector4_1e_cut, h_SF_VS_Edep_PCAL_AC_sector5_1e_cut, h_SF_VS_Edep_PCAL_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_SF_VS_Edep_PCAL_AC_sector1_1e_cut, h_SF_VS_Edep_PCAL_AC_sector2_1e_cut, h_SF_VS_Edep_PCAL_AC_sector3_1e_cut, h_SF_VS_Edep_PCAL_AC_sector4_1e_cut,
+                               h_SF_VS_Edep_PCAL_AC_sector5_1e_cut, h_SF_VS_Edep_PCAL_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_SF_VS_P_e_BC_sector1_1e_cut, h_SF_VS_P_e_BC_sector2_1e_cut, h_SF_VS_P_e_BC_sector3_1e_cut, h_SF_VS_P_e_BC_sector4_1e_cut,
-                                                h_SF_VS_P_e_BC_sector5_1e_cut, h_SF_VS_P_e_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_SF_VS_P_e_BC_sector1_1e_cut, h_SF_VS_P_e_BC_sector2_1e_cut, h_SF_VS_P_e_BC_sector3_1e_cut, h_SF_VS_P_e_BC_sector4_1e_cut, h_SF_VS_P_e_BC_sector5_1e_cut,
+                               h_SF_VS_P_e_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_SF_VS_P_e_AC_sector1_1e_cut, h_SF_VS_P_e_AC_sector2_1e_cut, h_SF_VS_P_e_AC_sector3_1e_cut, h_SF_VS_P_e_AC_sector4_1e_cut,
-                                                h_SF_VS_P_e_AC_sector5_1e_cut, h_SF_VS_P_e_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_SF_VS_P_e_AC_sector1_1e_cut, h_SF_VS_P_e_AC_sector2_1e_cut, h_SF_VS_P_e_AC_sector3_1e_cut, h_SF_VS_P_e_AC_sector4_1e_cut, h_SF_VS_P_e_AC_sector5_1e_cut,
+                               h_SF_VS_P_e_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms(
-            {h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut}, OutputDir,
-            "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms(
-            {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut}, OutputDir,
-            "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_e_BC_sector1_1e_cut, h_corrected_Vz_e_BC_sector2_1e_cut, h_corrected_Vz_e_BC_sector3_1e_cut,
-                                                h_corrected_Vz_e_BC_sector4_1e_cut, h_corrected_Vz_e_BC_sector5_1e_cut, h_corrected_Vz_e_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_e_BC_sector1_1e_cut, h_corrected_Vz_e_BC_sector2_1e_cut, h_corrected_Vz_e_BC_sector3_1e_cut, h_corrected_Vz_e_BC_sector4_1e_cut,
+                               h_corrected_Vz_e_BC_sector5_1e_cut, h_corrected_Vz_e_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut,
-                                                h_corrected_Vz_e_AC_sector4_1e_cut, h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut, h_corrected_Vz_e_AC_sector4_1e_cut,
+                               h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_e_BC_zoomin_sector1_1e_cut, h_Vz_e_BC_zoomin_sector2_1e_cut, h_Vz_e_BC_zoomin_sector3_1e_cut, h_Vz_e_BC_zoomin_sector4_1e_cut,
-                                                h_Vz_e_BC_zoomin_sector5_1e_cut, h_Vz_e_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_e_BC_zoomin_sector1_1e_cut, h_Vz_e_BC_zoomin_sector2_1e_cut, h_Vz_e_BC_zoomin_sector3_1e_cut, h_Vz_e_BC_zoomin_sector4_1e_cut,
+                               h_Vz_e_BC_zoomin_sector5_1e_cut, h_Vz_e_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut,
-                                                h_Vz_e_AC_zoomin_sector5_1e_cut, h_Vz_e_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut,
+                               h_Vz_e_AC_zoomin_sector5_1e_cut, h_Vz_e_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_e_BC_zoomin_sector1_1e_cut, h_corrected_Vz_e_BC_zoomin_sector2_1e_cut, h_corrected_Vz_e_BC_zoomin_sector3_1e_cut,
-                                                h_corrected_Vz_e_BC_zoomin_sector4_1e_cut, h_corrected_Vz_e_BC_zoomin_sector5_1e_cut, h_corrected_Vz_e_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_e_BC_zoomin_sector1_1e_cut, h_corrected_Vz_e_BC_zoomin_sector2_1e_cut, h_corrected_Vz_e_BC_zoomin_sector3_1e_cut,
+                               h_corrected_Vz_e_BC_zoomin_sector4_1e_cut, h_corrected_Vz_e_BC_zoomin_sector5_1e_cut, h_corrected_Vz_e_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_e_AC_zoomin_sector1_1e_cut, h_corrected_Vz_e_AC_zoomin_sector2_1e_cut, h_corrected_Vz_e_AC_zoomin_sector3_1e_cut,
-                                                h_corrected_Vz_e_AC_zoomin_sector4_1e_cut, h_corrected_Vz_e_AC_zoomin_sector5_1e_cut, h_corrected_Vz_e_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_e_AC_zoomin_sector1_1e_cut, h_corrected_Vz_e_AC_zoomin_sector2_1e_cut, h_corrected_Vz_e_AC_zoomin_sector3_1e_cut,
+                               h_corrected_Vz_e_AC_zoomin_sector4_1e_cut, h_corrected_Vz_e_AC_zoomin_sector5_1e_cut, h_corrected_Vz_e_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut,
-                                                h_Vz_pipFD_BC_sector5_1e_cut, h_Vz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut, h_Vz_pipFD_BC_sector5_1e_cut,
+                               h_Vz_pipFD_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut,
-                                                h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
+                               h_Vz_pipFD_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_BC_sector1_1e_cut, h_corrected_Vz_pipFD_BC_sector2_1e_cut, h_corrected_Vz_pipFD_BC_sector3_1e_cut,
-                                                h_corrected_Vz_pipFD_BC_sector4_1e_cut, h_corrected_Vz_pipFD_BC_sector5_1e_cut, h_corrected_Vz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pipFD_BC_sector1_1e_cut, h_corrected_Vz_pipFD_BC_sector2_1e_cut, h_corrected_Vz_pipFD_BC_sector3_1e_cut, h_corrected_Vz_pipFD_BC_sector4_1e_cut,
+                               h_corrected_Vz_pipFD_BC_sector5_1e_cut, h_corrected_Vz_pipFD_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_AC_sector1_1e_cut, h_corrected_Vz_pipFD_AC_sector2_1e_cut, h_corrected_Vz_pipFD_AC_sector3_1e_cut,
-                                                h_corrected_Vz_pipFD_AC_sector4_1e_cut, h_corrected_Vz_pipFD_AC_sector5_1e_cut, h_corrected_Vz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pipFD_AC_sector1_1e_cut, h_corrected_Vz_pipFD_AC_sector2_1e_cut, h_corrected_Vz_pipFD_AC_sector3_1e_cut, h_corrected_Vz_pipFD_AC_sector4_1e_cut,
+                               h_corrected_Vz_pipFD_AC_sector5_1e_cut, h_corrected_Vz_pipFD_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut,
-                                                h_dVz_pipFD_BC_sector5_1e_cut, h_dVz_pipFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut, h_dVz_pipFD_BC_sector5_1e_cut,
+                               h_dVz_pipFD_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut,
-                                                h_dVz_pipFD_AC_sector5_1e_cut, h_dVz_pipFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut, h_dVz_pipFD_AC_sector5_1e_cut,
+                               h_dVz_pipFD_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut,
-                                                h_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut, h_Vz_pipFD_BC_zoomin_sector4_1e_cut,
+                               h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut,
-                                                h_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
+                               h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector3_1e_cut,
-                                                h_corrected_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector3_1e_cut,
+                               h_corrected_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut,
-                                                h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut,
+                               h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut,
-                                                h_dVz_pipFD_BC_zoomin_sector4_1e_cut, h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut, h_dVz_pipFD_BC_zoomin_sector4_1e_cut,
+                               h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut,
-                                                h_dVz_pipFD_AC_zoomin_sector4_1e_cut, h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut, h_dVz_pipFD_AC_zoomin_sector4_1e_cut,
+                               h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut,
-                                                h_Vz_pimFD_BC_sector5_1e_cut, h_Vz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut,
+                               h_Vz_pimFD_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut,
-                                                h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut,
+                               h_Vz_pimFD_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_BC_sector1_1e_cut, h_corrected_Vz_pimFD_BC_sector2_1e_cut, h_corrected_Vz_pimFD_BC_sector3_1e_cut,
-                                                h_corrected_Vz_pimFD_BC_sector4_1e_cut, h_corrected_Vz_pimFD_BC_sector5_1e_cut, h_corrected_Vz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pimFD_BC_sector1_1e_cut, h_corrected_Vz_pimFD_BC_sector2_1e_cut, h_corrected_Vz_pimFD_BC_sector3_1e_cut, h_corrected_Vz_pimFD_BC_sector4_1e_cut,
+                               h_corrected_Vz_pimFD_BC_sector5_1e_cut, h_corrected_Vz_pimFD_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_AC_sector1_1e_cut, h_corrected_Vz_pimFD_AC_sector2_1e_cut, h_corrected_Vz_pimFD_AC_sector3_1e_cut,
-                                                h_corrected_Vz_pimFD_AC_sector4_1e_cut, h_corrected_Vz_pimFD_AC_sector5_1e_cut, h_corrected_Vz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pimFD_AC_sector1_1e_cut, h_corrected_Vz_pimFD_AC_sector2_1e_cut, h_corrected_Vz_pimFD_AC_sector3_1e_cut, h_corrected_Vz_pimFD_AC_sector4_1e_cut,
+                               h_corrected_Vz_pimFD_AC_sector5_1e_cut, h_corrected_Vz_pimFD_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut,
-                                                h_dVz_pimFD_BC_sector5_1e_cut, h_dVz_pimFD_BC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut, h_dVz_pimFD_BC_sector5_1e_cut,
+                               h_dVz_pimFD_BC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut,
-                                                h_dVz_pimFD_AC_sector5_1e_cut, h_dVz_pimFD_AC_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut, h_dVz_pimFD_AC_sector5_1e_cut,
+                               h_dVz_pimFD_AC_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut,
-                                                h_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut, h_Vz_pimFD_BC_zoomin_sector4_1e_cut,
+                               h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut,
-                                                h_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
+                               h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector3_1e_cut,
-                                                h_corrected_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector3_1e_cut,
+                               h_corrected_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut,
-                                                h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut,
+                               h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut,
-                                                h_dVz_pimFD_BC_zoomin_sector4_1e_cut, h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut, h_dVz_pimFD_BC_zoomin_sector4_1e_cut,
+                               h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut,
-                                                h_dVz_pimFD_AC_zoomin_sector4_1e_cut, h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
-                                               OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
+        hf::CompareHistograms({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut, h_dVz_pimFD_AC_zoomin_sector4_1e_cut,
+                               h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
+                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_zoomin_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_zoomin_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_zoomin_1e_cut");
+        hf::CompareHistograms({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_zoomin_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_BC_1e_cut");
+        hf::CompareHistograms({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_BC_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_AC_1e_cut");
+        hf::CompareHistograms({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_AC_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_1e_cut");
+        hf::CompareHistograms({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_1e_cut");
+        hf::CompareHistograms({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_zoomin_1e_cut");
+        hf::CompareHistograms({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_zoomin_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_zoomin_1e_cut");
+        hf::CompareHistograms({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_zoomin_1e_cut");
 
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_BC_1e_cut");
+        hf::CompareHistograms({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_BC_1e_cut");
         ++ComparisonNumber;
-        histogram_functions::CompareHistograms({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                                               bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_AC_1e_cut");
+        hf::CompareHistograms({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
+                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_AC_1e_cut");
 
         outFile->cd();
         for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }
         outFile->Close();
-
-        // outFile_ByThetaSlices->cd();
-        // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
-        // outFile_ByThetaSlices->Close();
-
-        // HistoList_ByThetaSlices.clear();
-        // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { HistoList_ByThetaSlices[i]->Write(); }
 
 #pragma endregion
 
         // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
         if (InputFiles.size() > 1) { gDirectory->Clear(); }
 
-        std::cout << "\033[33m\n=============================================================\n\033[0m";
-        std::cout << "\033[33m= HipoLooper summary                                         \n\033[0m";
-        std::cout << "\033[33m=============================================================\n\033[0m";
+        std::cout << "\033[33m" << "\n=============================================================\n" << "\033[0m";
+        std::cout << "\033[33m" << "= HipoLooper summary                                         \n" << "\033[0m";
+        std::cout << "\033[33m" << "=============================================================\n" << "\033[0m";
 
-        std::cout << "\033[33m\n- Input variables -------------------------------------------\n\033[0m";
-        std::cout << "\033[33mInputFiles.at(sample):\033[0m " << InputFiles.at(sample) << endl;
-        std::cout << "\033[33mnCodeRun_status:\033[0m       " << CodeRun_status << endl;
-        std::cout << "\033[33mOutputDir:\033[0m             " << OutputDir << "\n\n";
+        std::cout << "\033[33m" << "\n- Input variables -------------------------------------------\n" << "\033[0m";
+        std::cout << "\033[33m" << "InputFiles.at(sample):\033[0m " << InputFiles.at(sample) << endl;
+        std::cout << "\033[33m" << "nCodeRun_status:\033[0m       " << CodeRun_status << endl;
+        std::cout << "\033[33m" << "OutputDir:\033[0m             " << OutputDir << "\n\n";
     }
     // }
 
