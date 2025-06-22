@@ -275,8 +275,8 @@ void HipoLooper() {
             if (particle != "") {
                 std::string key = CodeRun_status + "_" + particle;
 
-                if (Beam_Coor.count(key) == 0) {
-                    std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                if (Beam_Coordinates.count(key) == 0) {
+                    std::cerr << "\n\nError! Beam_Coordinates does not contain key: " << key << ". Aborting...\n\n";
                     return std::numeric_limits<double>::quiet_NaN();
                 }
 
