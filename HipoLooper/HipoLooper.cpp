@@ -68,12 +68,12 @@ void HipoLooper() {
 
     // // Data samples:
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");  // X
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");  // X
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo"); // V
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo"); // V
-    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo"); // X
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
     // // Simulation samples:
 
@@ -251,13 +251,6 @@ void HipoLooper() {
             // return Vz_rec - (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
             return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         };
-
-        // // auto r = 0.5 * 3;
-        // // auto r = 0.5 / 2;
-        // // auto r = 0.5;
-        // // auto phi_beam_rad = -5 * am::pi / 6;
-        // auto r = compute_r(Beam_Coordinates);
-        // auto phi_beam_rad = compute_phi_beam_rad(Beam_Coordinates);
 
 #pragma region electron histograms
 
@@ -3463,7 +3456,7 @@ void HipoLooper() {
         int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
         while (chain.Next() == true) {
-            cout << "\033[32m" << "\n\nProcessing event " << NumOfEvents + 1 << "\n\033[0m";
+            // cout << "\033[32m" << "\n\nProcessing event " << NumOfEvents + 1 << "\n\033[0m";
 
             // Display completed
             ++NumOfEvents;
@@ -3525,8 +3518,6 @@ void HipoLooper() {
             //  =======================================================================================================================================================================
 
             //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
-
-            cout << "\033[33mElectrons BPID\n\033[0m";
 
 #pragma region Electrons BPID
             h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -3673,18 +3664,9 @@ void HipoLooper() {
 
 #pragma endregion
 
-            cout << "\033[33mElectrons BPID xxx\n\033[0m";
-
             if (electrons.size() != 1) { continue; }
 
-            cout << "\033[33melectrons.size() = " << electrons.size() << "\n\033[0m";
-            cout << "\033[33melectrons[0]->par()->getBeta() = " << electrons[0]->par()->getBeta() << "\n\033[0m";
-
-            cout << "\033[33mElectrons BPID yyy\n\033[0m";
-
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
-
-            cout << "\033[33mElectrons APID\n\033[0m";
 
 #pragma region Electrons APID
             double Vx_e = electrons[0]->par()->getVx();
@@ -3888,8 +3870,6 @@ void HipoLooper() {
 
             //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
 
-            cout << "\033[33mPiplus BPID\n\033[0m";
-
 #pragma region piplus BPID
             for (int i = 0; i < piplus_det.size(); i++) {
                 if (piplus_det[i]->getRegion() == FD) {
@@ -3979,8 +3959,6 @@ void HipoLooper() {
                 }
             }
 #pragma endregion
-
-            cout << "\033[33mPiplus APID\n\033[0m";
 
 #pragma region piplus APID
             for (int i = 0; i < piplus.size(); i++) {
@@ -4131,8 +4109,6 @@ void HipoLooper() {
 
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
-            cout << "\033[33mPiminus BPID\n\033[0m";
-
 #pragma region piminus BPID
             for (int i = 0; i < piminus_det.size(); i++) {
                 if (piminus_det[i]->getRegion() == FD) {
@@ -4223,32 +4199,16 @@ void HipoLooper() {
             }
 #pragma endregion
 
-            cout << "\033[33mPiminus APID\n\033[0m";
-
 #pragma region piminus APID
             for (int i = 0; i < piminus.size(); i++) {
-                cout << "\033[33mPiminus APID 1\n\033[0m";
-
                 double Vx_pim = piminus[i]->par()->getVx();
                 double Vy_pim = piminus[i]->par()->getVy();
                 double Vz_pim = piminus[i]->par()->getVz();
 
-                cout << "\033[33mPiminus APID 2\n\033[0m";
-
                 if (piminus[i]->getRegion() == FD) {
-                    cout << "\033[33mPiminus APID 3\n\033[0m";
-
                     auto r_pim = compute_r(Beam_Coordinates, "pimFD");
-
-                    cout << "\033[33mPiminus APID 4\n\033[0m";
-
                     auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
-
-                    cout << "\033[33mPiminus APID 5\n\033[0m";
-
                     auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
-
-                    cout << "\033[33mPiminus APID 6\n\033[0m";
 
                     h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
                     h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
@@ -4270,8 +4230,6 @@ void HipoLooper() {
                     raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
                     h_Chi2_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
-
-                    cout << "\033[33mPiminus APID 4\n\033[0m";
 
                     if (piminus[i]->getSector() == 1) {
                         h_Vx_pimFD_AC_sector1_1e_cut->Fill(Vx_pim, weight);
