@@ -4521,21 +4521,21 @@ void HipoLooper() {
                             bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
                                .c_str());
 
-            // text.DrawLatex(0.05, 0.10, "Beam position parameters for corrected V_{z}:");
-            // text.DrawLatex(0.10, 0.05,
-            //                ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) +
-            //                "#circ)}").c_str());
+            myText->Print(fileName, "pdf Title: Cover");
+            myText->Clear();
+
+            text.DrawLatex(0.05, 0.9, "Beam position parameters for corrected Vz");
+            // text.DrawLatex(0.05, 0.7,
+            //                ("Polar: #font[42]{(r, #phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
             // text.DrawLatex(0.05, 0.15, "Beam position parameters for Corrected V_{z}:");
             // text.DrawLatex(0.10, 0.10,
             //                ("Cartesian: #font[42]{(V_{x},V_{y}) = (" + bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).first) + " cm, " +
             //                 bt::ToStringWithPrecision(Beam_Coordinates.at(Run_status).second) + " cm)}")
             //                    .c_str());
             // text.DrawLatex(0.10, 0.05,
-            //                ("Polar: #font[42]{(r,#phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " +
-            //                 bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}")
-            //                    .c_str());
+            //                ("Polar: #font[42]{(r,#phi_{beam}) = (" + bt::ToStringWithPrecision(r) + " cm, " + bt::ToStringWithPrecision(phi_beam_rad * 180 / am::pi) + "#circ)}").c_str());
 
-            myText->Print(fileName, "pdf Title: Cover");
+            myText->Print(fileName, "pdf Title: Parameters");
             myText->Clear();
 
             // Remaining flags, loops, and drawing logic as-is
@@ -4731,11 +4731,13 @@ void HipoLooper() {
                         if (bt::FindSubstring(h->GetTitle(), "V_{x}^{")) {
                             measured_target_location_TLine_entry =
                                 Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " cm").c_str(), "l");
-                            // Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                            // Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + "
+                            // cm").c_str(), "l");
                         } else if (bt::FindSubstring(h->GetTitle(), "V_{y}^{")) {
                             measured_target_location_TLine_entry =
                                 Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " cm").c_str(), "l");
-                            // Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                            // Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + "
+                            // cm").c_str(), "l");
                         }
 
                         Legend->Draw("same");
