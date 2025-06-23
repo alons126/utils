@@ -39,8 +39,9 @@ myPlots.SaveHistograms("output_dir", "hist_output");
 // The histograms are named using the base name and the slice index, and the titles are generated using the title template and the slice limits.
 // @param SlicedHistoListPtr Pointer to a vector where the histograms will be stored.
 //        The caller is responsible for managing the lifetime of the vector and the histograms inside it.
-hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName,
-                 const std::string& titleTemplate, const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var)
+hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TObject*>* SlicedHistoListPtr,
+                 const std::string& baseName, const std::string& titleTemplate, const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow,
+                 const double& yup, std::string slice_var)
     : SliceLimits(sliceLimits), histoType(type), SlicedHistoListPtr(SlicedHistoListPtr) {
     bool PrintOut = false;
 

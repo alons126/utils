@@ -45,7 +45,7 @@ class hsPlots {
     // hsPlots constructor ----------------------------------------------------------------------------------------------------------------------------------------------
     // @param SlicedHistoListPtr Pointer to a vector where the histograms will be stored.
     //        The caller is responsible for managing the lifetime of the vector and the histograms inside it.
-    hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName,
+    hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TObject*>* SlicedHistoListPtr, const std::string& baseName,
             const std::string& titleTemplate, const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var);
 
     // hsPlots Destructor ----------------------------------------------------------------------------------------------------------------------------------------------
