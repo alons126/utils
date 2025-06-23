@@ -4575,69 +4575,61 @@ void HipoLooper() {
         // Sort hsPlots plots
         /////////////////////////////////////////////////////
 
-        // for (int i = 0; i < theta_slices.size(); i++) {
-        //     HistoList_ByThetaSlices.push_back(Vz_e_AC_1e_cut_BySliceOfTheta_HistoList[i]);
-        //     HistoList_ByThetaSlices.push_back(Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList[i]);
-        //     HistoList_ByThetaSlices.push_back(Sliced_Vz_VS_phi_e_HistoList[i]);
-        //     HistoList_ByThetaSlices.push_back(Sliced_corrected_Vz_VS_phi_e_HistoList[i]);
-        //     HistoList_ByThetaSlices.push_back(Sliced_corrected_Vz_VS_phi_e_HistoList[i]);
-        // }
-
-        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
-
         // Sort histograms by:
-        //   1. slice start (X in "slice_from_X_to_Y")
-        //   2. sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
-        //   3. base name (as before)
+        //   1. Particle type (e, pipFD, pimFD)
+        //   2. Sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
+        //   3. Theta slice start (X in "slice_from_X_to_Y")
+        //   4. Base name (alphabetical fallback)
         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject *a, TObject *b) {
             const std::string nameA = a->GetName();
             const std::string nameB = b->GetName();
 
-            // Define particle priority
+            // Assign a sorting priority based on particle type.
+            // "e" comes first, followed by "pipFD", then "pimFD"
             auto getParticlePriority = [](const std::string &name) -> int {
-                if (name.find("_e_") != std::string::npos) return 0;
-                if (name.find("_pipFD_") != std::string::npos) return 1;
-                if (name.find("_pimFD_") != std::string::npos) return 2;
-                return 9;  // fallback
+                if (name.find("_e_") != std::string::npos) return 0;      // electron
+                if (name.find("_pipFD_") != std::string::npos) return 1;  // pi+
+                if (name.find("_pimFD_") != std::string::npos) return 2;  // pi-
+                return 9;                                                 // Unknown or unmatched types get lowest priority
             };
 
-            // Extract sector number: 0 if not present
+            // Extract sector number from histogram name.
+            // Returns 0 for non-sector histograms (to sort them first).
             auto getSector = [](const std::string &name) -> int {
                 std::smatch match;
                 std::regex pattern(R"(_sector([1-6]))");
+                // If the pattern matches, extract the sector number, else return 0
                 return (std::regex_search(name, match, pattern)) ? std::stoi(match[1]) : 0;
             };
 
-            // Extract theta slice start value
+            // Extract the lower bound of the theta slice from the histogram name.
+            // If the format is not matched, return a large number so it sorts last.
             auto getSliceStart = [](const std::string &name) -> double {
                 std::smatch match;
                 std::regex pattern(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
+                // Use regex to extract the floating point number after "slice_from_"
                 return (std::regex_search(name, match, pattern)) ? std::stod(match[1]) : 1e9;
             };
 
+            // Compare particle types first
             int particleA = getParticlePriority(nameA);
             int particleB = getParticlePriority(nameB);
             if (particleA != particleB) return particleA < particleB;
 
+            // Then compare sectors (non-sector histograms first)
             int sectorA = getSector(nameA);
             int sectorB = getSector(nameB);
             if (sectorA != sectorB) return sectorA < sectorB;
 
+            // Then compare by theta slice start
             double sliceA = getSliceStart(nameA);
             double sliceB = getSliceStart(nameB);
             if (sliceA != sliceB) return sliceA < sliceB;
 
-            return nameA < nameB;  // fallback tie-breaker
+            // Final fallback: alphabetical order to ensure consistency
+            return nameA < nameB;
         });
 
-        cout << "\n";
-        cout << "\n";
-        cout << "\n";
-        cout << "\n";
-
-        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
-
-        exit(1);
 #pragma endregion
 
 #pragma region nExtracting Vz correction parameters
