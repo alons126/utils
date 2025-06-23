@@ -84,6 +84,7 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
         // Split the titleTemplate into parts if it contains two semicolons (in the form of Title;XLabel;YLabel)
         firstSep = titleTemplate.find(';');
         secondSep = titleTemplate.find(';', firstSep + 1);
+        size_t thirdSep = titleTemplate.find(';', secondSep + 1);
 
         bool hasSplit = (firstSep != std::string::npos && secondSep != std::string::npos);
 
@@ -91,12 +92,17 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
             mainTitle = titleTemplate.substr(0, firstSep);
             xLabel = titleTemplate.substr(firstSep + 1, secondSep - firstSep - 1);
             yLabel = titleTemplate.substr(secondSep + 1);
+
+            if (histoType == TH2D_TYPE && thirdSep != std::string::npos) {
+                yLabel = titleTemplate.substr(secondSep + 1, thirdSep - secondSep - 1);
+                std::cerr << "\033[33m[hsPlots WARNING]\033[0m Ignoring extra ';' field in titleTemplate for TH2D histogram: \"" << titleTemplate << "\"\n";
+            }
         } else {
             mainTitle = titleTemplate;
         }
 
         // Construct the histogram title with slice range information
-        title << "#splitline{ " << mainTitle << " }{ Slice limits: " << basic_tools::ToStringWithPrecision(range.at(0), 2) << "#leq" << slice_var_pair.first << "#leq"
+        title << "#splitline{ " << mainTitle << " }{ Slice limits: " << basic_tools::ToStringWithPrecision(range.at(0), 2) << " #leq " << slice_var_pair.first << " #leq "
               << basic_tools::ToStringWithPrecision(range.at(1), 2) << " " + slice_var_pair.second + " }";
 
         // Create the histogram object depending on the specified histogram type (TH1D or TH2D)

@@ -383,7 +383,7 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList;
         hsPlots h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_phi_e_AC_1e_cut", ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(),
@@ -393,7 +393,7 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList;
         hsPlots h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_1e_cut = new TH2D(
@@ -548,10 +548,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector1_1e_cut);
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector1;
-        hsPlots h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
-                    "#theta_{e} [#circ]");
+        hsPlots h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta = hsPlots(
+            theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
+            "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut =
             new TH2D("corrected_Vz_VS_phi_e_AC_sector1_1e_cut",
@@ -562,8 +561,8 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector1;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
-                    -13, 2, "#theta_{e} [#circ]");
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_sector1_1e_cut =
             new TH2D("corrected_Vz_VS_theta_e_AC_sector1_1e_cut",
@@ -725,10 +724,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector2_1e_cut);
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector2;
-        hsPlots h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
-                    "#theta_{e} [#circ]");
+        hsPlots h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta = hsPlots(
+            theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
+            "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut =
             new TH2D("corrected_Vz_VS_phi_e_AC_sector2_1e_cut",
@@ -739,8 +737,8 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector2;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
-                    -13, 2, "#theta_{e} [#circ]");
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_sector2_1e_cut =
             new TH2D("corrected_Vz_VS_theta_e_AC_sector2_1e_cut",
@@ -902,10 +900,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector3_1e_cut);
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector3;
-        hsPlots h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
-                    "#theta_{e} [#circ]");
+        hsPlots h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta = hsPlots(
+            theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
+            "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut =
             new TH2D("corrected_Vz_VS_phi_e_AC_sector3_1e_cut",
@@ -916,8 +913,8 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector3;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
-                    -13, 2, "#theta_{e} [#circ]");
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_sector3_1e_cut =
             new TH2D("corrected_Vz_VS_theta_e_AC_sector3_1e_cut",
@@ -1079,10 +1076,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector4_1e_cut);
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector4;
-        hsPlots h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
-                    "#theta_{e} [#circ]");
+        hsPlots h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta = hsPlots(
+            theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
+            "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut =
             new TH2D("corrected_Vz_VS_phi_e_AC_sector4_1e_cut",
@@ -1093,8 +1089,8 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector4;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
-                    -13, 2, "#theta_{e} [#circ]");
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_sector4_1e_cut =
             new TH2D("corrected_Vz_VS_theta_e_AC_sector4_1e_cut",
@@ -1256,10 +1252,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector5_1e_cut);
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector5;
-        hsPlots h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
-                    "#theta_{e} [#circ]");
+        hsPlots h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta = hsPlots(
+            theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
+            "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut =
             new TH2D("corrected_Vz_VS_phi_e_AC_sector5_1e_cut",
@@ -1270,8 +1265,8 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector5;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
-                    -13, 2, "#theta_{e} [#circ]");
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_sector5_1e_cut =
             new TH2D("corrected_Vz_VS_theta_e_AC_sector5_1e_cut",
@@ -1433,10 +1428,9 @@ void HipoLooper() {
         HistoList.push_back(h_Vz_VS_phi_e_AC_sector6_1e_cut);
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector6;
-        hsPlots h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
-                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
-                    "#theta_{e} [#circ]");
+        hsPlots h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta = hsPlots(
+            theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
+            "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut =
             new TH2D("corrected_Vz_VS_phi_e_AC_sector6_1e_cut",
@@ -1447,8 +1441,8 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector6;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
-                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
-                    -13, 2, "#theta_{e} [#circ]");
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_sector6_1e_cut =
             new TH2D("corrected_Vz_VS_theta_e_AC_sector6_1e_cut",
@@ -4822,7 +4816,7 @@ void HipoLooper() {
                  "#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}",
                  "#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
                      bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}"},
-                0.35, 0.05);
+                0.40, 0.05);
 
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
@@ -4909,7 +4903,17 @@ void HipoLooper() {
                 myCanvas->cd()->SetGrid();
                 myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
 
-                if (Is_hsPlot) { myCanvas->cd()->SetTopMargin(0.14); }
+                if (Is_hsPlot) {
+                    myCanvas->cd()->SetTopMargin(0.14);
+
+                    TPaveStats *stats = (TPaveStats *)((TH1 *)TempHistoList[i])->FindObject("stats");
+                    if (stats) {
+                        stats->SetX1NDC(stats->GetX1NDC());
+                        stats->SetY1NDC(stats->GetY1NDC() - 0.05);
+                        stats->SetX2NDC(stats->GetX2NDC());
+                        stats->SetY2NDC(stats->GetY2NDC() - 0.05);
+                    }
+                }
 
                 if (TempHistoList[i]->InheritsFrom("TH1") || TempHistoList[i]->InheritsFrom("TH2")) {
                     auto *h = (TH1 *)TempHistoList[i];
@@ -5013,7 +5017,11 @@ void HipoLooper() {
                     if (h->GetEntries() != 0) {
                         gPad->Update();
                         TPaletteAxis *palette = (TPaletteAxis *)h->GetListOfFunctions()->FindObject("palette");
-                        palette->SetY2NDC(0.55);
+                        if (Is_hsPlot) {
+                            palette->SetY2NDC(0.50);
+                        } else {
+                            palette->SetY2NDC(0.55);
+                        }
                         gPad->Modified();
                         gPad->Update();
                     }
