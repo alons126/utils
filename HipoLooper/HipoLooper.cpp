@@ -4833,42 +4833,44 @@ void HipoLooper() {
 
         // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
 
-        // exit(0);
-
-        // Load histograms from list
-        auto LoadFromList = [&](const char *name, const std::vector<TObject *> &HistogramList) -> std::tuple<TObject *, TObject *, TObject *, TObject *, TObject *, TObject *> {
-            std::vector<TObject *> HistogramsBySector(6, nullptr);
-
-            for (int i = 0; i < HistogramList.size(); i++) {
-                for (int j = 1; j <= 6; j++) {
-                    std::string expectedName = bt::ReplaceSubstring(name, "AC", "AC_sector" + bt::ToStringWithPrecision(j, 0));
-                    if (bt::FindSubstring(HistogramList[i]->GetName(), expectedName)) {
-                        HistogramsBySector[j - 1] = HistogramList[i];
-                        break;  // found the matching sector
-                    }
-                }
-            }
-
-            return std::make_tuple(HistogramsBySector[0], HistogramsBySector[1], HistogramsBySector[2], HistogramsBySector[3], HistogramsBySector[4], HistogramsBySector[5]);
-        };
-
-        auto ProcessFitsByThetaSlices = [&](const char *lable, const std::vector<std::vector<TObject *>> &Vz_HistogramLists,
+        auto ProcessFitsByThetaSlices = [&](const char *label, const std::vector<std::vector<TObject *>> &Vz_HistogramLists,
                                             const std::vector<std::vector<TObject *>> &Vz_VS_phi_HistogramLists) -> std::vector<TObject *> {
             std::vector<TObject *> FittedGraphsByThetaSlice;
 
             for (int i = 0; i < theta_slices.size(); i++) {
                 auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] =
-                    extract_and_fit(lable, Ebeam_status_1,
+                    extract_and_fit(label, Ebeam_status_1,
                                     {Vz_HistogramLists[0][i], Vz_HistogramLists[1][i], Vz_HistogramLists[2][i], Vz_HistogramLists[3][i], Vz_HistogramLists[4][i], Vz_HistogramLists[5][i]},
                                     {project(Vz_VS_phi_HistogramLists[0][i]), project(Vz_VS_phi_HistogramLists[1][i]), project(Vz_VS_phi_HistogramLists[2][i]),
                                      project(Vz_VS_phi_HistogramLists[3][i]), project(Vz_VS_phi_HistogramLists[4][i]), project(Vz_VS_phi_HistogramLists[5][i])},
                                     true, true, theta_slices[i]);
                 FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
-
-                return FittedGraphsByThetaSlice;
             }
+
+            return FittedGraphsByThetaSlice;
         };
 
+        auto FittedGraphsByThetaSlice_e = ProcessFitsByThetaSlices(
+            "e",
+            {Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3,
+             Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+            {Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3, Sliced_Vz_VS_phi_e_HistoList_sector4,
+             Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
+
+        std::string basename = "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta";
+
+        for (int i = 0; i < theta_slices.size(); i++) {
+            std::ostringstream name;
+            name << basename << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+                 << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+
+            for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+                if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+                    HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_e[i]);
+                    break;
+                }
+            }
+        }
 #pragma endregion
 
 #pragma region Plotting and saving histograms
