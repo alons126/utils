@@ -4629,10 +4629,10 @@ void HipoLooper() {
             int particleB = getParticlePriority(nameB);
             if (particleA != particleB) return particleA < particleB;
 
-            // // Compare particle types first
-            // int NameA = getNamePriority(nameA);
-            // int NameB = getNamePriority(nameB);
-            // if (NameA != NameB) return NameA < NameB;
+            // Compare particle types first
+            int NameA = getNamePriority(nameA);
+            int NameB = getNamePriority(nameB);
+            if (NameA != NameB) return NameA < NameB;
 
             // Then compare sectors (non-sector histograms first)
             int sectorA = getSector(nameA);
