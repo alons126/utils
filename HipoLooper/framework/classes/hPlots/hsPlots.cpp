@@ -273,7 +273,8 @@ void hsPlots::SaveHistograms(const std::string& outputDir, const std::string& ba
         canvas->cd();
         canvas->Clear();
 
-        TObject* hist = (*SlicedHistoListPtr)[i];
+        TObject* obj = (*SlicedHistoListPtr)[i];
+        TObject* hist = (TH1*)obj;
 
         // if (hist->GetEntries() == 0) {
         //     std::cout << "Skipping empty histogram [" << i << "]" << std::endl;
