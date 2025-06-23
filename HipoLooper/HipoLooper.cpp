@@ -4508,12 +4508,12 @@ void HipoLooper() {
              project(h_Vz_VS_phi_e_AC_sector5_1e_cut), project(h_Vz_VS_phi_e_AC_sector6_1e_cut)},
             true, false, theta_slices);
 
-        auto [A_pimFD, Vz_VS_phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
+        auto [A_pipFD, Vz_VS_phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             extract_and_fit("#pi^{+}FD", Ebeam_status_1,
-                            {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut,
-                             h_Vz_pimFD_AC_sector6_1e_cut},
-                            {project(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut),
-                             project(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut)},
+                            {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
+                             h_Vz_pipFD_AC_sector6_1e_cut},
+                            {project(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut),
+                             project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut)},
                             true, true, theta_slices);
 
         auto [A_pimFD, Vz_VS_phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
@@ -4553,7 +4553,7 @@ void HipoLooper() {
             }
         };
 
-        int insert_index_e = 0, insert_index_pimFD = 0, insert_index_pimFD = 0;
+        int insert_index_e = 0, insert_index_pipFD = 0, insert_index_pimFD = 0;
 
         for (size_t i = 0; i < HistoList.size(); i++) {
             if (HistoList[i]->InheritsFrom("TH1")) { style_th1((TH1 *)HistoList[i]); }
@@ -4563,14 +4563,14 @@ void HipoLooper() {
             std::string name = HistoList[i]->GetName();
             if (name == "Vz_VS_phi_e_AC_1e_cut")
                 insert_index_e = i + 1;
-            else if (name == "Vz_VS_phi_pimFD_AC_1e_cut")
-                insert_index_pimFD = i + 1;
+            else if (name == "Vz_VS_phi_pipFD_AC_1e_cut")
+                insert_index_pipFD = i + 1;
             else if (name == "Vz_VS_phi_pimFD_AC_1e_cut")
                 insert_index_pimFD = i + 1;
         }
 
         std::vector<std::pair<int, TGraph *>> graph_inserts = {
-            {insert_index_e, FittedParametersGraph_e}, {insert_index_pimFD, FittedParametersGraph_pimFD}, {insert_index_pimFD, FittedParametersGraph_pimFD}};
+            {insert_index_e, FittedParametersGraph_e}, {insert_index_pipFD, FittedParametersGraph_pipFD}, {insert_index_pimFD, FittedParametersGraph_pimFD}};
 
         for (const auto &[index, graph] : graph_inserts) {
             HistoList.insert(HistoList.begin() + index, graph);
@@ -4659,7 +4659,7 @@ void HipoLooper() {
             titles.SetTextSize(0.05);
             titles.DrawLatex(0.05, 0.90, "Beam position parameters for corrected Vz");
             draw_beam_info("e", "e", 0.70);
-            draw_beam_info("pimFD", "#pi^{+}FD", 0.55);
+            draw_beam_info("pipFD", "#pi^{+}FD", 0.55);
             draw_beam_info("pimFD", "#pi^{-}FD", 0.40);
 
             myText->Print(fileName, "pdf Title: Parameters");
@@ -4909,6 +4909,41 @@ void HipoLooper() {
         compare({h_corrected_Vz_e_AC_zoomin_sector1_1e_cut, h_corrected_Vz_e_AC_zoomin_sector2_1e_cut, h_corrected_Vz_e_AC_zoomin_sector3_1e_cut, h_corrected_Vz_e_AC_zoomin_sector4_1e_cut,
                  h_corrected_Vz_e_AC_zoomin_sector5_1e_cut, h_corrected_Vz_e_AC_zoomin_sector6_1e_cut},
                 "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut, h_Vz_pipFD_BC_sector5_1e_cut,
+                 h_Vz_pipFD_BC_sector6_1e_cut},
+                "Vz_pipFD_BC_BySector_1e_cut");
+        compare({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
+                 h_Vz_pipFD_AC_sector6_1e_cut},
+                "Vz_pipFD_AC_BySector_1e_cut");
+        // compare({h_corrected_Vz_pipFD_BC_sector1_1e_cut, h_corrected_Vz_pipFD_BC_sector2_1e_cut, h_corrected_Vz_pipFD_BC_sector3_1e_cut,
+        //          h_corrected_Vz_pipFD_BC_sector4_1e_cut, h_corrected_Vz_pipFD_BC_sector5_1e_cut, h_corrected_Vz_pipFD_BC_sector6_1e_cut}, "corrected_Vz_pipFD_BC_BySector_1e_cut");
+        compare({h_corrected_Vz_pipFD_AC_sector1_1e_cut, h_corrected_Vz_pipFD_AC_sector2_1e_cut, h_corrected_Vz_pipFD_AC_sector3_1e_cut, h_corrected_Vz_pipFD_AC_sector4_1e_cut,
+                 h_corrected_Vz_pipFD_AC_sector5_1e_cut, h_corrected_Vz_pipFD_AC_sector6_1e_cut},
+                "corrected_Vz_pipFD_AC_BySector_1e_cut");
+        compare({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut, h_dVz_pipFD_BC_sector5_1e_cut,
+                 h_dVz_pipFD_BC_sector6_1e_cut},
+                "DeltaVz_pipFD_BC_BySector_1e_cut");
+        compare({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut, h_dVz_pipFD_AC_sector5_1e_cut,
+                 h_dVz_pipFD_AC_sector6_1e_cut},
+                "DeltaVz_pipFD_AC_BySector_1e_cut");
+        compare({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut, h_Vz_pipFD_BC_zoomin_sector4_1e_cut,
+                 h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
+                "Vz_pipFD_BC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
+                 h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                "Vz_pipFD_AC_zoomin_BySector_1e_cut");
+        // compare({h_corrected_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector3_1e_cut,
+        //          h_corrected_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector6_1e_cut},
+        //          "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
+        compare({h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut,
+                 h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
+        compare({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut, h_dVz_pipFD_BC_zoomin_sector4_1e_cut,
+                 h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
+                "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
+        compare({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut, h_dVz_pipFD_AC_zoomin_sector4_1e_cut,
+                 h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
+                "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
         compare({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut,
                  h_Vz_pimFD_BC_sector6_1e_cut},
                 "Vz_pimFD_BC_BySector_1e_cut");
@@ -4944,47 +4979,12 @@ void HipoLooper() {
         compare({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut, h_dVz_pimFD_AC_zoomin_sector4_1e_cut,
                  h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
                 "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
-        compare({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut,
-                 h_Vz_pimFD_BC_sector6_1e_cut},
-                "Vz_pimFD_BC_BySector_1e_cut");
-        compare({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut,
-                 h_Vz_pimFD_AC_sector6_1e_cut},
-                "Vz_pimFD_AC_BySector_1e_cut");
-        // compare({h_corrected_Vz_pimFD_BC_sector1_1e_cut, h_corrected_Vz_pimFD_BC_sector2_1e_cut, h_corrected_Vz_pimFD_BC_sector3_1e_cut,
-        //          h_corrected_Vz_pimFD_BC_sector4_1e_cut, h_corrected_Vz_pimFD_BC_sector5_1e_cut, h_corrected_Vz_pimFD_BC_sector6_1e_cut}, "corrected_Vz_pimFD_BC_BySector_1e_cut");
-        compare({h_corrected_Vz_pimFD_AC_sector1_1e_cut, h_corrected_Vz_pimFD_AC_sector2_1e_cut, h_corrected_Vz_pimFD_AC_sector3_1e_cut, h_corrected_Vz_pimFD_AC_sector4_1e_cut,
-                 h_corrected_Vz_pimFD_AC_sector5_1e_cut, h_corrected_Vz_pimFD_AC_sector6_1e_cut},
-                "corrected_Vz_pimFD_AC_BySector_1e_cut");
-        compare({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut, h_dVz_pimFD_BC_sector5_1e_cut,
-                 h_dVz_pimFD_BC_sector6_1e_cut},
-                "DeltaVz_pimFD_BC_BySector_1e_cut");
-        compare({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut, h_dVz_pimFD_AC_sector5_1e_cut,
-                 h_dVz_pimFD_AC_sector6_1e_cut},
-                "DeltaVz_pimFD_AC_BySector_1e_cut");
-        compare({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut, h_Vz_pimFD_BC_zoomin_sector4_1e_cut,
-                 h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                "Vz_pimFD_BC_zoomin_BySector_1e_cut");
-        compare({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
-                 h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                "Vz_pimFD_AC_zoomin_BySector_1e_cut");
-        // compare({h_corrected_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector3_1e_cut,
-        //          h_corrected_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-        //          "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
-        compare({h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut,
-                 h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
-        compare({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut, h_dVz_pimFD_BC_zoomin_sector4_1e_cut,
-                 h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
-                "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
-        compare({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut, h_dVz_pimFD_AC_zoomin_sector4_1e_cut,
-                 h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
-                "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
-        compare({h_Vz_pimFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, "Vz_pions_FD_BC_1e_cut");
-        compare({h_Vz_pimFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, "Vz_pions_FD_AC_1e_cut");
-        compare({h_Vz_pimFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, "Vz_pions_FD_BC_zoomin_1e_cut");
-        compare({h_Vz_pimFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, "Vz_pions_FD_AC_zoomin_1e_cut");
-        compare({h_dVz_pimFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, "DeltaVz_pions_FD_BC_1e_cut");
-        compare({h_dVz_pimFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, "DeltaVz_pions_FD_AC_1e_cut");
+        compare({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, "Vz_pions_FD_BC_1e_cut");
+        compare({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, "Vz_pions_FD_AC_1e_cut");
+        compare({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, "Vz_pions_FD_BC_zoomin_1e_cut");
+        compare({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, "Vz_pions_FD_AC_zoomin_1e_cut");
+        compare({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, "DeltaVz_pions_FD_BC_1e_cut");
+        compare({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, "DeltaVz_pions_FD_AC_1e_cut");
         compare({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, "Vz_pions_CD_BC_1e_cut");
         compare({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, "Vz_pions_CD_AC_1e_cut");
         compare({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, "Vz_pions_CD_BC_zoomin_1e_cut");
