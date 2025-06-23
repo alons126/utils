@@ -15,9 +15,11 @@
 #include <TStyle.h>
 #include <TTree.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <iostream>
+#include <regex>
 #include <typeinfo>
 #include <vector>
 
@@ -52,12 +54,12 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_6_full";  // General status of the analysis
+    std::string General_status = "after_sampling_test_7";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
     int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -4568,8 +4570,45 @@ void HipoLooper() {
         std::cout << "\033[33m" << "\n\nExtracting Vz correction parameters..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
-        // Reorder hsPlots plots
+        // Sort hsPlots plots
         /////////////////////////////////////////////////////
+
+        // Helper lambda to sort histograms by theta slice start and then by prefix for consistent ordering.
+        std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject *a, TObject *b) {
+            // Lambda to extract the "slice_from" value from the histogram name using regex.
+            auto extractSliceStart = [](const std::string &name) -> double {
+                // The regex matches patterns like "slice_from_<number>_to_<number>"
+                std::regex sliceRegex(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_([-+]?[0-9]*\.?[0-9]+))");  // Regex to find slice start/end numbers
+                std::smatch match;
+                if (std::regex_search(name, match, sliceRegex)) {
+                    // If match, convert the first captured group ("from" value) to double
+                    return std::stod(match[1]);  // "from" value
+                }
+                // If not matched, return a large number so unmatched names are sorted at the end
+                return 1e9;  // put unmatched names at the end
+            };
+
+            // Lambda to extract the prefix before the slice info for secondary sorting.
+            auto extractPrefix = [](const std::string &name) -> std::string {
+                // Find where the "_slice_from_" substring starts
+                std::size_t pos = name.find("_slice_from_");
+                // If found, return the substring before it; otherwise, return the whole name
+                return (pos != std::string::npos) ? name.substr(0, pos) : name;
+            };
+
+            // Get the names of the two objects to compare
+            std::string nameA = a->GetName();
+            std::string nameB = b->GetName();
+
+            // Use extractSliceStart to get the numeric start value for each histogram name
+            double sliceA = extractSliceStart(nameA);
+            double sliceB = extractSliceStart(nameB);
+
+            // Primary sort: by slice start value (numerically ascending)
+            if (sliceA != sliceB) return sliceA < sliceB;
+            // Secondary sort: by prefix (alphabetically) if slices are equal
+            return extractPrefix(nameA) < extractPrefix(nameB);
+        });
 
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
