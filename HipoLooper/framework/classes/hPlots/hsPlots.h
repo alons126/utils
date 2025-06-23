@@ -59,7 +59,7 @@ class hsPlots {
 
     // GetSlicedHistoList function --------------------------------------------------------------------------------------------------------------------------------------
     // Returns a copy of the vector of histogram pointers. Original ownership is not transferred.
-    std::vector<TH1*> GetSlicedHistoList() const;
+    std::vector<TObject*> GetSlicedHistoList() const;
 
     // DrawEmptyHistogramNotice function --------------------------------------------------------------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ class hsPlots {
     // Pointer to externally managed vector of histograms.
     // Each histogram corresponds to a slice defined in SliceLimits.
     // The external owner is responsible for memory deallocation.
-    std::vector<TH1*>* SlicedHistoListPtr;
+    std::vector<TObject*>* SlicedHistoListPtr;
 
     // histoType: type of histogram (TH1D or TH2D)
     // This is used to determine how to create the histograms in the constructor

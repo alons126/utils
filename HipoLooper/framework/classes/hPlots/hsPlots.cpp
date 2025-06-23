@@ -336,7 +336,7 @@ void hsPlots::SaveHistograms(const std::string& outputDir, const std::string& ba
 // Pointer to externally managed vector of histograms.
 // Each histogram corresponds to a slice defined in SliceLimits.
 // The external owner is responsible for memory deallocation.
-std::vector<TH1*> hsPlots::GetSlicedHistoList() const {
+std::vector<TObject*> hsPlots::GetSlicedHistoList() const {
     // Returns a copy of the vector of histogram pointers. Original ownership is not transferred.
     return *SlicedHistoListPtr;
 }
