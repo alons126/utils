@@ -4605,7 +4605,7 @@ void HipoLooper() {
                 if (name.find("Vz_") != std::string::npos) return 0;
                 return 9;
             };
-            
+
             // Extract sector number from histogram name.
             // Returns 0 for non-sector histograms (to sort them first).
             auto getSector = [](const std::string &name) -> int {
@@ -4993,7 +4993,7 @@ void HipoLooper() {
                     myCanvas->cd()->SetTopMargin(0.14);
 
                     TPaveStats *stats = (TPaveStats *)((TH1 *)TempHistoList[i])->FindObject("stats");
-                    if (stats && FirstStatboxOffset) {
+                    if (stats) {
                         stats->SetX1NDC(stats->GetX1NDC());
                         stats->SetY1NDC(stats->GetY1NDC() - 0.05);
                         stats->SetX2NDC(stats->GetX2NDC());
