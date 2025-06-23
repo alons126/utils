@@ -41,6 +41,7 @@ namespace bt = basic_tools;
 namespace am = analysis_math;
 namespace raf = reco_analysis_functions;
 namespace hf = histogram_functions;
+namespace vc = variable_correctors;
 
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
@@ -51,12 +52,12 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_4_full";  // General status of the analysis
+    std::string General_status = "after_sampling_test_5";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -69,12 +70,12 @@ void HipoLooper() {
 
     // Data samples:
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
     InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
     // // Simulation samples:
 
@@ -4417,8 +4418,16 @@ void HipoLooper() {
             if (fitLimits.size() == 0) {
                 // If no limits are provided, use the histogram's peak center
                 double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
-                fitMin = -std::fabs(peakCenter * 1.1);
-                fitMax = -std::fabs(peakCenter * 0.9);
+
+                if (peakCenter < 0) {
+                    // If peak is negative, set limits accordingly
+                    fitMin = -std::fabs(peakCenter * 1.1);
+                    fitMax = -std::fabs(peakCenter * 0.9);
+                } else {
+                    // If peak is positive, set limits accordingly
+                    fitMin = std::fabs(peakCenter * 0.9);
+                    fitMax = std::fabs(peakCenter * 1.1);
+                }
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
                 fitMax = fitLimits[1];
@@ -4439,19 +4448,39 @@ void HipoLooper() {
             return fit->GetParameter(1);  // Return fitted mean
         };
 
-        // Usage:
-        double peak_sector1 = fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut);
-        double peak_sector2 = fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut);
-        double peak_sector3 = fit_peak_gaussian(h_Vz_e_AC_sector3_1e_cut);
-        double peak_sector4 = fit_peak_gaussian(h_Vz_e_AC_sector4_1e_cut);
-        double peak_sector5 = fit_peak_gaussian(h_Vz_e_AC_sector5_1e_cut);
-        double peak_sector6 = fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut);
+        // Helper lambda to extract peak centers from histograms
+        auto get_peak_centers = [&](std::vector<TH1D *> hists, bool fit) {
+            std::vector<double> centers;
+            for (auto *h : hists) { centers.push_back(fit ? fit_peak_gaussian(h) : h->GetBinCenter(h->GetMaximumBin())); }
+            return centers;
+        };
 
-        std::vector<double> Vz_e_peaks_BySector = {
-            h_Vz_e_AC_sector1_1e_cut->GetBinCenter(h_Vz_e_AC_sector1_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector2_1e_cut->GetBinCenter(h_Vz_e_AC_sector2_1e_cut->GetMaximumBin()),
-            h_Vz_e_AC_sector3_1e_cut->GetBinCenter(h_Vz_e_AC_sector3_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector4_1e_cut->GetBinCenter(h_Vz_e_AC_sector4_1e_cut->GetMaximumBin()),
-            h_Vz_e_AC_sector5_1e_cut->GetBinCenter(h_Vz_e_AC_sector5_1e_cut->GetMaximumBin()), h_Vz_e_AC_sector6_1e_cut->GetBinCenter(h_Vz_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A, phi_beam, Z0, FittedParametersGraph] = am::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector);
+        // Helper lambda to extract and fit peaks and return fit results
+        auto extract_and_fit = [&](const std::string &label, const std::string &Ebeam, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz,
+                                   bool fit_phi) -> std::tuple<double, double, double, TGraph *> {
+            auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
+            auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
+            return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
+        };
+
+        // Usage:
+        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
+            "e", Ebeam_status_1, {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
+            {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true, false);
+
+        auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] = extract_and_fit("#pi^{+}FD", Ebeam_status_1,
+                                                                                                {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut,
+                                                                                                 h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
+                                                                                                {h_phi_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector3_1e_cut,
+                                                                                                 h_phi_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector5_1e_cut, h_phi_pipFD_AC_sector6_1e_cut},
+                                                                                                true, true);
+
+        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] = extract_and_fit("#pi^{-}FD", Ebeam_status_1,
+                                                                                                {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut,
+                                                                                                 h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
+                                                                                                {h_phi_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector3_1e_cut,
+                                                                                                 h_phi_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector5_1e_cut, h_phi_pimFD_AC_sector6_1e_cut},
+                                                                                                true, true);
 #pragma endregion
 
 #pragma region Plotting and saving histograms
@@ -4460,54 +4489,55 @@ void HipoLooper() {
         /////////////////////////////////////////////////////
         // Organize histograms
         /////////////////////////////////////////////////////
-        int insert_index = 0;
 
-        for (int i = 0; i < HistoList.size(); i++) {
-            if (HistoList[i]->InheritsFrom("TH1")) {
-                auto *h1 = (TH1 *)HistoList[i];
-                h1->Sumw2();
-                h1->SetMinimum(0);
-                h1->SetLineWidth(2);
-                h1->SetLineColor(kRed);
-            }
+        // Helper lambda for TH1 styling
+        auto style_th1 = [](TH1 *h) {
+            h->Sumw2();
+            h->SetMinimum(0);
+            h->SetLineWidth(2);
+            h->SetLineColor(kRed);
+        };
 
-            if (HistoList[i]->InheritsFrom("TH1") || HistoList[i]->InheritsFrom("TH2")) {
-                auto *h = (TH1 *)HistoList[i];
+        // Helper lambda for centering axis titles
+        auto center_titles = [](TObject *obj) {
+            if (obj->InheritsFrom("TH1") || obj->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)obj;
                 h->GetXaxis()->CenterTitle();
                 h->GetYaxis()->CenterTitle();
-            } else if (HistoList[i]->InheritsFrom("TGraph")) {
-                auto *g = (TGraph *)HistoList[i];
+            } else if (obj->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)obj;
                 g->GetXaxis()->CenterTitle();
                 g->GetYaxis()->CenterTitle();
             }
+        };
 
-            if (std::string(HistoList[i]->GetName()) == "Vz_VS_phi_e_AC_1e_cut") { insert_index = i + 1; }
+        int insert_index_e = 0, insert_index_pipFD = 0, insert_index_pimFD = 0;
+
+        for (size_t i = 0; i < HistoList.size(); i++) {
+            if (HistoList[i]->InheritsFrom("TH1")) { style_th1((TH1 *)HistoList[i]); }
+
+            center_titles(HistoList[i]);
+
+            std::string name = HistoList[i]->GetName();
+            if (name == "Vz_VS_phi_e_AC_1e_cut")
+                insert_index_e = i + 1;
+            else if (name == "Vz_VS_phi_pipFD_AC_1e_cut")
+                insert_index_pipFD = i + 1;
+            else if (name == "Vz_VS_phi_pimFD_AC_1e_cut")
+                insert_index_pimFD = i + 1;
         }
 
-        HistoList.insert(HistoList.begin() + insert_index, FittedParametersGraph);
-        FittedParametersGraph->GetXaxis()->CenterTitle();
-        FittedParametersGraph->GetYaxis()->CenterTitle();
+        std::vector<std::pair<int, TGraph *>> graph_inserts = {
+            {insert_index_e, FittedParametersGraph_e}, {insert_index_pipFD, FittedParametersGraph_pipFD}, {insert_index_pimFD, FittedParametersGraph_pimFD}};
 
-        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) {
-            if (HistoList_ByThetaSlices[i]->InheritsFrom("TH1")) {
-                auto *h1 = (TH1 *)HistoList_ByThetaSlices[i];
-                h1->Sumw2();
-                h1->SetMinimum(0);
-                h1->SetLineWidth(2);
-                h1->SetLineColor(kRed);
-            }
+        for (const auto &[index, graph] : graph_inserts) {
+            HistoList.insert(HistoList.begin() + index, graph);
+            center_titles(graph);
+        }
 
-            if (HistoList_ByThetaSlices[i]->InheritsFrom("TH1") || HistoList_ByThetaSlices[i]->InheritsFrom("TH2")) {
-                auto *h = (TH1 *)HistoList_ByThetaSlices[i];
-                h->GetXaxis()->CenterTitle();
-                h->GetYaxis()->CenterTitle();
-            } else if (HistoList_ByThetaSlices[i]->InheritsFrom("TGraph")) {
-                auto *g = (TGraph *)HistoList_ByThetaSlices[i];
-                g->GetXaxis()->CenterTitle();
-                g->GetYaxis()->CenterTitle();
-            }
-
-            // if (std::string(HistoList_ByThetaSlices[i]->GetName()) == "Vz_VS_phi_e_AC_1e_cut") { insert_index = i + 1; }
+        for (auto *obj : HistoList_ByThetaSlices) {
+            if (obj->InheritsFrom("TH1")) { style_th1((TH1 *)obj); }
+            center_titles(obj);
         }
 
         /////////////////////////////////////////////////////
@@ -4534,6 +4564,24 @@ void HipoLooper() {
             myText->SaveAs(fileName);
             sprintf(fileName, "%s", PDF_fileName.c_str());
 
+            // Helper lambda for drawing title blocks
+            auto draw_title_block = [&](const std::string &title, const std::vector<std::string> &lines, double startY, double stepY) {
+                titles.DrawLatex(0.05, startY, title.c_str());
+                for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.05 + (i == 0 ? 0.05 : 0.10), startY - (i + 1) * stepY, lines[i].c_str()); }
+            };
+
+            // Helper lambda for drawing and beam info
+            auto draw_beam_info = [&](const std::string &particle, const std::string &label, double yTop) {
+                std::string Vx = IsData ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).first, 4) : "0";
+                std::string Vy = IsData ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).second, 4) : "0";
+                std::string r = bt::ToStringWithPrecision(compute_r(Beam_Coordinates, particle));
+                std::string phi = bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, particle) * 180 / am::pi);
+
+                text.DrawLatex(0.05, yTop, label.c_str());
+                text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + label + "},V_{y}^{" + label + "}) = (" + Vx + " cm, " + Vy + " cm)}").c_str());
+                text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + label + "}, #phi_{beam}^{" + label + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
+            };
+
             // First page:
             myText->cd();
             titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
@@ -4541,67 +4589,36 @@ void HipoLooper() {
             text.DrawLatex(0.05, 0.70, ("Plots from (e,e') events in: #font[42]{" + TempCodeRun_status + "}").c_str());
 
             if (TempIsData) {
-                text.DrawLatex(0.05, 0.65, ("TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}").c_str());
-                text.DrawLatex(0.05, 0.60, "TempOutFolderName:");
-                text.DrawLatex(0.10, 0.55, ("#font[42]{" + TempOutFolderName + "}").c_str());
+                draw_title_block("", {"TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}", "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"}, 0.65, 0.05);
             } else {
-                text.DrawLatex(0.05, 0.65, ("TempBaseDir: #font[42]{" + TempBaseDir + "}").c_str());
-                text.DrawLatex(0.05, 0.60, ("TempInputFiles: #font[42]{TempBaseDir + " + TempInputFiles.at(Tempsample).substr(TempBaseDir.length()) + "}").c_str());
-                text.DrawLatex(0.05, 0.55, "TempOutFolderName:");
-                text.DrawLatex(0.10, 0.50, ("#font[42]{" + TempOutFolderName + "}").c_str());
+                draw_title_block(
+                    "",
+                    {"TempBaseDir: #font[42]{" + TempBaseDir + "}", "TempInputFiles: #font[42]{TempBaseDir + " + TempInputFiles.at(Tempsample).substr(TempBaseDir.length()) + "}",
+                     "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"},
+                    0.65, 0.05);
             }
 
-            if (ApplyLimiter) {
-                text.DrawLatex(0.05, 0.45, ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + ", Limiter = " + bt::ToStringWithPrecision(Limiter, 0) + "):").c_str());
-            } else {
-                text.DrawLatex(0.05, 0.45, ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + "):").c_str());
-            }
-
-            text.DrawLatex(0.10, 0.40, ("Total #(events):            #font[42]{" + std::to_string(TempNumOfEvents) + "}").c_str());
-            text.DrawLatex(0.10, 0.35, ("#(Events) with any e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wAny_e_det) + "}").c_str());
-            text.DrawLatex(0.10, 0.30,
-                           ("#(Events) with one e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wOne_e_det) + " (" +
-                            bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e_det / TempNumOfEvents_wAny_e_det), 2) + "%)}")
-                               .c_str());
-            text.DrawLatex(0.10, 0.25, ("#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}").c_str());
-            text.DrawLatex(0.10, 0.20,
-                           ("#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
-                            bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}")
-                               .c_str());
+            text.DrawLatex(0.05, 0.45,
+                           ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + (ApplyLimiter ? ", Limiter = " + bt::ToStringWithPrecision(Limiter, 0) : "") + "):").c_str());
+            draw_title_block(
+                "",
+                {"Total #(events):            #font[42]{" + std::to_string(TempNumOfEvents) + "}", "#(Events) with any e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wAny_e_det) + "}",
+                 "#(Events) with one e_det:  #font[42]{" + std::to_string(TempNumOfEvents_wOne_e_det) + " (" +
+                     bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e_det / TempNumOfEvents_wAny_e_det), 2) + "%)}",
+                 "#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}",
+                 "#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
+                     bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}"},
+                0.40, 0.05);
 
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
 
             // Second page:
-            std::string Vx_e_str = (IsData) ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_e").first, 4) : "0";
-            std::string Vy_e_str = (IsData) ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_e").second, 4) : "0";
-
-            std::string Vx_pipFD_str = (IsData) ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pipFD").first, 4) : "0";
-            std::string Vy_pipFD_str = (IsData) ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pipFD").second, 4) : "0";
-
-            std::string Vx_pimFD_str = (IsData) ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pimFD").first, 4) : "0";
-            std::string Vy_pimFD_str = (IsData) ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_pimFD").second, 4) : "0";
-
             titles.SetTextSize(0.05);
             titles.DrawLatex(0.05, 0.90, "Beam position parameters for corrected Vz");
-            text.DrawLatex(0.05, 0.70, "e^{-}:");
-            text.DrawLatex(0.10, 0.65, ("Cartesian: #font[42]{(V_{x}^{e},V_{y}^{e}) = (" + Vx_e_str + " cm, " + Vy_e_str + " cm)}").c_str());
-            text.DrawLatex(0.10, 0.60,
-                           ("Polar: #font[42]{(r_{e}, #phi_{beam}^{e}) = (" + bt::ToStringWithPrecision(compute_r(Beam_Coordinates, "e")) + " cm, " +
-                            bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, "e") * 180 / am::pi) + "#circ)}")
-                               .c_str());
-            text.DrawLatex(0.05, 0.55, "#pi^{+}FD:");
-            text.DrawLatex(0.10, 0.50, ("Cartesian: #font[42]{(V_{x}^{#pi^{+}FD},V_{y}^{#pi^{+}FD}) = (" + Vx_pipFD_str + " cm, " + Vy_pipFD_str + " cm)}").c_str());
-            text.DrawLatex(0.10, 0.45,
-                           ("Polar: #font[42]{(r_{#pi^{+}FD}, #phi_{beam}^{#pi^{+}FD}) = (" + bt::ToStringWithPrecision(compute_r(Beam_Coordinates, "pipFD")) + " cm, " +
-                            bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, "pipFD") * 180 / am::pi) + "#circ)}")
-                               .c_str());
-            text.DrawLatex(0.05, 0.40, "#pi^{-}FD:");
-            text.DrawLatex(0.10, 0.35, ("Cartesian: #font[42]{(V_{x}^{#pi^{-}FD},V_{y}^{#pi^{-}FD}) = (" + Vx_pimFD_str + " cm, " + Vy_pimFD_str + " cm)}").c_str());
-            text.DrawLatex(0.10, 0.30,
-                           ("Polar: #font[42]{(r_{#pi^{-}FD}, #phi_{beam}^{#pi^{-}FD}) = (" + bt::ToStringWithPrecision(compute_r(Beam_Coordinates, "pimFD")) + " cm, " +
-                            bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, "pimFD") * 180 / am::pi) + "#circ)}")
-                               .c_str());
+            draw_beam_info("e", "e", 0.70);
+            draw_beam_info("pipFD", "#pi^{+}FD", 0.55);
+            draw_beam_info("pimFD", "#pi^{-}FD", 0.40);
 
             myText->Print(fileName, "pdf Title: Parameters");
             myText->Clear();
@@ -4611,75 +4628,29 @@ void HipoLooper() {
             // ...
             // (Paste all remaining code from first_electron through ReassignPDFBookmarks here)
 
-            bool first_electron = true;
-            bool first_electron_sector1 = true, first_electron_sector2 = true, first_electron_sector3 = true, first_electron_sector4 = true, first_electron_sector5 = true,
-                 first_electron_sector6 = true;
+            // Structured first flags for particles and sectors
+            std::map<std::string, bool> first_flags_scalar = {{"{e}", true}, {"{#pi^{+}FD}", true}, {"{#pi^{-}FD}", true}, {"{#pi^{+}CD}", true}, {"{#pi^{-}CD}", true}};
+            std::map<std::string, std::array<bool, 6>> first_flags_sector;
 
-            bool first_piplusFD = true;
-            bool first_piplusFD_sector1 = true, first_piplusFD_sector2 = true, first_piplusFD_sector3 = true, first_piplusFD_sector4 = true, first_piplusFD_sector5 = true,
-                 first_piplusFD_sector6 = true;
+            for (auto &[particle, _] : first_flags_scalar) { first_flags_sector[particle] = {true, true, true, true, true, true}; }
 
-            bool first_piminusFD = true;
-            bool first_piminusFD_sector1 = true, first_piminusFD_sector2 = true, first_piminusFD_sector3 = true, first_piminusFD_sector4 = true, first_piminusFD_sector5 = true,
-                 first_piminusFD_sector6 = true;
+            std::map<std::string, bool *> first_flags;
 
-            bool first_piplusCD = true;
-            bool first_piplusCD_sector1 = true, first_piplusCD_sector2 = true, first_piplusCD_sector3 = true, first_piplusCD_sector4 = true, first_piplusCD_sector5 = true,
-                 first_piplusCD_sector6 = true;
+            for (auto &[particle, flag] : first_flags_scalar) { first_flags[particle] = &flag; }
 
-            bool first_piminusCD = true;
-            bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
-                 first_piminusCD_sector6 = true;
+            std::map<std::string, std::map<int, bool *>> sector_flags;
+
+            for (auto &[particle, sector_array] : first_flags_sector) {
+                for (int sec = 0; sec < 6; ++sec) { sector_flags[particle][sec + 1] = &sector_array[sec]; }
+            }
+
+            std::map<std::string, std::string> particle_labels = {
+                {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
             int plot_counter = 2;
-
             double yOffset = 0.075;  // Offset for the y position of the text
 
             for (int i = 0; i < TempHistoList.size(); i++) {
-                // Maps to hold first-time flags
-                std::map<std::string, bool *> first_flags = {
-                    {"{e}", &first_electron}, {"{#pi^{+}FD}", &first_piplusFD}, {"{#pi^{-}FD}", &first_piminusFD}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
-
-                std::map<std::string, std::string> particle_labels = {
-                    {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
-
-                // Maps of sector flags (assumes these variables already exist)
-                std::map<std::string, std::map<int, bool *>> sector_flags = {{"{e}",
-                                                                              {{1, &first_electron_sector1},
-                                                                               {2, &first_electron_sector2},
-                                                                               {3, &first_electron_sector3},
-                                                                               {4, &first_electron_sector4},
-                                                                               {5, &first_electron_sector5},
-                                                                               {6, &first_electron_sector6}}},
-                                                                             {"{#pi^{+}FD}",
-                                                                              {{1, &first_piplusFD_sector1},
-                                                                               {2, &first_piplusFD_sector2},
-                                                                               {3, &first_piplusFD_sector3},
-                                                                               {4, &first_piplusFD_sector4},
-                                                                               {5, &first_piplusFD_sector5},
-                                                                               {6, &first_piplusFD_sector6}}},
-                                                                             {"{#pi^{-}FD}",
-                                                                              {{1, &first_piminusFD_sector1},
-                                                                               {2, &first_piminusFD_sector2},
-                                                                               {3, &first_piminusFD_sector3},
-                                                                               {4, &first_piminusFD_sector4},
-                                                                               {5, &first_piminusFD_sector5},
-                                                                               {6, &first_piminusFD_sector6}}},
-                                                                             {"{#pi^{+}CD}",
-                                                                              {{1, &first_piplusCD_sector1},
-                                                                               {2, &first_piplusCD_sector2},
-                                                                               {3, &first_piplusCD_sector3},
-                                                                               {4, &first_piplusCD_sector4},
-                                                                               {5, &first_piplusCD_sector5},
-                                                                               {6, &first_piplusCD_sector6}}},
-                                                                             {"{#pi^{-}CD}",
-                                                                              {{1, &first_piminusCD_sector1},
-                                                                               {2, &first_piminusCD_sector2},
-                                                                               {3, &first_piminusCD_sector3},
-                                                                               {4, &first_piminusCD_sector4},
-                                                                               {5, &first_piminusCD_sector5},
-                                                                               {6, &first_piminusCD_sector6}}}};
-
                 std::string title = TempHistoList[i]->GetTitle();
 
                 for (const auto &[particle_key, label] : particle_labels) {
@@ -4854,211 +4825,128 @@ void HipoLooper() {
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
+        // Helper lambda for using the hf::CompareHistograms function
         int ComparisonNumber = 0;
+        auto compare = [&](const std::vector<TH1 *> &hists, const std::string &tag) {
+            ++ComparisonNumber;
+            hf::CompareHistograms(hists, OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + tag);
+        };
 
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut, h_SF_VS_Edep_PCAL_BC_sector4_1e_cut,
-                               h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_SF_VS_Edep_PCAL_AC_sector1_1e_cut, h_SF_VS_Edep_PCAL_AC_sector2_1e_cut, h_SF_VS_Edep_PCAL_AC_sector3_1e_cut, h_SF_VS_Edep_PCAL_AC_sector4_1e_cut,
-                               h_SF_VS_Edep_PCAL_AC_sector5_1e_cut, h_SF_VS_Edep_PCAL_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_Edep_PCAL_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_SF_VS_P_e_BC_sector1_1e_cut, h_SF_VS_P_e_BC_sector2_1e_cut, h_SF_VS_P_e_BC_sector3_1e_cut, h_SF_VS_P_e_BC_sector4_1e_cut, h_SF_VS_P_e_BC_sector5_1e_cut,
-                               h_SF_VS_P_e_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_SF_VS_P_e_AC_sector1_1e_cut, h_SF_VS_P_e_AC_sector2_1e_cut, h_SF_VS_P_e_AC_sector3_1e_cut, h_SF_VS_P_e_AC_sector4_1e_cut, h_SF_VS_P_e_AC_sector5_1e_cut,
-                               h_SF_VS_P_e_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "SF_VS_P_e_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_BySector_1e_cut");
-
-        // ++ComparisonNumber;
-        // hf::CompareHistograms({h_corrected_Vz_e_BC_sector1_1e_cut, h_corrected_Vz_e_BC_sector2_1e_cut, h_corrected_Vz_e_BC_sector3_1e_cut, h_corrected_Vz_e_BC_sector4_1e_cut,
-        //                        h_corrected_Vz_e_BC_sector5_1e_cut, h_corrected_Vz_e_BC_sector6_1e_cut},
-        //                       OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut, h_corrected_Vz_e_AC_sector4_1e_cut,
-                               h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_e_BC_zoomin_sector1_1e_cut, h_Vz_e_BC_zoomin_sector2_1e_cut, h_Vz_e_BC_zoomin_sector3_1e_cut, h_Vz_e_BC_zoomin_sector4_1e_cut,
-                               h_Vz_e_BC_zoomin_sector5_1e_cut, h_Vz_e_BC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut,
-                               h_Vz_e_AC_zoomin_sector5_1e_cut, h_Vz_e_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_e_AC_zoomin_BySector_1e_cut");
-
-        // ++ComparisonNumber;
-        // hf::CompareHistograms({h_corrected_Vz_e_BC_zoomin_sector1_1e_cut, h_corrected_Vz_e_BC_zoomin_sector2_1e_cut, h_corrected_Vz_e_BC_zoomin_sector3_1e_cut,
-        //                        h_corrected_Vz_e_BC_zoomin_sector4_1e_cut, h_corrected_Vz_e_BC_zoomin_sector5_1e_cut, h_corrected_Vz_e_BC_zoomin_sector6_1e_cut},
-        //                       OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_corrected_Vz_e_AC_zoomin_sector1_1e_cut, h_corrected_Vz_e_AC_zoomin_sector2_1e_cut, h_corrected_Vz_e_AC_zoomin_sector3_1e_cut,
-                               h_corrected_Vz_e_AC_zoomin_sector4_1e_cut, h_corrected_Vz_e_AC_zoomin_sector5_1e_cut, h_corrected_Vz_e_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut, h_Vz_pipFD_BC_sector5_1e_cut,
-                               h_Vz_pipFD_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
-                               h_Vz_pipFD_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_BySector_1e_cut");
-
-        // ++ComparisonNumber;
-        // hf::CompareHistograms({h_corrected_Vz_pipFD_BC_sector1_1e_cut, h_corrected_Vz_pipFD_BC_sector2_1e_cut, h_corrected_Vz_pipFD_BC_sector3_1e_cut,
-        // h_corrected_Vz_pipFD_BC_sector4_1e_cut,
-        //                        h_corrected_Vz_pipFD_BC_sector5_1e_cut, h_corrected_Vz_pipFD_BC_sector6_1e_cut},
-        //                       OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_corrected_Vz_pipFD_AC_sector1_1e_cut, h_corrected_Vz_pipFD_AC_sector2_1e_cut, h_corrected_Vz_pipFD_AC_sector3_1e_cut, h_corrected_Vz_pipFD_AC_sector4_1e_cut,
-                               h_corrected_Vz_pipFD_AC_sector5_1e_cut, h_corrected_Vz_pipFD_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut, h_dVz_pipFD_BC_sector5_1e_cut,
-                               h_dVz_pipFD_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut, h_dVz_pipFD_AC_sector5_1e_cut,
-                               h_dVz_pipFD_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut, h_Vz_pipFD_BC_zoomin_sector4_1e_cut,
-                               h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
-                               h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pipFD_AC_zoomin_BySector_1e_cut");
-
-        // ++ComparisonNumber;
-        // hf::CompareHistograms({h_corrected_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector3_1e_cut,
-        //                        h_corrected_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector6_1e_cut},
-        //                       OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut,
-                               h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut, h_dVz_pipFD_BC_zoomin_sector4_1e_cut,
-                               h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut, h_dVz_pipFD_AC_zoomin_sector4_1e_cut,
-                               h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut,
-                               h_Vz_pimFD_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut,
-                               h_Vz_pimFD_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_BySector_1e_cut");
-
-        // ++ComparisonNumber;
-        // hf::CompareHistograms({h_corrected_Vz_pimFD_BC_sector1_1e_cut, h_corrected_Vz_pimFD_BC_sector2_1e_cut, h_corrected_Vz_pimFD_BC_sector3_1e_cut,
-        // h_corrected_Vz_pimFD_BC_sector4_1e_cut,
-        //                        h_corrected_Vz_pimFD_BC_sector5_1e_cut, h_corrected_Vz_pimFD_BC_sector6_1e_cut},
-        //                       OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_corrected_Vz_pimFD_AC_sector1_1e_cut, h_corrected_Vz_pimFD_AC_sector2_1e_cut, h_corrected_Vz_pimFD_AC_sector3_1e_cut, h_corrected_Vz_pimFD_AC_sector4_1e_cut,
-                               h_corrected_Vz_pimFD_AC_sector5_1e_cut, h_corrected_Vz_pimFD_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut, h_dVz_pimFD_BC_sector5_1e_cut,
-                               h_dVz_pimFD_BC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut, h_dVz_pimFD_AC_sector5_1e_cut,
-                               h_dVz_pimFD_AC_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut, h_Vz_pimFD_BC_zoomin_sector4_1e_cut,
-                               h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
-                               h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pimFD_AC_zoomin_BySector_1e_cut");
-
-        // ++ComparisonNumber;
-        // hf::CompareHistograms({h_corrected_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector3_1e_cut,
-        //                        h_corrected_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector6_1e_cut},
-        //                       OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut,
-                               h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut, h_dVz_pimFD_BC_zoomin_sector4_1e_cut,
-                               h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut, h_dVz_pimFD_AC_zoomin_sector4_1e_cut,
-                               h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
-                              OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_BC_zoomin_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_FD_AC_zoomin_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_BC_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_FD_AC_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_BC_zoomin_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "Vz_pions_CD_AC_zoomin_1e_cut");
-
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_BC_1e_cut");
-        ++ComparisonNumber;
-        hf::CompareHistograms({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, OutputDir, "Histogram_Comparisons",
-                              bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + "DeltaVz_pions_CD_AC_1e_cut");
+        compare({h_SF_VS_Edep_PCAL_BC_sector1_1e_cut, h_SF_VS_Edep_PCAL_BC_sector2_1e_cut, h_SF_VS_Edep_PCAL_BC_sector3_1e_cut, h_SF_VS_Edep_PCAL_BC_sector4_1e_cut,
+                 h_SF_VS_Edep_PCAL_BC_sector5_1e_cut, h_SF_VS_Edep_PCAL_BC_sector6_1e_cut},
+                "SF_VS_Edep_PCAL_BC_BySector_1e_cut");
+        compare({h_SF_VS_Edep_PCAL_AC_sector1_1e_cut, h_SF_VS_Edep_PCAL_AC_sector2_1e_cut, h_SF_VS_Edep_PCAL_AC_sector3_1e_cut, h_SF_VS_Edep_PCAL_AC_sector4_1e_cut,
+                 h_SF_VS_Edep_PCAL_AC_sector5_1e_cut, h_SF_VS_Edep_PCAL_AC_sector6_1e_cut},
+                "SF_VS_Edep_PCAL_AC_BySector_1e_cut");
+        compare({h_SF_VS_P_e_BC_sector1_1e_cut, h_SF_VS_P_e_BC_sector2_1e_cut, h_SF_VS_P_e_BC_sector3_1e_cut, h_SF_VS_P_e_BC_sector4_1e_cut, h_SF_VS_P_e_BC_sector5_1e_cut,
+                 h_SF_VS_P_e_BC_sector6_1e_cut},
+                "SF_VS_P_e_BC_BySector_1e_cut");
+        compare({h_SF_VS_P_e_AC_sector1_1e_cut, h_SF_VS_P_e_AC_sector2_1e_cut, h_SF_VS_P_e_AC_sector3_1e_cut, h_SF_VS_P_e_AC_sector4_1e_cut, h_SF_VS_P_e_AC_sector5_1e_cut,
+                 h_SF_VS_P_e_AC_sector6_1e_cut},
+                "SF_VS_P_e_AC_BySector_1e_cut");
+        compare({h_Vz_e_BC_sector1_1e_cut, h_Vz_e_BC_sector2_1e_cut, h_Vz_e_BC_sector3_1e_cut, h_Vz_e_BC_sector4_1e_cut, h_Vz_e_BC_sector5_1e_cut, h_Vz_e_BC_sector6_1e_cut},
+                "Vz_e_BC_BySector_1e_cut");
+        compare({h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
+                "Vz_e_AC_BySector_1e_cut");
+        // compare({h_corrected_Vz_e_BC_sector1_1e_cut, h_corrected_Vz_e_BC_sector2_1e_cut, h_corrected_Vz_e_BC_sector3_1e_cut, h_corrected_Vz_e_BC_sector4_1e_cut,
+        //          h_corrected_Vz_e_BC_sector5_1e_cut, h_corrected_Vz_e_BC_sector6_1e_cut}, "corrected_Vz_e_BC_BySector_1e_cut");
+        compare({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut, h_corrected_Vz_e_AC_sector4_1e_cut,
+                 h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
+                "corrected_Vz_e_AC_BySector_1e_cut");
+        compare({h_Vz_e_BC_zoomin_sector1_1e_cut, h_Vz_e_BC_zoomin_sector2_1e_cut, h_Vz_e_BC_zoomin_sector3_1e_cut, h_Vz_e_BC_zoomin_sector4_1e_cut, h_Vz_e_BC_zoomin_sector5_1e_cut,
+                 h_Vz_e_BC_zoomin_sector6_1e_cut},
+                "Vz_e_BC_zoomin_BySector_1e_cut");
+        compare({h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut, h_Vz_e_AC_zoomin_sector5_1e_cut,
+                 h_Vz_e_AC_zoomin_sector6_1e_cut},
+                "Vz_e_AC_zoomin_BySector_1e_cut");
+        // compare({h_corrected_Vz_e_BC_zoomin_sector1_1e_cut, h_corrected_Vz_e_BC_zoomin_sector2_1e_cut, h_corrected_Vz_e_BC_zoomin_sector3_1e_cut,
+        //          h_corrected_Vz_e_BC_zoomin_sector4_1e_cut, h_corrected_Vz_e_BC_zoomin_sector5_1e_cut, h_corrected_Vz_e_BC_zoomin_sector6_1e_cut},
+        //          "corrected_Vz_e_BC_zoomin_BySector_1e_cut");
+        compare({h_corrected_Vz_e_AC_zoomin_sector1_1e_cut, h_corrected_Vz_e_AC_zoomin_sector2_1e_cut, h_corrected_Vz_e_AC_zoomin_sector3_1e_cut, h_corrected_Vz_e_AC_zoomin_sector4_1e_cut,
+                 h_corrected_Vz_e_AC_zoomin_sector5_1e_cut, h_corrected_Vz_e_AC_zoomin_sector6_1e_cut},
+                "corrected_Vz_e_AC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pipFD_BC_sector1_1e_cut, h_Vz_pipFD_BC_sector2_1e_cut, h_Vz_pipFD_BC_sector3_1e_cut, h_Vz_pipFD_BC_sector4_1e_cut, h_Vz_pipFD_BC_sector5_1e_cut,
+                 h_Vz_pipFD_BC_sector6_1e_cut},
+                "Vz_pipFD_BC_BySector_1e_cut");
+        compare({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
+                 h_Vz_pipFD_AC_sector6_1e_cut},
+                "Vz_pipFD_AC_BySector_1e_cut");
+        // compare({h_corrected_Vz_pipFD_BC_sector1_1e_cut, h_corrected_Vz_pipFD_BC_sector2_1e_cut, h_corrected_Vz_pipFD_BC_sector3_1e_cut,
+        //          h_corrected_Vz_pipFD_BC_sector4_1e_cut, h_corrected_Vz_pipFD_BC_sector5_1e_cut, h_corrected_Vz_pipFD_BC_sector6_1e_cut}, "corrected_Vz_pipFD_BC_BySector_1e_cut");
+        compare({h_corrected_Vz_pipFD_AC_sector1_1e_cut, h_corrected_Vz_pipFD_AC_sector2_1e_cut, h_corrected_Vz_pipFD_AC_sector3_1e_cut, h_corrected_Vz_pipFD_AC_sector4_1e_cut,
+                 h_corrected_Vz_pipFD_AC_sector5_1e_cut, h_corrected_Vz_pipFD_AC_sector6_1e_cut},
+                "corrected_Vz_pipFD_AC_BySector_1e_cut");
+        compare({h_dVz_pipFD_BC_sector1_1e_cut, h_dVz_pipFD_BC_sector2_1e_cut, h_dVz_pipFD_BC_sector3_1e_cut, h_dVz_pipFD_BC_sector4_1e_cut, h_dVz_pipFD_BC_sector5_1e_cut,
+                 h_dVz_pipFD_BC_sector6_1e_cut},
+                "DeltaVz_pipFD_BC_BySector_1e_cut");
+        compare({h_dVz_pipFD_AC_sector1_1e_cut, h_dVz_pipFD_AC_sector2_1e_cut, h_dVz_pipFD_AC_sector3_1e_cut, h_dVz_pipFD_AC_sector4_1e_cut, h_dVz_pipFD_AC_sector5_1e_cut,
+                 h_dVz_pipFD_AC_sector6_1e_cut},
+                "DeltaVz_pipFD_AC_BySector_1e_cut");
+        compare({h_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_Vz_pipFD_BC_zoomin_sector3_1e_cut, h_Vz_pipFD_BC_zoomin_sector4_1e_cut,
+                 h_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_Vz_pipFD_BC_zoomin_sector6_1e_cut},
+                "Vz_pipFD_BC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
+                 h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                "Vz_pipFD_AC_zoomin_BySector_1e_cut");
+        // compare({h_corrected_Vz_pipFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector3_1e_cut,
+        //          h_corrected_Vz_pipFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_BC_zoomin_sector6_1e_cut},
+        //          "corrected_Vz_pipFD_BC_zoomin_BySector_1e_cut");
+        compare({h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut,
+                 h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                "corrected_Vz_pipFD_AC_zoomin_BySector_1e_cut");
+        compare({h_dVz_pipFD_BC_zoomin_sector1_1e_cut, h_dVz_pipFD_BC_zoomin_sector2_1e_cut, h_dVz_pipFD_BC_zoomin_sector3_1e_cut, h_dVz_pipFD_BC_zoomin_sector4_1e_cut,
+                 h_dVz_pipFD_BC_zoomin_sector5_1e_cut, h_dVz_pipFD_BC_zoomin_sector6_1e_cut},
+                "DeltaVz_pipFD_BC_zoomin_BySector_1e_cut");
+        compare({h_dVz_pipFD_AC_zoomin_sector1_1e_cut, h_dVz_pipFD_AC_zoomin_sector2_1e_cut, h_dVz_pipFD_AC_zoomin_sector3_1e_cut, h_dVz_pipFD_AC_zoomin_sector4_1e_cut,
+                 h_dVz_pipFD_AC_zoomin_sector5_1e_cut, h_dVz_pipFD_AC_zoomin_sector6_1e_cut},
+                "DeltaVz_pipFD_AC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pimFD_BC_sector1_1e_cut, h_Vz_pimFD_BC_sector2_1e_cut, h_Vz_pimFD_BC_sector3_1e_cut, h_Vz_pimFD_BC_sector4_1e_cut, h_Vz_pimFD_BC_sector5_1e_cut,
+                 h_Vz_pimFD_BC_sector6_1e_cut},
+                "Vz_pimFD_BC_BySector_1e_cut");
+        compare({h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut,
+                 h_Vz_pimFD_AC_sector6_1e_cut},
+                "Vz_pimFD_AC_BySector_1e_cut");
+        // compare({h_corrected_Vz_pimFD_BC_sector1_1e_cut, h_corrected_Vz_pimFD_BC_sector2_1e_cut, h_corrected_Vz_pimFD_BC_sector3_1e_cut,
+        //          h_corrected_Vz_pimFD_BC_sector4_1e_cut, h_corrected_Vz_pimFD_BC_sector5_1e_cut, h_corrected_Vz_pimFD_BC_sector6_1e_cut}, "corrected_Vz_pimFD_BC_BySector_1e_cut");
+        compare({h_corrected_Vz_pimFD_AC_sector1_1e_cut, h_corrected_Vz_pimFD_AC_sector2_1e_cut, h_corrected_Vz_pimFD_AC_sector3_1e_cut, h_corrected_Vz_pimFD_AC_sector4_1e_cut,
+                 h_corrected_Vz_pimFD_AC_sector5_1e_cut, h_corrected_Vz_pimFD_AC_sector6_1e_cut},
+                "corrected_Vz_pimFD_AC_BySector_1e_cut");
+        compare({h_dVz_pimFD_BC_sector1_1e_cut, h_dVz_pimFD_BC_sector2_1e_cut, h_dVz_pimFD_BC_sector3_1e_cut, h_dVz_pimFD_BC_sector4_1e_cut, h_dVz_pimFD_BC_sector5_1e_cut,
+                 h_dVz_pimFD_BC_sector6_1e_cut},
+                "DeltaVz_pimFD_BC_BySector_1e_cut");
+        compare({h_dVz_pimFD_AC_sector1_1e_cut, h_dVz_pimFD_AC_sector2_1e_cut, h_dVz_pimFD_AC_sector3_1e_cut, h_dVz_pimFD_AC_sector4_1e_cut, h_dVz_pimFD_AC_sector5_1e_cut,
+                 h_dVz_pimFD_AC_sector6_1e_cut},
+                "DeltaVz_pimFD_AC_BySector_1e_cut");
+        compare({h_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_Vz_pimFD_BC_zoomin_sector3_1e_cut, h_Vz_pimFD_BC_zoomin_sector4_1e_cut,
+                 h_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_Vz_pimFD_BC_zoomin_sector6_1e_cut},
+                "Vz_pimFD_BC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
+                 h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
+                "Vz_pimFD_AC_zoomin_BySector_1e_cut");
+        // compare({h_corrected_Vz_pimFD_BC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector3_1e_cut,
+        //          h_corrected_Vz_pimFD_BC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_BC_zoomin_sector6_1e_cut},
+        //          "corrected_Vz_pimFD_BC_zoomin_BySector_1e_cut");
+        compare({h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut,
+                 h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut},
+                "corrected_Vz_pimFD_AC_zoomin_BySector_1e_cut");
+        compare({h_dVz_pimFD_BC_zoomin_sector1_1e_cut, h_dVz_pimFD_BC_zoomin_sector2_1e_cut, h_dVz_pimFD_BC_zoomin_sector3_1e_cut, h_dVz_pimFD_BC_zoomin_sector4_1e_cut,
+                 h_dVz_pimFD_BC_zoomin_sector5_1e_cut, h_dVz_pimFD_BC_zoomin_sector6_1e_cut},
+                "DeltaVz_pimFD_BC_zoomin_BySector_1e_cut");
+        compare({h_dVz_pimFD_AC_zoomin_sector1_1e_cut, h_dVz_pimFD_AC_zoomin_sector2_1e_cut, h_dVz_pimFD_AC_zoomin_sector3_1e_cut, h_dVz_pimFD_AC_zoomin_sector4_1e_cut,
+                 h_dVz_pimFD_AC_zoomin_sector5_1e_cut, h_dVz_pimFD_AC_zoomin_sector6_1e_cut},
+                "DeltaVz_pimFD_AC_zoomin_BySector_1e_cut");
+        compare({h_Vz_pipFD_BC_1e_cut, h_Vz_pimFD_BC_1e_cut}, "Vz_pions_FD_BC_1e_cut");
+        compare({h_Vz_pipFD_AC_1e_cut, h_Vz_pimFD_AC_1e_cut}, "Vz_pions_FD_AC_1e_cut");
+        compare({h_Vz_pipFD_BC_zoomin_1e_cut, h_Vz_pimFD_BC_zoomin_1e_cut}, "Vz_pions_FD_BC_zoomin_1e_cut");
+        compare({h_Vz_pipFD_AC_zoomin_1e_cut, h_Vz_pimFD_AC_zoomin_1e_cut}, "Vz_pions_FD_AC_zoomin_1e_cut");
+        compare({h_dVz_pipFD_BC_1e_cut, h_dVz_pimFD_BC_1e_cut}, "DeltaVz_pions_FD_BC_1e_cut");
+        compare({h_dVz_pipFD_AC_1e_cut, h_dVz_pimFD_AC_1e_cut}, "DeltaVz_pions_FD_AC_1e_cut");
+        compare({h_Vz_pipCD_BC_1e_cut, h_Vz_pimCD_BC_1e_cut}, "Vz_pions_CD_BC_1e_cut");
+        compare({h_Vz_pipCD_AC_1e_cut, h_Vz_pimCD_AC_1e_cut}, "Vz_pions_CD_AC_1e_cut");
+        compare({h_Vz_pipCD_BC_zoomin_1e_cut, h_Vz_pimCD_BC_zoomin_1e_cut}, "Vz_pions_CD_BC_zoomin_1e_cut");
+        compare({h_Vz_pipCD_AC_zoomin_1e_cut, h_Vz_pimCD_AC_zoomin_1e_cut}, "Vz_pions_CD_AC_zoomin_1e_cut");
+        compare({h_dVz_pipCD_BC_1e_cut, h_dVz_pimCD_BC_1e_cut}, "DeltaVz_pions_CD_BC_1e_cut");
+        compare({h_dVz_pipCD_AC_1e_cut, h_dVz_pimCD_AC_1e_cut}, "DeltaVz_pions_CD_AC_1e_cut");
 
         outFile->cd();
         for (int i = 0; i < HistoList.size(); i++) { HistoList[i]->Write(); }

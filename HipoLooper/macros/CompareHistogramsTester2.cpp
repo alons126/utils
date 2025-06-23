@@ -333,15 +333,6 @@ void CompareHistogramsTester2() {
                     fitMin = std::fabs(peakCenter * 0.9);
                     fitMax = std::fabs(peakCenter * 1.1);
                 }
-
-                // fitMin = -std::fabs(peakCenter * 1.1);
-                // fitMax = -std::fabs(peakCenter * 0.9);
-                // fitMin = -std::fabs(peakCenter * 1.2);
-                // fitMax = -std::fabs(peakCenter * 0.8);
-                // fitMin = -std::fabs(peakCenter * 1.1);
-                // fitMax = -std::fabs(peakCenter * 0.9);
-                // // fitMin = -std::fabs(peakCenter * 1.2);
-                // // fitMax = -std::fabs(peakCenter * 0.8);
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
                 fitMax = fitLimits[1];
@@ -362,111 +353,89 @@ void CompareHistogramsTester2() {
             return fit->GetParameter(1);  // Return fitted mean
         };
 
-        // auto approx_phi_peak_location = [](TH1D *hist) -> double {
-        //     measured_target_location_TLine = new TLine(hist->GetBinCenter(hist->GetMaximumBin()), 0., hist->GetBinCenter(hist->GetMaximumBin()), gPad->GetFrame()->GetY2());
-        //     measured_target_location_TLine->SetLineColor(kGreen + 1);
-        //     measured_target_location_TLine->SetLineWidth(3);
-        //     // measured_target_location_TLine->SetLineWidth(4);
-        //     measured_target_location_TLine->SetLineStyle(2);
-        //     // measured_target_location_TLine->Draw("same");
+        // Helper lambda to extract peak centers from histograms
+        auto get_peak_centers = [&](std::vector<TH1D *> hists, bool fit) {
+            std::vector<double> centers;
+            for (auto *h : hists) { centers.push_back(fit ? fit_peak_gaussian(h) : h->GetBinCenter(h->GetMaximumBin())); }
+            return centers;
+        };
 
-        //     auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
-        //     // TLegendEntry *speac_target_location_TLine_entry =
-        //         // Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
-        //     TLegendEntry *measured_target_location_TLine_entry =
-        //         Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
-
-        //     Legend->Draw("same");
-
-        //     return fit->GetParameter(1);  // Return fitted mean
-        // };
+        // Helper lambda to extract and fit peaks and return fit results
+        auto extract_and_fit = [&](const std::string &label, const std::string &Ebeam, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz,
+                                   bool fit_phi) -> std::tuple<double, double, double, TGraph *> {
+            auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
+            auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
+            return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
+        };
 
         // Usage:
-        std::vector<double> Vz_e_peaks_BySector = {fit_peak_gaussian(h_Vz_e_AC_sector1_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector2_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector3_1e_cut),
-                                                   fit_peak_gaussian(h_Vz_e_AC_sector4_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector5_1e_cut), fit_peak_gaussian(h_Vz_e_AC_sector6_1e_cut)};
-        std::vector<double> phi_e_peaks_BySector = {
-            // fit_peak_gaussian(h_phi_e_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector2_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector3_1e_cut),
-            // fit_peak_gaussian(h_phi_e_AC_sector4_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_e_AC_sector6_1e_cut)};
-            h_phi_e_AC_sector1_1e_cut->GetBinCenter(h_phi_e_AC_sector1_1e_cut->GetMaximumBin()), h_phi_e_AC_sector2_1e_cut->GetBinCenter(h_phi_e_AC_sector2_1e_cut->GetMaximumBin()),
-            h_phi_e_AC_sector3_1e_cut->GetBinCenter(h_phi_e_AC_sector3_1e_cut->GetMaximumBin()), h_phi_e_AC_sector4_1e_cut->GetBinCenter(h_phi_e_AC_sector4_1e_cut->GetMaximumBin()),
-            h_phi_e_AC_sector5_1e_cut->GetBinCenter(h_phi_e_AC_sector5_1e_cut->GetMaximumBin()), h_phi_e_AC_sector6_1e_cut->GetBinCenter(h_phi_e_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = variable_correctors::FitVertexVsPhi("e", Ebeam_status_1, Vz_e_peaks_BySector, phi_e_peaks_BySector, theta_slice);
+        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
+            "e", Ebeam_status_1, {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
+            {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true, false);
 
-        std::vector<double> Vz_pipFD_peaks_BySector = {fit_peak_gaussian(h_Vz_pipFD_AC_sector1_1e_cut), fit_peak_gaussian(h_Vz_pipFD_AC_sector2_1e_cut),
-                                                       fit_peak_gaussian(h_Vz_pipFD_AC_sector3_1e_cut), fit_peak_gaussian(h_Vz_pipFD_AC_sector4_1e_cut),
-                                                       fit_peak_gaussian(h_Vz_pipFD_AC_sector5_1e_cut), fit_peak_gaussian(h_Vz_pipFD_AC_sector6_1e_cut)};
-        std::vector<double> phi_pipFD_peaks_BySector = {fit_peak_gaussian(h_phi_pipFD_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_pipFD_AC_sector2_1e_cut),
-                                                        fit_peak_gaussian(h_phi_pipFD_AC_sector3_1e_cut), fit_peak_gaussian(h_phi_pipFD_AC_sector4_1e_cut),
-                                                        fit_peak_gaussian(h_phi_pipFD_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_pipFD_AC_sector6_1e_cut)};
-        // h_phi_pipFD_AC_sector1_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector1_1e_cut->GetMaximumBin()),
-        // h_phi_pipFD_AC_sector2_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector2_1e_cut->GetMaximumBin()),
-        // h_phi_pipFD_AC_sector3_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector3_1e_cut->GetMaximumBin()),
-        // h_phi_pipFD_AC_sector4_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector4_1e_cut->GetMaximumBin()),
-        // h_phi_pipFD_AC_sector5_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector5_1e_cut->GetMaximumBin()),
-        // h_phi_pipFD_AC_sector6_1e_cut->GetBinCenter(h_phi_pipFD_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
-            variable_correctors::FitVertexVsPhi("#pi^{+}FD", Ebeam_status_1, Vz_pipFD_peaks_BySector, phi_pipFD_peaks_BySector, theta_slice);
+        auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] = extract_and_fit("#pi^{+}FD", Ebeam_status_1,
+                                                                                                {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut,
+                                                                                                 h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut, h_Vz_pipFD_AC_sector6_1e_cut},
+                                                                                                {h_phi_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector3_1e_cut,
+                                                                                                 h_phi_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector5_1e_cut, h_phi_pipFD_AC_sector6_1e_cut},
+                                                                                                true, true);
 
-        std::vector<double> Vz_pimFD_peaks_BySector = {fit_peak_gaussian(h_Vz_pimFD_AC_sector1_1e_cut), fit_peak_gaussian(h_Vz_pimFD_AC_sector2_1e_cut),
-                                                       fit_peak_gaussian(h_Vz_pimFD_AC_sector3_1e_cut), fit_peak_gaussian(h_Vz_pimFD_AC_sector4_1e_cut),
-                                                       fit_peak_gaussian(h_Vz_pimFD_AC_sector5_1e_cut), fit_peak_gaussian(h_Vz_pimFD_AC_sector6_1e_cut)};
-        std::vector<double> phi_pimFD_peaks_BySector = {fit_peak_gaussian(h_phi_pimFD_AC_sector1_1e_cut), fit_peak_gaussian(h_phi_pimFD_AC_sector2_1e_cut),
-                                                        fit_peak_gaussian(h_phi_pimFD_AC_sector3_1e_cut), fit_peak_gaussian(h_phi_pimFD_AC_sector4_1e_cut),
-                                                        fit_peak_gaussian(h_phi_pimFD_AC_sector5_1e_cut), fit_peak_gaussian(h_phi_pimFD_AC_sector6_1e_cut)};
-        // h_phi_pimFD_AC_sector1_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector1_1e_cut->GetMaximumBin()),
-        // h_phi_pimFD_AC_sector2_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector2_1e_cut->GetMaximumBin()),
-        // h_phi_pimFD_AC_sector3_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector3_1e_cut->GetMaximumBin()),
-        // h_phi_pimFD_AC_sector4_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector4_1e_cut->GetMaximumBin()),
-        // h_phi_pimFD_AC_sector5_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector5_1e_cut->GetMaximumBin()),
-        // h_phi_pimFD_AC_sector6_1e_cut->GetBinCenter(h_phi_pimFD_AC_sector6_1e_cut->GetMaximumBin())};
-        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
-            variable_correctors::FitVertexVsPhi("#pi^{-}FD", Ebeam_status_1, Vz_pimFD_peaks_BySector, phi_pimFD_peaks_BySector, theta_slice);
+        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] = extract_and_fit("#pi^{-}FD", Ebeam_status_1,
+                                                                                                {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut,
+                                                                                                 h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut, h_Vz_pimFD_AC_sector6_1e_cut},
+                                                                                                {h_phi_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector3_1e_cut,
+                                                                                                 h_phi_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector5_1e_cut, h_phi_pimFD_AC_sector6_1e_cut},
+                                                                                                true, true);
 
-        int insert_index_e = 0;
-        int insert_index_pipFD = 0;
-        int insert_index_pimFD = 0;
+        // Helper lambda for TH1 styling
+        auto style_th1 = [](TH1 *h) {
+            h->Sumw2();
+            h->SetMinimum(0);
+            h->SetLineWidth(2);
+            h->SetLineColor(kRed);
+        };
 
-        for (int i = 0; i < HistoList.size(); i++) {
-            if (HistoList[i]->InheritsFrom("TH1")) {
-                auto *h1 = (TH1 *)HistoList[i];
-                h1->Sumw2();
-                h1->SetMinimum(0);
-                h1->SetLineWidth(2);
-                h1->SetLineColor(kRed);
-            }
-
-            if (HistoList[i]->InheritsFrom("TH1") || HistoList[i]->InheritsFrom("TH2")) {
-                auto *h = (TH1 *)HistoList[i];
+        // Helper lambda for centering axis titles
+        auto center_titles = [](TObject *obj) {
+            if (obj->InheritsFrom("TH1") || obj->InheritsFrom("TH2")) {
+                auto *h = (TH1 *)obj;
                 h->GetXaxis()->CenterTitle();
                 h->GetYaxis()->CenterTitle();
-            } else if (HistoList[i]->InheritsFrom("TGraph")) {
-                auto *g = (TGraph *)HistoList[i];
+            } else if (obj->InheritsFrom("TGraph")) {
+                auto *g = (TGraph *)obj;
                 g->GetXaxis()->CenterTitle();
                 g->GetYaxis()->CenterTitle();
             }
+        };
 
-            if (std::string(HistoList[i]->GetName()) == "Vz_e_AC_zoomin_1e_cut") {
-                insert_index_e = i;
-                // insert_index_e = i + 1;
-            } else if (std::string(HistoList[i]->GetName()) == "Vz_pipFD_AC_zoomin_1e_cut") {
-                insert_index_pipFD = i;
-                // insert_index_pipFD = i + 1;
-            } else if (std::string(HistoList[i]->GetName()) == "Vz_pimFD_AC_zoomin_1e_cut") {
-                insert_index_pimFD = i;
-                // insert_index_pimFD = i + 1;
-            }
+        int insert_index_e = 0, insert_index_pipFD = 0, insert_index_pimFD = 0;
+
+        for (size_t i = 0; i < HistoList.size(); i++) {
+            if (HistoList[i]->InheritsFrom("TH1")) { style_th1((TH1 *)HistoList[i]); }
+
+            center_titles(HistoList[i]);
+
+            std::string name = HistoList[i]->GetName();
+            if (name == "Vz_VS_phi_e_AC_1e_cut")
+                insert_index_e = i + 1;
+            else if (name == "Vz_VS_phi_pipFD_AC_1e_cut")
+                insert_index_pipFD = i + 1;
+            else if (name == "Vz_VS_phi_pimFD_AC_1e_cut")
+                insert_index_pimFD = i + 1;
         }
 
-        FittedParametersGraph_e->GetXaxis()->CenterTitle();
-        FittedParametersGraph_e->GetYaxis()->CenterTitle();
-        FittedParametersGraph_pipFD->GetXaxis()->CenterTitle();
-        FittedParametersGraph_pipFD->GetYaxis()->CenterTitle();
-        FittedParametersGraph_pimFD->GetXaxis()->CenterTitle();
-        FittedParametersGraph_pimFD->GetYaxis()->CenterTitle();
+        std::vector<std::pair<int, TGraph *>> graph_inserts = {
+            {insert_index_e, FittedParametersGraph_e}, {insert_index_pipFD, FittedParametersGraph_pipFD}, {insert_index_pimFD, FittedParametersGraph_pimFD}};
 
-        HistoList.insert(HistoList.begin() + insert_index_e, FittedParametersGraph_e);
-        HistoList.insert(HistoList.begin() + insert_index_pipFD, FittedParametersGraph_pipFD);
-        HistoList.insert(HistoList.begin() + insert_index_pimFD, FittedParametersGraph_pimFD);
+        for (const auto &[index, graph] : graph_inserts) {
+            HistoList.insert(HistoList.begin() + index, graph);
+            center_titles(graph);
+        }
+
+        for (auto *obj : HistoList_ByThetaSlices) {
+            if (obj->InheritsFrom("TH1")) { style_th1((TH1 *)obj); }
+            center_titles(obj);
+        }
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
@@ -521,76 +490,28 @@ void CompareHistogramsTester2() {
         // // myText->Print(fileName, "pdf");
         // myText->Clear();
 
-        bool first_electron = true;
-        bool first_electron_sector1 = true, first_electron_sector2 = true, first_electron_sector3 = true, first_electron_sector4 = true, first_electron_sector5 = true,
-             first_electron_sector6 = true;
+        std::map<std::string, bool> first_flags_scalar = {{"{e}", true}, {"{#pi^{+}FD}", true}, {"{#pi^{-}FD}", true}, {"{#pi^{+}CD}", true}, {"{#pi^{-}CD}", true}};
+        std::map<std::string, std::array<bool, 6>> first_flags_sector;
 
-        bool first_piplusFD = true;
-        bool first_piplusFD_sector1 = true, first_piplusFD_sector2 = true, first_piplusFD_sector3 = true, first_piplusFD_sector4 = true, first_piplusFD_sector5 = true,
-             first_piplusFD_sector6 = true;
+        for (auto &[particle, _] : first_flags_scalar) { first_flags_sector[particle] = {true, true, true, true, true, true}; }
 
-        bool first_piminusFD = true;
-        bool first_piminusFD_sector1 = true, first_piminusFD_sector2 = true, first_piminusFD_sector3 = true, first_piminusFD_sector4 = true, first_piminusFD_sector5 = true,
-             first_piminusFD_sector6 = true;
+        std::map<std::string, bool *> first_flags;
 
-        bool first_piplusCD = true;
-        bool first_piplusCD_sector1 = true, first_piplusCD_sector2 = true, first_piplusCD_sector3 = true, first_piplusCD_sector4 = true, first_piplusCD_sector5 = true,
-             first_piplusCD_sector6 = true;
+        for (auto &[particle, flag] : first_flags_scalar) { first_flags[particle] = &flag; }
 
-        bool first_piminusCD = true;
-        bool first_piminusCD_sector1 = true, first_piminusCD_sector2 = true, first_piminusCD_sector3 = true, first_piminusCD_sector4 = true, first_piminusCD_sector5 = true,
-             first_piminusCD_sector6 = true;
+        std::map<std::string, std::map<int, bool *>> sector_flags;
+
+        for (auto &[particle, sector_array] : first_flags_sector) {
+            for (int sec = 0; sec < 6; ++sec) { sector_flags[particle][sec + 1] = &sector_array[sec]; }
+        }
+
+        std::map<std::string, std::string> particle_labels = {
+            {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
         int plot_counter = 2;
-
         double yOffset = 0.075;  // Offset for the y position of the text
-        // double yOffset = 0.10;  // Offset for the y position of the text
 
         for (int i = 0; i < HistoList.size(); i++) {
-            // Maps to hold first-time flags
-            std::map<std::string, bool *> first_flags = {
-                {"{e}", &first_electron}, {"{#pi^{+}FD}", &first_piplusFD}, {"{#pi^{-}FD}", &first_piminusFD}, {"{#pi^{+}CD}", &first_piplusCD}, {"{#pi^{-}CD}", &first_piminusCD}};
-
-            std::map<std::string, std::string> particle_labels = {
-                {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
-
-            // Maps of sector flags (assumes these variables already exist)
-            std::map<std::string, std::map<int, bool *>> sector_flags = {{"{e}",
-                                                                          {{1, &first_electron_sector1},
-                                                                           {2, &first_electron_sector2},
-                                                                           {3, &first_electron_sector3},
-                                                                           {4, &first_electron_sector4},
-                                                                           {5, &first_electron_sector5},
-                                                                           {6, &first_electron_sector6}}},
-                                                                         {"{#pi^{+}FD}",
-                                                                          {{1, &first_piplusFD_sector1},
-                                                                           {2, &first_piplusFD_sector2},
-                                                                           {3, &first_piplusFD_sector3},
-                                                                           {4, &first_piplusFD_sector4},
-                                                                           {5, &first_piplusFD_sector5},
-                                                                           {6, &first_piplusFD_sector6}}},
-                                                                         {"{#pi^{-}FD}",
-                                                                          {{1, &first_piminusFD_sector1},
-                                                                           {2, &first_piminusFD_sector2},
-                                                                           {3, &first_piminusFD_sector3},
-                                                                           {4, &first_piminusFD_sector4},
-                                                                           {5, &first_piminusFD_sector5},
-                                                                           {6, &first_piminusFD_sector6}}},
-                                                                         {"{#pi^{+}CD}",
-                                                                          {{1, &first_piplusCD_sector1},
-                                                                           {2, &first_piplusCD_sector2},
-                                                                           {3, &first_piplusCD_sector3},
-                                                                           {4, &first_piplusCD_sector4},
-                                                                           {5, &first_piplusCD_sector5},
-                                                                           {6, &first_piplusCD_sector6}}},
-                                                                         {"{#pi^{-}CD}",
-                                                                          {{1, &first_piminusCD_sector1},
-                                                                           {2, &first_piminusCD_sector2},
-                                                                           {3, &first_piminusCD_sector3},
-                                                                           {4, &first_piminusCD_sector4},
-                                                                           {5, &first_piminusCD_sector5},
-                                                                           {6, &first_piminusCD_sector6}}}};
-
             std::string title = HistoList[i]->GetTitle();
 
             for (const auto &[particle_key, label] : particle_labels) {
