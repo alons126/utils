@@ -4575,7 +4575,7 @@ void HipoLooper() {
         // Sort hsPlots plots
         /////////////////////////////////////////////////////
 
-        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices->GetName() << "\n"; }
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
 
         // Sort histograms by slice start (X in "slice_from_X_to_Y") and base name
         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject *a, TObject *b) {
@@ -4605,7 +4605,7 @@ void HipoLooper() {
         cout << "\n";
         cout << "\n";
 
-        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices->GetName() << "\n"; }
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
 
         exit(1);
 #pragma endregion
