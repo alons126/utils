@@ -4629,10 +4629,10 @@ void HipoLooper() {
             int particleB = getParticlePriority(nameB);
             if (particleA != particleB) return particleA < particleB;
 
-            // Compare particle types first
-            int NameA = getNamePriority(nameA);
-            int NameB = getNamePriority(nameB);
-            if (NameA != NameB) return NameA < NameB;
+            // // Compare particle types first
+            // int NameA = getNamePriority(nameA);
+            // int NameB = getNamePriority(nameB);
+            // if (NameA != NameB) return NameA < NameB;
 
             // Then compare sectors (non-sector histograms first)
             int sectorA = getSector(nameA);
@@ -4648,6 +4648,9 @@ void HipoLooper() {
             return nameA < nameB;
         });
 
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
+
+        exit(0);
 #pragma endregion
 
 #pragma region nExtracting Vz correction parameters
