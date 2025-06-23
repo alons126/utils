@@ -2,6 +2,9 @@
 // Created by Alon Sportes on 11/04/2025.
 //
 
+#ifndef HSPLOTS_CPP
+#define HSPLOTS_CPP
+
 #include "hsPlots.h"
 
 // hsPlots manages a list of sliced histograms (TH1D or TH2D) created from user-defined ranges.
@@ -330,3 +333,5 @@ std::vector<TH1*> hsPlots::GetSlicedHistoList() const {
     // Returns a copy of the vector of histogram pointers. Original ownership is not transferred.
     return *SlicedHistoListPtr;
 }
+
+#endif  // HSPLOTS_CPP
