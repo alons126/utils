@@ -4493,7 +4493,7 @@ void HipoLooper() {
             "e", Ebeam_status_1, {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
             {project(h_Vz_VS_phi_e_AC_sector1_1e_cut), project(h_Vz_VS_phi_e_AC_sector2_1e_cut), project(h_Vz_VS_phi_e_AC_sector3_1e_cut), project(h_Vz_VS_phi_e_AC_sector4_1e_cut),
              project(h_Vz_VS_phi_e_AC_sector5_1e_cut), project(h_Vz_VS_phi_e_AC_sector6_1e_cut)},
-            true, fals, theta_slices);
+            true, false, theta_slices);
 
         auto [A_pipFD, Vz_VS_phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             extract_and_fit("#pi^{+}FD", Ebeam_status_1,
