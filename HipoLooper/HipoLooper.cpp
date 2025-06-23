@@ -4851,12 +4851,13 @@ void HipoLooper() {
             return FittedGraphsByThetaSlice;
         };
 
-        auto FittedGraphsByThetaSlice_e = ProcessFitsByThetaSlices(
-            "e",
-            {Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3,
-             Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-            {Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3, Sliced_Vz_VS_phi_e_HistoList_sector4,
-             Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
+        auto FittedGraphsByThetaSlice_e =
+            ProcessFitsByThetaSlices("e",
+                                     std::vector<std::vector<TObject *>>{Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
+                                                                         Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
+                                                                         Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+                                     std::vector<std::vector<TObject *>>{Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3,
+                                                                         Sliced_Vz_VS_phi_e_HistoList_sector4, Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
 
         std::string basename = "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta";
 
