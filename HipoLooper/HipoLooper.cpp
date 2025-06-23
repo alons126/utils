@@ -196,38 +196,38 @@ void HipoLooper() {
 
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;
         Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.27, 80.49 * am::pi / 180.};  // {A in cm, phi_beam in rad}
-        Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.41, -153.04 * am::pi / 180.};
+        Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.41, -153.04 * am::pi / 180.};
         Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.37, 158.04 * am::pi / 180.};
         // Beam_Coordinates["C12_data_2GeV_run_015664_e"] = {0.1629, 0.0560};  // {Vx peak, Vy peak} in cm
-        // Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.1749, 0.0985};
+        // Beam_Coordinates["C12_data_2GeV_run_015664_pipFD"] = {0.1749, 0.0985};
         // Beam_Coordinates["C12_data_2GeV_run_015664_pimFD"] = {0.1707, 0.0997};
 
         Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.20, -135.79 * am::pi / 180.};  // {A in cm, phi_beam in rad}
-        Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.29, -121.08 * am::pi / 180.};
+        Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.29, -121.08 * am::pi / 180.};
         Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.22, 161.87 * am::pi / 180.};
         // Beam_Coordinates["C12_data_4GeV_run_015778_e"] = {0.1658, 0.1368};  // {Vx peak, Vy peak} in cm
-        // Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1767, 0.1357};
+        // Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1767, 0.1357};
         // Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1624, 0.1517};
 
         Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.17, 90.31 * am::pi / 180.};  // {A in cm, phi_beam in rad}
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.50, -150.10 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.50, -150.10 * am::pi / 180.};
         Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.39, 167.30 * am::pi / 180.};
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275};  // zoom-in peak fit of {Vx peak, Vy peak} in cm
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1560, 0.1201};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
 
         Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.21, -136.36 * am::pi / 180.};  // {A in cm, phi_beam in rad}
-        Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.33, -127.83 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.33, -127.83 * am::pi / 180.};
         Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.22, -152.82 * am::pi / 180.};
         // Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.1661, 0.1421};  // {Vx peak, Vy peak} in cm
-        // Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.1785, 0.1400};
+        // Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.1785, 0.1400};
         // Beam_Coordinates["Ar40_data_4GeV_run_015743_pimFD"] = {0.1638, 0.1521};
 
         Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.23, -124.10 * am::pi / 180.};  // {A in cm, phi_beam in rad}
-        Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.32, -116.05 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.32, -116.05 * am::pi / 180.};
         Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.18, -147.50 * am::pi / 180.};
         // Beam_Coordinates["Ar40_data_6GeV_run_015792_e"] = {0.1564, 0.1469};  // {Vx peak, Vy peak} in cm
-        // Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.1667, 0.1388};
+        // Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.1667, 0.1388};
         // Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.1455, 0.1524};
 
         // Lambda to compute r = sqrt(Vx² + Vy²)
@@ -2396,12 +2396,12 @@ void HipoLooper() {
         std::vector<TH1 *> Sliced_Vz_pimFD_HistoList;
         hsPlots h_Vz_pimFD_AC_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
-                    "V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{#pi^{+}FD} [#circ]");
+                    "V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);V_{z}^{#pi^{-}FD} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{#pi^{-}FD} [#circ]");
         std::vector<TH1 *> Sliced_Vz_pimFD_zoomin_HistoList;
         hsPlots h_Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta =
             hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_zoomin_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
-                    "V_{z}^{#pi^{+}FD} in (e,e') - zoomin - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, HistoList_zoomin_limits.at(0),
-                    HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{#pi^{+}FD} [#circ]");
+                    "V_{z}^{#pi^{-}FD} in (e,e') - zoomin - " + CodeRun_status + " (after #pi^{-}FD cuts);V_{z}^{#pi^{-}FD} [cm];Counts", 75, HistoList_zoomin_limits.at(0),
+                    HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{#pi^{-}FD} [#circ]");
 
         // TH1D *h_corrected_Vz_pimFD_BC_1e_cut =
         //     new TH1D("corrected_Vz_pimFD_BC_1e_cut", ("Corrected V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts);Corrected V_{z}^{#pi^{-}FD}
