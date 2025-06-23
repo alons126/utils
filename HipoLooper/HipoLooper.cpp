@@ -4844,7 +4844,7 @@ void HipoLooper() {
                                      (TH1D *)Vz_HistogramLists[4][i], (TH1D *)Vz_HistogramLists[5][i]},
                                     {project((TH2D *)Vz_VS_phi_HistogramLists[0][i]), project((TH2D *)Vz_VS_phi_HistogramLists[1][i]), project((TH2D *)Vz_VS_phi_HistogramLists[2][i]),
                                      project((TH2D *)Vz_VS_phi_HistogramLists[3][i]), project((TH2D *)Vz_VS_phi_HistogramLists[4][i]), project((TH2D *)Vz_VS_phi_HistogramLists[5][i])},
-                                    true, true, std::make_pair(theta_slices[i]));
+                                    true, true, std::make_pair(theta_slices[i][0], theta_slices[i][1]));
                 FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
             }
 
