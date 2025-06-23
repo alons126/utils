@@ -274,57 +274,62 @@ void hsPlots::SaveHistograms(const std::string& outputDir, const std::string& ba
         canvas->Clear();
 
         TObject* obj = (*SlicedHistoListPtr)[i];
-        TObject* hist = (TH1*)obj;
 
-        // if (hist->GetEntries() == 0) {
-        //     std::cout << "Skipping empty histogram [" << i << "]" << std::endl;
-        //     continue;
-        // }
+        if (obj->InheritsFrom("TH1")) {
+            TH1* hist = (TH1*)obj;
 
-        hist->GetXaxis()->SetTitleSize(0.06);
-        hist->GetXaxis()->SetLabelSize(0.0425);
-        hist->GetXaxis()->CenterTitle(true);
-        hist->GetYaxis()->SetTitleSize(0.06);
-        hist->GetYaxis()->SetLabelSize(0.0425);
-        hist->GetYaxis()->CenterTitle(true);
+            // if (hist->GetEntries() == 0) {
+            //     std::cout << "Skipping empty histogram [" << i << "]" << std::endl;
+            //     continue;
+            // }
 
-        if (hist->InheritsFrom("TH2")) {
-            if (hist->Integral() == 0. || hist->GetEntries() == 0) {
-                DrawEmptyHistogramNotice(x_1, y_1, x_2, y_2, diplayTextSize);
-                // TPaveText* displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
-                // displayText->SetTextSize(diplayTextSize);
-                // displayText->SetFillColor(0);
-                // displayText->AddText("Empty histogram");
-                // displayText->SetTextAlign(22);
-                // displayText->Draw();
+            hist->GetXaxis()->SetTitleSize(0.06);
+            hist->GetXaxis()->SetLabelSize(0.0425);
+            hist->GetXaxis()->CenterTitle(true);
+            hist->GetYaxis()->SetTitleSize(0.06);
+            hist->GetYaxis()->SetLabelSize(0.0425);
+            hist->GetYaxis()->CenterTitle(true);
+
+            if (hist->InheritsFrom("TH2")) {
+                if (hist->Integral() == 0. || hist->GetEntries() == 0) {
+                    DrawEmptyHistogramNotice(x_1, y_1, x_2, y_2, diplayTextSize);
+                    // TPaveText* displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
+                    // displayText->SetTextSize(diplayTextSize);
+                    // displayText->SetFillColor(0);
+                    // displayText->AddText("Empty histogram");
+                    // displayText->SetTextAlign(22);
+                    // displayText->Draw();
+                }
+
+                hist->Draw("colz");
+            } else if (hist->InheritsFrom("TH1")) {
+                if (hist->Integral() == 0. || hist->GetEntries() == 0) {
+                    DrawEmptyHistogramNotice(x_1, y_1, x_2, y_2, diplayTextSize);
+                    // TPaveText* displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
+                    // displayText->SetTextSize(diplayTextSize);
+                    // displayText->SetFillColor(0);
+                    // displayText->AddText("Empty histogram");
+                    // displayText->SetTextAlign(22);
+                    // displayText->Draw();
+                }
+
+                hist->Draw();
             }
+            // if (hist->InheritsFrom("TH2")) {
+            //     hist->Draw("colz");
+            // } else if (hist->InheritsFrom("TH1")) {
+            //     hist->Draw("hist");
+            // }
 
-            hist->Draw("colz");
-        } else if (hist->InheritsFrom("TH1")) {
-            if (hist->Integral() == 0. || hist->GetEntries() == 0) {
-                DrawEmptyHistogramNotice(x_1, y_1, x_2, y_2, diplayTextSize);
-                // TPaveText* displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
-                // displayText->SetTextSize(diplayTextSize);
-                // displayText->SetFillColor(0);
-                // displayText->AddText("Empty histogram");
-                // displayText->SetTextAlign(22);
-                // displayText->Draw();
-            }
+            // Save to PDF page
+            canvas->Print(PDF_File.c_str());
 
-            hist->Draw();
+            // Save PNG (single underscore version)
+            std::string PNG_File = PNG_Files_Base_Directory + "/" + std::to_string(i) + "_" + hist->GetName() + ".pdf";
+            canvas->SaveAs(PNG_File.c_str());
+        } else {
+            std::cerr << "\033[31m[hsPlots::SaveHistograms] ERROR: Object at index " << i << " is not a TH1-derived histogram.\n\033[0m";
         }
-        // if (hist->InheritsFrom("TH2")) {
-        //     hist->Draw("colz");
-        // } else if (hist->InheritsFrom("TH1")) {
-        //     hist->Draw("hist");
-        // }
-
-        // Save to PDF page
-        canvas->Print(PDF_File.c_str());
-
-        // Save PNG (single underscore version)
-        std::string PNG_File = PNG_Files_Base_Directory + "/" + std::to_string(i) + "_" + hist->GetName() + ".pdf";
-        canvas->SaveAs(PNG_File.c_str());
     }
 
     canvas->Print((PDF_File + "]").c_str());  // Close multipage PDF
