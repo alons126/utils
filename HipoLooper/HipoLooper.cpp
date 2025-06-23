@@ -317,11 +317,11 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_e_HistoList;
         hsPlots h_Vz_e_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, Sliced_Vz_e_HistoList, "Vz_e_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_e_HistoList, "Vz_e_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
         std::vector<TH1 *> Sliced_Vz_e_zoomin_HistoList;
         hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, Sliced_Vz_e_zoomin_HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_e_zoomin_HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
                     HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
@@ -1426,11 +1426,11 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_pimFD_HistoList;
         hsPlots h_Vz_pimFD_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, Sliced_Vz_pimFD_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{#pi^{+}FD} [#circ]");
         std::vector<TH1 *> Sliced_Vz_pimFD_zoomin_HistoList;
         hsPlots h_Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, Sliced_Vz_pimFD_zoomin_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_zoomin_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{+}FD} in (e,e') - zoomin - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, HistoList_zoomin_limits.at(0),
                     HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{#pi^{+}FD} [#circ]");
 
@@ -2395,11 +2395,11 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_pimFD_HistoList;
         hsPlots h_Vz_pimFD_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, Sliced_Vz_pimFD_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{#pi^{+}FD} [#circ]");
         std::vector<TH1 *> Sliced_Vz_pimFD_zoomin_HistoList;
         hsPlots h_Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, Sliced_Vz_pimFD_zoomin_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_zoomin_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{+}FD} in (e,e') - zoomin - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, HistoList_zoomin_limits.at(0),
                     HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{#pi^{+}FD} [#circ]");
 
