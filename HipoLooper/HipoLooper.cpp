@@ -4575,6 +4575,8 @@ void HipoLooper() {
         // Sort hsPlots plots
         /////////////////////////////////////////////////////
 
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices->GetName() << "\n"; }
+
         // Sort histograms by slice start (X in "slice_from_X_to_Y") and base name
         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject *a, TObject *b) {
             auto getStartVal = [](const std::string &name) -> double {
@@ -4597,6 +4599,15 @@ void HipoLooper() {
 
             return getBaseName(a->GetName()) < getBaseName(b->GetName());
         });
+
+        cout << "\n";
+        cout << "\n";
+        cout << "\n";
+        cout << "\n";
+
+        for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices->GetName() << "\n"; }
+
+        exit(1);
 #pragma endregion
 
 #pragma region nExtracting Vz correction parameters

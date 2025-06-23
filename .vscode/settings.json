@@ -57,6 +57,7 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "tuple": "cpp",
-        "process_events.C": "cpp"
+        "process_events.C": "cpp",
+        "regex": "cpp"
     }
 }
