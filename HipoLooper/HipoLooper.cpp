@@ -4590,45 +4590,44 @@ void HipoLooper() {
         //   2. sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
         //   3. base name (as before)
         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject *a, TObject *b) {
-            // Helper to extract the start value of the slice
-            auto getStartVal = [](const std::string &name) -> double {
-                std::smatch m;
-                std::regex re(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
-            
-                if (std::regex_search(name, m, re)) {
-                    return std::stod(m[1]);  // Extract start of slice
-                }
-            
-                return 1e9;  // Push unmatched names to end
+            const std::string nameA = a->GetName();
+            const std::string nameB = b->GetName();
+
+            // Define particle priority
+            auto getParticlePriority = [](const std::string &name) -> int {
+                if (name.find("_e_") != std::string::npos) return 0;
+                if (name.find("_pipFD_") != std::string::npos) return 1;
+                if (name.find("_pimFD_") != std::string::npos) return 2;
+                return 9;  // fallback
             };
 
-            // Helper to extract sector group: 0 = none, 1 = sector1, ..., 6 = sector6
-            auto getSectorGroup = [](const std::string &name) -> int {
-                std::smatch m;
-                std::regex re(R"(_sector([1-6]))");
-                if (std::regex_search(name, m, re)) { return std::stoi(m[1]); }
-                return 0;
+            // Extract sector number: 0 if not present
+            auto getSector = [](const std::string &name) -> int {
+                std::smatch match;
+                std::regex pattern(R"(_sector([1-6]))");
+                return (std::regex_search(name, match, pattern)) ? std::stoi(match[1]) : 0;
             };
 
-            // Helper to extract the base name (before "_slice_from_")
-            auto getBaseName = [](const std::string &name) -> std::string {
-                std::size_t pos = name.find("_slice_from_");
-                return (pos != std::string::npos) ? name.substr(0, pos) : name;
+            // Extract theta slice start value
+            auto getSliceStart = [](const std::string &name) -> double {
+                std::smatch match;
+                std::regex pattern(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
+                return (std::regex_search(name, match, pattern)) ? std::stod(match[1]) : 1e9;
             };
-            
-            double aStart = getStartVal(a->GetName());
-            double bStart = getStartVal(b->GetName());
-            
-            // 1. Compare by slice start value
-            if (aStart != bStart) return aStart < bStart;
-            
-            // 2. Compare by sector group
-            int aSector = getSectorGroup(a->GetName());
-            int bSector = getSectorGroup(b->GetName());
-            if (aSector != bSector) return aSector < bSector;
-            
-            // 3. Compare by base name
-            return getBaseName(a->GetName()) < getBaseName(b->GetName());
+
+            int particleA = getParticlePriority(nameA);
+            int particleB = getParticlePriority(nameB);
+            if (particleA != particleB) return particleA < particleB;
+
+            int sectorA = getSector(nameA);
+            int sectorB = getSector(nameB);
+            if (sectorA != sectorB) return sectorA < sectorB;
+
+            double sliceA = getSliceStart(nameA);
+            double sliceB = getSliceStart(nameB);
+            if (sliceA != sliceB) return sliceA < sliceB;
+
+            return nameA < nameB;  // fallback tie-breaker
         });
 
         cout << "\n";
