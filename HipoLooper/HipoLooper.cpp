@@ -5112,6 +5112,9 @@ void HipoLooper() {
                         stats->SetX2NDC(stats->GetX2NDC());
                         stats->SetY2NDC(stats->GetY2NDC() - 0.05);
                     }
+
+                    gPad->Modified();
+                    gPad->Update();
                 }
 
                 if (TempHistoList[i]->InheritsFrom("TH1") || TempHistoList[i]->InheritsFrom("TH2")) {
