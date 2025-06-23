@@ -382,7 +382,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList;
         hsPlots h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_1e_cut = new TH2D(
@@ -392,7 +392,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList;
         hsPlots h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -549,7 +549,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector1;
         hsPlots h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -561,7 +561,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector1;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
                     -13, 2, "#theta_{e} [#circ]");
 
@@ -726,7 +726,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector2;
         hsPlots h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -738,7 +738,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector2;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
                     -13, 2, "#theta_{e} [#circ]");
 
@@ -903,7 +903,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector3;
         hsPlots h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -915,7 +915,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector3;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
                     -13, 2, "#theta_{e} [#circ]");
 
@@ -1080,7 +1080,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector4;
         hsPlots h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -1092,7 +1092,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector4;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
                     -13, 2, "#theta_{e} [#circ]");
 
@@ -1257,7 +1257,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector5;
         hsPlots h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -1269,7 +1269,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector5;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
                     -13, 2, "#theta_{e} [#circ]");
 
@@ -1434,7 +1434,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector6;
         hsPlots h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
                     "#theta_{e} [#circ]");
 
@@ -1446,7 +1446,7 @@ void HipoLooper() {
 
         std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector6;
         hsPlots h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH2D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
                     "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150,
                     -13, 2, "#theta_{e} [#circ]");
 
@@ -4691,7 +4691,8 @@ void HipoLooper() {
 
         // Helper lambda for TH1 styling
         auto style_th1 = [](TH1 *h) {
-            h->Sumw2();
+            if (!h->GetSumw2N()) { h->Sumw2(); }
+
             h->SetMinimum(0);
             h->SetLineWidth(2);
             h->SetLineColor(kRed);
@@ -4764,9 +4765,16 @@ void HipoLooper() {
             sprintf(fileName, "%s", PDF_fileName.c_str());
 
             // Helper lambda for drawing title blocks
-            auto draw_title_block = [&](const std::string &title, const std::vector<std::string> &lines, double startY, double stepY) {
+            auto draw_title_block = [&](const std::string &title, const std::vector<std::string> &lines, double startY, double stepY, bool OverrideOffset = false) {
                 if (title != "") { titles.DrawLatex(0.05, startY, title.c_str()); }
-                for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.10, startY - (i + 1) * stepY, lines[i].c_str()); }
+
+                for (size_t i = 0; i < lines.size(); ++i) {
+                    if (OverrideOffset) {
+                        text.DrawLatex(0.05, startY - (i + 1) * stepY, lines[i].c_str());
+                    } else {
+                        text.DrawLatex(0.10, startY - (i + 1) * stepY, lines[i].c_str());
+                    }
+                }
                 // titles.DrawLatex(0.05, startY, title.c_str());
                 // for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.05 + (i == 0 ? 0.05 : 0.10), startY - (i + 1) * stepY, lines[i].c_str()); }
             };
@@ -4778,9 +4786,14 @@ void HipoLooper() {
                 std::string r = bt::ToStringWithPrecision(compute_r(Beam_Coordinates, particle));
                 std::string phi = bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, particle) * 180 / am::pi);
 
-                text.DrawLatex(0.05, yTop, label.c_str());
-                text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + label + "},V_{y}^{" + label + "}) = (" + Vx + " cm, " + Vy + " cm)}").c_str());
-                text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + label + "}, #phi_{beam}^{" + label + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
+                std::string BulletLable = (bt::FindSubstring(label, "e")) ? "e^{-}" : label;
+                BulletLable = BulletLable + ":";
+
+                std::string SubscriptLable = label;
+
+                text.DrawLatex(0.05, yTop, BulletLable.c_str());
+                text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + SubscriptLable + "},V_{y}^{" + SubscriptLable + "}) = (" + Vx + " cm, " + Vy + " cm)}").c_str());
+                text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
             };
 
             // First page:
@@ -4790,16 +4803,16 @@ void HipoLooper() {
             text.DrawLatex(0.05, 0.70, ("Plots from (e,e') events in: #font[42]{" + TempCodeRun_status + "}").c_str());
 
             if (TempIsData) {
-                draw_title_block("", {"TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}", "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"}, 0.65, 0.05);
+                draw_title_block("", {"TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}", "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"}, 0.65, 0.05, true);
             } else {
                 draw_title_block(
                     "",
                     {"TempBaseDir: #font[42]{" + TempBaseDir + "}", "TempInputFiles: #font[42]{TempBaseDir + " + TempInputFiles.at(Tempsample).substr(TempBaseDir.length()) + "}",
                      "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"},
-                    0.65, 0.05);
+                    0.60, 0.05, true);
             }
 
-            text.DrawLatex(0.05, 0.45,
+            text.DrawLatex(0.05, 0.40,
                            ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + (ApplyLimiter ? ", Limiter = " + bt::ToStringWithPrecision(Limiter, 0) : "") + "):").c_str());
             draw_title_block(
                 "",
@@ -4809,7 +4822,7 @@ void HipoLooper() {
                  "#(Events) with any e:       #font[42]{" + std::to_string(TempNumOfEvents_wAny_e) + "}",
                  "#(Events) with one e:       #font[42]{" + std::to_string(TempNumOfEvents_wOne_e) + " (" +
                      bt::ToStringWithPrecision((100 * TempNumOfEvents_wOne_e / TempNumOfEvents_wAny_e), 2) + "%)}"},
-                0.40, 0.05);
+                0.35, 0.05);
 
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
@@ -4896,7 +4909,7 @@ void HipoLooper() {
                 myCanvas->cd()->SetGrid();
                 myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
 
-                if (Is_hsPlot) { myCanvas->cd()->SetTopMargin(0.12); }
+                if (Is_hsPlot) { myCanvas->cd()->SetTopMargin(0.14); }
 
                 if (TempHistoList[i]->InheritsFrom("TH1") || TempHistoList[i]->InheritsFrom("TH2")) {
                     auto *h = (TH1 *)TempHistoList[i];
