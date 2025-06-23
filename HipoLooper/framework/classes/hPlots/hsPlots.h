@@ -2,9 +2,8 @@
 // Created by Alon Sportes on 11/04/2025.
 //
 
-// #ifndef HSPLOTS_H
-// #define HSPLOTS_H
-#ifdef HSPLOTS_H
+#ifndef HSPLOTS_H
+#define HSPLOTS_H
 
     #include <TCanvas.h>
     #include <TClass.h>
@@ -21,7 +20,7 @@
 /*
 Example usage:
 std::vector<std::vector<double>> slices = {{0, 1}, {1, 2}, {2, 3}};
-hsPlots myPlots(slices, hsPlots::TH2D_TYPE, "theta_phi", "Theta vs Phi",
+hsPlots myPlots(slices, hsPlots::TH2D_TYPE, HistoList, &SlicedHistoList, "theta_phi", "Theta vs Phi",
                 100, -180, 180, 100, 0, 180);
 
 // Fill with: momentum, phi, theta
@@ -34,7 +33,7 @@ class hsPlots {
 
     // hsPlots constructor ----------------------------------------------------------------------------------------------------------------------------------------------
 
-    hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, const std::string& baseName, const std::string& titleTemplate,
+    hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName, const std::string& titleTemplate,
             const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var);
 
     // hsPlots Destructor -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -70,8 +69,8 @@ class hsPlots {
     // SliceLimits: 2D vector of slice limits, each inner vector contains two elements: [lower_limit, upper_limit]
     std::vector<std::vector<double>> SliceLimits;
 
-    // SlicedHistoList: vector of histograms, each histogram corresponds to a slice defined in SliceLimits
-    std::vector<TH1*> SlicedHistoList;
+    // pointer to vector of histograms, each histogram corresponds to a slice defined in SliceLimits
+    std::vector<TH1*>* SlicedHistoListPtr;
 
     // histoType: type of histogram (TH1D or TH2D)
     // This is used to determine how to create the histograms in the constructor

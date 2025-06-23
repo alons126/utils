@@ -2,9 +2,6 @@
 // Created by Alon Sportes on 11/04/2025.
 //
 
-#ifndef HSPLOTS_H
-#define HSPLOTS_H
-
 #include "hsPlots.h"
 
 // hsPlots constructor --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -16,9 +13,9 @@
 // The histograms are created using the ROOT library's TH1D and TH2D classes.
 // The constructor also takes a vector of TObject pointers (HistoList) to store the created histograms.
 // The histograms are named using the base name and the slice index, and the titles are generated using the title template and the slice limits.
-hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, const std::string& baseName, const std::string& titleTemplate,
+hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName, const std::string& titleTemplate,
                  const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var)
-    : SliceLimits(sliceLimits), histoType(type) {
+    : SliceLimits(sliceLimits), histoType(type), SlicedHistoListPtr(SlicedHistoListPtr) {
     bool PrintOut = false;
 
     // Expand the slice limits by adding an additional slice to cover values greater than the last upper limit (e.g., to handle resolution effects)
@@ -85,7 +82,7 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
                 hist->GetYaxis()->SetTitle(yLabel.c_str());
             }
 
-            SlicedHistoList.push_back(hist);
+            SlicedHistoListPtr->push_back(hist);
         } else if (histoType == TH2D_TYPE) {
             TH2D* hist = new TH2D(name.str().c_str(), title.str().c_str(), nbinsX, xlow, xup, nbinsY, ylow, yup);
 
@@ -94,14 +91,14 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
                 hist->GetYaxis()->SetTitle(yLabel.c_str());
             }
 
-            SlicedHistoList.push_back(hist);
+            SlicedHistoListPtr->push_back(hist);
         }
 
         ++count;
     }
 
     // Append the created sliced histograms to the external HistoList vector provided by the caller
-    for (int i = 0; i < SlicedHistoList.size(); i++) { HistoList.push_back(SlicedHistoList[i]); }
+    for (int i = 0; i < static_cast<int>(SlicedHistoListPtr->size()); i++) { HistoList.push_back((*SlicedHistoListPtr)[i]); }
 }
 
 // hsPlots Destructor ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +107,7 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
 // This destructor iterates through the SlicedHistoList and deletes each histogram
 // to free up the memory allocated for them. This is important to prevent memory leaks in the program.
 hsPlots::~hsPlots() {
-    for (auto* h : SlicedHistoList) { delete h; }
+    for (auto* h : *SlicedHistoListPtr) { delete h; }
 }
 
 // FindSliceIndex function ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -135,7 +132,7 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
     int index = FindSliceIndex(sliceVar);
 
     // Check if slice index is valid:
-    if ((index < 0) || (index >= static_cast<int>(SlicedHistoList.size()))) {
+    if ((index < 0) || (index >= static_cast<int>(SlicedHistoListPtr->size()))) {
         std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Invalid slice index!\n";
         std::cerr << "index = " << index << "\n";
         std::cerr << "sliceVar = " << sliceVar << "\n";
@@ -144,23 +141,23 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
     }
 
     if (PrintOut) {
-        for (size_t i = 0; i < SlicedHistoList.size(); ++i) {
+        for (size_t i = 0; i < SlicedHistoListPtr->size(); ++i) {
             std::cout << "Index " << i << ": ";
-            if (!SlicedHistoList[i]) {
+            if (!(*SlicedHistoListPtr)[i]) {
                 std::cout << "nullptr\n";
             } else {
-                std::cout << SlicedHistoList[i]->ClassName() << "\n";
+                std::cout << (*SlicedHistoListPtr)[i]->ClassName() << "\n";
             }
         }
     }
 
-    if (!SlicedHistoList[index]) {
+    if (!(*SlicedHistoListPtr)[index]) {
         std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index = " << index << " is null!\n";
         std::cerr << "Aborting...\033[0m\n";
         exit(1);
     }
 
-    TObject* obj = SlicedHistoList[index];
+    TObject* obj = (*SlicedHistoListPtr)[index];
 
     if (histoType == TH1D_TYPE) {
         TH1D* h1_cast = dynamic_cast<TH1D*>(obj);
@@ -199,9 +196,9 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
     }
 
     // if (histoType == TH1D_TYPE) {
-    //     dynamic_cast<TH1D*>(SlicedHistoList[index])->Fill(x, weight);
+    //     dynamic_cast<TH1D*>((*SlicedHistoListPtr)[index])->Fill(x, weight);
     // } else if (histoType == TH2D_TYPE) {
-    //     dynamic_cast<TH2D*>(SlicedHistoList[index])->Fill(x, y, weight);
+    //     dynamic_cast<TH2D*>((*SlicedHistoListPtr)[index])->Fill(x, y, weight);
     // }
 }
 
@@ -238,11 +235,11 @@ void hsPlots::SaveHistograms(const std::string& outputDir, const std::string& ba
 
     canvas->Print((PDF_File + "[").c_str());  // Open multipage PDF
 
-    for (size_t i = 0; i < SlicedHistoList.size(); ++i) {
+    for (size_t i = 0; i < SlicedHistoListPtr->size(); ++i) {
         canvas->cd();
         canvas->Clear();
 
-        TH1* hist = SlicedHistoList[i];
+        TH1* hist = (*SlicedHistoListPtr)[i];
 
         // if (hist->GetEntries() == 0) {
         //     std::cout << "Skipping empty histogram [" << i << "]" << std::endl;
@@ -302,6 +299,4 @@ void hsPlots::SaveHistograms(const std::string& outputDir, const std::string& ba
 
 // GetSlicedHistoList function ------------------------------------------------------------------------------------------------------------------------------------------
 
-std::vector<TH1*> hsPlots::GetSlicedHistoList() const { return SlicedHistoList; }
-
-#endif  // HSPLOTS_H
+std::vector<TH1*> hsPlots::GetSlicedHistoList() const { return *SlicedHistoListPtr; }
