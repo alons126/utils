@@ -92,7 +92,7 @@ void HipoLooper() {
     // // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
 
     std::vector<std::vector<double>> theta_slices;
-    theta_slices.push_back({0.0, 180.0});
+    // theta_slices.push_back({0.0, 180.0});
     for (double start = 5.0; start < 40.0; start += 2.5) { theta_slices.push_back({start, start + 2.5}); }
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
@@ -4608,8 +4608,10 @@ void HipoLooper() {
 
             // Helper lambda for drawing title blocks
             auto draw_title_block = [&](const std::string &title, const std::vector<std::string> &lines, double startY, double stepY) {
-                titles.DrawLatex(0.05, startY, title.c_str());
-                for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.05 + (i == 0 ? 0.05 : 0.10), startY - (i + 1) * stepY, lines[i].c_str()); }
+                if (title != "") { titles.DrawLatex(0.05, startY, title.c_str()); }
+                for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.10, startY - (i + 1) * stepY, lines[i].c_str()); }
+                // titles.DrawLatex(0.05, startY, title.c_str());
+                // for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.05 + (i == 0 ? 0.05 : 0.10), startY - (i + 1) * stepY, lines[i].c_str()); }
             };
 
             // Helper lambda for drawing and beam info
