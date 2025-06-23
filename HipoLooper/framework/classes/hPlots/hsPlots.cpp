@@ -4,6 +4,27 @@
 
 #include "hsPlots.h"
 
+// hsPlots manages a list of sliced histograms (TH1D or TH2D) created from user-defined ranges.
+// Histogram objects are stored externally and passed via pointer, enabling ownership control outside the class.
+
+/*
+Example usage:
+
+std::vector<std::vector<double>> slices = {{0, 1}, {1, 2}, {2, 3}};
+std::vector<TObject*> HistoList;
+std::vector<TH1*> SlicedHistoList;
+
+hsPlots myPlots(slices, hsPlots::TH2D_TYPE, HistoList, &SlicedHistoList,
+                "theta_phi", "Theta vs Phi;#phi [deg];#theta [deg]",
+                100, -180, 180, 100, 0, 180, "theta");
+
+// Fill with: theta slice variable, phi, theta
+myPlots.Fill(1.5, 45, 90);
+
+// Save plots to disk
+myPlots.SaveHistograms("output_dir", "hist_output");
+*/
+
 // hsPlots constructor --------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Constructor to initialize the hsPlots object
@@ -13,6 +34,8 @@
 // The histograms are created using the ROOT library's TH1D and TH2D classes.
 // The constructor also takes a vector of TObject pointers (HistoList) to store the created histograms.
 // The histograms are named using the base name and the slice index, and the titles are generated using the title template and the slice limits.
+// @param SlicedHistoListPtr Pointer to a vector where the histograms will be stored.
+//        The caller is responsible for managing the lifetime of the vector and the histograms inside it.
 hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName, const std::string& titleTemplate,
                  const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var)
     : SliceLimits(sliceLimits), histoType(type), SlicedHistoListPtr(SlicedHistoListPtr) {
@@ -103,7 +126,8 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
 
 // hsPlots Destructor ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Destructor to clean up the dynamically allocated histograms
+// Destructor deletes all histograms pointed to by SlicedHistoListPtr.
+// NOTE: Only use this class if you intend the class to own and delete those histograms.
 // This destructor iterates through the SlicedHistoList and deletes each histogram
 // to free up the memory allocated for them. This is important to prevent memory leaks in the program.
 hsPlots::~hsPlots() {
@@ -299,4 +323,10 @@ void hsPlots::SaveHistograms(const std::string& outputDir, const std::string& ba
 
 // GetSlicedHistoList function ------------------------------------------------------------------------------------------------------------------------------------------
 
-std::vector<TH1*> hsPlots::GetSlicedHistoList() const { return *SlicedHistoListPtr; }
+// Pointer to externally managed vector of histograms.
+// Each histogram corresponds to a slice defined in SliceLimits.
+// The external owner is responsible for memory deallocation.
+std::vector<TH1*> hsPlots::GetSlicedHistoList() const { 
+    // Returns a copy of the vector of histogram pointers. Original ownership is not transferred.
+    return *SlicedHistoListPtr; 
+}
