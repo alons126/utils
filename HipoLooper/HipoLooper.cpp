@@ -4564,51 +4564,43 @@ void HipoLooper() {
 #pragma endregion
         }
 
+        std::cout << "\033[33m" << "\n\nEvent loop finished..." << "\n\n" << "\033[0m";
+
 #pragma endregion
 
-#pragma region nExtracting Vz correction parameters
-        std::cout << "\033[33m" << "\n\nExtracting Vz correction parameters..." << "\n\n" << "\033[0m";
+#pragma region Processing hsPlots plots
+        std::cout << "\033[33m" << "\n\nProcessing hsPlots plots..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
         // Sort hsPlots plots
         /////////////////////////////////////////////////////
 
-        // Helper lambda to sort histograms by theta slice start and then by prefix for consistent ordering.
+        // Sort histograms by slice start (X in "slice_from_X_to_Y") and base name
         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject *a, TObject *b) {
-            // Lambda to extract the "slice_from" value from the histogram name using regex.
-            auto extractSliceStart = [](const std::string &name) -> double {
-                // The regex matches patterns like "slice_from_<number>_to_<number>"
-                std::regex sliceRegex(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_([-+]?[0-9]*\.?[0-9]+))");  // Regex to find slice start/end numbers
-                std::smatch match;
-                if (std::regex_search(name, match, sliceRegex)) {
-                    // If match, convert the first captured group ("from" value) to double
-                    return std::stod(match[1]);  // "from" value
+            auto getStartVal = [](const std::string &name) -> double {
+                std::smatch m;
+                std::regex re(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
+                if (std::regex_search(name, m, re)) {
+                    return std::stod(m[1]);  // Extract start of slice
                 }
-                // If not matched, return a large number so unmatched names are sorted at the end
-                return 1e9;  // put unmatched names at the end
+                return 1e9;  // Push unmatched names to end
             };
 
-            // Lambda to extract the prefix before the slice info for secondary sorting.
-            auto extractPrefix = [](const std::string &name) -> std::string {
-                // Find where the "_slice_from_" substring starts
+            auto getBaseName = [](const std::string &name) -> std::string {
                 std::size_t pos = name.find("_slice_from_");
-                // If found, return the substring before it; otherwise, return the whole name
                 return (pos != std::string::npos) ? name.substr(0, pos) : name;
             };
 
-            // Get the names of the two objects to compare
-            std::string nameA = a->GetName();
-            std::string nameB = b->GetName();
+            double aStart = getStartVal(a->GetName());
+            double bStart = getStartVal(b->GetName());
+            if (aStart != bStart) return aStart < bStart;
 
-            // Use extractSliceStart to get the numeric start value for each histogram name
-            double sliceA = extractSliceStart(nameA);
-            double sliceB = extractSliceStart(nameB);
-
-            // Primary sort: by slice start value (numerically ascending)
-            if (sliceA != sliceB) return sliceA < sliceB;
-            // Secondary sort: by prefix (alphabetically) if slices are equal
-            return extractPrefix(nameA) < extractPrefix(nameB);
+            return getBaseName(a->GetName()) < getBaseName(b->GetName());
         });
+#pragma endregion
+
+#pragma region nExtracting Vz correction parameters
+        std::cout << "\033[33m" << "\n\nExtracting Vz correction parameters..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
@@ -4901,6 +4893,8 @@ void HipoLooper() {
             int plot_counter = 2;
             double yOffset = 0.075;  // Offset for the y position of the text
 
+            bool FirstStatboxOffset = true;
+
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
                 bool Is_hsPlot = bt::FindSubstring(title, "Slice limits:");
@@ -4950,11 +4944,13 @@ void HipoLooper() {
                     myCanvas->cd()->SetTopMargin(0.14);
 
                     TPaveStats *stats = (TPaveStats *)((TH1 *)TempHistoList[i])->FindObject("stats");
-                    if (stats) {
+                    if (stats && FirstStatboxOffset) {
                         stats->SetX1NDC(stats->GetX1NDC());
                         stats->SetY1NDC(stats->GetY1NDC() - 0.05);
                         stats->SetX2NDC(stats->GetX2NDC());
                         stats->SetY2NDC(stats->GetY2NDC() - 0.05);
+
+                        FirstStatboxOffset = false;
                     }
                 }
 
