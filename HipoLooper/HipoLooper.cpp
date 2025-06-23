@@ -4459,12 +4459,12 @@ void HipoLooper() {
         auto project = [&](TH2D *h2) -> TH1D * {
             if (!h2) return nullptr;
 
-            std::string projName = bt::ReplaceSubstring(name, "Vz_VS_", "");
+            std::string projName = bt::ReplaceSubstring(h2->GetName(), "Vz_VS_", "");
             auto h_phi = h2->ProjectionX(projName.c_str());
             h_phi->SetTitle(bt::ReplaceSubstring(h_phi->GetTitle(), "V_{z}^{e} vs. #phi_{e}", "#phi_{e}").c_str());
 
             if (!h_phi) {
-                std::cerr << "Error: Projection of " << name << " failed." << std::endl;
+                std::cerr << "Error: Projection of " << h2->GetName() << " failed." << std::endl;
                 return nullptr;
             }
 
@@ -4856,7 +4856,7 @@ void HipoLooper() {
 
         // Helper lambda for using the hf::CompareHistograms function
         int ComparisonNumber = 0;
-        auto compare = [&](const std::vector<TH1 *> &hists, const std::string &tag) {
+        auto compare = [&](const std::vector<TObject *> &hists, const std::string &tag) {
             ++ComparisonNumber;
             hf::CompareHistograms(hists, OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + tag);
         };
