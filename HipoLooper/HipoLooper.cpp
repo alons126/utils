@@ -93,7 +93,7 @@ void HipoLooper() {
 
     std::vector<std::vector<double>> theta_slices;
     // theta_slices.push_back({0.0, 180.0});
-    for (double start = 5.0; start < 40.0; start += 2.5) { theta_slices.push_back({start, start + 2.5}); }
+    for (double start = 0.0; start < 40.0; start += 2.5) { theta_slices.push_back({start, start + 2.5}); }
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
