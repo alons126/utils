@@ -4840,7 +4840,8 @@ void HipoLooper() {
             for (int i = 0; i < theta_slices.size(); i++) {
                 auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] =
                     extract_and_fit(label, Ebeam_status_1,
-                                    {Vz_HistogramLists[0][i], Vz_HistogramLists[1][i], Vz_HistogramLists[2][i], Vz_HistogramLists[3][i], Vz_HistogramLists[4][i], Vz_HistogramLists[5][i]},
+                                    {(TH1D *)Vz_HistogramLists[0][i], (TH1D *)Vz_HistogramLists[1][i], (TH1D *)Vz_HistogramLists[2][i], (TH1D *)Vz_HistogramLists[3][i],
+                                     (TH1D *)Vz_HistogramLists[4][i], (TH1D *)Vz_HistogramLists[5][i]},
                                     {project((TH2D *)Vz_VS_phi_HistogramLists[0][i]), project((TH2D *)Vz_VS_phi_HistogramLists[1][i]), project((TH2D *)Vz_VS_phi_HistogramLists[2][i]),
                                      project((TH2D *)Vz_VS_phi_HistogramLists[3][i]), project((TH2D *)Vz_VS_phi_HistogramLists[4][i]), project((TH2D *)Vz_VS_phi_HistogramLists[5][i])},
                                     true, true, theta_slices[i]);
