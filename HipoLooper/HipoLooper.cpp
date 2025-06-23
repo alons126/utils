@@ -5124,16 +5124,6 @@ void HipoLooper() {
                     auto *h = (TH1 *)TempHistoList[i];
                     h->GetYaxis()->SetTitleOffset(1.5);
                     h->GetXaxis()->SetTitleOffset(1.1);
-
-                    if (Is_hsPlot) {
-                        TPaveStats *stats = (TPaveStats *)((TH1 *)TempHistoList[i])->FindObject("stats");
-                        stats->SetX1NDC(stats->GetX1NDC());
-                        stats->SetY1NDC(stats->GetY1NDC() - 0.05);
-                        stats->SetX2NDC(stats->GetX2NDC());
-                        stats->SetY2NDC(stats->GetY2NDC() - 0.05);
-                        gPad->Modified();
-                        gPad->Update();
-                    }
                 } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
                     auto *g = (TGraph *)TempHistoList[i];
                     g->SetTitle((std::string(g->GetTitle()) + std::string(" - " + TempCodeRun_status)).c_str());  // Ensure title has x and y labels
@@ -5144,8 +5134,19 @@ void HipoLooper() {
 
                 if (TempHistoList[i]->InheritsFrom("TH1D")) {
                     auto *h = (TH1D *)TempHistoList[i];
-
                     h->Draw();
+
+                    if (Is_hsPlot) {
+                        TPaveStats *stats = (TPaveStats *)((TH1 *)TempHistoList[i])->FindObject("stats");
+                        if (stats) {
+                            stats->SetX1NDC(stats->GetX1NDC());
+                            stats->SetY1NDC(stats->GetY1NDC() - 0.05);
+                            stats->SetX2NDC(stats->GetX2NDC());
+                            stats->SetY2NDC(stats->GetY2NDC() - 0.05);
+                            gPad->Modified();
+                            gPad->Update();
+                        }
+                    }
 
                     if (bt::FindSubstring(h->GetTitle(), "Corrected V_{z}^{") || (bt::FindSubstring(h->GetTitle(), "V_{z}^{") && !bt::FindSubstring(h->GetTitle(), "dV_{z}^{"))) {
                         gPad->Update();
@@ -5225,6 +5226,18 @@ void HipoLooper() {
                     auto *h = (TH2D *)TempHistoList[i];
 
                     h->Draw("colz");
+
+                    if (Is_hsPlot) {
+                        TPaveStats *stats = (TPaveStats *)((TH1 *)TempHistoList[i])->FindObject("stats");
+                        if (stats) {
+                            stats->SetX1NDC(stats->GetX1NDC());
+                            stats->SetY1NDC(stats->GetY1NDC() - 0.05);
+                            stats->SetX2NDC(stats->GetX2NDC());
+                            stats->SetY2NDC(stats->GetY2NDC() - 0.05);
+                            gPad->Modified();
+                            gPad->Update();
+                        }
+                    }
 
                     myCanvas->SetLogz(0);
                     if (bt::FindSubstring(h->GetName(), "PCAL") && !bt::FindSubstring(h->GetName(), "sampling fraction")) { myCanvas->SetLogz(1); }
