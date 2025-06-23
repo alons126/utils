@@ -48,19 +48,19 @@ void HipoLooper() {
 
     std::cout << "\033[33m" << "\n\nInitiating HipoLooper.cpp...\n\n" << "\033[0m";
 
-    int version = 22;  // Version of the code
+    int version = 23;  // Version of the code
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_5";  // General status of the analysis
+    std::string General_status = "after_sampling_test_6";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
     bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
-    int Limiter = 10000000;  // 10M events (fo the data)
-    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    // int Limiter = 10000000;  // 10M events (fo the data)
+    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
@@ -187,9 +187,18 @@ void HipoLooper() {
         char temp_title[100];
 
         std::vector<double> HistoList_zoomin_limits;
+        std::vector<double> Vz_2D_limits;
 
         if (target_status == "Ar40") {
             HistoList_zoomin_limits = {-8.0, -4.0};
+
+            if (Is2GeV) {
+                Vz_2D_limits = {-12, -2};
+            } else if (Is4GeV) {
+                Vz_2D_limits = {-10, -2};
+            } else if (Is6GeV) {
+                Vz_2D_limits = {-8, -2};
+            }
         } else if (target_status == "C12") {
             HistoList_zoomin_limits = {-4.0, 1.0};
         }
@@ -315,13 +324,13 @@ void HipoLooper() {
                                                  HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
         HistoList.push_back(h_Vz_e_AC_zoomin_1e_cut);
 
-        std::vector<TH1 *> Sliced_Vz_e_HistoList;
+        std::vector<TH1 *> Vz_e_AC_1e_cut_BySliceOfTheta_HistoList;
         hsPlots h_Vz_e_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_e_HistoList, "Vz_e_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Vz_e_AC_1e_cut_BySliceOfTheta_HistoList, "Vz_e_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{e} [#circ]");
-        std::vector<TH1 *> Sliced_Vz_e_zoomin_HistoList;
+        std::vector<TH1 *> Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList;
         hsPlots h_Vz_e_AC_zoomin_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_e_zoomin_HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList, "Vz_e_AC_zoomin_1e_cut_BySliceOfTheta",
                     "V_{z}^{e} in (e,e') - zoomin - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts", 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), 75,
                     HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{e} [#circ]");
 
@@ -364,21 +373,32 @@ void HipoLooper() {
         HistoList.push_back(h_Vy_e_AC_1e_cut);
 
         TH2D *h_Vz_VS_phi_e_AC_1e_cut = new TH2D(
-            "Vz_VS_phi_e_AC_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -180, 180, 100, -13, 2);
+            "Vz_VS_phi_e_AC_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_e_AC_1e_cut);
 
         TH2D *h_Vz_VS_theta_e_AC_1e_cut = new TH2D(
-            "Vz_VS_theta_e_AC_1e_cut", ("V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 0, 50, 100, -13, 2);
+            "Vz_VS_theta_e_AC_1e_cut", ("V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_theta_e_AC_1e_cut);
+
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList;
+        hsPlots h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_phi_e_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_phi_e_AC_1e_cut", ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(),
-            100, -180, 180, 100, -13, 2);
+            150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
 
         TH2D *h_corrected_Vz_VS_theta_e_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_theta_e_AC_1e_cut",
-            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 100, 0, 50, 100, -13, 2);
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
         HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_1e_cut[4];  // 3 regions
@@ -524,15 +544,26 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector1_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector1_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_sector1_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_sector1_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
-                     -180, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_sector1_1e_cut);
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector1;
+        hsPlots h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
-        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_zoomin_sector1_1e_cut",
-                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector1);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -10, 70, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut);
+        TH2D *h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_sector1_1e_cut",
+            ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector1;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_sector1_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_sector1_1e_cut",
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_sector1_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector1_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector1_1e_cut[4];  // 3 regions
@@ -682,15 +713,26 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector2_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector2_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_sector2_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_sector2_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
-                     -180, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_sector2_1e_cut);
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector2;
+        hsPlots h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
-        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_zoomin_sector2_1e_cut",
-                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector2);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 50, 130, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut);
+        TH2D *h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_sector2_1e_cut",
+            ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector2;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_sector2_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_sector2_1e_cut",
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_sector2_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector2_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector2_1e_cut[4];  // 3 regions
@@ -840,15 +882,26 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector3_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector3_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_sector3_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_sector3_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
-                     -180, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_sector3_1e_cut);
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector3;
+        hsPlots h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
-        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_zoomin_sector3_1e_cut",
-                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector3);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, 110, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut);
+        TH2D *h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_sector3_1e_cut",
+            ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector3;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_sector3_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_sector3_1e_cut",
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_sector3_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector3_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector3_1e_cut[4];  // 3 regions
@@ -998,15 +1051,26 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector4_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector4_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_sector4_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_sector4_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
-                     -180, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_sector4_1e_cut);
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector4;
+        hsPlots h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
-        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut = new TH2D(
-            "Vz_VS_phi_e_AC_zoomin_sector4_1e_cut",
-            ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector4);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -180, -110, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut);
+        TH2D *h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_sector4_1e_cut",
+            ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector4;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_sector4_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_sector4_1e_cut",
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_sector4_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector4_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector4_1e_cut[4];  // 3 regions
@@ -1156,15 +1220,26 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector5_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector5_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_sector5_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_sector5_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
-                     -180, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_sector5_1e_cut);
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector5;
+        hsPlots h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
-        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut = new TH2D(
-            "Vz_VS_phi_e_AC_zoomin_sector5_1e_cut",
-            ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector5);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -130, -50, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut);
+        TH2D *h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_sector5_1e_cut",
+            ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector5;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_sector5_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_sector5_1e_cut",
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_sector5_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector5_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector5_1e_cut[4];  // 3 regions
@@ -1314,15 +1389,26 @@ void HipoLooper() {
             new TH1D("Vy_e_AC_sector6_1e_cut", ("V_{y}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{y}^{e} [cm];Counts").c_str(), 75, -1, 1);
         HistoList.push_back(h_Vy_e_AC_sector6_1e_cut);
 
-        TH2D *h_Vz_VS_phi_e_AC_sector6_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_sector6_1e_cut", ("V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100,
-                     -180, 180, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_sector6_1e_cut);
+        std::vector<TH1 *> Sliced_Vz_VS_phi_e_HistoList_sector6;
+        hsPlots h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_VS_phi_e_HistoList, "Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
+                    "V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2, "#theta_{e} [#circ]");
 
-        TH2D *h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut =
-            new TH2D("Vz_VS_phi_e_AC_zoomin_sector6_1e_cut",
-                     ("V_{z}^{e} vs. #phi_{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector6);#phi_{e} [#circ];V_{z}^{e} [cm]").c_str(), 100, -70, 10, 100, -13, 2);
-        HistoList.push_back(h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut);
+        TH2D *h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut = new TH2D(
+            "corrected_Vz_VS_phi_e_AC_sector6_1e_cut",
+            ("Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, -180, 180, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut);
+
+        std::vector<TH1 *> Sliced_corrected_Vz_VS_phi_e_HistoList_sector6;
+        hsPlots h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta =
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_corrected_Vz_VS_phi_e_HistoList, "corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta",
+                    "Corrected V_{z}^{e} vs. #phi_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#phi_{e} [#circ];Corrected V_{z}^{e} [cm];Counts", 150, -180, 180, 150, -13, 2,
+                    "#theta_{e} [#circ]");
+
+        TH2D *h_corrected_Vz_VS_theta_e_AC_sector6_1e_cut = new TH2D(
+            "corrected_Vz_VS_theta_e_AC_sector6_1e_cut",
+            ("Corrected V_{z}^{e} vs. #theta_{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);#theta_{e} [#circ];Corrected V_{z}^{e} [cm]").c_str(), 150, 0, 50, 150, -13, 2);
+        HistoList.push_back(h_corrected_Vz_VS_theta_e_AC_sector6_1e_cut);
 
         TH2D *h_dc_electron_hit_map_BC_sector6_1e_cut[4];  // 3 regions
         TH2D *h_dc_electron_hit_map_AC_sector6_1e_cut[4];  // 3 regions
@@ -1424,13 +1510,13 @@ void HipoLooper() {
                      HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
         HistoList.push_back(h_Vz_pipFD_AC_zoomin_1e_cut);
 
-        std::vector<TH1 *> Sliced_Vz_pipFD_HistoList;
+        std::vector<TH1 *> Vz_pipFD_AC_1e_cut_BySliceOfTheta_HistoList;
         hsPlots h_Vz_pipFD_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pipFD_HistoList, "Vz_pipFD_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Vz_pipFD_AC_1e_cut_BySliceOfTheta_HistoList, "Vz_pipFD_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{#pi^{+}FD} [#circ]");
-        std::vector<TH1 *> Sliced_Vz_pipFD_zoomin_HistoList;
+        std::vector<TH1 *> Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList;
         hsPlots h_Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pipFD_zoomin_HistoList, "Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList, "Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{+}FD} in (e,e') - zoomin - " + CodeRun_status + " (after #pi^{+}FD cuts);V_{z}^{#pi^{+}FD} [cm];Counts", 75, HistoList_zoomin_limits.at(0),
                     HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{#pi^{+}FD} [#circ]");
 
@@ -1512,27 +1598,27 @@ void HipoLooper() {
 
         TH2D *h_Vz_VS_phi_pipFD_AC_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_1e_cut",
-                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(), 100, -180,
-                     180, 100, -13, 2);
+                     ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(), 150, -180,
+                     180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_1e_cut);
 
         TH2D *h_Vz_VS_theta_pipFD_AC_1e_cut =
             new TH2D("Vz_VS_theta_pipFD_AC_1e_cut",
-                     ("V_{z}^{#pi^{+}FD} vs. #theta_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#theta_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(), 100, 0,
-                     50, 100, -13, 2);
+                     ("V_{z}^{#pi^{+}FD} vs. #theta_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#theta_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(), 150, 0,
+                     50, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_theta_pipFD_AC_1e_cut);
 
         TH2D *h_corrected_Vz_VS_phi_pipFD_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_phi_pipFD_AC_1e_cut",
             ("Corrected V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#phi_{#pi^{+}FD} [#circ];Corrected V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, -180, 180, 100, -13, 2);
+            150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_corrected_Vz_VS_phi_pipFD_AC_1e_cut);
 
         TH2D *h_corrected_Vz_VS_theta_pipFD_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_theta_pipFD_AC_1e_cut",
             ("Corrected V_{z}^{#pi^{+}FD} vs. #theta_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts);#theta_{#pi^{+}FD} [#circ];Corrected V_{z}^{#pi^{+}FD} [cm]")
                 .c_str(),
-            100, 0, 50, 100, -13, 2);
+            150, 0, 50, 150, -13, 2);
         HistoList.push_back(h_corrected_Vz_VS_theta_pipFD_AC_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_1e_cut[4];  // 3 regions
@@ -1668,13 +1754,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pipFD_AC_sector1_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_sector1_1e_cut",
                      ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector1);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut);
 
         TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut = new TH2D(
             "Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut",
             ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector1);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, -10, 70, 100, -13, 2);
+            150, -10, 70, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector1_1e_cut[4];  // 3 regions
@@ -1804,13 +1890,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pipFD_AC_sector2_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_sector2_1e_cut",
                      ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector2);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut);
 
         TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut = new TH2D(
             "Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut",
             ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector2);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, 50, 130, 100, -13, 2);
+            150, 50, 130, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector2_1e_cut[4];  // 3 regions
@@ -1940,13 +2026,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pipFD_AC_sector3_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_sector3_1e_cut",
                      ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector3);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut);
 
         TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut = new TH2D(
             "Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut",
             ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector3);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, 110, 180, 100, -13, 2);
+            150, 110, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector3_1e_cut[4];  // 3 regions
@@ -2076,13 +2162,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pipFD_AC_sector4_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_sector4_1e_cut",
                      ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector4);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut);
 
         TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut = new TH2D(
             "Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut",
             ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector4);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, -180, -110, 100, -13, 2);
+            150, -180, -110, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector4_1e_cut[4];  // 3 regions
@@ -2212,13 +2298,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pipFD_AC_sector5_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_sector5_1e_cut",
                      ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector5);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut);
 
         TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut = new TH2D(
             "Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut",
             ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector5);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, -130, -50, 100, -13, 2);
+            150, -130, -50, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector5_1e_cut[4];  // 3 regions
@@ -2348,13 +2434,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pipFD_AC_sector6_1e_cut =
             new TH2D("Vz_VS_phi_pipFD_AC_sector6_1e_cut",
                      ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (after #pi^{+}FD cuts, sector6);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut);
 
         TH2D *h_Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut = new TH2D(
             "Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut",
             ("V_{z}^{#pi^{+}FD} vs. #phi_{#pi^{+}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{+}FD cuts, sector6);#phi_{#pi^{+}FD} [#circ];V_{z}^{#pi^{+}FD} [cm]").c_str(),
-            100, -70, 10, 100, -13, 2);
+            150, -70, 10, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut);
 
         TH2D *h_dc_pipFD_hit_map_BC_sector6_1e_cut[4];  // 3 regions
@@ -2393,13 +2479,13 @@ void HipoLooper() {
                      HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1));
         HistoList.push_back(h_Vz_pimFD_AC_zoomin_1e_cut);
 
-        std::vector<TH1 *> Sliced_Vz_pimFD_HistoList;
+        std::vector<TH1 *> Vz_pimFD_AC_1e_cut_BySliceOfTheta_HistoList;
         hsPlots h_Vz_pimFD_AC_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Vz_pimFD_AC_1e_cut_BySliceOfTheta_HistoList, "Vz_pimFD_AC_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);V_{z}^{#pi^{-}FD} [cm];Counts", 75, -9, 2, 75, -9, 2, "#theta_{#pi^{-}FD} [#circ]");
-        std::vector<TH1 *> Sliced_Vz_pimFD_zoomin_HistoList;
+        std::vector<TH1 *> Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList;
         hsPlots h_Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta =
-            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Sliced_Vz_pimFD_zoomin_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
+            hsPlots(theta_slices, hsPlots::TH1D_TYPE, HistoList_ByThetaSlices, &Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList, "Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta",
                     "V_{z}^{#pi^{-}FD} in (e,e') - zoomin - " + CodeRun_status + " (after #pi^{-}FD cuts);V_{z}^{#pi^{-}FD} [cm];Counts", 75, HistoList_zoomin_limits.at(0),
                     HistoList_zoomin_limits.at(1), 75, HistoList_zoomin_limits.at(0), HistoList_zoomin_limits.at(1), "#theta_{#pi^{-}FD} [#circ]");
 
@@ -2481,27 +2567,27 @@ void HipoLooper() {
 
         TH2D *h_Vz_VS_phi_pimFD_AC_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_1e_cut",
-                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 100, -180,
-                     180, 100, -13, 2);
+                     ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 150, -180,
+                     180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_1e_cut);
 
         TH2D *h_Vz_VS_theta_pimFD_AC_1e_cut =
             new TH2D("Vz_VS_theta_pimFD_AC_1e_cut",
-                     ("V_{z}^{#pi^{-}FD} vs. #theta_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#theta_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 100, 0,
-                     50, 100, -13, 2);
+                     ("V_{z}^{#pi^{-}FD} vs. #theta_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#theta_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(), 150, 0,
+                     50, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_theta_pimFD_AC_1e_cut);
 
         TH2D *h_corrected_Vz_VS_phi_pimFD_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_phi_pimFD_AC_1e_cut",
             ("Corrected V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#phi_{#pi^{-}FD} [#circ];Corrected V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, -180, 180, 100, -13, 2);
+            150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_corrected_Vz_VS_phi_pimFD_AC_1e_cut);
 
         TH2D *h_corrected_Vz_VS_theta_pimFD_AC_1e_cut = new TH2D(
             "corrected_Vz_VS_theta_pimFD_AC_1e_cut",
             ("Corrected V_{z}^{#pi^{-}FD} vs. #theta_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts);#theta_{#pi^{-}FD} [#circ];Corrected V_{z}^{#pi^{-}FD} [cm]")
                 .c_str(),
-            100, 0, 50, 100, -13, 2);
+            150, 0, 50, 150, -13, 2);
         HistoList.push_back(h_corrected_Vz_VS_theta_pimFD_AC_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_1e_cut[4];  // 3 regions
@@ -2637,13 +2723,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pimFD_AC_sector1_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_sector1_1e_cut",
                      ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector1);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut);
 
         TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut = new TH2D(
             "Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut",
             ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector1);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, -10, 70, 100, -13, 2);
+            150, -10, 70, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector1_1e_cut[4];  // 3 regions
@@ -2773,13 +2859,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pimFD_AC_sector2_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_sector2_1e_cut",
                      ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector2);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut);
 
         TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut = new TH2D(
             "Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut",
             ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector2);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, 50, 130, 100, -13, 2);
+            150, 50, 130, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector2_1e_cut[4];  // 3 regions
@@ -2909,13 +2995,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pimFD_AC_sector3_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_sector3_1e_cut",
                      ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector3);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut);
 
         TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut = new TH2D(
             "Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut",
             ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector3);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, 130, 180, 100, -13, 2);
+            150, 130, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector3_1e_cut[4];  // 3 regions
@@ -3045,13 +3131,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pimFD_AC_sector4_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_sector4_1e_cut",
                      ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector4);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut);
 
         TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut = new TH2D(
             "Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut",
             ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector4);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, -180, -110, 100, -13, 2);
+            150, -180, -110, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector4_1e_cut[4];  // 3 regions
@@ -3181,13 +3267,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pimFD_AC_sector5_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_sector5_1e_cut",
                      ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector5);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut);
 
         TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut = new TH2D(
             "Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut",
             ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector5);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, -130, -50, 100, -13, 2);
+            150, -130, -50, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector5_1e_cut[4];  // 3 regions
@@ -3317,13 +3403,13 @@ void HipoLooper() {
         TH2D *h_Vz_VS_phi_pimFD_AC_sector6_1e_cut =
             new TH2D("Vz_VS_phi_pimFD_AC_sector6_1e_cut",
                      ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (after #pi^{-}FD cuts, sector6);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-                     100, -180, 180, 100, -13, 2);
+                     150, -180, 180, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut);
 
         TH2D *h_Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut = new TH2D(
             "Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut",
             ("V_{z}^{#pi^{-}FD} vs. #phi_{#pi^{-}FD} in (e,e') - zoom-in - " + CodeRun_status + " (after #pi^{-}FD cuts, sector6);#phi_{#pi^{-}FD} [#circ];V_{z}^{#pi^{-}FD} [cm]").c_str(),
-            100, -70, 10, 100, -13, 2);
+            150, -70, 10, 150, -13, 2);
         HistoList.push_back(h_Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut);
 
         TH2D *h_dc_pimFD_hit_map_BC_sector6_1e_cut[4];  // 3 regions
@@ -3754,6 +3840,9 @@ void HipoLooper() {
             h_corrected_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
             h_corrected_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
 
+            h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+            h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+
             raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_1e_cut, weight);
 
             h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -3781,6 +3870,9 @@ void HipoLooper() {
                 h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
                 h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
+                h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+
                 raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector1_1e_cut, weight);
 
                 h_nphe_AC_sector1_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -3806,6 +3898,9 @@ void HipoLooper() {
 
                 h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
                 h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+
+                h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
                 raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector2_1e_cut, weight);
 
@@ -3833,6 +3928,9 @@ void HipoLooper() {
                 h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
                 h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
+                h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+
                 raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector3_1e_cut, weight);
 
                 h_nphe_AC_sector3_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -3858,6 +3956,9 @@ void HipoLooper() {
 
                 h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
                 h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+
+                h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
                 raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector4_1e_cut, weight);
 
@@ -3885,6 +3986,9 @@ void HipoLooper() {
                 h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
                 h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
+                h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+
                 raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector5_1e_cut, weight);
 
                 h_nphe_AC_sector5_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -3910,6 +4014,9 @@ void HipoLooper() {
 
                 h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
                 h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+
+                h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
                 raf::fillDCdebug(electrons[0], h_dc_electron_hit_map_AC_sector6_1e_cut, weight);
 
@@ -4417,6 +4524,10 @@ void HipoLooper() {
         std::cout << "\033[33m" << "\n\nExtracting Vz correction parameters..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
+        // Reorder hsPlots plots
+        /////////////////////////////////////////////////////
+
+        /////////////////////////////////////////////////////
         // Extracting Vz correction parameters
         /////////////////////////////////////////////////////
 
@@ -4696,6 +4807,7 @@ void HipoLooper() {
 
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
+                bool Is_hsPlot = bt::FindSubstring(title, "Slice limits:");
 
                 for (const auto &[particle_key, label] : particle_labels) {
                     if (bt::FindSubstring(title, particle_key)) {
@@ -4737,6 +4849,8 @@ void HipoLooper() {
 
                 myCanvas->cd()->SetGrid();
                 myCanvas->cd()->SetBottomMargin(0.14), myCanvas->cd()->SetLeftMargin(0.16), myCanvas->cd()->SetRightMargin(0.12);
+
+                if (Is_hsPlot) { myCanvas->cd()->SetTopMargin(0.12); }
 
                 if (TempHistoList[i]->InheritsFrom("TH1") || TempHistoList[i]->InheritsFrom("TH2")) {
                     auto *h = (TH1 *)TempHistoList[i];

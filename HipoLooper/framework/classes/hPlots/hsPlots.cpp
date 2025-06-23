@@ -96,7 +96,7 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
         }
 
         // Construct the histogram title with slice range information
-        title << "#splitline{ " << mainTitle << " }{ " << basic_tools::ToStringWithPrecision(range.at(0), 2) << "#leq" << slice_var_pair.first << "#leq"
+        title << "#splitline{ " << mainTitle << " }{ Slice limits: " << basic_tools::ToStringWithPrecision(range.at(0), 2) << "#leq" << slice_var_pair.first << "#leq"
               << basic_tools::ToStringWithPrecision(range.at(1), 2) << " " + slice_var_pair.second + " }";
 
         // Create the histogram object depending on the specified histogram type (TH1D or TH2D)
