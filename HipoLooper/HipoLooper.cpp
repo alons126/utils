@@ -4726,13 +4726,13 @@ void HipoLooper() {
         };
 
         // Usage:
-        std::pair<double, double> theta_slices = {-1, -1};
+        std::pair<double, double> theta_slice = {-1, -1};
 
         auto [A_e, Vz_VS_phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
             "e", Ebeam_status_1, {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
             {project(h_Vz_VS_phi_e_AC_sector1_1e_cut), project(h_Vz_VS_phi_e_AC_sector2_1e_cut), project(h_Vz_VS_phi_e_AC_sector3_1e_cut), project(h_Vz_VS_phi_e_AC_sector4_1e_cut),
              project(h_Vz_VS_phi_e_AC_sector5_1e_cut), project(h_Vz_VS_phi_e_AC_sector6_1e_cut)},
-            true, false, theta_slices);
+            true, false, theta_slice);
 
         auto [A_pipFD, Vz_VS_phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             extract_and_fit("#pi^{+}FD", Ebeam_status_1,
@@ -4740,7 +4740,7 @@ void HipoLooper() {
                              h_Vz_pipFD_AC_sector6_1e_cut},
                             {project(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut),
                              project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut)},
-                            true, true, theta_slices);
+                            true, true, theta_slice);
 
         auto [A_pimFD, Vz_VS_phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
             extract_and_fit("#pi^{-}FD", Ebeam_status_1,
@@ -4748,7 +4748,7 @@ void HipoLooper() {
                              h_Vz_pimFD_AC_sector6_1e_cut},
                             {project(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut),
                              project(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut)},
-                            true, true, theta_slices);
+                            true, true, theta_slice);
 #pragma endregion
 
 #pragma region Processing hsPlots plots
