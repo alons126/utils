@@ -4593,6 +4593,19 @@ void HipoLooper() {
                 return 9;                                                 // Unknown or unmatched types get lowest priority
             };
 
+            // Assign a sorting priority based on histograms name.
+            // "Vz_<particle>_AC_1e_cut_BySliceOfTheta_[...]" comes first,
+            // followed by "Vz_<particle>_AC_zoomin_1e_cut_BySliceOfTheta_slice_[...]",
+            // then "Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_slice_from_[...]" and
+            // lastly "corrected_Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_[...]"
+            auto getNamePriority = [](const std::string &name) -> int {
+                if (name.find("corrected") != std::string::npos) return 3;
+                if (name.find("Vz_VS_phi") != std::string::npos) return 2;
+                if (name.find("zoomin") != std::string::npos) return 1;
+                if (name.find("Vz_") != std::string::npos) return 0;
+                return 9;
+            };
+            
             // Extract sector number from histogram name.
             // Returns 0 for non-sector histograms (to sort them first).
             auto getSector = [](const std::string &name) -> int {
@@ -4615,6 +4628,11 @@ void HipoLooper() {
             int particleA = getParticlePriority(nameA);
             int particleB = getParticlePriority(nameB);
             if (particleA != particleB) return particleA < particleB;
+
+            // Compare particle types first
+            int NameA = getNamePriority(nameA);
+            int NameB = getNamePriority(nameB);
+            if (NameA != NameB) return NameA < NameB;
 
             // Then compare sectors (non-sector histograms first)
             int sectorA = getSector(nameA);
@@ -4926,8 +4944,6 @@ void HipoLooper() {
             int plot_counter = 2;
             double yOffset = 0.075;  // Offset for the y position of the text
 
-            bool FirstStatboxOffset = true;
-
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
                 bool Is_hsPlot = bt::FindSubstring(title, "Slice limits:");
@@ -4982,8 +4998,6 @@ void HipoLooper() {
                         stats->SetY1NDC(stats->GetY1NDC() - 0.05);
                         stats->SetX2NDC(stats->GetX2NDC());
                         stats->SetY2NDC(stats->GetY2NDC() - 0.05);
-
-                        FirstStatboxOffset = false;
                     }
                 }
 
