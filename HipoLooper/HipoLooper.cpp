@@ -52,12 +52,12 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_6";  // General status of the analysis
+    std::string General_status = "after_sampling_test_6_full";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
     int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -155,6 +155,10 @@ void HipoLooper() {
         const std::string IndividualPlotsOutputDir = OutputDir + "/Individual_plots/";
         system(("rm -rf " + IndividualPlotsOutputDir).c_str());
         system(("mkdir -p " + IndividualPlotsOutputDir).c_str());
+
+        const std::string IndividualPlotsOutputDirByThetaSlices = OutputDir + "/Individual_plots/ByThetaSlices/";
+        system(("rm -rf " + IndividualPlotsOutputDirByThetaSlices).c_str());
+        system(("mkdir -p " + IndividualPlotsOutputDirByThetaSlices).c_str());
 
         TFile *outFile = new TFile((OutputDir + "/" + OutFileName + ".root").c_str(), "RECREATE");
         TFile *outFile_ByThetaSlices = new TFile((OutputDir + "/" + OutFileName + "_ByThetaSlices.root").c_str(), "RECREATE");
@@ -5030,7 +5034,9 @@ void HipoLooper() {
                 }
 
                 if (bt::FindSubstring(TempHistoList[i]->GetTitle(), "V_{z}^{") && !bt::FindSubstring(TempHistoList[i]->GetTitle(), "sector")) {
-                    std::string Individual_PDF_fileName = IndividualPlotsOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
+                    std::string Individual_PDF_fileName = (bt::FindSubstring(TempOutFolderName, "ByThetaSlices"))
+                                                              ? IndividualPlotsOutputDirByThetaSlices + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf"
+                                                              : IndividualPlotsOutputDir + to_string(plot_counter) + "_" + TempHistoList[i]->GetName() + ".pdf";
                     myCanvas->SaveAs(Individual_PDF_fileName.c_str());
                     hf::FixPDFOrientation(Individual_PDF_fileName);
                 }
