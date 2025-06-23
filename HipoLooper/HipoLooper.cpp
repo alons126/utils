@@ -4950,6 +4950,7 @@ void HipoLooper() {
             gStyle->SetOptStat("ourmen");
 
             TCanvas *myCanvas = new TCanvas("myPage", "myPage", pixelx, pixely);
+            double originalTopMargin = myCanvas->GetTopMargin();
 
             std::string PDF_fileName = TempOutputDir + "/" + TempOutFolderName + ".pdf";
             char fileName[PDF_fileName.length()];
@@ -5115,6 +5116,8 @@ void HipoLooper() {
 
                     // gPad->Modified();
                     // gPad->Update();
+                } else {
+                    myCanvas->cd()->SetTopMargin(originalTopMargin);
                 }
 
                 if (TempHistoList[i]->InheritsFrom("TH1") || TempHistoList[i]->InheritsFrom("TH2")) {
