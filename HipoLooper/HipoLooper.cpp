@@ -30,7 +30,7 @@
 // Include classes:
 #include "framework/classes/clas12ana/clas12ana.cpp"
 // #include "framework/classes/clas12ana/clas12ana.h"
-#include "framework/classes/hPlots/hsPlots.cpp"
+#include "framework/classes/hPlots/hsPlots.h"
 
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"

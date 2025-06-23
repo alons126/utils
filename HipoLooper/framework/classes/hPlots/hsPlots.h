@@ -5,17 +5,17 @@
 #ifndef HSPLOTS_H
 #define HSPLOTS_H
 
-    #include <TCanvas.h>
-    #include <TClass.h>
-    #include <TH1.h>
-    #include <TH1D.h>
-    #include <TH2D.h>
-    #include <TString.h>
+#include <TCanvas.h>
+#include <TClass.h>
+#include <TH1.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TString.h>
 
-    #include <iostream>
-    #include <sstream>
-    #include <string>
-    #include <vector>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 /*
 Example usage:
@@ -45,8 +45,8 @@ class hsPlots {
     // hsPlots constructor ----------------------------------------------------------------------------------------------------------------------------------------------
     // @param SlicedHistoListPtr Pointer to a vector where the histograms will be stored.
     //        The caller is responsible for managing the lifetime of the vector and the histograms inside it.
-    hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName, const std::string& titleTemplate,
-            const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var);
+    hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType type, std::vector<TObject*>& HistoList, std::vector<TH1*>* SlicedHistoListPtr, const std::string& baseName,
+            const std::string& titleTemplate, const int& nbinsX, const double& xlow, const double& xup, const int& nbinsY, const double& ylow, const double& yup, std::string slice_var);
 
     // hsPlots Destructor ----------------------------------------------------------------------------------------------------------------------------------------------
     // Destructor deletes all histograms pointed to by SlicedHistoListPtr.
@@ -72,7 +72,7 @@ class hsPlots {
         displayText->SetTextAlign(22);
         displayText->Draw();
     }
-    
+
     // SaveHistograms function -------------------------------------------------------------------------------------------------------------------------------------
 
     void SaveHistograms(const std::string& outputDir, const std::string& baseFileName) const;
