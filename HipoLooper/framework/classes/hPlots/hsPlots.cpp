@@ -134,7 +134,7 @@ hsPlots::hsPlots(const std::vector<std::vector<double>>& sliceLimits, HistoType 
 // This destructor iterates through the SlicedHistoList and deletes each histogram
 // to free up the memory allocated for them. This is important to prevent memory leaks in the program.
 hsPlots::~hsPlots() {
-    for (auto* h : *SlicedHistoListPtr) { delete h; }
+    // for (auto* h : *SlicedHistoListPtr) { delete h; }
 }
 
 // FindSliceIndex function ---------------------------------------------------------------------------------------------------------------------------------------------
