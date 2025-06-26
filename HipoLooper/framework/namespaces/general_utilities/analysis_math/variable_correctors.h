@@ -149,7 +149,8 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
     double meanGuess = 0.5 * (maxZ + minZ);
     fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
 
-    fitFunc->SetParLimits(0, 0, 1); // Set amplitude (or r) limits to be non-negative
+    fitFunc->SetParLimits(0, 0, 9999); // Set amplitude (or r) limits to be non-negative
+    // fitFunc->SetParLimits(0, 0, 1); // Set amplitude (or r) limits to be non-negative
 
     // double minPhi_beam = 30;
     // double maxPhi_beam = 45;
@@ -170,6 +171,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         A = A / tan(mean_theta_rad);  // convert back from r to amplitude
     }
 
+    // Converts phi_beam into range [-180^\circ, 180^\circ]
     phi_beam = fmod(phi_beam, 360.0);
     if (phi_beam < -180.0) {
         phi_beam += 360.0;
@@ -187,14 +189,14 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = V_{z,true}^{" << Particle << "} - A*cos(#phi_{" << Particle << "} - #phi_{beam})";
     }
 
-    TLegend *legend = new TLegend(0.18, 0.77, 0.775, 0.88);
+    TLegend *legend = new TLegend(0.18, 0.77, 0.74, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     legend->SetTextAlign(12);
     legend->SetTextSize(0.025);
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.65, 0.375, 0.75, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.375, 0.65, 0.56, 0.75, "NDC");
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.65, 0.30, 0.75, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.30, 0.65, 0.60, 0.75, "NDC");
 
     for (auto *box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
@@ -212,7 +214,7 @@ std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle
         FitParam1->AddText(("A = " + basic_tools::ToStringWithPrecision(A) + " cm").c_str());
     }
 
-    FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ").c_str());
+    FitParam2->AddText(("#phi_{beam} = " + basic_tools::ToStringWithPrecision(phi_beam) + "#circ (#in [-180#circ, 180#circ])").c_str());
     FitParam2->AddText(("V_{z,true}^{" + Particle + "} = " + basic_tools::ToStringWithPrecision(Vz_true) + " cm").c_str());
 
     g->GetListOfFunctions()->Add(FitParam1);

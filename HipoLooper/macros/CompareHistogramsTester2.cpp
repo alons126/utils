@@ -132,24 +132,24 @@ void CompareHistogramsTester2() {
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
     //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_C12_data_4GeV_run_015778_35_to_40_deg_lastB4thetaSliceFit/017_HipoLooper_v17_C12_data_4GeV_run_015778_35_to_40_deg_lastB4thetaSliceFit.root");
 
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_10_to_15_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_10_to_15_deg_lastB4thetaSliceFit.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_15_to_20_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_15_to_20_deg_lastB4thetaSliceFit.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_10_to_15_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_10_to_15_deg_lastB4thetaSliceFit.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_15_to_20_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_15_to_20_deg_lastB4thetaSliceFit.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
         "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit.root");
-    InputFiles.push_back(
-        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_35_to_40_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_35_to_40_deg_lastB4thetaSliceFit.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit.root");
+    // InputFiles.push_back(
+    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_35_to_40_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_35_to_40_deg_lastB4thetaSliceFit.root");
 
     // InputFiles.push_back(
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
@@ -367,36 +367,36 @@ void CompareHistogramsTester2() {
             return std::make_pair(vz_hist, phi_hist);
         };
 
-        auto h_Vz_e_AC_1e_cut = (TH1D *)load("Vz_e_AC_1e_cut", "TH1D");
-        auto h_Vz_e_AC_zoomin_1e_cut = (TH1D *)load("Vz_e_AC_zoomin_1e_cut", "TH1D");
-        auto h_Vx_e_AC_1e_cut = (TH1D *)load("Vx_e_AC_1e_cut", "TH1D");
-        auto h_Vy_e_AC_1e_cut = (TH1D *)load("Vy_e_AC_1e_cut", "TH1D");
-        auto h_Vz_e_AC_sector1_1e_cut = (TH1D *)load("Vz_e_AC_sector1_1e_cut", "TH1D");
-        auto [h_Vz_e_AC_zoomin_sector1_1e_cut, h_phi_e_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "e");
-        auto h_Vz_e_AC_sector2_1e_cut = (TH1D *)load("Vz_e_AC_sector2_1e_cut", "TH1D");
-        auto [h_Vz_e_AC_zoomin_sector2_1e_cut, h_phi_e_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "e");
-        auto h_Vz_e_AC_sector3_1e_cut = (TH1D *)load("Vz_e_AC_sector3_1e_cut", "TH1D");
-        auto [h_Vz_e_AC_zoomin_sector3_1e_cut, h_phi_e_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "e");
-        auto h_Vz_e_AC_sector4_1e_cut = (TH1D *)load("Vz_e_AC_sector4_1e_cut", "TH1D");
-        auto [h_Vz_e_AC_zoomin_sector4_1e_cut, h_phi_e_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "e");
-        auto h_Vz_e_AC_sector5_1e_cut = (TH1D *)load("Vz_e_AC_sector5_1e_cut", "TH1D");
-        auto [h_Vz_e_AC_zoomin_sector5_1e_cut, h_phi_e_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "e");
-        auto h_Vz_e_AC_sector6_1e_cut = (TH1D *)load("Vz_e_AC_sector6_1e_cut", "TH1D");
-        auto [h_Vz_e_AC_zoomin_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "e");
-        // auto h_corrected_Vz_e_AC_1e_cut = (TH1D *)load("corrected_Vz_e_AC_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_1e_cut->SetName("Vz_e_AC_corrected_1e_cut");
-        // auto h_corrected_Vz_e_AC_sector1_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector1_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_sector1_1e_cut->SetName("Vz_e_AC_corrected_sector1_1e_cut");
-        // auto h_corrected_Vz_e_AC_sector2_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector2_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_sector2_1e_cut->SetName("Vz_e_AC_corrected_sector2_1e_cut");
-        // auto h_corrected_Vz_e_AC_sector3_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector3_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_sector3_1e_cut->SetName("Vz_e_AC_corrected_sector3_1e_cut");
-        // auto h_corrected_Vz_e_AC_sector4_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector4_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_sector4_1e_cut->SetName("Vz_e_AC_corrected_sector4_1e_cut");
-        // auto h_corrected_Vz_e_AC_sector5_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector5_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_sector5_1e_cut->SetName("Vz_e_AC_corrected_sector5_1e_cut");
-        // auto h_corrected_Vz_e_AC_sector6_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector6_1e_cut", "TH1D");
-        // h_corrected_Vz_e_AC_sector6_1e_cut->SetName("Vz_e_AC_corrected_sector6_1e_cut");
+        // auto h_Vz_e_AC_1e_cut = (TH1D *)load("Vz_e_AC_1e_cut", "TH1D");
+        // auto h_Vz_e_AC_zoomin_1e_cut = (TH1D *)load("Vz_e_AC_zoomin_1e_cut", "TH1D");
+        // auto h_Vx_e_AC_1e_cut = (TH1D *)load("Vx_e_AC_1e_cut", "TH1D");
+        // auto h_Vy_e_AC_1e_cut = (TH1D *)load("Vy_e_AC_1e_cut", "TH1D");
+        // auto h_Vz_e_AC_sector1_1e_cut = (TH1D *)load("Vz_e_AC_sector1_1e_cut", "TH1D");
+        // auto [h_Vz_e_AC_zoomin_sector1_1e_cut, h_phi_e_AC_sector1_1e_cut] = loadVzAndPhiHistograms("sector1", "e");
+        // auto h_Vz_e_AC_sector2_1e_cut = (TH1D *)load("Vz_e_AC_sector2_1e_cut", "TH1D");
+        // auto [h_Vz_e_AC_zoomin_sector2_1e_cut, h_phi_e_AC_sector2_1e_cut] = loadVzAndPhiHistograms("sector2", "e");
+        // auto h_Vz_e_AC_sector3_1e_cut = (TH1D *)load("Vz_e_AC_sector3_1e_cut", "TH1D");
+        // auto [h_Vz_e_AC_zoomin_sector3_1e_cut, h_phi_e_AC_sector3_1e_cut] = loadVzAndPhiHistograms("sector3", "e");
+        // auto h_Vz_e_AC_sector4_1e_cut = (TH1D *)load("Vz_e_AC_sector4_1e_cut", "TH1D");
+        // auto [h_Vz_e_AC_zoomin_sector4_1e_cut, h_phi_e_AC_sector4_1e_cut] = loadVzAndPhiHistograms("sector4", "e");
+        // auto h_Vz_e_AC_sector5_1e_cut = (TH1D *)load("Vz_e_AC_sector5_1e_cut", "TH1D");
+        // auto [h_Vz_e_AC_zoomin_sector5_1e_cut, h_phi_e_AC_sector5_1e_cut] = loadVzAndPhiHistograms("sector5", "e");
+        // auto h_Vz_e_AC_sector6_1e_cut = (TH1D *)load("Vz_e_AC_sector6_1e_cut", "TH1D");
+        // auto [h_Vz_e_AC_zoomin_sector6_1e_cut, h_phi_e_AC_sector6_1e_cut] = loadVzAndPhiHistograms("sector6", "e");
+        // // auto h_corrected_Vz_e_AC_1e_cut = (TH1D *)load("corrected_Vz_e_AC_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_1e_cut->SetName("Vz_e_AC_corrected_1e_cut");
+        // // auto h_corrected_Vz_e_AC_sector1_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector1_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_sector1_1e_cut->SetName("Vz_e_AC_corrected_sector1_1e_cut");
+        // // auto h_corrected_Vz_e_AC_sector2_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector2_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_sector2_1e_cut->SetName("Vz_e_AC_corrected_sector2_1e_cut");
+        // // auto h_corrected_Vz_e_AC_sector3_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector3_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_sector3_1e_cut->SetName("Vz_e_AC_corrected_sector3_1e_cut");
+        // // auto h_corrected_Vz_e_AC_sector4_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector4_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_sector4_1e_cut->SetName("Vz_e_AC_corrected_sector4_1e_cut");
+        // // auto h_corrected_Vz_e_AC_sector5_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector5_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_sector5_1e_cut->SetName("Vz_e_AC_corrected_sector5_1e_cut");
+        // // auto h_corrected_Vz_e_AC_sector6_1e_cut = (TH1D *)load("corrected_Vz_e_AC_sector6_1e_cut", "TH1D");
+        // // h_corrected_Vz_e_AC_sector6_1e_cut->SetName("Vz_e_AC_corrected_sector6_1e_cut");
 
         auto h_Vz_pipFD_AC_1e_cut = (TH1D *)load("Vz_pipFD_AC_1e_cut", "TH1D");
         auto h_Vz_pipFD_AC_zoomin_1e_cut = (TH1D *)load("Vz_pipFD_AC_zoomin_1e_cut", "TH1D");
@@ -482,48 +482,15 @@ void CompareHistogramsTester2() {
                 // If no limits are provided, use the histogram's peak center
                 double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
 
-                if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
-                    if (peakCenter < 0) {
-                        // If peak is negative, set limits accordingly
-                        fitMin = -std::fabs(peakCenter * 1.1);
-                        fitMax = -std::fabs(peakCenter * 0.9);
-                    } else {
-                        // If peak is positive, set limits accordingly
-                        fitMin = std::fabs(peakCenter * 0.9);
-                        fitMax = std::fabs(peakCenter * 1.1);
-                    }
+                if (peakCenter < 0) {
+                    // If peak is negative, set limits accordingly
+                    fitMin = -std::fabs(peakCenter * 1.1);
+                    fitMax = -std::fabs(peakCenter * 0.9);
                 } else {
-                    if (Ebeam_status_1 == "2GeV") {
-                        if (peakCenter < 0) {
-                            // If peak is negative, set limits accordingly
-                            fitMin = -std::fabs(peakCenter * 1.4);
-                            fitMax = -std::fabs(peakCenter * 0.6);
-                            // fitMin = -std::fabs(peakCenter * 1.4);
-                            // fitMax = -std::fabs(peakCenter * 0.6);
-                        } else {
-                            // If peak is positive, set limits accordingly
-                            fitMin = std::fabs(peakCenter * 0.6);
-                            fitMax = std::fabs(peakCenter * 1.4);
-                            // fitMin = std::fabs(peakCenter * 0.6);
-                            // fitMax = std::fabs(peakCenter * 1.4);
-                        }
-                    } else {
-                        if (peakCenter < 0) {
-                            // If peak is negative, set limits accordingly
-                            fitMin = -std::fabs(peakCenter * 1.2);
-                            fitMax = -std::fabs(peakCenter * 0.8);
-                            // fitMin = -std::fabs(peakCenter * 1.4);
-                            // fitMax = -std::fabs(peakCenter * 0.6);
-                        } else {
-                            // If peak is positive, set limits accordingly
-                            fitMin = std::fabs(peakCenter * 0.8);
-                            fitMax = std::fabs(peakCenter * 1.2);
-                            // fitMin = std::fabs(peakCenter * 0.6);
-                            // fitMax = std::fabs(peakCenter * 1.4);
-                        }
-                    }
+                    // If peak is positive, set limits accordingly
+                    fitMin = std::fabs(peakCenter * 0.9);
+                    fitMax = std::fabs(peakCenter * 1.1);
                 }
-
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
                 fitMax = fitLimits[1];
@@ -531,6 +498,59 @@ void CompareHistogramsTester2() {
                 std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
                 return std::numeric_limits<double>::quiet_NaN();
             }
+            // if (fitLimits.size() == 0) {
+            //     // If no limits are provided, use the histogram's peak center
+            //     double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
+
+            //     if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
+            //         if (peakCenter < 0) {
+            //             // If peak is negative, set limits accordingly
+            //             fitMin = -std::fabs(peakCenter * 1.1);
+            //             fitMax = -std::fabs(peakCenter * 0.9);
+            //         } else {
+            //             // If peak is positive, set limits accordingly
+            //             fitMin = std::fabs(peakCenter * 0.9);
+            //             fitMax = std::fabs(peakCenter * 1.1);
+            //         }
+            //     } else {
+            //         if (Ebeam_status_1 == "2GeV") {
+            //             if (peakCenter < 0) {
+            //                 // If peak is negative, set limits accordingly
+            //                 fitMin = -std::fabs(peakCenter * 1.4);
+            //                 fitMax = -std::fabs(peakCenter * 0.6);
+            //                 // fitMin = -std::fabs(peakCenter * 1.4);
+            //                 // fitMax = -std::fabs(peakCenter * 0.6);
+            //             } else {
+            //                 // If peak is positive, set limits accordingly
+            //                 fitMin = std::fabs(peakCenter * 0.6);
+            //                 fitMax = std::fabs(peakCenter * 1.4);
+            //                 // fitMin = std::fabs(peakCenter * 0.6);
+            //                 // fitMax = std::fabs(peakCenter * 1.4);
+            //             }
+            //         } else {
+            //             if (peakCenter < 0) {
+            //                 // If peak is negative, set limits accordingly
+            //                 fitMin = -std::fabs(peakCenter * 1.2);
+            //                 fitMax = -std::fabs(peakCenter * 0.8);
+            //                 // fitMin = -std::fabs(peakCenter * 1.4);
+            //                 // fitMax = -std::fabs(peakCenter * 0.6);
+            //             } else {
+            //                 // If peak is positive, set limits accordingly
+            //                 fitMin = std::fabs(peakCenter * 0.8);
+            //                 fitMax = std::fabs(peakCenter * 1.2);
+            //                 // fitMin = std::fabs(peakCenter * 0.6);
+            //                 // fitMax = std::fabs(peakCenter * 1.4);
+            //             }
+            //         }
+            //     }
+
+            // } else if (fitLimits.size() == 2) {
+            //     fitMin = fitLimits[0];
+            //     fitMax = fitLimits[1];
+            // } else {
+            //     std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
+            //     return std::numeric_limits<double>::quiet_NaN();
+            // }
 
             TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
             hist->Fit(fit, "RQ");  // R = use range, Q = quiet
@@ -559,12 +579,12 @@ void CompareHistogramsTester2() {
             return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
         };
 
-        // Usage:
-        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
-            "e", Ebeam_status_1,
-            {h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut, h_Vz_e_AC_zoomin_sector5_1e_cut,
-             h_Vz_e_AC_zoomin_sector6_1e_cut},
-            {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true, false);
+        // // Usage:
+        // auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
+        //     "e", Ebeam_status_1,
+        //     {h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut, h_Vz_e_AC_zoomin_sector5_1e_cut,
+        //      h_Vz_e_AC_zoomin_sector6_1e_cut},
+        //     {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true, false);
 
         auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             extract_and_fit("#pi^{+}FD", Ebeam_status_1,
@@ -636,14 +656,14 @@ void CompareHistogramsTester2() {
             }
         }
 
-        FittedParametersGraph_e->GetXaxis()->CenterTitle();
-        FittedParametersGraph_e->GetYaxis()->CenterTitle();
+        // // FittedParametersGraph_e->GetXaxis()->CenterTitle();
+        // // FittedParametersGraph_e->GetYaxis()->CenterTitle();
         FittedParametersGraph_pipFD->GetXaxis()->CenterTitle();
         FittedParametersGraph_pipFD->GetYaxis()->CenterTitle();
         FittedParametersGraph_pimFD->GetXaxis()->CenterTitle();
         FittedParametersGraph_pimFD->GetYaxis()->CenterTitle();
 
-        HistoList.insert(HistoList.begin() + insert_index_e, FittedParametersGraph_e);
+        // // HistoList.insert(HistoList.begin() + insert_index_e, FittedParametersGraph_e);
         HistoList.insert(HistoList.begin() + insert_index_pipFD, FittedParametersGraph_pipFD);
         HistoList.insert(HistoList.begin() + insert_index_pimFD, FittedParametersGraph_pimFD);
 
@@ -990,11 +1010,11 @@ void CompareHistogramsTester2() {
             hf::CompareHistograms(hists, OutputDir, "Histogram_Comparisons", bt::ToStringWithPrecision(ComparisonNumber, 0) + "_" + tag);
         };
 
-        compare({h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
-                "Vz_e_AC_BySector_1e_cut");
-        // compare({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut, h_corrected_Vz_e_AC_sector4_1e_cut,
-        //          h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
-        //         "corrected_Vz_e_AC_BySector_1e_cut");
+        // compare({h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut, h_Vz_e_AC_sector6_1e_cut},
+        //         "Vz_e_AC_BySector_1e_cut");
+        // // compare({h_corrected_Vz_e_AC_sector1_1e_cut, h_corrected_Vz_e_AC_sector2_1e_cut, h_corrected_Vz_e_AC_sector3_1e_cut, h_corrected_Vz_e_AC_sector4_1e_cut,
+        // //          h_corrected_Vz_e_AC_sector5_1e_cut, h_corrected_Vz_e_AC_sector6_1e_cut},
+        // //         "corrected_Vz_e_AC_BySector_1e_cut");
 
         compare({h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
                  h_Vz_pipFD_AC_sector6_1e_cut},
