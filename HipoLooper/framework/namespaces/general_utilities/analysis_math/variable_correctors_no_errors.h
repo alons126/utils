@@ -53,8 +53,8 @@ namespace variable_correctors {
  * @param theta_slice  Optional pair of theta limits in degrees (first < second). Used to fit with A = r / tan(theta).
  * @return std::tuple<double, double, double, TGraphErrors*> with (A or r, φ_beam, Vz_true, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<double> &Zrec_peaks,
-                                                                  const std::vector<double> &phi_peaks = {}, const std::pair<double, double> &theta_slice = {-1, -1}) {
+std::tuple<double, double, double, TGraph *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<double> &Zrec_peaks, const std::vector<double> &phi_peaks = {},
+                                                            const std::pair<double, double> &theta_slice = {-1, -1}) {
     if (Zrec_peaks.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector values (Zrec_peaks.size() != 6)"); }
 
     std::string sector_label[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
@@ -98,10 +98,8 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
         mean_theta_rad = mean_theta * TMath::DegToRad();
     }
 
-    // To match behavior with the version without error bars, we pass nullptr as errors.
-    // Otherwise, small errors (e.g., 0.05) strongly weight the fit and inflate chi2/ndf.
-    double z_err[6] = {0, 0, 0, 0, 0, 0};  // same as no error: ROOT will use 1.0 internally
-    TGraphErrors *g = new TGraphErrors(6, phi_deg, z_vals, nullptr, nullptr);
+    // Use phi_deg directly as x-values
+    TGraph *g = new TGraph(6, phi_deg, z_vals);
 
     if (useThetaSlice) {
         g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} peaks for " + bt::ToStringWithPrecision(theta_slice.first) + "#circ #leq #theta_{" + Particle +
@@ -152,7 +150,6 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
 
     fitFunc->SetParLimits(0, 0, 9999);  // Set amplitude (or r) limits to be non-negative
-    // fitFunc->SetParLimits(0, 0, 1); // Set amplitude (or r) limits to be non-negative
 
     // double minPhi_beam = 30;
     // double maxPhi_beam = 45;
@@ -169,15 +166,8 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     double phi_beam = fitFunc->GetParameter(1);
     double Vz_true = fitFunc->GetParameter(2);
 
-    // Retrieve parameter errors before using them below
-    double err_A = fitFunc->GetParError(0);
-    double err_phi_beam = fitFunc->GetParError(1);
-    double err_Vz_true = fitFunc->GetParError(2);
-
-    // convert back from r to amplitude and propagate error
     if (useThetaSlice) {
-        A = A / tan(mean_theta_rad);
-        err_A = err_A / tan(mean_theta_rad);  // propagate error from r to A
+        A = A / tan(mean_theta_rad);  // convert back from r to amplitude
     }
 
     // Converts phi_beam into range [-180^\circ, 180^\circ]
@@ -203,8 +193,8 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     legend->SetTextSize(0.025);
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.65, 0.35, 0.75, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.35, 0.65, 0.75, 0.75, "NDC");
+    TPaveText *FitParam1 = new TPaveText(0.18, 0.65, 0.40, 0.75, "NDC");
+    TPaveText *FitParam2 = new TPaveText(0.40, 0.65, 0.60, 0.75, "NDC");
 
     for (auto *box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
@@ -218,17 +208,17 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     FitParam1->AddText(("#chi^{2}/NDF = " + bt::ToStringWithPrecision(chi2_ndf, 3)).c_str());
 
     if (useThetaSlice) {
-        FitParam1->AddText(("r = " + bt::ToStringWithPrecision(A) + " #pm " + bt::ToStringWithPrecision(err_A) + " cm").c_str());
+        FitParam1->AddText(("r = " + bt::ToStringWithPrecision(A) + " cm").c_str());
     } else {
-        FitParam1->AddText(("A = " + bt::ToStringWithPrecision(A) + " #pm " + bt::ToStringWithPrecision(err_A) + " cm").c_str());
+        FitParam1->AddText(("A = " + bt::ToStringWithPrecision(A) + " cm").c_str());
     }
 
-    FitParam2->AddText(("#phi_{beam} = " + bt::ToStringWithPrecision(phi_beam) + " #pm " + bt::ToStringWithPrecision(err_phi_beam) + "#circ (#phi_{beam} #in [-180#circ, 180#circ])").c_str());
-    FitParam2->AddText(("V_{z,true}^{" + Particle + "} = " + bt::ToStringWithPrecision(Vz_true) + " #pm " + bt::ToStringWithPrecision(err_Vz_true) + " cm").c_str());
+    FitParam2->AddText(("#phi_{beam} = " + bt::ToStringWithPrecision(phi_beam) + "#circ (#in [-180#circ, 180#circ])").c_str());
+    FitParam2->AddText(("V_{z,true}^{" + Particle + "} = " + bt::ToStringWithPrecision(Vz_true) + " cm").c_str());
 
-    g->GetListOfFunctions()->Add(fitFunc);
     g->GetListOfFunctions()->Add(FitParam1);
     g->GetListOfFunctions()->Add(FitParam2);
+    g->GetListOfFunctions()->Add(fitFunc);
 
     std::cout << std::endl;
 

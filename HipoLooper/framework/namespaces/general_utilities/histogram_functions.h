@@ -239,7 +239,7 @@ std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitL
                     fitMin = std::fabs(peakCenter * 0.8);
                     fitMax = std::fabs(peakCenter * 1.2);
                 }
-            // }
+            }
         }
     } else if (fitLimits.size() == 2) {
         // Use provided fit limits
