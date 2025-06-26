@@ -140,7 +140,8 @@ void CompareHistogramsTester2() {
     //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_15_to_20_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_15_to_20_deg_lastB4thetaSliceFit.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit.root");
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit.root");
     // InputFiles.push_back(
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
     //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit.root");
@@ -482,14 +483,38 @@ void CompareHistogramsTester2() {
                 // If no limits are provided, use the histogram's peak center
                 double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
 
-                if (peakCenter < 0) {
-                    // If peak is negative, set limits accordingly
-                    fitMin = -std::fabs(peakCenter * 1.1);
-                    fitMax = -std::fabs(peakCenter * 0.9);
+                if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
+                    if (peakCenter < 0) {
+                        // If peak is negative, set limits accordingly
+                        fitMin = -std::fabs(peakCenter * 1.1);
+                        fitMax = -std::fabs(peakCenter * 0.9);
+                    } else {
+                        // If peak is positive, set limits accordingly
+                        fitMin = std::fabs(peakCenter * 0.9);
+                        fitMax = std::fabs(peakCenter * 1.1);
+                    }
                 } else {
-                    // If peak is positive, set limits accordingly
-                    fitMin = std::fabs(peakCenter * 0.9);
-                    fitMax = std::fabs(peakCenter * 1.1);
+                    if (Ebeam_status_1 == "2GeV") {
+                        if (peakCenter < 0) {
+                            // If peak is negative, set limits accordingly
+                            fitMin = -std::fabs(peakCenter * 1.4);
+                            fitMax = -std::fabs(peakCenter * 0.6);
+                        } else {
+                            // If peak is positive, set limits accordingly
+                            fitMin = std::fabs(peakCenter * 0.6);
+                            fitMax = std::fabs(peakCenter * 1.4);
+                        }
+                    } else {
+                        if (peakCenter < 0) {
+                            // If peak is negative, set limits accordingly
+                            fitMin = -std::fabs(peakCenter * 1.2);
+                            fitMax = -std::fabs(peakCenter * 0.8);
+                        } else {
+                            // If peak is positive, set limits accordingly
+                            fitMin = std::fabs(peakCenter * 0.8);
+                            fitMax = std::fabs(peakCenter * 1.2);
+                        }
+                    }
                 }
             } else if (fitLimits.size() == 2) {
                 fitMin = fitLimits[0];
@@ -498,59 +523,6 @@ void CompareHistogramsTester2() {
                 std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
                 return std::numeric_limits<double>::quiet_NaN();
             }
-            // if (fitLimits.size() == 0) {
-            //     // If no limits are provided, use the histogram's peak center
-            //     double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
-
-            //     if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
-            //         if (peakCenter < 0) {
-            //             // If peak is negative, set limits accordingly
-            //             fitMin = -std::fabs(peakCenter * 1.1);
-            //             fitMax = -std::fabs(peakCenter * 0.9);
-            //         } else {
-            //             // If peak is positive, set limits accordingly
-            //             fitMin = std::fabs(peakCenter * 0.9);
-            //             fitMax = std::fabs(peakCenter * 1.1);
-            //         }
-            //     } else {
-            //         if (Ebeam_status_1 == "2GeV") {
-            //             if (peakCenter < 0) {
-            //                 // If peak is negative, set limits accordingly
-            //                 fitMin = -std::fabs(peakCenter * 1.4);
-            //                 fitMax = -std::fabs(peakCenter * 0.6);
-            //                 // fitMin = -std::fabs(peakCenter * 1.4);
-            //                 // fitMax = -std::fabs(peakCenter * 0.6);
-            //             } else {
-            //                 // If peak is positive, set limits accordingly
-            //                 fitMin = std::fabs(peakCenter * 0.6);
-            //                 fitMax = std::fabs(peakCenter * 1.4);
-            //                 // fitMin = std::fabs(peakCenter * 0.6);
-            //                 // fitMax = std::fabs(peakCenter * 1.4);
-            //             }
-            //         } else {
-            //             if (peakCenter < 0) {
-            //                 // If peak is negative, set limits accordingly
-            //                 fitMin = -std::fabs(peakCenter * 1.2);
-            //                 fitMax = -std::fabs(peakCenter * 0.8);
-            //                 // fitMin = -std::fabs(peakCenter * 1.4);
-            //                 // fitMax = -std::fabs(peakCenter * 0.6);
-            //             } else {
-            //                 // If peak is positive, set limits accordingly
-            //                 fitMin = std::fabs(peakCenter * 0.8);
-            //                 fitMax = std::fabs(peakCenter * 1.2);
-            //                 // fitMin = std::fabs(peakCenter * 0.6);
-            //                 // fitMax = std::fabs(peakCenter * 1.4);
-            //             }
-            //         }
-            //     }
-
-            // } else if (fitLimits.size() == 2) {
-            //     fitMin = fitLimits[0];
-            //     fitMax = fitLimits[1];
-            // } else {
-            //     std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
-            //     return std::numeric_limits<double>::quiet_NaN();
-            // }
 
             TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
             hist->Fit(fit, "RQ");  // R = use range, Q = quiet
@@ -584,7 +556,8 @@ void CompareHistogramsTester2() {
         //     "e", Ebeam_status_1,
         //     {h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut, h_Vz_e_AC_zoomin_sector5_1e_cut,
         //      h_Vz_e_AC_zoomin_sector6_1e_cut},
-        //     {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true, false);
+        //     {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true,
+        //     false);
 
         auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             extract_and_fit("#pi^{+}FD", Ebeam_status_1,
