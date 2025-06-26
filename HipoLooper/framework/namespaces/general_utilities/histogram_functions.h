@@ -47,6 +47,8 @@
 // Include classes:
 #include "../../classes/hPlots/hsPlots.cpp"
 
+namespace bt = basic_tools;
+
 namespace histogram_functions {
 
 // FillByInt1D function -------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,6 +183,94 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
     }
 }
 
+// FitPeakToGaussian functions ------------------------------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Fits a Gaussian function to the peak of a histogram and returns the mean and its error.
+ *
+ * If fit limits are not provided, they are inferred based on the histogram peak and Ebeam status.
+ *
+ * @param hist Pointer to the TH1D histogram to be fitted.
+ * @param fitLimits Optional vector of two doubles specifying fit range [min, max].
+ * @return std::pair<double, double> containing the fitted mean and its uncertainty.
+ *
+ * @example
+ *   auto [mean, error] = fit_peak_gaussian(h1);
+ *   std::cout << "Peak at: " << mean << " ± " << error << std::endl;
+ */
+std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitLimits = {}) {
+    double fitMin, fitMax;
+
+    // Return NaNs if histogram is empty
+    if (hist->GetEntries() == 0) {
+        std::cerr << "Histogram is empty. Returning NaN." << std::endl;
+        return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+    }
+
+    // Use default fit limits based on histogram characteristics if none provided
+    if (fitLimits.empty()) {
+        // If no limits are provided, use the histogram's peak center
+        double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
+
+        if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
+            if (peakCenter < 0) {
+                // If peak is negative, set limits accordingly
+                fitMin = -std::fabs(peakCenter * 1.1);
+                fitMax = -std::fabs(peakCenter * 0.9);
+            } else {
+                // If peak is positive, set limits accordingly
+                fitMin = std::fabs(peakCenter * 0.9);
+                fitMax = std::fabs(peakCenter * 1.1);
+            }
+        } else {
+            // if (Ebeam_status_1 == "2GeV") {
+            //     if (peakCenter < 0) {
+            //         fitMin = -std::fabs(peakCenter * 1.4);
+            //         fitMax = -std::fabs(peakCenter * 0.6);
+            //     } else {
+            //         fitMin = std::fabs(peakCenter * 0.6);
+            //         fitMax = std::fabs(peakCenter * 1.4);
+            //     }
+            // } else {
+                if (peakCenter < 0) {
+                    fitMin = -std::fabs(peakCenter * 1.2);
+                    fitMax = -std::fabs(peakCenter * 0.8);
+                } else {
+                    fitMin = std::fabs(peakCenter * 0.8);
+                    fitMax = std::fabs(peakCenter * 1.2);
+                }
+            // }
+        }
+    } else if (fitLimits.size() == 2) {
+        // Use provided fit limits
+        fitMin = fitLimits[0];
+        fitMax = fitLimits[1];
+    } else {
+        // Return NaNs if fitLimits vector is invalid
+        std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
+        return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+    }
+
+    // Construct and fit a Gaussian
+    TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
+    hist->Fit(fit, "RQ");  // R = use range, Q = quiet
+
+    // Set visual color and attach to histogram
+    fit->SetLineColor(kViolet);
+    hist->GetListOfFunctions()->Clear();
+    hist->GetListOfFunctions()->Add(fit);
+
+    // Extract fit results
+    double mean = fit->GetParameter(1);
+    double error = fit->GetParError(1);
+    auto result = std::make_pair(mean, error);
+
+    // Clean up fit object
+    delete fit;
+
+    return result;
+}
+
 // SanitizeForBookmark functions ----------------------------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -286,8 +376,8 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &input
 template <typename T>
 void TitleAligner(T *obj, std::string &title, std::string &xLabel, const std::string &originToReplace, const std::string &replacement) {
     auto updateTitle = [&](std::string &str, auto setTitleFunc) {
-        if (basic_tools::FindSubstring(str, originToReplace)) {
-            str = basic_tools::ReplaceSubstring(str, originToReplace, replacement);
+        if (bt::FindSubstring(str, originToReplace)) {
+            str = bt::ReplaceSubstring(str, originToReplace, replacement);
             setTitleFunc(str.c_str());
         }
     };
@@ -313,8 +403,8 @@ void TitleAligner(T *obj, std::string &title, std::string &xLabel, const std::st
 template <typename T>
 void TitleAligner(T *obj, std::string &title, std::string &xLabel, std::string &yLabel, const std::string &originToReplace, const std::string &replacement) {
     auto updateTitle = [&](std::string &str, auto setTitleFunc) {
-        if (basic_tools::FindSubstring(str, originToReplace)) {
-            str = basic_tools::ReplaceSubstring(str, originToReplace, replacement);
+        if (bt::FindSubstring(str, originToReplace)) {
+            str = bt::ReplaceSubstring(str, originToReplace, replacement);
             setTitleFunc(str.c_str());
         }
     };
@@ -349,8 +439,8 @@ void TitleAligner(TObject *obj, const std::string &originToReplace, const std::s
 
     std::string title = obj->GetTitle();
     auto updateTitle = [&](std::string &str, auto setTitleFunc) {
-        if (basic_tools::FindSubstring(str, originToReplace)) {
-            str = basic_tools::ReplaceSubstring(str, originToReplace, replacement);
+        if (bt::FindSubstring(str, originToReplace)) {
+            str = bt::ReplaceSubstring(str, originToReplace, replacement);
             setTitleFunc(str.c_str());
         }
     };
@@ -393,18 +483,18 @@ void TitleAligner(TH1D *simHistogram, TH1D *dataHistogram, const std::string &or
         std::string xLabel = hist->GetXaxis()->GetTitle();
         std::string yLabel = hist->GetYaxis()->GetTitle();
 
-        if (basic_tools::FindSubstring(title, originToReplace)) {
-            title = basic_tools::ReplaceSubstring(title, originToReplace, replacement);
+        if (bt::FindSubstring(title, originToReplace)) {
+            title = bt::ReplaceSubstring(title, originToReplace, replacement);
             hist->SetTitle(title.c_str());
         }
 
-        if (basic_tools::FindSubstring(xLabel, originToReplace)) {
-            xLabel = basic_tools::ReplaceSubstring(xLabel, originToReplace, replacement);
+        if (bt::FindSubstring(xLabel, originToReplace)) {
+            xLabel = bt::ReplaceSubstring(xLabel, originToReplace, replacement);
             hist->GetXaxis()->SetTitle(xLabel.c_str());
         }
 
-        if (basic_tools::FindSubstring(yLabel, originToReplace)) {
-            yLabel = basic_tools::ReplaceSubstring(yLabel, originToReplace, replacement);
+        if (bt::FindSubstring(yLabel, originToReplace)) {
+            yLabel = bt::ReplaceSubstring(yLabel, originToReplace, replacement);
             hist->GetYaxis()->SetTitle(yLabel.c_str());
         }
     };
@@ -444,7 +534,7 @@ void DrawAndSaveHistogramsToPDF(TCanvas *MainCanvas, const std::vector<TObject *
     titles.DrawLatex(0.05, 0.90, "2N analyzer output");
     text.DrawLatex(0.05, 0.80, SampleName.c_str());
     text.DrawLatex(0.05, 0.75, VaryingSampleName.c_str());
-    text.DrawLatex(0.2, 0.65, ("Beam energy: " + basic_tools::GetBeamEnergyFromDouble(beamE) + " [GeV]").c_str());
+    text.DrawLatex(0.2, 0.65, ("Beam energy: " + bt::GetBeamEnergyFromDouble(beamE) + " [GeV]").c_str());
 
     TextCanvas->Print(Histogram_OutPDF_fileName_char, "pdf");
     TextCanvas->Clear();
@@ -541,7 +631,7 @@ TObject *FindHistogram(TFile *file, const char *histNameSubstring, const std::st
 
         // Step 2b: Check if the object matches the name substring and inherits from the desired class
         // - If either check fails, delete the object and continue to the next key
-        if (!basic_tools::FindSubstring(objName, histNameSubstring) || !obj->IsA()->InheritsFrom(desiredClass.c_str())) {
+        if (!bt::FindSubstring(objName, histNameSubstring) || !obj->IsA()->InheritsFrom(desiredClass.c_str())) {
             delete obj;  // Safe to delete since we won't keep this object
             continue;
         }
