@@ -198,78 +198,78 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
  *   auto [mean, error] = fit_peak_gaussian(h1);
  *   std::cout << "Peak at: " << mean << " ± " << error << std::endl;
  */
-std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitLimits = {}) {
-    double fitMin, fitMax;
+// std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitLimits = {}) {
+//     double fitMin, fitMax;
 
-    // Return NaNs if histogram is empty
-    if (hist->GetEntries() == 0) {
-        std::cerr << "Histogram is empty. Returning NaN." << std::endl;
-        return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
-    }
+//     // Return NaNs if histogram is empty
+//     if (hist->GetEntries() == 0) {
+//         std::cerr << "Histogram is empty. Returning NaN." << std::endl;
+//         return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+//     }
 
-    // Use default fit limits based on histogram characteristics if none provided
-    if (fitLimits.empty()) {
-        // If no limits are provided, use the histogram's peak center
-        double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
+//     // Use default fit limits based on histogram characteristics if none provided
+//     if (fitLimits.empty()) {
+//         // If no limits are provided, use the histogram's peak center
+//         double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
 
-        if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
-            if (peakCenter < 0) {
-                // If peak is negative, set limits accordingly
-                fitMin = -std::fabs(peakCenter * 1.1);
-                fitMax = -std::fabs(peakCenter * 0.9);
-            } else {
-                // If peak is positive, set limits accordingly
-                fitMin = std::fabs(peakCenter * 0.9);
-                fitMax = std::fabs(peakCenter * 1.1);
-            }
-        } else {
-            // if (Ebeam_status_1 == "2GeV") {
-            //     if (peakCenter < 0) {
-            //         fitMin = -std::fabs(peakCenter * 1.4);
-            //         fitMax = -std::fabs(peakCenter * 0.6);
-            //     } else {
-            //         fitMin = std::fabs(peakCenter * 0.6);
-            //         fitMax = std::fabs(peakCenter * 1.4);
-            //     }
-            // } else {
-                if (peakCenter < 0) {
-                    fitMin = -std::fabs(peakCenter * 1.2);
-                    fitMax = -std::fabs(peakCenter * 0.8);
-                } else {
-                    fitMin = std::fabs(peakCenter * 0.8);
-                    fitMax = std::fabs(peakCenter * 1.2);
-                }
-            }
-        }
-    } else if (fitLimits.size() == 2) {
-        // Use provided fit limits
-        fitMin = fitLimits[0];
-        fitMax = fitLimits[1];
-    } else {
-        // Return NaNs if fitLimits vector is invalid
-        std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
-        return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
-    }
+//         if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
+//             if (peakCenter < 0) {
+//                 // If peak is negative, set limits accordingly
+//                 fitMin = -std::fabs(peakCenter * 1.1);
+//                 fitMax = -std::fabs(peakCenter * 0.9);
+//             } else {
+//                 // If peak is positive, set limits accordingly
+//                 fitMin = std::fabs(peakCenter * 0.9);
+//                 fitMax = std::fabs(peakCenter * 1.1);
+//             }
+//         } else {
+//             // if (Ebeam_status_1 == "2GeV") {
+//             //     if (peakCenter < 0) {
+//             //         fitMin = -std::fabs(peakCenter * 1.4);
+//             //         fitMax = -std::fabs(peakCenter * 0.6);
+//             //     } else {
+//             //         fitMin = std::fabs(peakCenter * 0.6);
+//             //         fitMax = std::fabs(peakCenter * 1.4);
+//             //     }
+//             // } else {
+//                 if (peakCenter < 0) {
+//                     fitMin = -std::fabs(peakCenter * 1.2);
+//                     fitMax = -std::fabs(peakCenter * 0.8);
+//                 } else {
+//                     fitMin = std::fabs(peakCenter * 0.8);
+//                     fitMax = std::fabs(peakCenter * 1.2);
+//                 }
+//             // }
+//         }
+//     } else if (fitLimits.size() == 2) {
+//         // Use provided fit limits
+//         fitMin = fitLimits[0];
+//         fitMax = fitLimits[1];
+//     } else {
+//         // Return NaNs if fitLimits vector is invalid
+//         std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
+//         return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+//     }
 
-    // Construct and fit a Gaussian
-    TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
-    hist->Fit(fit, "RQ");  // R = use range, Q = quiet
+//     // Construct and fit a Gaussian
+//     TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
+//     hist->Fit(fit, "RQ");  // R = use range, Q = quiet
 
-    // Set visual color and attach to histogram
-    fit->SetLineColor(kViolet);
-    hist->GetListOfFunctions()->Clear();
-    hist->GetListOfFunctions()->Add(fit);
+//     // Set visual color and attach to histogram
+//     fit->SetLineColor(kViolet);
+//     hist->GetListOfFunctions()->Clear();
+//     hist->GetListOfFunctions()->Add(fit);
 
-    // Extract fit results
-    double mean = fit->GetParameter(1);
-    double error = fit->GetParError(1);
-    auto result = std::make_pair(mean, error);
+//     // Extract fit results
+//     double mean = fit->GetParameter(1);
+//     double error = fit->GetParError(1);
+//     auto result = std::make_pair(mean, error);
 
-    // Clean up fit object
-    delete fit;
+//     // Clean up fit object
+//     delete fit;
 
-    return result;
-}
+//     return result;
+// }
 
 // SanitizeForBookmark functions ----------------------------------------------------------------------------------------------------------------------------------------
 

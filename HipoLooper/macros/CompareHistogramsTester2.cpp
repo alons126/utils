@@ -471,85 +471,85 @@ void CompareHistogramsTester2() {
         // Extracting Vz correction parameters
         /////////////////////////////////////////////////////
 
-        auto fit_peak_gaussian = [&](TH1D *hist, std::vector<double> fitLimits = {}) -> double {
-            double fitMin, fitMax;
+        // auto fit_peak_gaussian = [&](TH1D *hist, std::vector<double> fitLimits = {}) -> double {
+        //     double fitMin, fitMax;
 
-            if (hist->GetEntries() == 0) {
-                std::cerr << "Histogram is empty. Returning NaN." << std::endl;
-                return std::numeric_limits<double>::quiet_NaN();
-            }
+        //     if (hist->GetEntries() == 0) {
+        //         std::cerr << "Histogram is empty. Returning NaN." << std::endl;
+        //         return std::numeric_limits<double>::quiet_NaN();
+        //     }
 
-            if (fitLimits.size() == 0) {
-                // If no limits are provided, use the histogram's peak center
-                double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
+        //     if (fitLimits.size() == 0) {
+        //         // If no limits are provided, use the histogram's peak center
+        //         double peakCenter = hist->GetBinCenter(hist->GetMaximumBin());
 
-                if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
-                    if (peakCenter < 0) {
-                        // If peak is negative, set limits accordingly
-                        fitMin = -std::fabs(peakCenter * 1.1);
-                        fitMax = -std::fabs(peakCenter * 0.9);
-                    } else {
-                        // If peak is positive, set limits accordingly
-                        fitMin = std::fabs(peakCenter * 0.9);
-                        fitMax = std::fabs(peakCenter * 1.1);
-                    }
-                } else {
-                    if (Ebeam_status_1 == "2GeV") {
-                        if (peakCenter < 0) {
-                            // If peak is negative, set limits accordingly
-                            fitMin = -std::fabs(peakCenter * 1.4);
-                            fitMax = -std::fabs(peakCenter * 0.6);
-                        } else {
-                            // If peak is positive, set limits accordingly
-                            fitMin = std::fabs(peakCenter * 0.6);
-                            fitMax = std::fabs(peakCenter * 1.4);
-                        }
-                    } else {
-                        if (peakCenter < 0) {
-                            // If peak is negative, set limits accordingly
-                            fitMin = -std::fabs(peakCenter * 1.2);
-                            fitMax = -std::fabs(peakCenter * 0.8);
-                        } else {
-                            // If peak is positive, set limits accordingly
-                            fitMin = std::fabs(peakCenter * 0.8);
-                            fitMax = std::fabs(peakCenter * 1.2);
-                        }
-                    }
-                }
-            } else if (fitLimits.size() == 2) {
-                fitMin = fitLimits[0];
-                fitMax = fitLimits[1];
-            } else {
-                std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
-                return std::numeric_limits<double>::quiet_NaN();
-            }
+        //         if (bt::FindSubstring(hist->GetName(), "_e_") || bt::FindSubstring(hist->GetName(), "_pipCD_") || bt::FindSubstring(hist->GetName(), "_pimCD_")) {
+        //             if (peakCenter < 0) {
+        //                 // If peak is negative, set limits accordingly
+        //                 fitMin = -std::fabs(peakCenter * 1.1);
+        //                 fitMax = -std::fabs(peakCenter * 0.9);
+        //             } else {
+        //                 // If peak is positive, set limits accordingly
+        //                 fitMin = std::fabs(peakCenter * 0.9);
+        //                 fitMax = std::fabs(peakCenter * 1.1);
+        //             }
+        //         } else {
+        //             if (Ebeam_status_1 == "2GeV") {
+        //                 if (peakCenter < 0) {
+        //                     // If peak is negative, set limits accordingly
+        //                     fitMin = -std::fabs(peakCenter * 1.4);
+        //                     fitMax = -std::fabs(peakCenter * 0.6);
+        //                 } else {
+        //                     // If peak is positive, set limits accordingly
+        //                     fitMin = std::fabs(peakCenter * 0.6);
+        //                     fitMax = std::fabs(peakCenter * 1.4);
+        //                 }
+        //             } else {
+        //                 if (peakCenter < 0) {
+        //                     // If peak is negative, set limits accordingly
+        //                     fitMin = -std::fabs(peakCenter * 1.2);
+        //                     fitMax = -std::fabs(peakCenter * 0.8);
+        //                 } else {
+        //                     // If peak is positive, set limits accordingly
+        //                     fitMin = std::fabs(peakCenter * 0.8);
+        //                     fitMax = std::fabs(peakCenter * 1.2);
+        //                 }
+        //             }
+        //         }
+        //     } else if (fitLimits.size() == 2) {
+        //         fitMin = fitLimits[0];
+        //         fitMax = fitLimits[1];
+        //     } else {
+        //         std::cerr << "Error: fitLimits must contain exactly two elements." << std::endl;
+        //         return std::numeric_limits<double>::quiet_NaN();
+        //     }
 
-            TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
-            hist->Fit(fit, "RQ");  // R = use range, Q = quiet
+        //     TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
+        //     hist->Fit(fit, "RQ");  // R = use range, Q = quiet
 
-            fit->SetLineColor(kViolet);
-            // fit->SetLineColor(kMagenta);
+        //     fit->SetLineColor(kViolet);
+        //     // fit->SetLineColor(kMagenta);
 
-            hist->GetListOfFunctions()->Clear();
-            hist->GetListOfFunctions()->Add(fit);  // Add fit to the histogram's function list
+        //     hist->GetListOfFunctions()->Clear();
+        //     hist->GetListOfFunctions()->Add(fit);  // Add fit to the histogram's function list
 
-            return fit->GetParameter(1);  // Return fitted mean
-        };
+        //     return fit->GetParameter(1);  // Return fitted mean
+        // };
 
-        // Helper lambda to extract peak centers from histograms
-        auto get_peak_centers = [&](std::vector<TH1D *> hists, bool fit) {
-            std::vector<double> centers;
-            for (auto *h : hists) { centers.push_back(fit ? fit_peak_gaussian(h) : h->GetBinCenter(h->GetMaximumBin())); }
-            return centers;
-        };
+        // // Helper lambda to extract peak centers from histograms
+        // auto get_peak_centers = [&](std::vector<TH1D *> hists, bool fit) {
+        //     std::vector<double> centers;
+        //     for (auto *h : hists) { centers.push_back(fit ? vc::FitPeakToGaussian(h) : h->GetBinCenter(h->GetMaximumBin())); }
+        //     return centers;
+        // };
 
-        // Helper lambda to extract and fit peaks and return fit results
-        auto extract_and_fit = [&](const std::string &label, const std::string &Ebeam, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz,
-                                   bool fit_phi) -> std::tuple<double, double, double, TGraph *> {
-            auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
-            auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
-            return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
-        };
+        // // Helper lambda to extract and fit peaks and return fit results
+        // auto extract_and_fit = [&](const std::string &label, const std::string &Ebeam, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz,
+        //                            bool fit_phi) -> std::tuple<double, double, double, TGraph *> {
+        //     auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
+        //     auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
+        //     return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
+        // };
 
         // // Usage:
         // auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
@@ -559,21 +559,28 @@ void CompareHistogramsTester2() {
         //     {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, true,
         //     false);
 
+        // auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
+        //     extract_and_fit("#pi^{+}FD", Ebeam_status_1,
+        //                     {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
+        //                      h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+        //                     {h_phi_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector5_1e_cut,
+        //                      h_phi_pipFD_AC_sector6_1e_cut},
+        //                     true, true);
         auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
-            extract_and_fit("#pi^{+}FD", Ebeam_status_1,
-                            {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
-                             h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                            {h_phi_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector5_1e_cut,
-                             h_phi_pipFD_AC_sector6_1e_cut},
-                            true, true);
+            vc::FitVertexVsPhi("#pi^{+}FD", SampleName,
+                               {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
+                                h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                               {h_phi_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector5_1e_cut,
+                                h_phi_pipFD_AC_sector6_1e_cut},
+                               theta_slice);
 
-        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
-            extract_and_fit("#pi^{-}FD", Ebeam_status_1,
-                            {h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
-                             h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                            {h_phi_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector3_1e_cut, h_phi_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector5_1e_cut,
-                             h_phi_pimFD_AC_sector6_1e_cut},
-                            true, true);
+        // auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
+        //     extract_and_fit("#pi^{-}FD", Ebeam_status_1,
+        //                     {h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
+        //                      h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
+        //                     {h_phi_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector3_1e_cut, h_phi_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector5_1e_cut,
+        //                      h_phi_pimFD_AC_sector6_1e_cut},
+        //                     true, true);
 
         // Helper lambda for TH1 styling
         auto style_th1 = [](TH1 *h) {
@@ -633,12 +640,12 @@ void CompareHistogramsTester2() {
         // // FittedParametersGraph_e->GetYaxis()->CenterTitle();
         FittedParametersGraph_pipFD->GetXaxis()->CenterTitle();
         FittedParametersGraph_pipFD->GetYaxis()->CenterTitle();
-        FittedParametersGraph_pimFD->GetXaxis()->CenterTitle();
-        FittedParametersGraph_pimFD->GetYaxis()->CenterTitle();
+        // FittedParametersGraph_pimFD->GetXaxis()->CenterTitle();
+        // FittedParametersGraph_pimFD->GetYaxis()->CenterTitle();
 
         // // HistoList.insert(HistoList.begin() + insert_index_e, FittedParametersGraph_e);
         HistoList.insert(HistoList.begin() + insert_index_pipFD, FittedParametersGraph_pipFD);
-        HistoList.insert(HistoList.begin() + insert_index_pimFD, FittedParametersGraph_pimFD);
+        // HistoList.insert(HistoList.begin() + insert_index_pimFD, FittedParametersGraph_pimFD);
 
         // int insert_index_e = 0, insert_index_pipFD = 0, insert_index_pimFD = 0;
 
@@ -836,6 +843,8 @@ void CompareHistogramsTester2() {
                 if (basic_tools::FindSubstring(h->GetTitle(), "V_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "dV_{z}^{") && !basic_tools::FindSubstring(h->GetTitle(), "phi")) {
                     gPad->Update();
 
+                    auto [peak, err] = vc::FitPeakToGaussian(h);
+
                     TLine *speac_target_location_TLine;
                     double speac_target_location_value = 0.0;
 
@@ -847,12 +856,11 @@ void CompareHistogramsTester2() {
 
                     speac_target_location_TLine = new TLine(speac_target_location_value, 0., speac_target_location_value, gPad->GetFrame()->GetY2());
                     speac_target_location_TLine->SetLineColor(kBlue);
-                    // speac_target_location_TLine->SetLineWidth(2);
                     speac_target_location_TLine->Draw("same");
 
                     TLine *measured_target_location_TLine;
                     // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
-                    double measured_target_location_value = fit_peak_gaussian(h);
+                    double measured_target_location_value = peak;
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);
@@ -861,11 +869,13 @@ void CompareHistogramsTester2() {
                     measured_target_location_TLine->SetLineStyle(2);
                     measured_target_location_TLine->Draw("same");
 
-                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
+                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25 - 0.1, gStyle->GetStatY() - 0.375 - yOffset);
                     TLegendEntry *speac_target_location_TLine_entry =
                         Legend->AddEntry(speac_target_location_TLine, ("Spec. z pos. = " + basic_tools::ToStringWithPrecision(speac_target_location_value, 2) + " cm").c_str(), "l");
-                    TLegendEntry *measured_target_location_TLine_entry =
-                        Legend->AddEntry(measured_target_location_TLine, ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                    TLegendEntry *measured_target_location_TLine_entry = Legend->AddEntry(
+                        measured_target_location_TLine,
+                        ("Meas. z pos. = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " #pm " + basic_tools::ToStringWithPrecision(err, 2) + " cm").c_str(),
+                        "l");
 
                     Legend->Draw("same");
 
@@ -876,20 +886,23 @@ void CompareHistogramsTester2() {
                 } else if (basic_tools::FindSubstring(h->GetName(), "phi_")) {
                     gPad->Update();
 
+                    auto [peak, err] = vc::FitPeakToGaussian(h);
+
                     TLine *measured_target_location_TLine;
                     // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
-                    double measured_target_location_value = fit_peak_gaussian(h);
+                    double measured_target_location_value = peak;
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);
                     measured_target_location_TLine->SetLineWidth(3);
-                    // measured_target_location_TLine->SetLineWidth(4);
                     measured_target_location_TLine->SetLineStyle(2);
                     measured_target_location_TLine->Draw("same");
 
-                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.325 - yOffset);
-                    TLegendEntry *measured_target_location_TLine_entry =
-                        Legend->AddEntry(measured_target_location_TLine, ("phi_e peak = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + "#circ").c_str(), "l");
+                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25 - 0.1, gStyle->GetStatY() - 0.325 - yOffset);
+                    TLegendEntry *measured_target_location_TLine_entry = Legend->AddEntry(
+                        measured_target_location_TLine,
+                        ("phi_e peak = " + basic_tools::ToStringWithPrecision(measured_target_location_value, 2) + " #pm " + basic_tools::ToStringWithPrecision(err, 2) + "#circ").c_str(),
+                        "l");
 
                     Legend->Draw("same");
 
@@ -901,10 +914,11 @@ void CompareHistogramsTester2() {
 
                     std::vector<double> fitLimits = {h->GetBinCenter(h->GetMaximumBin()) * 0.7, h->GetBinCenter(h->GetMaximumBin()) * 1.3};
 
+                    auto [peak, err] = vc::FitPeakToGaussian(h, fitLimits);
+
                     TLine *measured_target_location_TLine;
                     // double measured_target_location_value = h->GetBinCenter(h->GetMaximumBin());
-                    double measured_target_location_value = fit_peak_gaussian(h, fitLimits);
-                    // double measured_target_location_value = fit_peak_gaussian(h);
+                    double measured_target_location_value = peak;
 
                     measured_target_location_TLine = new TLine(measured_target_location_value, 0., measured_target_location_value, gPad->GetFrame()->GetY2());
                     measured_target_location_TLine->SetLineColor(kGreen + 1);
@@ -912,18 +926,17 @@ void CompareHistogramsTester2() {
                     measured_target_location_TLine->SetLineStyle(2);
                     measured_target_location_TLine->Draw("same");
 
-                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.325 - yOffset);
-                    // auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25, gStyle->GetStatY() - 0.375 - yOffset);
+                    auto Legend = new TLegend(gStyle->GetStatX(), gStyle->GetStatY() - 0.25 - yOffset, gStyle->GetStatX() - 0.25 - 0.1, gStyle->GetStatY() - 0.325 - yOffset);
                     TLegendEntry *measured_target_location_TLine_entry;
 
                     if (bt::FindSubstring(h->GetTitle(), "V_{x}^{")) {
-                        measured_target_location_TLine_entry =
-                            Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " cm").c_str(), "l");
-                        // Legend->AddEntry(measured_target_location_TLine, ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                        measured_target_location_TLine_entry = Legend->AddEntry(
+                            measured_target_location_TLine,
+                            ("Meas. x pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " #pm " + basic_tools::ToStringWithPrecision(err, 4) + " cm").c_str(), "l");
                     } else if (bt::FindSubstring(h->GetTitle(), "V_{y}^{")) {
-                        measured_target_location_TLine_entry =
-                            Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " cm").c_str(), "l");
-                        // Legend->AddEntry(measured_target_location_TLine, ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 2) + " cm").c_str(), "l");
+                        measured_target_location_TLine_entry = Legend->AddEntry(
+                            measured_target_location_TLine,
+                            ("Meas. y pos. = " + bt::ToStringWithPrecision(measured_target_location_value, 4) + " #pm " + basic_tools::ToStringWithPrecision(err, 4) + " cm").c_str(), "l");
                     }
 
                     Legend->Draw("same");
