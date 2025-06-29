@@ -4703,29 +4703,6 @@ void HipoLooper() {
         };
 
         // Project TH2D onto phi (X) axis and register result
-        auto project = [&](TH2D *h2) -> TH1D * {
-            if (!h2) return nullptr;
-
-            std::string projName = bt::ReplaceSubstring(h2->GetName(), "Vz_VS_", "");
-            auto h_phi = h2->ProjectionX(projName.c_str());
-            h_phi->SetTitle(bt::ReplaceSubstring(h_phi->GetTitle(), "V_{z}^{e} vs. #phi_{e}", "#phi_{e}").c_str());
-
-            if (!h_phi) {
-                std::cerr << "Error: Projection of " << h2->GetName() << " failed." << std::endl;
-                return nullptr;
-            }
-
-            auto it = std::find(HistoList.begin(), HistoList.end(), h2);
-            if (it != HistoList.end()) {
-                HistoList.insert(it + 1, h_phi);
-            } else {
-                HistoList.push_back(h_phi);
-            }
-
-            return h_phi;
-        };
-
-        // Project TH2D onto phi (X) axis and register result
         auto project = [&](TH2D *h2, const std::string &particle) -> TH1D * {
             if (!h2) return nullptr;
 
