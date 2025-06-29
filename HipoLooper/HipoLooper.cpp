@@ -54,7 +54,8 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "rAndPhi_beam_from_25_leq_theta_pipFD_leq_30_deg";  // General status of the analysis
+    std::string General_status = "rAndPhi_beam_from_30_leq_theta_pipFD_leq_35_deg";  // General status of the analysis
+    // std::string General_status = "rAndPhi_beam_from_25_leq_theta_pipFD_leq_30_deg";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
@@ -223,9 +224,12 @@ void HipoLooper() {
         // Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1767, 0.1357};
         // Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1624, 0.1517};
 
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.57, -150.35 * am::pi / 180.};  // {r cm, phi_beam in rad} rAndPhi_beam_from_25_leq_theta_pipFD_leq_30_deg
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.57, -150.35 * am::pi / 180.};
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.57, -150.35 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.44, -162.92 * am::pi / 180.};  // {r cm, phi_beam in rad} rAndPhi_beam_from_30_leq_theta_pipFD_leq_35_deg
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.44, -162.92 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.44, -162.92 * am::pi / 180.};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.57, -150.35 * am::pi / 180.};  // {r cm, phi_beam in rad} rAndPhi_beam_from_25_leq_theta_pipFD_leq_30_deg
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.57, -150.35 * am::pi / 180.};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.57, -150.35 * am::pi / 180.};
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.71, -155.25 * am::pi / 180.};  // {r cm, phi_beam in rad} rAndPhi_beam_from_20_leq_theta_pipFD_leq_25_deg
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.71, -155.25 * am::pi / 180.};
         // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.71, -155.25 * am::pi / 180.};
