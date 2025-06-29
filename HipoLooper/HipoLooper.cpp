@@ -50,16 +50,16 @@ void HipoLooper() {
 
     std::cout << "\033[33m" << "\n\nInitiating HipoLooper.cpp...\n\n" << "\033[0m";
 
-    int version = 24;  // Version of the code
+    int version = 25;  // Version of the code
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "after_sampling_test_8_full";  // General status of the analysis
+    std::string General_status = "rAndPhi_beam_from_20_leq_theta_pipFD_leq_25_deg";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
     int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -72,12 +72,12 @@ void HipoLooper() {
 
     // Data samples:
 
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/C/dst/recon/015664/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/C/dst/recon/015778/*.hipo");
 
     InputFiles.push_back("/cache/clas12/rg-m/production/pass1/2gev/Ar/dst/recon/015672/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
-    InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/4gev/Ar/dst/recon/015743/*.hipo");
+    // InputFiles.push_back("/cache/clas12/rg-m/production/pass1/6gev/Ar/dst/recon/015792/*.hipo");
 
     // // Simulation samples:
 
@@ -223,12 +223,15 @@ void HipoLooper() {
         // Beam_Coordinates["C12_data_4GeV_run_015778_pipFD"] = {0.1767, 0.1357};
         // Beam_Coordinates["C12_data_4GeV_run_015778_pimFD"] = {0.1624, 0.1517};
 
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.17, 90.31 * am::pi / 180.};  // {A in cm, phi_beam in rad}
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.50, -150.10 * am::pi / 180.};
-        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.39, 167.30 * am::pi / 180.};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275};  // zoom-in peak fit of {Vx peak, Vy peak} in cm
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
-        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.71, -155.25 * am::pi / 180.};  // {r cm, phi_beam in rad} rAndPhi_beam_from_20_leq_theta_pipFD_leq_25_deg
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.71, -155.25 * am::pi / 180.};
+        Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.71, -155.25 * am::pi / 180.};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.17, 90.31 * am::pi / 180.};  // {A in cm, phi_beam in rad}
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.50, -150.10 * am::pi / 180.};
+        // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.39, 167.30 * am::pi / 180.};
+        // // Beam_Coordinates["Ar40_data_2GeV_run_015672_e"] = {0.1485, 0.1275};  // zoom-in peak fit of {Vx peak, Vy peak} in cm
+        // // Beam_Coordinates["Ar40_data_2GeV_run_015672_pipFD"] = {0.1560, 0.1201};
+        // // Beam_Coordinates["Ar40_data_2GeV_run_015672_pimFD"] = {0.1444, 0.1260};
 
         Beam_Coordinates["Ar40_data_4GeV_run_015743_e"] = {0.21, -136.36 * am::pi / 180.};  // {A in cm, phi_beam in rad}
         Beam_Coordinates["Ar40_data_4GeV_run_015743_pipFD"] = {0.33, -127.83 * am::pi / 180.};
@@ -297,15 +300,21 @@ void HipoLooper() {
         // Lambda to compute corrected Vz
         auto correct_Vz = [&CodeRun_status, &Beam_Coordinates](double Vz_rec, double r, double theta_particle_rad, double phi_particle_rad, double phi_beam_rad,
                                                                const std::string &particle = "") -> double {
-            if (particle != "") {
+            if (!particle.empty()) {
                 std::string key = CodeRun_status + "_" + particle;
 
-                if (Beam_Coordinates.count(key) == 0) {
+                auto it = Beam_Coordinates.find(key);
+                if (it == Beam_Coordinates.end()) {
                     std::cerr << "\n\nError! Beam_Coordinates does not contain key: " << key << ". Aborting...\n\n";
                     return std::numeric_limits<double>::quiet_NaN();
                 }
 
-                return Vz_rec + Beam_Coordinates.at(key).first * std::cos(phi_particle_rad - Beam_Coordinates.at(key).second);
+                double r_local = it->second.first;
+                double phi_beam_local = it->second.second;
+
+                return Vz_rec + (r_local / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_local);
+                // If instead you want to use A = r / tan(theta) directly, then:
+                // return Vz_rec + A * std::cos(phi_particle_rad - phi_beam_local);
             } else {
                 return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
             }
@@ -4986,7 +4995,12 @@ void HipoLooper() {
 
                 text.DrawLatex(0.05, yTop, BulletLable.c_str());
                 text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + SubscriptLable + "},V_{y}^{" + SubscriptLable + "}) = (" + Vx + " cm, " + Vy + " cm)}").c_str());
-                text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
+                text.DrawLatex(0.10, yTop - 0.10,
+                               ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" +
+                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).first, 4) + " cm, " +
+                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).second * 180. / am::pi, 4) + "#circ)}")
+                                   .c_str());
+                // text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
             };
 
             // First page:
