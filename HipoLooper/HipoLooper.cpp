@@ -4755,8 +4755,8 @@ void HipoLooper() {
             vc::FitVertexVsPhi("#pi^{+}FD", SampleName,
                                {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
                                 h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                               {project(h_Vz_VS_phi_e_AC_sector1_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector2_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector3_1e_cut, "#pi^{+}FD"),
-                                project(h_Vz_VS_phi_e_AC_sector4_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector5_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector6_1e_cut, "#pi^{+}FD")},
+                               {project(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut, "#pi^{+}FD"),
+                                project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut, "#pi^{+}FD")},
                                theta_slice);
         // auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
         //     extract_and_fit("#pi^{+}FD", Ebeam_status_1,
@@ -4766,12 +4766,12 @@ void HipoLooper() {
         //                      project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut)},
         //                     true, true, theta_slice);
 
-        auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
+        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
             vc::FitVertexVsPhi("#pi^{-}FD", SampleName,
-                               {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
-                                h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                               {project(h_Vz_VS_phi_e_AC_sector1_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector2_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector3_1e_cut, "#pi^{-}FD"),
-                                project(h_Vz_VS_phi_e_AC_sector4_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector5_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector6_1e_cut, "#pi^{-}FD")},
+                               {h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
+                                h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
+                               {project(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut, "#pi^{-}FD"),
+                                project(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut, "#pi^{-}FD")},
                                theta_slice);
         // auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
         //     extract_and_fit("#pi^{-}FD", Ebeam_status_1,
