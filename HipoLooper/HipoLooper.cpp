@@ -4725,22 +4725,48 @@ void HipoLooper() {
             return h_phi;
         };
 
-        // Helper lambda to extract and fit peaks and return fit results
-        auto extract_and_fit = [&](const std::string &label, const std::string &Ebeam, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz, bool fit_phi,
-                                   const std::pair<double, double> &theta_slice = {-1, -1}) -> std::tuple<double, double, double, TGraph *> {
-            auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
-            auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
-            return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
+        // Project TH2D onto phi (X) axis and register result
+        auto project = [&](TH2D *h2, const std::string &particle) -> TH1D * {
+            if (!h2) return nullptr;
+
+            std::string projName = bt::ReplaceSubstring(h2->GetName(), "Vz_VS_", "");
+            auto h_phi = h2->ProjectionX(projName.c_str());
+            h_phi->SetTitle(bt::ReplaceSubstring(h_phi->GetTitle(), "V_{z}^{" + particle + "} vs. #phi_{" + particle + "}", "#phi_{" + particle + "}").c_str());
+
+            if (!h_phi) {
+                std::cerr << "Error: Projection of " << h2->GetName() << " failed." << std::endl;
+                return nullptr;
+            }
+
+            auto it = std::find(HistoList.begin(), HistoList.end(), h2);
+            if (it != HistoList.end()) {
+                HistoList.insert(it + 1, h_phi);
+            } else {
+                HistoList.push_back(h_phi);
+            }
+
+            return h_phi;
         };
+
+        // // Helper lambda to extract and fit peaks and return fit results
+        // auto extract_and_fit = [&](const std::string &label, const std::string &Ebeam, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz, bool
+        // fit_phi,
+        //                            const std::pair<double, double> &theta_slice = {-1, -1}) -> std::tuple<double, double, double, TGraph *> {
+        //     auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
+        //     auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
+        //     return vc::FitVertexVsPhi(label, Ebeam, Vz_peaks, phi_peaks, theta_slice);
+        // };
 
         // Usage:
         std::pair<double, double> theta_slice = {-1, -1};
 
-        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = vc::FitVertexVsPhi(
-            "e", SampleName,
-            {h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut, h_Vz_e_AC_zoomin_sector5_1e_cut,
-             h_Vz_e_AC_zoomin_sector6_1e_cut},
-            {h_phi_e_AC_sector1_1e_cut, h_phi_e_AC_sector2_1e_cut, h_phi_e_AC_sector3_1e_cut, h_phi_e_AC_sector4_1e_cut, h_phi_e_AC_sector5_1e_cut, h_phi_e_AC_sector6_1e_cut}, theta_slice);
+        auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] =
+            vc::FitVertexVsPhi("e", SampleName,
+                               {h_Vz_e_AC_zoomin_sector1_1e_cut, h_Vz_e_AC_zoomin_sector2_1e_cut, h_Vz_e_AC_zoomin_sector3_1e_cut, h_Vz_e_AC_zoomin_sector4_1e_cut,
+                                h_Vz_e_AC_zoomin_sector5_1e_cut, h_Vz_e_AC_zoomin_sector6_1e_cut},
+                               {project(h_Vz_VS_phi_e_AC_sector1_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector2_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector3_1e_cut, "e"),
+                                project(h_Vz_VS_phi_e_AC_sector4_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector5_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector6_1e_cut, "e")},
+                               theta_slice);
         // auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
         //     "e", Ebeam_status_1, {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut,
         //     h_Vz_e_AC_sector6_1e_cut}, {project(h_Vz_VS_phi_e_AC_sector1_1e_cut), project(h_Vz_VS_phi_e_AC_sector2_1e_cut), project(h_Vz_VS_phi_e_AC_sector3_1e_cut),
@@ -4752,8 +4778,8 @@ void HipoLooper() {
             vc::FitVertexVsPhi("#pi^{+}FD", SampleName,
                                {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
                                 h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
-                               {h_phi_pipFD_AC_sector1_1e_cut, h_phi_pipFD_AC_sector2_1e_cut, h_phi_pipFD_AC_sector3_1e_cut, h_phi_pipFD_AC_sector4_1e_cut, h_phi_pipFD_AC_sector5_1e_cut,
-                                h_phi_pipFD_AC_sector6_1e_cut},
+                               {project(h_Vz_VS_phi_e_AC_sector1_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector2_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector3_1e_cut, "#pi^{+}FD"),
+                                project(h_Vz_VS_phi_e_AC_sector4_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector5_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_e_AC_sector6_1e_cut, "#pi^{+}FD")},
                                theta_slice);
         // auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
         //     extract_and_fit("#pi^{+}FD", Ebeam_status_1,
@@ -4763,12 +4789,12 @@ void HipoLooper() {
         //                      project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut)},
         //                     true, true, theta_slice);
 
-        auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
+        auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
             vc::FitVertexVsPhi("#pi^{-}FD", SampleName,
-                               {h_Vz_pimFD_AC_zoomin_sector1_1e_cut, h_Vz_pimFD_AC_zoomin_sector2_1e_cut, h_Vz_pimFD_AC_zoomin_sector3_1e_cut, h_Vz_pimFD_AC_zoomin_sector4_1e_cut,
-                                h_Vz_pimFD_AC_zoomin_sector5_1e_cut, h_Vz_pimFD_AC_zoomin_sector6_1e_cut},
-                               {h_phi_pimFD_AC_sector1_1e_cut, h_phi_pimFD_AC_sector2_1e_cut, h_phi_pimFD_AC_sector3_1e_cut, h_phi_pimFD_AC_sector4_1e_cut, h_phi_pimFD_AC_sector5_1e_cut,
-                                h_phi_pimFD_AC_sector6_1e_cut},
+                               {h_Vz_pipFD_AC_zoomin_sector1_1e_cut, h_Vz_pipFD_AC_zoomin_sector2_1e_cut, h_Vz_pipFD_AC_zoomin_sector3_1e_cut, h_Vz_pipFD_AC_zoomin_sector4_1e_cut,
+                                h_Vz_pipFD_AC_zoomin_sector5_1e_cut, h_Vz_pipFD_AC_zoomin_sector6_1e_cut},
+                               {project(h_Vz_VS_phi_e_AC_sector1_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector2_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector3_1e_cut, "#pi^{-}FD"),
+                                project(h_Vz_VS_phi_e_AC_sector4_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector5_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_e_AC_sector6_1e_cut, "#pi^{-}FD")},
                                theta_slice);
         // auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
         //     extract_and_fit("#pi^{-}FD", Ebeam_status_1,
