@@ -61,8 +61,8 @@ void HipoLooper() {
 
     bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
-    // int Limiter = 10000000;  // 10M events (fo the data)
-    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    int Limiter = 10000000;  // 10M events (fo the data)
+    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
