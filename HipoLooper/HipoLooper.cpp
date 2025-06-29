@@ -4869,12 +4869,16 @@ void HipoLooper() {
             std::vector<TObject *> FittedGraphsByThetaSlice;
 
             for (int i = 0; i < theta_slices.size(); i++) {
+                std::vector<TH1D *> Vz_Hists_per_slice;
+                std::vector<TH1D *> Phi_Hists_per_slice;
+
+                for (int sector = 0; sector < 6; ++sector) {
+                    Vz_Hists_per_slice.push_back(static_cast<TH1D *>(Vz_HistogramLists[sector][i]));
+                    Phi_Hists_per_slice.push_back(project(static_cast<TH2D *>(Vz_VS_phi_HistogramLists[sector][i]), Particle));
+                }
+
                 auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] =
-                    vc ::FitVertexVsPhi(Particle, SampleName, Vz_HistogramLists,
-                                        {project((TH2D *)Vz_VS_phi_HistogramLists[0][i], Particle), project((TH2D *)Vz_VS_phi_HistogramLists[1][i], Particle),
-                                         project((TH2D *)Vz_VS_phi_HistogramLists[2][i], Particle), project((TH2D *)Vz_VS_phi_HistogramLists[3][i], Particle),
-                                         project((TH2D *)Vz_VS_phi_HistogramLists[4][i], Particle), project((TH2D *)Vz_VS_phi_HistogramLists[5][i], Particle)},
-                                        std::make_pair(theta_slices[i][0], theta_slices[i][1]));
+                    vc::FitVertexVsPhi(Particle, SampleName, Vz_Hists_per_slice, Phi_Hists_per_slice, std::make_pair(theta_slices[i][0], theta_slices[i][1]));
                 FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
             }
 
