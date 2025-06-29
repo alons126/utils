@@ -54,12 +54,12 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "rAndPhi_beam_from_20_leq_theta_pipFD_leq_25_deg";  // General status of the analysis
+    std::string General_status = "rAndPhi_beam_from_20_leq_theta_pipFD_leq_25_deg_full";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -5023,8 +5023,8 @@ void HipoLooper() {
                 text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + SubscriptLable + "},V_{y}^{" + SubscriptLable + "}) = (" + Vx + " cm, " + Vy + " cm)}").c_str());
                 text.DrawLatex(0.10, yTop - 0.10,
                                ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" +
-                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).first, 4) + " cm, " +
-                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).second * 180. / am::pi, 4) + "#circ)}")
+                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).first, 2) + " cm, " +
+                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).second * 180. / am::pi, 2) + "#circ)}")
                                    .c_str());
                 // text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
             };
