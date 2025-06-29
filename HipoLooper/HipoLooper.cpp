@@ -4703,7 +4703,7 @@ void HipoLooper() {
         };
 
         // Project TH2D onto phi (X) axis and register result
-        auto project = [&](TH2D *h2, const std::string &particle) -> TH1D * {
+        auto project = [&](TH2D *h2, const std::string &particle = "e") -> TH1D * {
             if (!h2) return nullptr;
 
             std::string projName = bt::ReplaceSubstring(h2->GetName(), "Vz_VS_", "");
