@@ -55,12 +55,12 @@ void HipoLooper() {
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
     // std::string General_status = "rAndPhi_beam_from_30_leq_theta_pipFD_leq_35_deg_full";  // General status of the analysis
-    std::string General_status = "reformat_test";  // General status of the analysis
+    std::string General_status = "reformat_full";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = true;
+    bool ApplyLimiter = false;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
@@ -5368,9 +5368,8 @@ void HipoLooper() {
             center_titles(HistoList[i]);
 
             std::string name = HistoList[i]->GetName();
-            if (name == "Vz_VS_phi_e_AC_1e_cut")
-                insert_index_e = i;
-                // insert_index_e = i + 1;
+            if (name == "Vz_VS_phi_e_AC_1e_cut") insert_index_e = i;
+            // insert_index_e = i + 1;
             else if (name == "Vz_VS_phi_pipFD_AC_1e_cut")
                 insert_index_pipFD = i + 1;
             else if (name == "Vz_VS_phi_pimFD_AC_1e_cut")
@@ -5736,18 +5735,24 @@ void HipoLooper() {
                         gPad->Update();
                     }
 
-                    // Draw graph overlays if they exist
-                    for (TObject *obj : *(h->GetListOfFunctions())) {
-                        if (obj->InheritsFrom("TGraphErrors")) {
-                            auto *g = (TGraphErrors *)obj;
-                            g->SetMarkerStyle(21);
-                            g->SetMarkerSize(1.5);
-                            // g->GetXaxis()->CenterTitle();
-                            // g->GetYaxis()->CenterTitle();
+                    TList *funcs = h->GetListOfFunctions();
+                    std::vector<TGraphErrors *> graphs_to_draw;
 
-                            // g->Draw("ap same");
-                            g->Draw("PZ same");
+                    for (int j = 0; j < funcs->GetSize(); ++j) {
+                        TObject *obj = funcs->At(j);
+                        if (obj && obj->InheritsFrom("TGraphErrors")) {
+                            auto *g = (TGraphErrors *)obj;
+                            graphs_to_draw.push_back(g);
                         }
+                    }
+
+                    // Remove after iteration to avoid iterator invalidation
+                    for (auto *g : graphs_to_draw) {
+                        funcs->Remove(g);
+                        g->SetMarkerStyle(21);
+                        g->SetMarkerSize(1.5);
+                        g->SetLineWidth(2);
+                        g->Draw("P same");  // Show points + error bars
                     }
                 } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
                     ((TGraph *)TempHistoList[i])->Draw("ap");
@@ -5775,8 +5780,8 @@ void HipoLooper() {
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
-        // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
-        //                   NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
+        GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
+                          NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         // Helper lambda for using the hf::CompareHistograms function
         int ComparisonNumber = 0;
