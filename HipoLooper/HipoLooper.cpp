@@ -5518,10 +5518,13 @@ void HipoLooper() {
 
             int plot_counter = 2;
             double yOffset = 0.075;  // Offset for the y position of the text
+            std::string marker = "BySliceOfTheta";
 
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
-                bool Is_hsPlot = bt::FindSubstring(title, "Slice limits:");
+                std::string name = TempHistoList[i]->GetName();
+                bool Is_hsPlot = (bt::FindSubstring(title, "Slice limits:") || bt::FindSubstring(title, "ByThetaSlices"));
+                std::string Is_hsPlot_result = Is_hsPlot ? name.substr(name.find(marker)) : "";
 
                 for (const auto &[particle_key, label] : particle_labels) {
                     if (bt::FindSubstring(title, particle_key)) {
@@ -5529,7 +5532,9 @@ void HipoLooper() {
                         titles.SetTextAlign(22);  // Center text both horizontally and vertically
 
                         if (*first_flags[particle_key] && !bt::FindSubstring(title, "sector")) {
-                            std::string bookmark_title = label + " plots";
+                            std::string bookmark_title = Is_hsPlot ? hf::SanitizeForBookmark(label + " plots") + ">" + Is_hsPlot_result : label + " plots";
+                            // std::string bookmark_title = Is_hsPlot ? label + " plots" + ">" + Is_hsPlot_result : label + " plots";
+                            // std::string bookmark_title = label + " plots"; // Original line without Is_hsPlot
                             std::string sanitized_bookmark_title = hf::SanitizeForBookmark(bookmark_title);
                             titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                             myText->Print(fileName, ("pdf Title:" + sanitized_bookmark_title).c_str());
@@ -5545,6 +5550,12 @@ void HipoLooper() {
                                     std::string bookmark_title = label + " plots - " + sector_title_str;
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
                                     std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title);
+                                    std::string hierarchical_title = Is_hsPlot
+                                                                         ? hf::SanitizeForBookmark(label + " plots") + ">" + Is_hsPlot_result + ">" + hf::SanitizeForBookmark(bookmark_title)
+                                                                         : hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title);
+
+                                    // std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title); // Original line without
+                                    // Is_hsPlot
                                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                                     myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
                                     myText->Clear();
