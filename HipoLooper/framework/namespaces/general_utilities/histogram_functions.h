@@ -284,24 +284,32 @@ void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &h
  * @return A sanitized version of the string suitable for bookmarks
  */
 std::string SanitizeForBookmark(const std::string &s) {
-    std::string modified = s;
-    size_t pos;
-
-    // Replace #pi^{+} with "pi plus"
-    while ((pos = modified.find("#pi^{+}")) != std::string::npos) { modified.replace(pos, 7, "pi plus"); }
-
-    // Replace #pi^{-} with "pi minus"
-    while ((pos = modified.find("#pi^{-}")) != std::string::npos) { modified.replace(pos, 7, "pi minus"); }
-
     std::string out;
-    for (char c : modified) {
-        if (isalnum(c) || c == ' ' || c == '-' || c == '_') {
-            out += c;  // Only append allowed characters
-        }
+    for (char c : s) {
+        if (c == '>' || (c >= 32 && c != '/' && c != '\\'))  // keep '>' and printable characters except '/' and '\'
+            out += c;
     }
-
     return out;
 }
+// std::string SanitizeForBookmark(const std::string &s) {
+//     std::string modified = s;
+//     size_t pos;
+
+//     // Replace #pi^{+} with "pi plus"
+//     while ((pos = modified.find("#pi^{+}")) != std::string::npos) { modified.replace(pos, 7, "pi plus"); }
+
+//     // Replace #pi^{-} with "pi minus"
+//     while ((pos = modified.find("#pi^{-}")) != std::string::npos) { modified.replace(pos, 7, "pi minus"); }
+
+//     std::string out;
+//     for (char c : modified) {
+//         if (isalnum(c) || c == ' ' || c == '-' || c == '_') {
+//             out += c;  // Only append allowed characters
+//         }
+//     }
+
+//     return out;
+// }
 
 // ReassignPDFBookmarks functions ---------------------------------------------------------------------------------------------------------------------------------------
 

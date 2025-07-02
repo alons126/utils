@@ -5518,13 +5518,16 @@ void HipoLooper() {
 
             int plot_counter = 2;
             double yOffset = 0.075;  // Offset for the y position of the text
-            std::string marker = "BySliceOfTheta";
+            // std::string marker = "BySliceOfTheta";
 
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
                 std::string name = TempHistoList[i]->GetName();
-                bool Is_hsPlot = (bt::FindSubstring(title, "Slice limits:") || bt::FindSubstring(title, "ByThetaSlices"));
-                std::string Is_hsPlot_result = Is_hsPlot ? name.substr(name.find(marker)) : "";
+
+                std::regex slice_re(R"(BySliceOfTheta_slice_from_(\d+\.\d+)_to_(\d+\.\d+))");
+                std::smatch match;
+                bool Is_hsPlot = std::regex_search(name, match, slice_re);
+                std::string slice_id = Is_hsPlot ? "BySliceOfTheta_slice_from_" + match[1].str() + "_to_" + match[2].str() : "";
 
                 for (const auto &[particle_key, label] : particle_labels) {
                     if (bt::FindSubstring(title, particle_key)) {
@@ -5532,7 +5535,7 @@ void HipoLooper() {
                         titles.SetTextAlign(22);  // Center text both horizontally and vertically
 
                         if (*first_flags[particle_key] && !bt::FindSubstring(title, "sector")) {
-                            std::string bookmark_title = Is_hsPlot ? hf::SanitizeForBookmark(label + " plots") + ">" + Is_hsPlot_result : label + " plots";
+                            std::string bookmark_title = Is_hsPlot ? hf::SanitizeForBookmark(label + " plots") + ">" + slice_id : label + " plots";
                             // std::string bookmark_title = Is_hsPlot ? label + " plots" + ">" + Is_hsPlot_result : label + " plots";
                             // std::string bookmark_title = label + " plots"; // Original line without Is_hsPlot
                             std::string sanitized_bookmark_title = hf::SanitizeForBookmark(bookmark_title);
@@ -5549,9 +5552,8 @@ void HipoLooper() {
                                 if (*sector_flags[particle_key][sector] && bt::FindSubstring(title, sector_str)) {
                                     std::string bookmark_title = label + " plots - " + sector_title_str;
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
-                                    std::string hierarchical_title = Is_hsPlot
-                                                                         ? hf::SanitizeForBookmark(label + " plots") + ">" + Is_hsPlot_result + ">" + hf::SanitizeForBookmark(bookmark_title)
-                                                                         : hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title);
+                                    std::string hierarchical_title =
+                                        hf::SanitizeForBookmark(label + " plots") + (Is_hsPlot ? ">" + slice_id : "") + ">" + hf::SanitizeForBookmark(bookmark_title);
                                     // std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title); // Original line without
                                     // Is_hsPlot
                                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
@@ -5732,8 +5734,8 @@ void HipoLooper() {
                             g->SetMarkerSize(1.5);
                             g->GetXaxis()->CenterTitle();
                             g->GetYaxis()->CenterTitle();
-                            
-                            g->Draw("ap");
+
+                            g->Draw("ap same");
                             // g->Draw("P same");
                         }
                     }
