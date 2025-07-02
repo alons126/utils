@@ -5723,6 +5723,20 @@ void HipoLooper() {
                         gPad->Modified();
                         gPad->Update();
                     }
+
+                    // Draw graph overlays if they exist
+                    for (TObject *obj : *(h->GetListOfFunctions())) {
+                        if (obj->InheritsFrom("TGraphErrors")) {
+                            auto *g = (TGraphErrors *)obj;
+                            g->SetMarkerStyle(21);
+                            g->SetMarkerSize(1.5);
+                            g->GetXaxis()->CenterTitle();
+                            g->GetYaxis()->CenterTitle();
+                            
+                            g->Draw("ap");
+                            // g->Draw("P same");
+                        }
+                    }
                 } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
                     ((TGraph *)TempHistoList[i])->Draw("ap");
                 }
