@@ -185,9 +185,10 @@ void CompareHistogramsTester2() {
     // InputFiles.push_back(
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
     //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_6GeV_run_015792_25_to_30_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_6GeV_run_015792_25_to_30_deg_lastB4thetaSliceFit.root");
-    // InputFiles.push_back(
-    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_6GeV_run_015792_30_to_35_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_6GeV_run_015792_30_to_35_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_6GeV_run_015792_30_to_35_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_6GeV_run_015792_30_to_35_deg_lastB4thetaSliceFit.root");
     InputFiles.push_back(
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
         "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_6GeV_run_015792_35_to_40_deg_lastB4thetaSliceFit/"
@@ -1084,7 +1085,7 @@ void CompareHistogramsTester2() {
         // file->Close();
         delete file;
 
-        // // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
-        // if (InputFiles.size() > 1) { gDirectory->Clear(); }
+        // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
+        if (InputFiles.size() > 1) { gDirectory->Clear(); }
     }
 }
