@@ -141,8 +141,9 @@ std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitL
  * @param theta_slice              Optional pair of theta limits in degrees (first < second). Used to fit with A = r / tan(theta).
  * @return std::tuple<double, double, double, TGraphErrors*> with (A or r, φ_beam, Vz_true, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Particle, std::string SampleName, TH2D *h_Vz_VS_phi_AllSectors, const std::vector<TH1D *> &Zrec_BySector_HistList,
-                                                                  const std::vector<TH1D *> &Phi_BySector_HistList = {}, const std::pair<double, double> &theta_slice = {-1, -1}) {
+std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Particle, std::string SampleName, TObject *h_Vz_VS_phi_AllSectors,
+                                                                  const std::vector<TH1D *> &Zrec_BySector_HistList, const std::vector<TH1D *> &Phi_BySector_HistList = {},
+                                                                  const std::pair<double, double> &theta_slice = {-1, -1}) {
     if (Zrec_BySector_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Zrec_BySector_HistList.size() != 6)"); }
     if (Phi_BySector_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Phi_BySector_HistList.size() != 6)"); }
 
@@ -317,11 +318,13 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
 
     std::cout << std::endl;
 
-    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(g);
-    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(fitFunc);
-    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(legend);
-    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam1);
-    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam2);
+    if (h_Vz_VS_phi_AllSectors->InheritsFrom("TH2D")) {
+        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(g);
+        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(fitFunc);
+        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(legend);
+        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam1);
+        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam2);
+    }
 
     return std::make_tuple(A, phi_beam, Vz_true, g);
 }
