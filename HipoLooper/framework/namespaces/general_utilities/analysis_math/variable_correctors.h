@@ -319,11 +319,13 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     std::cout << std::endl;
 
     if (h_Vz_VS_phi_AllSectors->InheritsFrom("TH2D")) {
-        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(g);
-        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(fitFunc);
-        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(legend);
-        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam1);
-        h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam2);
+        auto *Temo_h2 = (TH2D *)h_Vz_VS_phi_AllSectors;
+
+        Temo_h2->GetListOfFunctions()->Add(g);
+        Temo_h2->GetListOfFunctions()->Add(fitFunc);
+        Temo_h2->GetListOfFunctions()->Add(legend);
+        Temo_h2->GetListOfFunctions()->Add(FitParam1);
+        Temo_h2->GetListOfFunctions()->Add(FitParam2);
     }
 
     return std::make_tuple(A, phi_beam, Vz_true, g);
