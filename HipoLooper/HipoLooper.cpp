@@ -5520,6 +5520,9 @@ void HipoLooper() {
             double yOffset = 0.075;  // Offset for the y position of the text
             // std::string marker = "BySliceOfTheta";
 
+            // For histogram processing: track current slice ID for resetting first_flags
+            std::string current_slice_id;
+
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
                 std::string name = TempHistoList[i]->GetName();
@@ -5528,6 +5531,12 @@ void HipoLooper() {
                 std::smatch match;
                 bool Is_hsPlot = std::regex_search(name, match, slice_re);
                 std::string slice_id = Is_hsPlot ? "BySliceOfTheta_slice_from_" + match[1].str() + "_to_" + match[2].str() : "";
+
+                // Reset first_flags once per new slice_id, outside the particle loop
+                if (Is_hsPlot && slice_id != current_slice_id) {
+                    current_slice_id = slice_id;
+                    for (auto &[key, flag] : first_flags) { flag = true; }
+                }
 
                 for (const auto &[particle_key, label] : particle_labels) {
                     if (bt::FindSubstring(title, particle_key)) {
@@ -5554,8 +5563,8 @@ void HipoLooper() {
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
                                     std::string hierarchical_title =
                                         hf::SanitizeForBookmark(label + " plots") + (Is_hsPlot ? ">" + slice_id : "") + ">" + hf::SanitizeForBookmark(bookmark_title);
-                                    // std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title); // Original line without
-                                    // Is_hsPlot
+                                    // std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title); // Original line
+                                    // without Is_hsPlot
                                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
                                     myText->Print(fileName, ("pdf Title:" + hierarchical_title).c_str());
                                     myText->Clear();
