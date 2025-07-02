@@ -5726,19 +5726,19 @@ void HipoLooper() {
                         gPad->Update();
                     }
 
-                    // Draw graph overlays if they exist
-                    for (TObject *obj : *(h->GetListOfFunctions())) {
-                        if (obj->InheritsFrom("TGraphErrors")) {
-                            auto *g = (TGraphErrors *)obj;
-                            g->SetMarkerStyle(21);
-                            g->SetMarkerSize(1.5);
-                            g->GetXaxis()->CenterTitle();
-                            g->GetYaxis()->CenterTitle();
+                    // // Draw graph overlays if they exist
+                    // for (TObject *obj : *(h->GetListOfFunctions())) {
+                    //     if (obj->InheritsFrom("TGraphErrors")) {
+                    //         auto *g = (TGraphErrors *)obj;
+                    //         g->SetMarkerStyle(21);
+                    //         g->SetMarkerSize(1.5);
+                    //         g->GetXaxis()->CenterTitle();
+                    //         g->GetYaxis()->CenterTitle();
 
-                            g->Draw("ap same");
-                            // g->Draw("P same");
-                        }
-                    }
+                    //         // g->Draw("ap same");
+                    //         g->Draw("P same");
+                    //     }
+                    // }
                 } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
                     ((TGraph *)TempHistoList[i])->Draw("ap");
                 }
@@ -5763,8 +5763,8 @@ void HipoLooper() {
             hf::ReassignPDFBookmarks(bt::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
         };
 
-        GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
-                          NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
+        // GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
+        //                   NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
         GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
                           NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 

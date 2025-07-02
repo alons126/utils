@@ -29,6 +29,7 @@ public class ReassignBookmarksTool {
         List<BookmarkEntry> roots = new ArrayList<>();
 
         for (BookmarkEntry entry : flatBookmarks) {
+            System.out.println("Processing entry: " + entry.title + " (Page " + entry.page + ")");
             String[] parts = entry.title.split(">");
             StringBuilder fullPath = new StringBuilder();
             BookmarkEntry parent = null;
@@ -40,8 +41,16 @@ public class ReassignBookmarksTool {
                 if (fullPath.length() > 0) fullPath.append(" > ");
                 fullPath.append(part);
 
+                // Debug: print level and key
+                System.out.println("  Level " + i + ": " + parts[i] + " -> Key: " + fullPath.toString());
+
                 String key = fullPath.toString();
                 BookmarkEntry current = allBookmarks.get(key);
+                if (current == null) {
+                    System.out.println("  Creating new entry for: " + key);
+                } else {
+                    System.out.println("  Found existing entry for: " + key);
+                }
 
                 if (current == null) {
                     current = new BookmarkEntry();
