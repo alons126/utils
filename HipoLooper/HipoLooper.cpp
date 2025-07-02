@@ -62,8 +62,8 @@ void HipoLooper() {
 
     bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
-    // int Limiter = 10000000;  // 10M events (fo the data)
-    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    int Limiter = 10000000;  // 10M events (fo the data)
+    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
@@ -5369,7 +5369,8 @@ void HipoLooper() {
 
             std::string name = HistoList[i]->GetName();
             if (name == "Vz_VS_phi_e_AC_1e_cut")
-                insert_index_e = i + 1;
+                insert_index_e = i;
+                // insert_index_e = i + 1;
             else if (name == "Vz_VS_phi_pipFD_AC_1e_cut")
                 insert_index_pipFD = i + 1;
             else if (name == "Vz_VS_phi_pimFD_AC_1e_cut")
@@ -5745,7 +5746,7 @@ void HipoLooper() {
                             // g->GetYaxis()->CenterTitle();
 
                             // g->Draw("ap same");
-                            g->Draw("P same");
+                            g->Draw("PZ same");
                         }
                     }
                 } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
