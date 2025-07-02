@@ -5739,13 +5739,13 @@ void HipoLooper() {
                     for (TObject *obj : *(h->GetListOfFunctions())) {
                         if (obj->InheritsFrom("TGraphErrors")) {
                             auto *g = (TGraphErrors *)obj;
-                            // g->SetMarkerStyle(21);
-                            // g->SetMarkerSize(1.5);
+                            g->SetMarkerStyle(21);
+                            g->SetMarkerSize(1.5);
                             // g->GetXaxis()->CenterTitle();
                             // g->GetYaxis()->CenterTitle();
 
-                            g->Draw("ap same");
-                            // g->Draw("P same");
+                            // g->Draw("ap same");
+                            g->Draw("P same");
                         }
                     }
                 } else if (TempHistoList[i]->InheritsFrom("TGraph")) {
