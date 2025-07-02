@@ -142,12 +142,14 @@ void CompareHistogramsTester2() {
         "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
         "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit/"
         "017_HipoLooper_v17_Ar40_data_2GeV_run_015672_20_to_25_deg_lastB4thetaSliceFit.root");
-    // InputFiles.push_back(
-    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit.root");
-    // InputFiles.push_back(
-    //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
-    //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_2GeV_run_015672_25_to_30_deg_lastB4thetaSliceFit.root");
+    InputFiles.push_back(
+        "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
+        "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit/"
+        "017_HipoLooper_v17_Ar40_data_2GeV_run_015672_30_to_35_deg_lastB4thetaSliceFit.root");
     // InputFiles.push_back(
     //     "/Users/alon/Code runs/utils/HipoLooper (Ar40 "
     //     "imp)/17_HipoLooper_v17/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_35_to_40_deg_lastB4thetaSliceFit/017_HipoLooper_v17_Ar40_data_2GeV_run_015672_35_to_40_deg_lastB4thetaSliceFit.root");

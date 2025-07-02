@@ -136,22 +136,22 @@ std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitL
  * This version takes lists of TH1D* histograms for Zrec and phi, fits their peaks,
  * and uses the extracted means and errors to construct the TGraphErrors.
  *
- * @param Zrec_HistList   Vector of TH1D* histograms for Zrec per sector (size must be 6).
- * @param phi_HistList    Vector of TH1D* histograms for phi per sector (size must be 6).
- * @param theta_slice     Optional pair of theta limits in degrees (first < second). Used to fit with A = r / tan(theta).
+ * @param Zrec_BySector_HistList   Vector of TH1D* histograms for Zrec per sector (size must be 6).
+ * @param Phi_BySector_HistList    Vector of TH1D* histograms for phi per sector (size must be 6).
+ * @param theta_slice              Optional pair of theta limits in degrees (first < second). Used to fit with A = r / tan(theta).
  * @return std::tuple<double, double, double, TGraphErrors*> with (A or r, φ_beam, Vz_true, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Particle, std::string SampleName, const std::vector<TH1D *> &Zrec_HistList,
-                                                                  const std::vector<TH1D *> &phi_HistList = {}, const std::pair<double, double> &theta_slice = {-1, -1}) {
-    if (Zrec_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Zrec_HistList.size() != 6)"); }
-    if (phi_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (phi_HistList.size() != 6)"); }
+std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Particle, std::string SampleName, TH2D *h_Vz_VS_phi_AllSectors, const std::vector<TH1D *> &Zrec_BySector_HistList,
+                                                                  const std::vector<TH1D *> &Phi_BySector_HistList = {}, const std::pair<double, double> &theta_slice = {-1, -1}) {
+    if (Zrec_BySector_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Zrec_BySector_HistList.size() != 6)"); }
+    if (Phi_BySector_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Phi_BySector_HistList.size() != 6)"); }
 
     std::string sector_label[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
 
     double phi_deg[6], z_vals[6], phi_err[6], z_err[6];
     for (int i = 0; i < 6; ++i) {
-        auto [phi_mean, phi_error] = FitPeakToGaussian(phi_HistList[i]);
-        auto [z_mean, z_error] = FitPeakToGaussian(Zrec_HistList[i]);
+        auto [phi_mean, phi_error] = FitPeakToGaussian(Phi_BySector_HistList[i]);
+        auto [z_mean, z_error] = FitPeakToGaussian(Zrec_BySector_HistList[i]);
         phi_deg[i] = phi_mean;
         phi_err[i] = phi_error;
         z_vals[i] = z_mean;
@@ -316,6 +316,12 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     }
 
     std::cout << std::endl;
+
+    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(g);
+    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(fitFunc);
+    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(legend);
+    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam1);
+    h_Vz_VS_phi_AllSectors->GetListOfFunctions()->Add(FitParam2);
 
     return std::make_tuple(A, phi_beam, Vz_true, g);
 }
