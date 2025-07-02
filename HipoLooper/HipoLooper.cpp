@@ -5301,7 +5301,7 @@ void HipoLooper() {
 
             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-                    HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pimFD[i]);
+                    HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pipFD[i]);
                     break;
                 }
             }
