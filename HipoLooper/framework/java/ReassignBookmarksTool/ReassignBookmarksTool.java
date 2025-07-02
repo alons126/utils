@@ -306,9 +306,9 @@ public class ReassignBookmarksTool {
         System.out.println(GREEN + "\nAdding bookmarks to outline...\n" + RESET);
 
         for (BookmarkEntry entry : bookmarks) {
-            PDOutlineItem item = createOutlineItem(document, entry);
+            PDOutlineItem item = createOutlineItem(entry, document);
             outline.addLast(item);
-            System.out.println("- Added root bookmark: '" + entry.title + "'");
+            System.out.println("- Added root bookmark: '" + (entry.getTitle() != null ? entry.getTitle() : "") + "'");
         }
 
         System.out.println("\n");
@@ -316,16 +316,26 @@ public class ReassignBookmarksTool {
         outline.openNode();
     }
 
-    private static PDOutlineItem createOutlineItem(PDDocument doc, BookmarkEntry entry) {
-        PDPage page = doc.getPage(entry.page - 1);
+    /**
+     * Recursively creates a PDOutlineItem from a BookmarkEntry and its children.
+     * Page index is clamped to valid range to avoid IndexOutOfBoundsException.
+     * All getTitle() calls are null-safe.
+     */
+    private static PDOutlineItem createOutlineItem(BookmarkEntry entry, PDDocument document) {
+        // Clamp page index to valid range
+        int pageIndex = Math.max(0, Math.min(document.getNumberOfPages() - 1, entry.getPage() - 1));
+        PDPage page = document.getPage(pageIndex);
         PDOutlineItem item = new PDOutlineItem();
-        item.setTitle(entry.title.trim());
+        String title = entry.getTitle() != null ? entry.getTitle().trim() : "";
+        item.setTitle(title);
         item.setDestination(page);
 
-        for (BookmarkEntry child : entry.getChildren()) {
-            PDOutlineItem childItem = createOutlineItem(doc, child);
-            item.addLast(childItem);
-            System.out.println("\t- Added child '" + child.title + "' to parent '" + entry.title + "'");
+        if (entry.getChildren() != null) {
+            for (BookmarkEntry child : entry.getChildren()) {
+                PDOutlineItem childItem = createOutlineItem(child, document);
+                item.addLast(childItem);
+                System.out.println("  ✔ Added child '" + (child.getTitle() != null ? child.getTitle() : "") + "' to parent '" + title + "'");
+            }
         }
 
         return item;

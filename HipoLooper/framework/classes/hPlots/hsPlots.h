@@ -78,6 +78,8 @@ class hsPlots {
     void SaveHistograms(const std::string& outputDir, const std::string& baseFileName) const;
 
    private:
+    bool ForceFullVarRange = false;
+    
     // SliceLimits: 2D vector of slice limits, each inner vector contains two elements: [lower_limit, upper_limit]
     std::vector<std::vector<double>> SliceLimits;
 
