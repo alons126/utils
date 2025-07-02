@@ -5549,11 +5549,9 @@ void HipoLooper() {
                                 if (*sector_flags[particle_key][sector] && bt::FindSubstring(title, sector_str)) {
                                     std::string bookmark_title = label + " plots - " + sector_title_str;
                                     // Compose hierarchical bookmark: parent>child (separation expects '>' for hierarchy)
-                                    std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title);
                                     std::string hierarchical_title = Is_hsPlot
                                                                          ? hf::SanitizeForBookmark(label + " plots") + ">" + Is_hsPlot_result + ">" + hf::SanitizeForBookmark(bookmark_title)
                                                                          : hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title);
-
                                     // std::string hierarchical_title = hf::SanitizeForBookmark(label + " plots") + ">" + hf::SanitizeForBookmark(bookmark_title); // Original line without
                                     // Is_hsPlot
                                     titles.DrawLatex(0.5, 0.5, bookmark_title.c_str());
