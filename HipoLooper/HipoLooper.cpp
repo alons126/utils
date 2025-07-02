@@ -5535,7 +5535,7 @@ void HipoLooper() {
                 // Reset first_flags once per new slice_id, outside the particle loop
                 if (Is_hsPlot && slice_id != current_slice_id) {
                     current_slice_id = slice_id;
-                    for (auto &[key, flag] : first_flags) { flag = true; }
+                    for (auto &[key, flag] : first_flags) { *flag = true; }
                 }
 
                 for (const auto &[particle_key, label] : particle_labels) {
