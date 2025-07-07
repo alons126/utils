@@ -166,14 +166,16 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
     int index = FindSliceIndex(sliceVar);
 
     // Check if slice index is valid:
-    if ((index < 0) || (index >= static_cast<int>(SlicedHistoListPtr->size()))) {
-        std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Invalid slice index!\n";
-        std::cerr << "index = " << index << "\n";
-        std::cerr << "sliceVar = " << sliceVar << "\n";
-        std::cerr << "Aborting...\033[0m\n";
-        exit(1);
+    if (ForceFullVarRange) {
+        if ((index < 0) || (index >= static_cast<int>(SlicedHistoListPtr->size()))) {
+            std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Invalid slice index!\n";
+            std::cerr << "index = " << index << "\n";
+            std::cerr << "sliceVar = " << sliceVar << "\n";
+            std::cerr << "Aborting...\033[0m\n";
+            exit(1);
+        }
     }
-
+    
     if (PrintOut) {
         for (size_t i = 0; i < SlicedHistoListPtr->size(); ++i) {
             std::cout << "Index " << i << ": ";
