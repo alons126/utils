@@ -55,7 +55,7 @@ void HipoLooper() {
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
     // std::string General_status = "rAndPhi_beam_from_30_leq_theta_pipFD_leq_35_deg_full";  // General status of the analysis
-    std::string General_status = "Ar40_data_2GeV_run_015672 for Julia";  // General status of the analysis
+    std::string General_status = "Ar40_data_2GeV_run_015672_for_Julia";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
