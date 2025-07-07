@@ -164,10 +164,11 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
     bool PrintOut = false;
 
     int index = FindSliceIndex(sliceVar);
+    bool ValidIndex = (index < 0) || (index >= static_cast<int>(SlicedHistoListPtr->size()));
 
     // Check if slice index is valid:
     if (ForceFullVarRange) {
-        if ((index < 0) || (index >= static_cast<int>(SlicedHistoListPtr->size()))) {
+        if (ValidIndex) {
             std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Invalid slice index!\n";
             std::cerr << "index = " << index << "\n";
             std::cerr << "sliceVar = " << sliceVar << "\n";
@@ -175,67 +176,69 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
             exit(1);
         }
     }
-    
-    if (PrintOut) {
-        for (size_t i = 0; i < SlicedHistoListPtr->size(); ++i) {
-            std::cout << "Index " << i << ": ";
-            if (!(*SlicedHistoListPtr)[i]) {
-                std::cout << "nullptr\n";
-            } else {
-                std::cout << (*SlicedHistoListPtr)[i]->ClassName() << "\n";
+
+    if (ValidIndex) {
+        if (PrintOut) {
+            for (size_t i = 0; i < SlicedHistoListPtr->size(); ++i) {
+                std::cout << "Index " << i << ": ";
+                if (!(*SlicedHistoListPtr)[i]) {
+                    std::cout << "nullptr\n";
+                } else {
+                    std::cout << (*SlicedHistoListPtr)[i]->ClassName() << "\n";
+                }
             }
         }
-    }
 
-    if (!(*SlicedHistoListPtr)[index]) {
-        std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index = " << index << " is null!\n";
-        std::cerr << "Aborting...\033[0m\n";
-        exit(1);
-    }
-
-    TObject* obj = (*SlicedHistoListPtr)[index];
-
-    if (histoType == TH1D_TYPE) {
-        TH1D* h1_cast = dynamic_cast<TH1D*>(obj);
-
-        if (h1_cast) {
-            h1_cast->Fill(x, weight);
-        } else {
-            std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index " << index << " is not TH1D as expected.\n";
-
-            if (obj) {
-                std::cerr << "Actual class name: " << obj->ClassName() << "\n";
-            } else {
-                std::cerr << "Histogram pointer is null!\n";
-            }
-
+        if (!(*SlicedHistoListPtr)[index]) {
+            std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index = " << index << " is null!\n";
             std::cerr << "Aborting...\033[0m\n";
             exit(1);
         }
-    } else if (histoType == TH2D_TYPE) {
-        TH2D* h2_cast = dynamic_cast<TH2D*>(obj);
 
-        if (h2_cast) {
-            h2_cast->Fill(x, y, weight);
-        } else {
-            std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index " << index << " is not TH2D as expected.\n";
+        TObject* obj = (*SlicedHistoListPtr)[index];
 
-            if (obj) {
-                std::cerr << "Actual class name: " << obj->ClassName() << "\n";
+        if (histoType == TH1D_TYPE) {
+            TH1D* h1_cast = dynamic_cast<TH1D*>(obj);
+
+            if (h1_cast) {
+                h1_cast->Fill(x, weight);
             } else {
-                std::cerr << "Histogram pointer is null!\n";
+                std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index " << index << " is not TH1D as expected.\n";
+
+                if (obj) {
+                    std::cerr << "Actual class name: " << obj->ClassName() << "\n";
+                } else {
+                    std::cerr << "Histogram pointer is null!\n";
+                }
+
+                std::cerr << "Aborting...\033[0m\n";
+                exit(1);
             }
+        } else if (histoType == TH2D_TYPE) {
+            TH2D* h2_cast = dynamic_cast<TH2D*>(obj);
 
-            std::cerr << "Aborting...\033[0m\n";
-            exit(1);
+            if (h2_cast) {
+                h2_cast->Fill(x, y, weight);
+            } else {
+                std::cerr << "\033[31m\n\nhsPlots::Fill: ERROR: Histogram at index " << index << " is not TH2D as expected.\n";
+
+                if (obj) {
+                    std::cerr << "Actual class name: " << obj->ClassName() << "\n";
+                } else {
+                    std::cerr << "Histogram pointer is null!\n";
+                }
+
+                std::cerr << "Aborting...\033[0m\n";
+                exit(1);
+            }
         }
-    }
 
-    // if (histoType == TH1D_TYPE) {
-    //     dynamic_cast<TH1D*>((*SlicedHistoListPtr)[index])->Fill(x, weight);
-    // } else if (histoType == TH2D_TYPE) {
-    //     dynamic_cast<TH2D*>((*SlicedHistoListPtr)[index])->Fill(x, y, weight);
-    // }
+        // if (histoType == TH1D_TYPE) {
+        //     dynamic_cast<TH1D*>((*SlicedHistoListPtr)[index])->Fill(x, weight);
+        // } else if (histoType == TH2D_TYPE) {
+        //     dynamic_cast<TH2D*>((*SlicedHistoListPtr)[index])->Fill(x, y, weight);
+        // }
+    }
 }
 
 // DrawEmptyHistogramNotice function ------------------------------------------------------------------------------------------------------------------------------------
