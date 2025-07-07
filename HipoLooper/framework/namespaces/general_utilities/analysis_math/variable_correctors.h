@@ -26,6 +26,33 @@ namespace bt = basic_tools;
 
 namespace variable_correctors {
 
+// GetPeakFromHighestBin function ----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns the peak position of a histogram by locating the bin with the maximum number of entries.
+ *
+ * This function does not perform a fit — it simply identifies the bin with the highest content,
+ * and returns its central x-value and an estimated uncertainty.
+ *
+ * The uncertainty is estimated as half the bin width at the peak bin, providing a simple measure
+ * of positional resolution based on binning.
+ *
+ * This is useful for a quick, rough estimate of the peak position but is less robust than a Gaussian fit,
+ * especially in the presence of statistical fluctuations or background.
+ *
+ * @param hist Pointer to the TH1D histogram to be analyzed.
+ * @return std::pair<double, double> where the first value is the peak position (x of the max bin),
+ *         and the second is an estimated uncertainty (half the bin width at the peak).
+ *
+ * @example
+ *   auto [peak, err] = GetPeakFromHighestBin(h1);
+ *   std::cout << "Peak bin center: " << peak << " ± " << err << std::endl;
+ */
+std::pair<double, double> GetPeakFromHighestBin(TH1D *hist) {
+    int peakBin = hist->GetMaximumBin();
+    return {hist->GetBinCenter(peakBin), 0.5 * hist->GetBinWidth(peakBin)};
+}
+
 // FitPeakToGaussian functions ------------------------------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -66,37 +93,14 @@ std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitL
                 fitMax = std::fabs(peakCenter * 1.1);
             }
         } else {
-            if (peakCenter < 0) {
-                fitMin = -std::fabs(peakCenter * 1.6);
-                fitMax = -std::fabs(peakCenter * 0.4);
-            } else {
-                fitMin = std::fabs(peakCenter * 0.8);
-                fitMax = std::fabs(peakCenter * 1.2);
-            }
+            fitMin = peakCenter - 0.5;
+            fitMax = peakCenter + 0.5;
             // if (peakCenter < 0) {
-            //     fitMin = -std::fabs(peakCenter * 1.2);
-            //     fitMax = -std::fabs(peakCenter * 0.8);
+            //     fitMin = -std::fabs(peakCenter * 1.6);
+            //     fitMax = -std::fabs(peakCenter * 0.4);
             // } else {
             //     fitMin = std::fabs(peakCenter * 0.8);
             //     fitMax = std::fabs(peakCenter * 1.2);
-            // }
-
-            // if (bt::FindSubstring(hist->GetName(), "2GeV")) {
-            //     if (peakCenter < 0) {
-            //         fitMin = -std::fabs(peakCenter * 1.4);
-            //         fitMax = -std::fabs(peakCenter * 0.6);
-            //     } else {
-            //         fitMin = std::fabs(peakCenter * 0.6);
-            //         fitMax = std::fabs(peakCenter * 1.4);
-            //     }
-            // } else {
-            //     if (peakCenter < 0) {
-            //         fitMin = -std::fabs(peakCenter * 1.2);
-            //         fitMax = -std::fabs(peakCenter * 0.8);
-            //     } else {
-            //         fitMin = std::fabs(peakCenter * 0.8);
-            //         fitMax = std::fabs(peakCenter * 1.2);
-            //     }
             // }
         }
     } else if (fitLimits.size() == 2) {
@@ -150,26 +154,31 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     std::string sector_label[6] = {"Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6"};
 
     double phi_deg[6], z_vals[6], phi_err[6], z_err[6];
+
     for (int i = 0; i < 6; ++i) {
-        auto [phi_mean, phi_error] = FitPeakToGaussian(Phi_BySector_HistList[i]);
         auto [z_mean, z_error] = FitPeakToGaussian(Zrec_BySector_HistList[i]);
-        phi_deg[i] = phi_mean;
-        phi_err[i] = phi_error;
         z_vals[i] = z_mean;
         z_err[i] = z_error;
     }
 
-    double minZ = *std::min_element(z_vals, z_vals + 6);
-    double maxZ = *std::max_element(z_vals, z_vals + 6);
+    for (int i = 0; i < 6; ++i) {
+        auto [phi_mean, phi_error] = GetPeakFromHighestBin(Phi_BySector_HistList[i]);
+        phi_deg[i] = phi_mean;
+        phi_err[i] = phi_error;
+    }
+
+    double minZ = *std::min_element(z_vals, z_vals + 6), maxZ = *std::max_element(z_vals, z_vals + 6);
 
     bool useThetaSlice = (theta_slice.first > 0.0 && theta_slice.second > 0.0 && theta_slice.second > theta_slice.first);
 
-    double mean_theta = 0.0;
-    double mean_theta_rad = 0.0;
-    if (useThetaSlice) {
-        mean_theta = 0.5 * (theta_slice.first + theta_slice.second);  // mean in degrees
-        mean_theta_rad = mean_theta * TMath::DegToRad();
-    }
+    double mean_theta = useThetaSlice ? 0.5 * (theta_slice.first + theta_slice.second) : 0.0;  // mean in degrees
+    double mean_theta_rad = mean_theta * TMath::DegToRad();                                    // mean in radians
+    // double mean_theta = 0.0;
+    // double mean_theta_rad = 0.0;
+    // if (useThetaSlice) {
+    //     mean_theta = 0.5 * (theta_slice.first + theta_slice.second);  // mean in degrees
+    //     mean_theta_rad = mean_theta * TMath::DegToRad();
+    // }
 
     TGraphErrors *g = new TGraphErrors(6, phi_deg, z_vals, phi_err, z_err);
 
@@ -193,20 +202,7 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + 10 * margin);
     // g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + margin);
 
-    // if (bt::FindSubstring(SampleName, "2GeV")) {
-    //     if (bt::FindSubstring(SampleName, "Ar40")) {
-    //         g->GetYaxis()->SetRangeUser(-6.8, -5.9);
-    //     }
-    // } else if (bt::FindSubstring(SampleName, "4GeV")) {
-    //     if (bt::FindSubstring(SampleName, "Ar40")) {
-    //         g->GetYaxis()->SetRangeUser(-6.8, -5.9);
-    //     }
-    // } else if (bt::FindSubstring(SampleName, "6GeV")) {
-    //     g->GetXaxis()->SetRangeUser(-180, 180);
-    // }
-
-    // Fit function: argument in degrees, convert to radians in the formula
-    TF1 *fitFunc = nullptr;
+    TF1 *fitFunc = nullptr;  // Fit function: argument in degrees, convert to radians in the formula
 
     if (!useThetaSlice) {
         fitFunc = new TF1("fitFunc", "(-[0]) * cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
@@ -217,12 +213,10 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
         fitFunc->SetParNames("r", "Phi_beam", "Vz_true");
     }
 
-    double ampGuess = 0.5 * (maxZ - minZ);
-    double meanGuess = 0.5 * (maxZ + minZ);
+    double ampGuess = 0.5 * (maxZ - minZ), meanGuess = 0.5 * (maxZ + minZ);
     fitFunc->SetParameters(ampGuess, 0.0, meanGuess);
 
     fitFunc->SetParLimits(0, 0, 9999);  // Set amplitude (or r) limits to be non-negative
-    // fitFunc->SetParLimits(0, 0, 1); // Set amplitude (or r) limits to be non-negative
 
     // double minPhi_beam = 30;
     // double maxPhi_beam = 45;
@@ -235,6 +229,7 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     g->Fit(fitFunc);
     // g->Fit(fitFunc, "F");
 
+    // Retrieve fit parameters
     double A = fitFunc->GetParameter(0);
     double phi_beam = fitFunc->GetParameter(1);
     double Vz_true = fitFunc->GetParameter(2);
