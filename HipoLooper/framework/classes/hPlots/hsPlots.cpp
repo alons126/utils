@@ -177,6 +177,8 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
         }
     }
 
+                std::cerr << "Aborting...\033[0m\n";
+
     if (ValidIndex) {
         if (PrintOut) {
             for (size_t i = 0; i < SlicedHistoListPtr->size(); ++i) {
@@ -194,6 +196,9 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
             std::cerr << "Aborting...\033[0m\n";
             exit(1);
         }
+
+            std::cerr << "Aborting2...\033[0m\n";
+
 
         TObject* obj = (*SlicedHistoListPtr)[index];
 
@@ -232,6 +237,9 @@ void hsPlots::Fill(double sliceVar, double x, double y, double weight) {
                 exit(1);
             }
         }
+
+                    std::cerr << "Aborting3...\033[0m\n";
+
 
         // if (histoType == TH1D_TYPE) {
         //     dynamic_cast<TH1D*>((*SlicedHistoListPtr)[index])->Fill(x, weight);
