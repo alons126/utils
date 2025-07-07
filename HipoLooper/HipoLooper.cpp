@@ -50,17 +50,17 @@ void HipoLooper() {
 
     std::cout << "\033[33m" << "\n\nInitiating HipoLooper.cpp...\n\n" << "\033[0m";
 
-    int version = 26;  // Version of the code
+    int version = 27;  // Version of the code
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
     // std::string General_status = "rAndPhi_beam_from_30_leq_theta_pipFD_leq_35_deg_full";  // General status of the analysis
-    std::string General_status = "reformat_full";  // General status of the analysis
+    std::string General_status = "Ar40_data_2GeV_run_015672 for Julia";  // General status of the analysis
     // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
 
     General_status = "__" + General_status;
 
-    bool ApplyLimiter = false;
+    bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     int Limiter = 10000000;  // 10M events (fo the data)
     // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
