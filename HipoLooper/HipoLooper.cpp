@@ -54,9 +54,8 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    // std::string General_status = "rAndPhi_beam_from_30_leq_theta_pipFD_leq_35_deg_full";  // General status of the analysis
-    std::string General_status = "test_test_test";  // General status of the analysis
-    // std::string General_status = "Ar40_test_2_full";  // General status of the analysis
+    std::string General_status = "Ar40_target_zpos_test";  // General status of the analysis
+    // std::string General_status = "";  // General status of the analysis
 
     General_status = "__" + General_status;
 
@@ -5166,178 +5165,183 @@ void HipoLooper() {
         //                     true, true, theta_slice);
 #pragma endregion
 
-// #pragma region Processing hsPlots plots
-//         std::cout << "\033[33m" << "\n\nProcessing hsPlots plots..." << "\n\n" << "\033[0m";
+        // #pragma region Processing hsPlots plots
+        //         std::cout << "\033[33m" << "\n\nProcessing hsPlots plots..." << "\n\n" << "\033[0m";
 
-//         /////////////////////////////////////////////////////
-//         // Sort hsPlots plots
-//         /////////////////////////////////////////////////////
+        //         /////////////////////////////////////////////////////
+        //         // Sort hsPlots plots
+        //         /////////////////////////////////////////////////////
 
-//         // Sort histograms by:
-//         //   1. Particle type (e, pipFD, pimFD)
-//         //   2. Sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
-//         //   3. Theta slice start (X in "slice_from_X_to_Y")
-//         //   4. Base name (alphabetical fallback)
-//         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject* a, TObject* b) {
-//             const std::string nameA = a->GetName();
-//             const std::string nameB = b->GetName();
+        //         // Sort histograms by:
+        //         //   1. Particle type (e, pipFD, pimFD)
+        //         //   2. Sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
+        //         //   3. Theta slice start (X in "slice_from_X_to_Y")
+        //         //   4. Base name (alphabetical fallback)
+        //         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject* a, TObject* b) {
+        //             const std::string nameA = a->GetName();
+        //             const std::string nameB = b->GetName();
 
-//             // Assign a sorting priority based on particle type.
-//             // "e" comes first, followed by "pipFD", then "pimFD"
-//             auto getParticlePriority = [](const std::string& name) -> int {
-//                 if (name.find("_e_") != std::string::npos) return 0;      // electron
-//                 if (name.find("_pipFD_") != std::string::npos) return 1;  // pi+
-//                 if (name.find("_pimFD_") != std::string::npos) return 2;  // pi-
-//                 return 9;                                                 // Unknown or unmatched types get lowest priority
-//             };
+        //             // Assign a sorting priority based on particle type.
+        //             // "e" comes first, followed by "pipFD", then "pimFD"
+        //             auto getParticlePriority = [](const std::string& name) -> int {
+        //                 if (name.find("_e_") != std::string::npos) return 0;      // electron
+        //                 if (name.find("_pipFD_") != std::string::npos) return 1;  // pi+
+        //                 if (name.find("_pimFD_") != std::string::npos) return 2;  // pi-
+        //                 return 9;                                                 // Unknown or unmatched types get lowest priority
+        //             };
 
-//             // Assign a sorting priority based on histograms name.
-//             // "Vz_<particle>_AC_1e_cut_BySliceOfTheta_[...]" comes first,
-//             // followed by "Vz_<particle>_AC_zoomin_1e_cut_BySliceOfTheta_slice_[...]",
-//             // then "Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_slice_from_[...]" and
-//             // lastly "corrected_Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_[...]"
-//             auto getNamePriority = [](const std::string& name) -> int {
-//                 if (name.find("corrected") != std::string::npos) return 3;
-//                 if (name.find("Vz_VS_phi") != std::string::npos) return 2;
-//                 if (name.find("zoomin") != std::string::npos) return 1;
-//                 if (name.find("Vz_") != std::string::npos) return 0;
-//                 return 9;
-//             };
+        //             // Assign a sorting priority based on histograms name.
+        //             // "Vz_<particle>_AC_1e_cut_BySliceOfTheta_[...]" comes first,
+        //             // followed by "Vz_<particle>_AC_zoomin_1e_cut_BySliceOfTheta_slice_[...]",
+        //             // then "Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_slice_from_[...]" and
+        //             // lastly "corrected_Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_[...]"
+        //             auto getNamePriority = [](const std::string& name) -> int {
+        //                 if (name.find("corrected") != std::string::npos) return 3;
+        //                 if (name.find("Vz_VS_phi") != std::string::npos) return 2;
+        //                 if (name.find("zoomin") != std::string::npos) return 1;
+        //                 if (name.find("Vz_") != std::string::npos) return 0;
+        //                 return 9;
+        //             };
 
-//             // Extract sector number from histogram name.
-//             // Returns 0 for non-sector histograms (to sort them first).
-//             auto getSector = [](const std::string& name) -> int {
-//                 std::smatch match;
-//                 std::regex pattern(R"(_sector([1-6]))");
-//                 // If the pattern matches, extract the sector number, else return 0
-//                 return (std::regex_search(name, match, pattern)) ? std::stoi(match[1]) : 0;
-//             };
+        //             // Extract sector number from histogram name.
+        //             // Returns 0 for non-sector histograms (to sort them first).
+        //             auto getSector = [](const std::string& name) -> int {
+        //                 std::smatch match;
+        //                 std::regex pattern(R"(_sector([1-6]))");
+        //                 // If the pattern matches, extract the sector number, else return 0
+        //                 return (std::regex_search(name, match, pattern)) ? std::stoi(match[1]) : 0;
+        //             };
 
-//             // Extract the lower bound of the theta slice from the histogram name.
-//             // If the format is not matched, return a large number so it sorts last.
-//             auto getSliceStart = [](const std::string& name) -> double {
-//                 std::smatch match;
-//                 std::regex pattern(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
-//                 // Use regex to extract the floating point number after "slice_from_"
-//                 return (std::regex_search(name, match, pattern)) ? std::stod(match[1]) : 1e9;
-//             };
+        //             // Extract the lower bound of the theta slice from the histogram name.
+        //             // If the format is not matched, return a large number so it sorts last.
+        //             auto getSliceStart = [](const std::string& name) -> double {
+        //                 std::smatch match;
+        //                 std::regex pattern(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
+        //                 // Use regex to extract the floating point number after "slice_from_"
+        //                 return (std::regex_search(name, match, pattern)) ? std::stod(match[1]) : 1e9;
+        //             };
 
-//             // Compare particle types first
-//             int particleA = getParticlePriority(nameA);
-//             int particleB = getParticlePriority(nameB);
-//             if (particleA != particleB) return particleA < particleB;
+        //             // Compare particle types first
+        //             int particleA = getParticlePriority(nameA);
+        //             int particleB = getParticlePriority(nameB);
+        //             if (particleA != particleB) return particleA < particleB;
 
-//             // // Compare particle types first
-//             // int NameA = getNamePriority(nameA);
-//             // int NameB = getNamePriority(nameB);
-//             // if (NameA != NameB) return NameA < NameB;
+        //             // // Compare particle types first
+        //             // int NameA = getNamePriority(nameA);
+        //             // int NameB = getNamePriority(nameB);
+        //             // if (NameA != NameB) return NameA < NameB;
 
-//             // Then compare sectors (non-sector histograms first)
-//             int sectorA = getSector(nameA);
-//             int sectorB = getSector(nameB);
-//             if (sectorA != sectorB) return sectorA < sectorB;
+        //             // Then compare sectors (non-sector histograms first)
+        //             int sectorA = getSector(nameA);
+        //             int sectorB = getSector(nameB);
+        //             if (sectorA != sectorB) return sectorA < sectorB;
 
-//             // Then compare by theta slice start
-//             double sliceA = getSliceStart(nameA);
-//             double sliceB = getSliceStart(nameB);
-//             if (sliceA != sliceB) return sliceA < sliceB;
+        //             // Then compare by theta slice start
+        //             double sliceA = getSliceStart(nameA);
+        //             double sliceB = getSliceStart(nameB);
+        //             if (sliceA != sliceB) return sliceA < sliceB;
 
-//             // Final fallback: alphabetical order to ensure consistency
-//             return nameA < nameB;
-//         });
+        //             // Final fallback: alphabetical order to ensure consistency
+        //             return nameA < nameB;
+        //         });
 
-//         // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
+        //         // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
 
-//         auto ProcessFitsByThetaSlices = [&](const char* Particle, std::vector<TObject*> Vz_VS_phi_AllSector_HistoLists, const std::vector<std::vector<TObject*>>& Vz_BySector_HistoLists,
-//                                             const std::vector<std::vector<TObject*>>& Vz_VS_phi_BySector_HistoLists) -> std::vector<TObject*> {
-//             std::vector<TObject*> FittedGraphsByThetaSlice;
+        //         auto ProcessFitsByThetaSlices = [&](const char* Particle, std::vector<TObject*> Vz_VS_phi_AllSector_HistoLists, const std::vector<std::vector<TObject*>>&
+        //         Vz_BySector_HistoLists,
+        //                                             const std::vector<std::vector<TObject*>>& Vz_VS_phi_BySector_HistoLists) -> std::vector<TObject*> {
+        //             std::vector<TObject*> FittedGraphsByThetaSlice;
 
-//             for (int i = 0; i < theta_slices.size(); i++) {
-//                 std::vector<TH1D*> Vz_Hists_per_slice;
-//                 std::vector<TH1D*> Phi_Hists_per_slice;
+        //             for (int i = 0; i < theta_slices.size(); i++) {
+        //                 std::vector<TH1D*> Vz_Hists_per_slice;
+        //                 std::vector<TH1D*> Phi_Hists_per_slice;
 
-//                 for (int sector = 0; sector < 6; ++sector) {
-//                     Vz_Hists_per_slice.push_back(static_cast<TH1D*>(Vz_BySector_HistoLists[sector][i]));
-//                     Phi_Hists_per_slice.push_back(project(static_cast<TH2D*>(Vz_VS_phi_BySector_HistoLists[sector][i]), Particle));
-//                 }
+        //                 for (int sector = 0; sector < 6; ++sector) {
+        //                     Vz_Hists_per_slice.push_back(static_cast<TH1D*>(Vz_BySector_HistoLists[sector][i]));
+        //                     Phi_Hists_per_slice.push_back(project(static_cast<TH2D*>(Vz_VS_phi_BySector_HistoLists[sector][i]), Particle));
+        //                 }
 
-//                 auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] = vc::FitVertexVsPhi(Particle, SampleName, Vz_VS_phi_AllSector_HistoLists[i], Vz_Hists_per_slice,
-//                                                                                                              Phi_Hists_per_slice, std::make_pair(theta_slices[i][0], theta_slices[i][1]));
+        //                 auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] = vc::FitVertexVsPhi(Particle, SampleName, Vz_VS_phi_AllSector_HistoLists[i],
+        //                 Vz_Hists_per_slice,
+        //                                                                                                              Phi_Hists_per_slice, std::make_pair(theta_slices[i][0],
+        //                                                                                                              theta_slices[i][1]));
 
-//                 FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
-//             }
+        //                 FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
+        //             }
 
-//             return FittedGraphsByThetaSlice;
-//         };
+        //             return FittedGraphsByThetaSlice;
+        //         };
 
-//         auto FittedGraphsByThetaSlice_e = ProcessFitsByThetaSlices(
-//             "e", Sliced_Vz_VS_phi_e_HistoList,
-//             {Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3,
-//              Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-//             {Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3, Sliced_Vz_VS_phi_e_HistoList_sector4,
-//              Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
+        //         auto FittedGraphsByThetaSlice_e = ProcessFitsByThetaSlices(
+        //             "e", Sliced_Vz_VS_phi_e_HistoList,
+        //             {Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
+        //             Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3,
+        //              Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5,
+        //              Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+        //             {Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3, Sliced_Vz_VS_phi_e_HistoList_sector4,
+        //              Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
 
-//         std::string basename_e = "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta";
+        //         std::string basename_e = "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta";
 
-//         for (int i = 0; i < theta_slices.size(); i++) {
-//             std::ostringstream name;
-//             name << basename_e << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
-//                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+        //         for (int i = 0; i < theta_slices.size(); i++) {
+        //             std::ostringstream name;
+        //             name << basename_e << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+        //                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
 
-//             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
-//                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-//                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_e[i]);
-//                     break;
-//                 }
-//             }
-//         }
+        //             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+        //                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+        //                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_e[i]);
+        //                     break;
+        //                 }
+        //             }
+        //         }
 
-//         auto FittedGraphsByThetaSlice_pipFD =
-//             ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pipFD_HistoList,
-//                                      {Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
-//                                       Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
-//                                       Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-//                                      {Sliced_Vz_VS_phi_pipFD_HistoList_sector1, Sliced_Vz_VS_phi_pipFD_HistoList_sector2, Sliced_Vz_VS_phi_pipFD_HistoList_sector3,
-//                                       Sliced_Vz_VS_phi_pipFD_HistoList_sector4, Sliced_Vz_VS_phi_pipFD_HistoList_sector5, Sliced_Vz_VS_phi_pipFD_HistoList_sector6});
+        //         auto FittedGraphsByThetaSlice_pipFD =
+        //             ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pipFD_HistoList,
+        //                                      {Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
+        //                                       Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
+        //                                       Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+        //                                      {Sliced_Vz_VS_phi_pipFD_HistoList_sector1, Sliced_Vz_VS_phi_pipFD_HistoList_sector2, Sliced_Vz_VS_phi_pipFD_HistoList_sector3,
+        //                                       Sliced_Vz_VS_phi_pipFD_HistoList_sector4, Sliced_Vz_VS_phi_pipFD_HistoList_sector5, Sliced_Vz_VS_phi_pipFD_HistoList_sector6});
 
-//         std::string basename_pipFD = "Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta";
+        //         std::string basename_pipFD = "Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta";
 
-//         for (int i = 0; i < theta_slices.size(); i++) {
-//             std::ostringstream name;
-//             name << basename_pipFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
-//                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+        //         for (int i = 0; i < theta_slices.size(); i++) {
+        //             std::ostringstream name;
+        //             name << basename_pipFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+        //                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
 
-//             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
-//                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-//                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pipFD[i]);
-//                     break;
-//                 }
-//             }
-//         }
+        //             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+        //                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+        //                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pipFD[i]);
+        //                     break;
+        //                 }
+        //             }
+        //         }
 
-//         auto FittedGraphsByThetaSlice_pimFD =
-//             ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pimFD_HistoList,
-//                                      {Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
-//                                       Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
-//                                       Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-//                                      {Sliced_Vz_VS_phi_pimFD_HistoList_sector1, Sliced_Vz_VS_phi_pimFD_HistoList_sector2, Sliced_Vz_VS_phi_pimFD_HistoList_sector3,
-//                                       Sliced_Vz_VS_phi_pimFD_HistoList_sector4, Sliced_Vz_VS_phi_pimFD_HistoList_sector5, Sliced_Vz_VS_phi_pimFD_HistoList_sector6});
+        //         auto FittedGraphsByThetaSlice_pimFD =
+        //             ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pimFD_HistoList,
+        //                                      {Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
+        //                                       Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
+        //                                       Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+        //                                      {Sliced_Vz_VS_phi_pimFD_HistoList_sector1, Sliced_Vz_VS_phi_pimFD_HistoList_sector2, Sliced_Vz_VS_phi_pimFD_HistoList_sector3,
+        //                                       Sliced_Vz_VS_phi_pimFD_HistoList_sector4, Sliced_Vz_VS_phi_pimFD_HistoList_sector5, Sliced_Vz_VS_phi_pimFD_HistoList_sector6});
 
-//         std::string basename_pimFD = "Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta";
+        //         std::string basename_pimFD = "Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta";
 
-//         for (int i = 0; i < theta_slices.size(); i++) {
-//             std::ostringstream name;
-//             name << basename_pimFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
-//                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+        //         for (int i = 0; i < theta_slices.size(); i++) {
+        //             std::ostringstream name;
+        //             name << basename_pimFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+        //                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
 
-//             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
-//                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-//                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pimFD[i]);
-//                     break;
-//                 }
-//             }
-//         }
-// #pragma endregion
+        //             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+        //                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+        //                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pimFD[i]);
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        // #pragma endregion
 
 #pragma region Plotting and saving histograms
         std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
