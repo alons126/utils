@@ -5444,6 +5444,8 @@ void HipoLooper() {
             myText->SaveAs(fileName);
             sprintf(fileName, "%s", PDF_fileName.c_str());
 
+            cout << "Test 10a \n";
+
             // Helper lambda for drawing title blocks
             auto draw_title_block = [&](const std::string& title, const std::vector<std::string>& lines, double startY, double stepY, bool OverrideOffset = false) {
                 if (title != "") { titles.DrawLatex(0.05, startY, title.c_str()); }
@@ -5458,6 +5460,8 @@ void HipoLooper() {
                 // titles.DrawLatex(0.05, startY, title.c_str());
                 // for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.05 + (i == 0 ? 0.05 : 0.10), startY - (i + 1) * stepY, lines[i].c_str()); }
             };
+
+            cout << "Test 10b \n";
 
             // Helper lambda for drawing and beam info
             auto draw_beam_info = [&](const std::string& particle, const std::string& label, double yTop) {
@@ -5481,11 +5485,15 @@ void HipoLooper() {
                 // text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
             };
 
+            cout << "Test 10c \n";
+
             // First page:
             myText->cd();
             titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
             text.DrawLatex(0.05, 0.80, "This output is for the Ar40 implementation in GEMC");
             text.DrawLatex(0.05, 0.70, ("Plots from (e,e') events in: #font[42]{" + TempCodeRun_status + "}").c_str());
+
+            cout << "Test 10d \n";
 
             if (TempIsData) {
                 draw_title_block("", {"TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}", "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"}, 0.65, 0.05, true);
@@ -5496,6 +5504,8 @@ void HipoLooper() {
                      "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"},
                     0.60, 0.05, true);
             }
+
+            cout << "Test 10e \n";
 
             text.DrawLatex(0.05, 0.40,
                            ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + (ApplyLimiter ? ", Limiter = " + bt::ToStringWithPrecision(Limiter, 0) : "") + "):").c_str());
@@ -5512,6 +5522,8 @@ void HipoLooper() {
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
 
+            cout << "Test 10f \n";
+
             // Second page:
             titles.SetTextSize(0.05);
             titles.DrawLatex(0.05, 0.90, "Beam position parameters for corrected Vz");
@@ -5521,6 +5533,8 @@ void HipoLooper() {
 
             myText->Print(fileName, "pdf Title: Parameters");
             myText->Clear();
+
+            cout << "Test 10g \n";
 
             // Remaining flags, loops, and drawing logic as-is
             // (You may optionally break this block further into helper lambdas)
@@ -5533,15 +5547,21 @@ void HipoLooper() {
 
             for (auto& [particle, _] : first_flags_scalar) { first_flags_sector[particle] = {true, true, true, true, true, true}; }
 
+            cout << "Test 10h \n";
+
             std::map<std::string, bool*> first_flags;
 
             for (auto& [particle, flag] : first_flags_scalar) { first_flags[particle] = &flag; }
+
+            cout << "Test 10i \n";
 
             std::map<std::string, std::map<int, bool*>> sector_flags;
 
             for (auto& [particle, sector_array] : first_flags_sector) {
                 for (int sec = 0; sec < 6; ++sec) { sector_flags[particle][sec + 1] = &sector_array[sec]; }
             }
+
+            cout << "Test 10j \n";
 
             std::map<std::string, std::string> particle_labels = {
                 {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
@@ -5550,8 +5570,12 @@ void HipoLooper() {
             double yOffset = 0.075;  // Offset for the y position of the text
             // std::string marker = "BySliceOfTheta";
 
+            cout << "Test 10k \n";
+
             // For histogram processing: track current slice ID for resetting first_flags
             std::string current_slice_id;
+
+            cout << "Test 10l \n";
 
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
@@ -5800,6 +5824,8 @@ void HipoLooper() {
                 myCanvas->Clear();
                 ++plot_counter;
             }
+
+            cout << "Test 10m \n";
 
             sprintf(fileName, "%s]", PDF_fileName.c_str());
             myCanvas->Print(fileName, "pdf");
