@@ -5465,24 +5465,36 @@ void HipoLooper() {
 
             // Helper lambda for drawing and beam info
             auto draw_beam_info = [&](const std::string& particle, const std::string& label, double yTop) {
-                std::string Vx = IsData ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).first, 4) : "0";
-                std::string Vy = IsData ? bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).second, 4) : "0";
-                std::string r = bt::ToStringWithPrecision(compute_r(Beam_Coordinates, particle));
-                std::string phi = bt::ToStringWithPrecision(compute_phi_beam_rad(Beam_Coordinates, particle) * 180 / am::pi);
+                const std::string key = CodeRun_status + "_" + particle;
+                auto it = Beam_Coordinates.find(key);
+
+                // If we don’t have that particle’s beam coordinates, just print zeros and return
+                if (it == Beam_Coordinates.end()) {
+                    std::cerr << "Warning: Beam_Coordinates has no entry for key '" << key << "'. Using (0,0) in the PDF.\n";
+
+                    text.DrawLatex(0.05, yTop, (label + ":").c_str());
+                    text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + label + "},V_{y}^{" + label + "}) = (0 cm, 0 cm)}").c_str());
+                    text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + label + "}, #phi_{beam}^{" + label + "}) = (0 cm, 0#circ)}").c_str());
+                    return;
+                }
+
+                double Vx_val = it->second.first;
+                double Vy_val = it->second.second;
+                double r_val = compute_r(Beam_Coordinates, particle);
+                double phi_val = compute_phi_beam_rad(Beam_Coordinates, particle) * 180. / am::pi;
 
                 std::string BulletLable = (bt::FindSubstring(label, "e")) ? "e^{-}" : label;
-                BulletLable = BulletLable + ":";
-
                 std::string SubscriptLable = label;
 
-                text.DrawLatex(0.05, yTop, BulletLable.c_str());
-                text.DrawLatex(0.10, yTop - 0.05, ("Cartesian: #font[42]{(V_{x}^{" + SubscriptLable + "},V_{y}^{" + SubscriptLable + "}) = (" + Vx + " cm, " + Vy + " cm)}").c_str());
-                text.DrawLatex(0.10, yTop - 0.10,
-                               ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" +
-                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).first, 2) + " cm, " +
-                                bt::ToStringWithPrecision(Beam_Coordinates.at(CodeRun_status + "_" + particle).second * 180. / am::pi, 2) + "#circ)}")
+                text.DrawLatex(0.05, yTop, (BulletLable + ":").c_str());
+                text.DrawLatex(0.10, yTop - 0.05,
+                               ("Cartesian: #font[42]{(V_{x}^{" + SubscriptLable + "},V_{y}^{" + SubscriptLable + "}) = " + bt::ToStringWithPrecision(Vx_val, 4) + " cm, " +
+                                bt::ToStringWithPrecision(Vy_val, 4) + " cm)}")
                                    .c_str());
-                // text.DrawLatex(0.10, yTop - 0.10, ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + r + " cm, " + phi + "#circ)}").c_str());
+                text.DrawLatex(0.10, yTop - 0.10,
+                               ("Polar: #font[42]{(r_{" + SubscriptLable + "}, #phi_{beam}^{" + SubscriptLable + "}) = (" + bt::ToStringWithPrecision(r_val, 2) + " cm, " +
+                                bt::ToStringWithPrecision(phi_val, 2) + "#circ)}")
+                                   .c_str());
             };
 
             cout << "Test 10c \n";
