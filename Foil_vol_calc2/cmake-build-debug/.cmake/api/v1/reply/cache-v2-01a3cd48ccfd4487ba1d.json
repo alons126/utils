@@ -31,7 +31,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar"
+			"value" : "/usr/bin/ar"
 		},
 		{
 			"name" : "CMAKE_BUILD_TYPE",
@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/alon/Projects/Foil_vol_calc2/cmake-build-debug"
+			"value" : "/Users/alon/Projects/utils/Foil_vol_calc2/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -67,7 +67,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "3"
+			"value" : "4"
 		},
 		{
 			"name" : "CMAKE_CACHE_MINOR_VERSION",
@@ -79,7 +79,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "30"
+			"value" : "0"
 		},
 		{
 			"name" : "CMAKE_CACHE_PATCH_VERSION",
@@ -91,7 +91,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "5"
+			"value" : "2"
 		},
 		{
 			"name" : "CMAKE_COLOR_DIAGNOSTICS",
@@ -154,8 +154,8 @@
 					"value" : "CXX compiler"
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++"
+			"type" : "STRING",
+			"value" : "/Applications/Xcode.app/Contents/Developer/usr/bin/g++"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -250,8 +250,8 @@
 					"value" : "C compiler"
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc"
+			"type" : "STRING",
+			"value" : "/Applications/Xcode.app/Contents/Developer/usr/bin/gcc"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -442,6 +442,22 @@
 			"value" : ""
 		},
 		{
+			"name" : "CMAKE_EXPORT_BUILD_DATABASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable/Disable output of build database during the build."
+				}
+			],
+			"type" : "BOOL",
+			"value" : ""
+		},
+		{
 			"name" : "CMAKE_EXPORT_COMPILE_COMMANDS",
 			"properties" : 
 			[
@@ -479,7 +495,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/alon/Projects/Foil_vol_calc2/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/Users/alon/Projects/utils/Foil_vol_calc2/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -539,7 +555,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/alon/Projects/Foil_vol_calc2"
+			"value" : "/Users/alon/Projects/utils/Foil_vol_calc2"
 		},
 		{
 			"name" : "CMAKE_INSTALL_NAME_TOOL",
@@ -583,7 +599,19 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld"
+			"value" : "/Applications/Xcode.app/Contents/Developer/usr/bin/ld"
+		},
+		{
+			"name" : "CMAKE_LIST_FILE_NAME",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Name of CMakeLists files to read"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "CMakeLists.txt"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -691,7 +719,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm"
+			"value" : "/usr/bin/nm"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -735,7 +763,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/objdump"
+			"value" : "/usr/bin/objdump"
 		},
 		{
 			"name" : "CMAKE_OSX_ARCHITECTURES",
@@ -771,7 +799,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk"
+			"value" : "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -835,7 +863,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib"
+			"value" : "/usr/bin/ranlib"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -863,7 +891,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.30"
+			"value" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-4.0"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1071,7 +1099,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip"
+			"value" : "/usr/bin/strip"
 		},
 		{
 			"name" : "CMAKE_TAPI",
@@ -1127,7 +1155,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/alon/Projects/Foil_vol_calc2/cmake-build-debug"
+			"value" : "/Users/alon/Projects/utils/Foil_vol_calc2/cmake-build-debug"
 		},
 		{
 			"name" : "Foil_vol_calc2_IS_TOP_LEVEL",
@@ -1151,7 +1179,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/alon/Projects/Foil_vol_calc2"
+			"value" : "/Users/alon/Projects/utils/Foil_vol_calc2"
 		}
 	],
 	"kind" : "cache",

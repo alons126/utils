@@ -10,8 +10,8 @@ double PrismVolume(double t, double a, double b) {
 // TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
-    // std::string Size = "small";
-    std::string Size = "large";
+    std::string Size = "small";
+    // std::string Size = "large";
 
     double separation = 0.127;
 

@@ -35,7 +35,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics"
+					"fragment" : "-g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk -fcolor-diagnostics"
 				}
 			],
 			"language" : "CXX",
@@ -60,10 +60,6 @@
 		[
 			{
 				"fragment" : "-g",
-				"role" : "flags"
-			},
-			{
-				"fragment" : "",
 				"role" : "flags"
 			}
 		],
