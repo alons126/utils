@@ -5346,9 +5346,13 @@ void HipoLooper() {
 #pragma region Plotting and saving histograms
         std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
 
+        cout << "Test 1 \n";
+
         /////////////////////////////////////////////////////
         // Organize histograms
         /////////////////////////////////////////////////////
+
+        cout << "Test 2 \n";
 
         // Helper lambda for TH1 styling
         auto style_th1 = [](TH1* h) {
@@ -5358,6 +5362,8 @@ void HipoLooper() {
             h->SetLineWidth(2);
             h->SetLineColor(kRed);
         };
+
+        cout << "Test 3 \n";
 
         // Helper lambda for centering axis titles
         auto center_titles = [](TObject* obj) {
@@ -5372,9 +5378,11 @@ void HipoLooper() {
             }
         };
 
+        cout << "Test 4 \n";
+
         int insert_index_e = 0, insert_index_pipFD = 0, insert_index_pimFD = 0;
 
-        cout << "Test 1 \n";
+        cout << "Test 5 \n";
 
         for (size_t i = 0; i < HistoList.size(); i++) {
             if (HistoList[i]->InheritsFrom("TH1")) { style_th1((TH1*)HistoList[i]); }
@@ -5390,26 +5398,26 @@ void HipoLooper() {
                 insert_index_pimFD = i + 1;
         }
 
-        cout << "Test 2 \n";
+        cout << "Test 6 \n";
 
         std::vector<std::pair<int, TGraph*>> graph_inserts = {
             {insert_index_e, FittedParametersGraph_e}, {insert_index_pipFD, FittedParametersGraph_pipFD}, {insert_index_pimFD, FittedParametersGraph_pimFD}};
 
-        cout << "Test 3 \n";
+        cout << "Test 7 \n";
 
         for (const auto& [index, graph] : graph_inserts) {
             HistoList.insert(HistoList.begin() + index, graph);
             center_titles(graph);
         }
 
-        cout << "Test 4 \n";
+        cout << "Test 8 \n";
 
         for (auto* obj : HistoList_ByThetaSlices) {
             if (obj->InheritsFrom("TH1")) { style_th1((TH1*)obj); }
             center_titles(obj);
         }
 
-        cout << "Test 5 \n";
+        cout << "Test 9 \n";
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
@@ -5800,17 +5808,17 @@ void HipoLooper() {
             hf::ReassignPDFBookmarks(bt::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
         };
 
-        cout << "Test 6 \n";
+        cout << "Test 10 \n";
 
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
-        cout << "Test 7 \n";
+        cout << "Test 11 \n";
 
         // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
         //                   NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
-        cout << "Test 8 \n";
+        cout << "Test 12 \n";
 
         // Helper lambda for using the hf::CompareHistograms function
         int ComparisonNumber = 0;
