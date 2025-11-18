@@ -62,9 +62,10 @@ void HipoLooper() {
     bool ApplyLimiter = true;
     // bool ApplyLimiter = true;
     // int Limiter = 10000000;  // 10M events (fo the data)
-    // int Limiter = 1000000;  // 100 files or 1M events (fo the data)
+    // int Limiter = 5000000;  // 500 files or 1M events (fo the data)
+    int Limiter = 1000000;  // 100 files or 1M events (fo the data)
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
-    int Limiter = 10000;  // 1 file
+    // int Limiter = 10000;  // 1 file
 
     std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
@@ -106,16 +107,14 @@ void HipoLooper() {
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
+
         bool IsData = bt::FindSubstring(InputFiles.at(sample), "cache");
 
         double Ebeam = (bt::FindSubstring(InputFiles.at(sample), "2070MeV") || bt::FindSubstring(InputFiles.at(sample), "2gev"))   ? 2.07052
                        : (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev")) ? 4.02962
                        : (bt::FindSubstring(InputFiles.at(sample), "5986MeV") || bt::FindSubstring(InputFiles.at(sample), "6gev")) ? 5.98636
                                                                                                                                    : 0.0;
-        if (Ebeam == 0.0) {
-            std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
-            exit(1);
-        }
+        if (Ebeam == 0.0) { std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         bool Is2GeV = (bt::FindSubstring(InputFiles.at(sample), "2070MeV") || bt::FindSubstring(InputFiles.at(sample), "2gev"));
         bool Is4GeV = (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev"));
@@ -125,25 +124,16 @@ void HipoLooper() {
                                     : (bt::FindSubstring(InputFiles.at(sample), "/Ar40/") || bt::FindSubstring(InputFiles.at(sample), "/Ar/")) ? "Ar40"
                                                                                                                                                : "_Unknown";
 
-        if (target_status == "_Unknown") {
-            std::cerr << "\n\nError! Target not found in InputFiles string! Aborting...\n\n";
-            exit(1);
-        }
+        if (target_status == "_Unknown") { std::cerr << "\n\nError! Target not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         std::string sample_type_status = IsData ? "_data" : "_sim";
         std::string genie_tune_status = !IsData ? "_G18_" : "_";
         std::string Ebeam_status_1 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
         std::string Ebeam_status_2 = Is2GeV ? "_2GeV" : Is4GeV ? "_4GeV" : Is6GeV ? "_6GeV" : "_Unknown";
 
-        if (Ebeam_status_1 == "_Unknown") {
-            std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
-            exit(1);
-        }
+        if (Ebeam_status_1 == "_Unknown") { std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
 
-        if (Ebeam_status_2 == "_Unknown") {
-            std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n";
-            exit(1);
-        }
+        if (Ebeam_status_2 == "_Unknown") { std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         std::string Run_status = bt::FindSubstring(InputFiles.at(sample), "015664")   ? "_run_015664"
                                  : bt::FindSubstring(InputFiles.at(sample), "015778") ? "_run_015778"
@@ -181,12 +171,15 @@ void HipoLooper() {
         chain.db()->turnOffQADB();
         auto config_c12 = chain.GetC12Reader();
         const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
+
 #pragma endregion
 
 #pragma region Prepare histograms
+
         /////////////////////////////////////
         // Prepare histograms
         /////////////////////////////////////
+
         vector<TObject*> HistoList;
         vector<TObject*> HistoList_ByThetaSlices;
 
@@ -341,6 +334,7 @@ void HipoLooper() {
 #pragma region electron histograms
 
 #pragma region electron histograms - all sectors
+
         TH1D* h_Vz_e_BC_1e_cut = new TH1D("Vz_e_BC_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_1e_cut);
         TH1D* h_Vz_e_AC_1e_cut = new TH1D("Vz_e_AC_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (after e^{-} cuts);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
@@ -507,6 +501,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region electron histograms - sector 1
+
         TH1D* h_Vz_e_BC_sector1_1e_cut =
             new TH1D("Vz_e_BC_sector1_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector1);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_sector1_1e_cut);
@@ -694,6 +689,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region electron histograms - sector 2
+
         TH1D* h_Vz_e_BC_sector2_1e_cut =
             new TH1D("Vz_e_BC_sector2_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector2);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_sector2_1e_cut);
@@ -881,6 +877,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region electron histograms - sector 3
+
         TH1D* h_Vz_e_BC_sector3_1e_cut =
             new TH1D("Vz_e_BC_sector3_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector3);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_sector3_1e_cut);
@@ -1068,6 +1065,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region electron histograms - sector 4
+
         TH1D* h_Vz_e_BC_sector4_1e_cut =
             new TH1D("Vz_e_BC_sector4_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector4);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_sector4_1e_cut);
@@ -1255,6 +1253,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region electron histograms - sector 5
+
         TH1D* h_Vz_e_BC_sector5_1e_cut =
             new TH1D("Vz_e_BC_sector5_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector5);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_sector5_1e_cut);
@@ -1442,6 +1441,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region electron histograms - sector 6
+
         TH1D* h_Vz_e_BC_sector6_1e_cut =
             new TH1D("Vz_e_BC_sector6_1e_cut", ("V_{z}^{e} in (e,e') - " + CodeRun_status + " (before e^{-} cuts, sector6);V_{z}^{e} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_e_BC_sector6_1e_cut);
@@ -1633,6 +1633,7 @@ void HipoLooper() {
 #pragma region FD piplus histograms
 
 #pragma region FD piplus histograms - all sectors
+
         TH1D* h_Vz_pipFD_BC_1e_cut =
             new TH1D("Vz_pipFD_BC_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_1e_cut);
@@ -1794,6 +1795,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piplus histograms - sector 1
+
         TH1D* h_Vz_pipFD_BC_sector1_1e_cut =
             new TH1D("Vz_pipFD_BC_sector1_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector1);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_sector1_1e_cut);
@@ -1952,6 +1954,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piplus histograms - sector 2
+
         TH1D* h_Vz_pipFD_BC_sector2_1e_cut =
             new TH1D("Vz_pipFD_BC_sector2_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector2);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_sector2_1e_cut);
@@ -2110,6 +2113,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piplus histograms - sector 3
+
         TH1D* h_Vz_pipFD_BC_sector3_1e_cut =
             new TH1D("Vz_pipFD_BC_sector3_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector3);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_sector3_1e_cut);
@@ -2268,6 +2272,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piplus histograms - sector 4
+
         TH1D* h_Vz_pipFD_BC_sector4_1e_cut =
             new TH1D("Vz_pipFD_BC_sector4_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector4);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_sector4_1e_cut);
@@ -2426,6 +2431,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piplus histograms - sector 5
+
         TH1D* h_Vz_pipFD_BC_sector5_1e_cut =
             new TH1D("Vz_pipFD_BC_sector5_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector5);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_sector5_1e_cut);
@@ -2584,6 +2590,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piplus histograms - sector 6
+
         TH1D* h_Vz_pipFD_BC_sector6_1e_cut =
             new TH1D("Vz_pipFD_BC_sector6_1e_cut", ("V_{z}^{#pi^{+}FD} in (e,e') - " + CodeRun_status + " (before #pi^{+} cuts, sector6);V_{z}^{#pi^{+}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pipFD_BC_sector6_1e_cut);
@@ -2746,6 +2753,7 @@ void HipoLooper() {
 #pragma region FD piminus histograms
 
 #pragma region FD piminus histograms - all sectors
+
         TH1D* h_Vz_pimFD_BC_1e_cut =
             new TH1D("Vz_pimFD_BC_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_1e_cut);
@@ -2907,6 +2915,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piminus histograms - sector 1
+
         TH1D* h_Vz_pimFD_BC_sector1_1e_cut =
             new TH1D("Vz_pimFD_BC_sector1_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector1);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_sector1_1e_cut);
@@ -3065,6 +3074,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piminus histograms - sector 2
+
         TH1D* h_Vz_pimFD_BC_sector2_1e_cut =
             new TH1D("Vz_pimFD_BC_sector2_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector2);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_sector2_1e_cut);
@@ -3223,6 +3233,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piminus histograms - sector 3
+
         TH1D* h_Vz_pimFD_BC_sector3_1e_cut =
             new TH1D("Vz_pimFD_BC_sector3_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector3);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_sector3_1e_cut);
@@ -3381,6 +3392,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piminus histograms - sector 4
+
         TH1D* h_Vz_pimFD_BC_sector4_1e_cut =
             new TH1D("Vz_pimFD_BC_sector4_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector4);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_sector4_1e_cut);
@@ -3539,6 +3551,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piminus histograms - sector 5
+
         TH1D* h_Vz_pimFD_BC_sector5_1e_cut =
             new TH1D("Vz_pimFD_BC_sector5_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector5);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_sector5_1e_cut);
@@ -3697,6 +3710,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region FD piminus histograms - sector 6
+
         TH1D* h_Vz_pimFD_BC_sector6_1e_cut =
             new TH1D("Vz_pimFD_BC_sector6_1e_cut", ("V_{z}^{#pi^{-}FD} in (e,e') - " + CodeRun_status + " (before #pi^{-} cuts, sector6);V_{z}^{#pi^{-}FD} [cm];Counts").c_str(), 50, -9, 2);
         HistoList.push_back(h_Vz_pimFD_BC_sector6_1e_cut);
@@ -3857,6 +3871,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region CD piplus histograms
+
         TH1D* h_Vz_pipCD_BC_1e_cut = new TH1D("Vz_pipCD_BC_1e_cut", ("V_{z}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{z}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_pipCD_BC_1e_cut);
         TH1D* h_Vz_pipCD_AC_1e_cut = new TH1D("Vz_pipCD_AC_1e_cut", ("V_{z}^{#pi^{+}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{z}^{#pi^{+}CD} [cm];Counts").c_str(), 75, -9, 2);
@@ -3933,6 +3948,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region CD piminus histograms
+
         TH1D* h_Vz_pimCD_BC_1e_cut = new TH1D("Vz_pimCD_BC_1e_cut", ("V_{z}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (before cut);V_{z}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -9, 2);
         HistoList.push_back(h_Vz_pimCD_BC_1e_cut);
         TH1D* h_Vz_pimCD_AC_1e_cut = new TH1D("Vz_pimCD_AC_1e_cut", ("V_{z}^{#pi^{-}CD} in (e,e') - " + CodeRun_status + " (after cut);V_{z}^{#pi^{-}CD} [cm];Counts").c_str(), 75, -9, 2);
@@ -4015,22 +4031,18 @@ void HipoLooper() {
         clasAna.setVertexCorrCuts(true);  // making f_corr_vertexCuts = true
 
         // Set vertex correlation cuts for 2 GeV samples
-        if (Is2GeV) {
-            clasAna.setVertexCorrCuts_FD(-6, 4);
-            clasAna.setVertexCorrCuts_CD(-5, 3);
-        }
+        if (Is2GeV) { clasAna.setVertexCorrCuts_FD(-6, 4), clasAna.setVertexCorrCuts_CD(-5, 3); }
 
         std::cout << "\033[33m" << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n" << "\033[0m";
 
 #pragma region Loop over events
+
         int NumOfEvents = 0;
         int NumOfEvents_wAny_e_det = 0, NumOfEvents_wOne_e_det = 0;
         int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
         while (chain.Next() == true) {
-            // cout << "\033[32m" << "\n\nProcessing event " << NumOfEvents + 1 << "\n\033[0m";
-
-            // Display completed
+            // Display completed:
             ++NumOfEvents;
             if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m" << "\n\n" << NumOfEvents / 1000000 << " million completed\n\n" << "\033[0m"; }
             if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
@@ -4092,6 +4104,7 @@ void HipoLooper() {
             //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region Electrons BPID
+
             h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
             h_Vy_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
             h_Vz_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
@@ -4241,6 +4254,7 @@ void HipoLooper() {
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
 #pragma region Electrons APID
+
             double Vx_e = electrons[0]->par()->getVx();
             double Vy_e = electrons[0]->par()->getVy();
             double Vz_e = electrons[0]->par()->getVz();
@@ -4476,6 +4490,7 @@ void HipoLooper() {
             //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region piplus BPID
+
             for (int i = 0; i < piplus_det.size(); i++) {
                 if (piplus_det[i]->getRegion() == FD) {
                     h_Vx_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
@@ -4566,6 +4581,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region piplus APID
+
             for (int i = 0; i < piplus.size(); i++) {
                 double Vx_pip = piplus[i]->par()->getVx();
                 double Vy_pip = piplus[i]->par()->getVy();
@@ -4751,6 +4767,7 @@ void HipoLooper() {
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region piminus BPID
+
             for (int i = 0; i < piminus_det.size(); i++) {
                 if (piminus_det[i]->getRegion() == FD) {
                     h_Vx_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
@@ -4841,6 +4858,7 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region piminus APID
+
             for (int i = 0; i < piminus.size(); i++) {
                 double Vx_pim = piminus[i]->par()->getVx();
                 double Vy_pim = piminus[i]->par()->getVy();
@@ -5023,6 +5041,7 @@ void HipoLooper() {
                     h_dVz_pimCD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                 }
             }
+
 #pragma endregion
         }
 
@@ -5108,15 +5127,6 @@ void HipoLooper() {
             return h_phi;
         };
 
-        // // Helper lambda to extract and fit peaks and return fit results
-        // auto extract_and_fit = [&](const std::string &Particle, const std::vector<TH1D *> &Vz_hists, const std::vector<TH1D *> &phi_hists, bool fit_Vz, bool
-        // fit_phi,
-        //                            const std::pair<double, double> &theta_slice = {-1, -1}) -> std::tuple<double, double, double, TGraph *> {
-        //     auto Vz_peaks = get_peak_centers(Vz_hists, fit_Vz);
-        //     auto phi_peaks = get_peak_centers(phi_hists, fit_phi);
-        //     return vc::FitVertexVsPhi(Particle, SampleName, Vz_peaks, phi_peaks, theta_slice);
-        // };
-
         // Usage:
         std::pair<double, double> theta_slice = {-1, -1};
 
@@ -5127,12 +5137,6 @@ void HipoLooper() {
                                {project(h_Vz_VS_phi_e_AC_sector1_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector2_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector3_1e_cut, "e"),
                                 project(h_Vz_VS_phi_e_AC_sector4_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector5_1e_cut, "e"), project(h_Vz_VS_phi_e_AC_sector6_1e_cut, "e")},
                                theta_slice);
-        // auto [A_e, phi_beam_e, Z0_e, FittedParametersGraph_e] = extract_and_fit(
-        //     "e", Ebeam_status_1, {h_Vz_e_AC_sector1_1e_cut, h_Vz_e_AC_sector2_1e_cut, h_Vz_e_AC_sector3_1e_cut, h_Vz_e_AC_sector4_1e_cut, h_Vz_e_AC_sector5_1e_cut,
-        //     h_Vz_e_AC_sector6_1e_cut}, {project(h_Vz_VS_phi_e_AC_sector1_1e_cut), project(h_Vz_VS_phi_e_AC_sector2_1e_cut), project(h_Vz_VS_phi_e_AC_sector3_1e_cut),
-        //     project(h_Vz_VS_phi_e_AC_sector4_1e_cut),
-        //      project(h_Vz_VS_phi_e_AC_sector5_1e_cut), project(h_Vz_VS_phi_e_AC_sector6_1e_cut)},
-        //     true, false, theta_slice);
 
         auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] = vc::FitVertexVsPhi(
             "#pi^{+}FD", SampleName, h_Vz_VS_phi_pipFD_AC_1e_cut,
@@ -5141,13 +5145,6 @@ void HipoLooper() {
             {project(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut, "#pi^{+}FD"),
              project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut, "#pi^{+}FD"), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut, "#pi^{+}FD")},
             theta_slice);
-        // auto [A_pipFD, phi_beam_pipFD, Z0_pipFD, FittedParametersGraph_pipFD] =
-        //     extract_and_fit("#pi^{+}FD", Ebeam_status_1,
-        //                     {h_Vz_pipFD_AC_sector1_1e_cut, h_Vz_pipFD_AC_sector2_1e_cut, h_Vz_pipFD_AC_sector3_1e_cut, h_Vz_pipFD_AC_sector4_1e_cut, h_Vz_pipFD_AC_sector5_1e_cut,
-        //                      h_Vz_pipFD_AC_sector6_1e_cut},
-        //                     {project(h_Vz_VS_phi_pipFD_AC_sector1_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector2_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector3_1e_cut),
-        //                      project(h_Vz_VS_phi_pipFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pipFD_AC_sector6_1e_cut)},
-        //                     true, true, theta_slice);
 
         auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] = vc::FitVertexVsPhi(
             "#pi^{-}FD", SampleName, h_Vz_VS_phi_pimFD_AC_1e_cut,
@@ -5156,203 +5153,191 @@ void HipoLooper() {
             {project(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut, "#pi^{-}FD"),
              project(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut, "#pi^{-}FD"), project(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut, "#pi^{-}FD")},
             theta_slice);
-        // auto [A_pimFD, phi_beam_pimFD, Z0_pimFD, FittedParametersGraph_pimFD] =
-        //     extract_and_fit("#pi^{-}FD", Ebeam_status_1,
-        //                     {h_Vz_pimFD_AC_sector1_1e_cut, h_Vz_pimFD_AC_sector2_1e_cut, h_Vz_pimFD_AC_sector3_1e_cut, h_Vz_pimFD_AC_sector4_1e_cut, h_Vz_pimFD_AC_sector5_1e_cut,
-        //                      h_Vz_pimFD_AC_sector6_1e_cut},
-        //                     {project(h_Vz_VS_phi_pimFD_AC_sector1_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector2_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector3_1e_cut),
-        //                      project(h_Vz_VS_phi_pimFD_AC_sector4_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector5_1e_cut), project(h_Vz_VS_phi_pimFD_AC_sector6_1e_cut)},
-        //                     true, true, theta_slice);
+
 #pragma endregion
 
-        // #pragma region Processing hsPlots plots
-        //         std::cout << "\033[33m" << "\n\nProcessing hsPlots plots..." << "\n\n" << "\033[0m";
+#pragma region Processing hsPlots plots
 
-        //         /////////////////////////////////////////////////////
-        //         // Sort hsPlots plots
-        //         /////////////////////////////////////////////////////
+        std::cout << "\033[33m" << "\n\nProcessing hsPlots plots..." << "\n\n" << "\033[0m";
 
-        //         // Sort histograms by:
-        //         //   1. Particle type (e, pipFD, pimFD)
-        //         //   2. Sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
-        //         //   3. Theta slice start (X in "slice_from_X_to_Y")
-        //         //   4. Base name (alphabetical fallback)
-        //         std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject* a, TObject* b) {
-        //             const std::string nameA = a->GetName();
-        //             const std::string nameB = b->GetName();
+        /////////////////////////////////////////////////////
+        // Sort hsPlots plots
+        /////////////////////////////////////////////////////
 
-        //             // Assign a sorting priority based on particle type.
-        //             // "e" comes first, followed by "pipFD", then "pimFD"
-        //             auto getParticlePriority = [](const std::string& name) -> int {
-        //                 if (name.find("_e_") != std::string::npos) return 0;      // electron
-        //                 if (name.find("_pipFD_") != std::string::npos) return 1;  // pi+
-        //                 if (name.find("_pimFD_") != std::string::npos) return 2;  // pi-
-        //                 return 9;                                                 // Unknown or unmatched types get lowest priority
-        //             };
+        // Sort histograms by:
+        //   1. Particle type (e, pipFD, pimFD)
+        //   2. Sector group (0 = no sector, 1 = _sector1, ..., 6 = _sector6)
+        //   3. Theta slice start (X in "slice_from_X_to_Y")
+        //   4. Base name (alphabetical fallback)
+        std::sort(HistoList_ByThetaSlices.begin(), HistoList_ByThetaSlices.end(), [](TObject* a, TObject* b) {
+            const std::string nameA = a->GetName();
+            const std::string nameB = b->GetName();
 
-        //             // Assign a sorting priority based on histograms name.
-        //             // "Vz_<particle>_AC_1e_cut_BySliceOfTheta_[...]" comes first,
-        //             // followed by "Vz_<particle>_AC_zoomin_1e_cut_BySliceOfTheta_slice_[...]",
-        //             // then "Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_slice_from_[...]" and
-        //             // lastly "corrected_Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_[...]"
-        //             auto getNamePriority = [](const std::string& name) -> int {
-        //                 if (name.find("corrected") != std::string::npos) return 3;
-        //                 if (name.find("Vz_VS_phi") != std::string::npos) return 2;
-        //                 if (name.find("zoomin") != std::string::npos) return 1;
-        //                 if (name.find("Vz_") != std::string::npos) return 0;
-        //                 return 9;
-        //             };
+            // Assign a sorting priority based on particle type.
+            // "e" comes first, followed by "pipFD", then "pimFD"
+            auto getParticlePriority = [](const std::string& name) -> int {
+                if (name.find("_e_") != std::string::npos) return 0;      // electron
+                if (name.find("_pipFD_") != std::string::npos) return 1;  // pi+
+                if (name.find("_pimFD_") != std::string::npos) return 2;  // pi-
+                return 9;                                                 // Unknown or unmatched types get lowest priority
+            };
 
-        //             // Extract sector number from histogram name.
-        //             // Returns 0 for non-sector histograms (to sort them first).
-        //             auto getSector = [](const std::string& name) -> int {
-        //                 std::smatch match;
-        //                 std::regex pattern(R"(_sector([1-6]))");
-        //                 // If the pattern matches, extract the sector number, else return 0
-        //                 return (std::regex_search(name, match, pattern)) ? std::stoi(match[1]) : 0;
-        //             };
+            // Assign a sorting priority based on histograms name.
+            // "Vz_<particle>_AC_1e_cut_BySliceOfTheta_[...]" comes first,
+            // followed by "Vz_<particle>_AC_zoomin_1e_cut_BySliceOfTheta_slice_[...]",
+            // then "Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_slice_from_[...]" and
+            // lastly "corrected_Vz_VS_phi_<particle>_AC_1e_cut_BySliceOfTheta_[...]"
+            auto getNamePriority = [](const std::string& name) -> int {
+                if (name.find("corrected") != std::string::npos) return 3;
+                if (name.find("Vz_VS_phi") != std::string::npos) return 2;
+                if (name.find("zoomin") != std::string::npos) return 1;
+                if (name.find("Vz_") != std::string::npos) return 0;
+                return 9;
+            };
 
-        //             // Extract the lower bound of the theta slice from the histogram name.
-        //             // If the format is not matched, return a large number so it sorts last.
-        //             auto getSliceStart = [](const std::string& name) -> double {
-        //                 std::smatch match;
-        //                 std::regex pattern(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
-        //                 // Use regex to extract the floating point number after "slice_from_"
-        //                 return (std::regex_search(name, match, pattern)) ? std::stod(match[1]) : 1e9;
-        //             };
+            // Extract sector number from histogram name.
+            // Returns 0 for non-sector histograms (to sort them first).
+            auto getSector = [](const std::string& name) -> int {
+                std::smatch match;
+                std::regex pattern(R"(_sector([1-6]))");
+                // If the pattern matches, extract the sector number, else return 0
+                return (std::regex_search(name, match, pattern)) ? std::stoi(match[1]) : 0;
+            };
 
-        //             // Compare particle types first
-        //             int particleA = getParticlePriority(nameA);
-        //             int particleB = getParticlePriority(nameB);
-        //             if (particleA != particleB) return particleA < particleB;
+            // Extract the lower bound of the theta slice from the histogram name.
+            // If the format is not matched, return a large number so it sorts last.
+            auto getSliceStart = [](const std::string& name) -> double {
+                std::smatch match;
+                std::regex pattern(R"(slice_from_([-+]?[0-9]*\.?[0-9]+)_to_)");
+                // Use regex to extract the floating point number after "slice_from_"
+                return (std::regex_search(name, match, pattern)) ? std::stod(match[1]) : 1e9;
+            };
 
-        //             // // Compare particle types first
-        //             // int NameA = getNamePriority(nameA);
-        //             // int NameB = getNamePriority(nameB);
-        //             // if (NameA != NameB) return NameA < NameB;
+            // Compare particle types first
+            int particleA = getParticlePriority(nameA);
+            int particleB = getParticlePriority(nameB);
+            if (particleA != particleB) return particleA < particleB;
 
-        //             // Then compare sectors (non-sector histograms first)
-        //             int sectorA = getSector(nameA);
-        //             int sectorB = getSector(nameB);
-        //             if (sectorA != sectorB) return sectorA < sectorB;
+            // // Compare particle types first
+            // int NameA = getNamePriority(nameA);
+            // int NameB = getNamePriority(nameB);
+            // if (NameA != NameB) return NameA < NameB;
 
-        //             // Then compare by theta slice start
-        //             double sliceA = getSliceStart(nameA);
-        //             double sliceB = getSliceStart(nameB);
-        //             if (sliceA != sliceB) return sliceA < sliceB;
+            // Then compare sectors (non-sector histograms first)
+            int sectorA = getSector(nameA);
+            int sectorB = getSector(nameB);
+            if (sectorA != sectorB) return sectorA < sectorB;
 
-        //             // Final fallback: alphabetical order to ensure consistency
-        //             return nameA < nameB;
-        //         });
+            // Then compare by theta slice start
+            double sliceA = getSliceStart(nameA);
+            double sliceB = getSliceStart(nameB);
+            if (sliceA != sliceB) return sliceA < sliceB;
 
-        //         // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
+            // Final fallback: alphabetical order to ensure consistency
+            return nameA < nameB;
+        });
 
-        //         auto ProcessFitsByThetaSlices = [&](const char* Particle, std::vector<TObject*> Vz_VS_phi_AllSector_HistoLists, const std::vector<std::vector<TObject*>>&
-        //         Vz_BySector_HistoLists,
-        //                                             const std::vector<std::vector<TObject*>>& Vz_VS_phi_BySector_HistoLists) -> std::vector<TObject*> {
-        //             std::vector<TObject*> FittedGraphsByThetaSlice;
+        // for (int i = 0; i < HistoList_ByThetaSlices.size(); i++) { cout << HistoList_ByThetaSlices[i]->GetName() << "\n"; }
 
-        //             for (int i = 0; i < theta_slices.size(); i++) {
-        //                 std::vector<TH1D*> Vz_Hists_per_slice;
-        //                 std::vector<TH1D*> Phi_Hists_per_slice;
+        auto ProcessFitsByThetaSlices = [&](const char* Particle, std::vector<TObject*> Vz_VS_phi_AllSector_HistoLists, const std::vector<std::vector<TObject*>>& Vz_BySector_HistoLists,
+                                            const std::vector<std::vector<TObject*>>& Vz_VS_phi_BySector_HistoLists) -> std::vector<TObject*> {
+            std::vector<TObject*> FittedGraphsByThetaSlice;
 
-        //                 for (int sector = 0; sector < 6; ++sector) {
-        //                     Vz_Hists_per_slice.push_back(static_cast<TH1D*>(Vz_BySector_HistoLists[sector][i]));
-        //                     Phi_Hists_per_slice.push_back(project(static_cast<TH2D*>(Vz_VS_phi_BySector_HistoLists[sector][i]), Particle));
-        //                 }
+            for (int i = 0; i < theta_slices.size(); i++) {
+                std::vector<TH1D*> Vz_Hists_per_slice;
+                std::vector<TH1D*> Phi_Hists_per_slice;
 
-        //                 auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] = vc::FitVertexVsPhi(Particle, SampleName, Vz_VS_phi_AllSector_HistoLists[i],
-        //                 Vz_Hists_per_slice,
-        //                                                                                                              Phi_Hists_per_slice, std::make_pair(theta_slices[i][0],
-        //                                                                                                              theta_slices[i][1]));
+                for (int sector = 0; sector < 6; ++sector) {
+                    Vz_Hists_per_slice.push_back(static_cast<TH1D*>(Vz_BySector_HistoLists[sector][i]));
+                    Phi_Hists_per_slice.push_back(project(static_cast<TH2D*>(Vz_VS_phi_BySector_HistoLists[sector][i]), Particle));
+                }
 
-        //                 FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
-        //             }
+                auto [Temp_A, Temp_Vz_VS_phi_beam, Temp_Z0, Temp_FittedParametersGraph] = vc::FitVertexVsPhi(Particle, SampleName, Vz_VS_phi_AllSector_HistoLists[i], Vz_Hists_per_slice,
+                                                                                                             Phi_Hists_per_slice, std::make_pair(theta_slices[i][0], theta_slices[i][1]));
 
-        //             return FittedGraphsByThetaSlice;
-        //         };
+                FittedGraphsByThetaSlice.push_back(Temp_FittedParametersGraph);
+            }
 
-        //         auto FittedGraphsByThetaSlice_e = ProcessFitsByThetaSlices(
-        //             "e", Sliced_Vz_VS_phi_e_HistoList,
-        //             {Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
-        //             Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3,
-        //              Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5,
-        //              Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-        //             {Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3, Sliced_Vz_VS_phi_e_HistoList_sector4,
-        //              Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
+            return FittedGraphsByThetaSlice;
+        };
 
-        //         std::string basename_e = "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta";
+        auto FittedGraphsByThetaSlice_e = ProcessFitsByThetaSlices(
+            "e", Sliced_Vz_VS_phi_e_HistoList,
+            {Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3,
+             Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_e_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+            {Sliced_Vz_VS_phi_e_HistoList_sector1, Sliced_Vz_VS_phi_e_HistoList_sector2, Sliced_Vz_VS_phi_e_HistoList_sector3, Sliced_Vz_VS_phi_e_HistoList_sector4,
+             Sliced_Vz_VS_phi_e_HistoList_sector5, Sliced_Vz_VS_phi_e_HistoList_sector6});
 
-        //         for (int i = 0; i < theta_slices.size(); i++) {
-        //             std::ostringstream name;
-        //             name << basename_e << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
-        //                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+        std::string basename_e = "Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta";
 
-        //             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
-        //                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-        //                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_e[i]);
-        //                     break;
-        //                 }
-        //             }
-        //         }
+        for (int i = 0; i < theta_slices.size(); i++) {
+            std::ostringstream name;
+            name << basename_e << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+                 << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
 
-        //         auto FittedGraphsByThetaSlice_pipFD =
-        //             ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pipFD_HistoList,
-        //                                      {Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
-        //                                       Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
-        //                                       Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-        //                                      {Sliced_Vz_VS_phi_pipFD_HistoList_sector1, Sliced_Vz_VS_phi_pipFD_HistoList_sector2, Sliced_Vz_VS_phi_pipFD_HistoList_sector3,
-        //                                       Sliced_Vz_VS_phi_pipFD_HistoList_sector4, Sliced_Vz_VS_phi_pipFD_HistoList_sector5, Sliced_Vz_VS_phi_pipFD_HistoList_sector6});
+            for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+                if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+                    HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_e[i]);
+                    break;
+                }
+            }
+        }
 
-        //         std::string basename_pipFD = "Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta";
+        auto FittedGraphsByThetaSlice_pipFD =
+            ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pipFD_HistoList,
+                                     {Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
+                                      Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
+                                      Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+                                     {Sliced_Vz_VS_phi_pipFD_HistoList_sector1, Sliced_Vz_VS_phi_pipFD_HistoList_sector2, Sliced_Vz_VS_phi_pipFD_HistoList_sector3,
+                                      Sliced_Vz_VS_phi_pipFD_HistoList_sector4, Sliced_Vz_VS_phi_pipFD_HistoList_sector5, Sliced_Vz_VS_phi_pipFD_HistoList_sector6});
 
-        //         for (int i = 0; i < theta_slices.size(); i++) {
-        //             std::ostringstream name;
-        //             name << basename_pipFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
-        //                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+        std::string basename_pipFD = "Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta";
 
-        //             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
-        //                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-        //                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pipFD[i]);
-        //                     break;
-        //                 }
-        //             }
-        //         }
+        for (int i = 0; i < theta_slices.size(); i++) {
+            std::ostringstream name;
+            name << basename_pipFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+                 << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
 
-        //         auto FittedGraphsByThetaSlice_pimFD =
-        //             ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pimFD_HistoList,
-        //                                      {Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
-        //                                       Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
-        //                                       Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
-        //                                      {Sliced_Vz_VS_phi_pimFD_HistoList_sector1, Sliced_Vz_VS_phi_pimFD_HistoList_sector2, Sliced_Vz_VS_phi_pimFD_HistoList_sector3,
-        //                                       Sliced_Vz_VS_phi_pimFD_HistoList_sector4, Sliced_Vz_VS_phi_pimFD_HistoList_sector5, Sliced_Vz_VS_phi_pimFD_HistoList_sector6});
+            for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+                if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+                    HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pipFD[i]);
+                    break;
+                }
+            }
+        }
 
-        //         std::string basename_pimFD = "Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta";
+        auto FittedGraphsByThetaSlice_pimFD =
+            ProcessFitsByThetaSlices("e", Sliced_Vz_VS_phi_pimFD_HistoList,
+                                     {Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector1, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector2,
+                                      Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector3, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector4,
+                                      Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector5, Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta_HistoList_sector6},
+                                     {Sliced_Vz_VS_phi_pimFD_HistoList_sector1, Sliced_Vz_VS_phi_pimFD_HistoList_sector2, Sliced_Vz_VS_phi_pimFD_HistoList_sector3,
+                                      Sliced_Vz_VS_phi_pimFD_HistoList_sector4, Sliced_Vz_VS_phi_pimFD_HistoList_sector5, Sliced_Vz_VS_phi_pimFD_HistoList_sector6});
 
-        //         for (int i = 0; i < theta_slices.size(); i++) {
-        //             std::ostringstream name;
-        //             name << basename_pimFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
-        //                  << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+        std::string basename_pimFD = "Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta";
 
-        //             for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
-        //                 if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
-        //                     HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pimFD[i]);
-        //                     break;
-        //                 }
-        //             }
-        //         }
-        // #pragma endregion
+        for (int i = 0; i < theta_slices.size(); i++) {
+            std::ostringstream name;
+            name << basename_pimFD << "_slice_from_" << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(0), 2) << "_to_"
+                 << basic_tools::ToStringWithPrecision(theta_slices.at(i).at(1), 2);
+
+            for (int j = 0; j < HistoList_ByThetaSlices.size(); j++) {
+                if (std::string(HistoList_ByThetaSlices[j]->GetName()) == name.str()) {
+                    HistoList_ByThetaSlices.insert(HistoList_ByThetaSlices.begin() + j, FittedGraphsByThetaSlice_pimFD[i]);
+                    break;
+                }
+            }
+        }
+
+#pragma endregion
 
 #pragma region Plotting and saving histograms
-        std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
-
-        cout << "Test 1 \n";
+        
+    std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
         // Organize histograms
         /////////////////////////////////////////////////////
-
-        cout << "Test 2 \n";
 
         // Helper lambda for TH1 styling
         auto style_th1 = [](TH1* h) {
@@ -5362,8 +5347,6 @@ void HipoLooper() {
             h->SetLineWidth(2);
             h->SetLineColor(kRed);
         };
-
-        cout << "Test 3 \n";
 
         // Helper lambda for centering axis titles
         auto center_titles = [](TObject* obj) {
@@ -5378,11 +5361,7 @@ void HipoLooper() {
             }
         };
 
-        cout << "Test 4 \n";
-
         int insert_index_e = 0, insert_index_pipFD = 0, insert_index_pimFD = 0;
-
-        cout << "Test 5 \n";
 
         for (size_t i = 0; i < HistoList.size(); i++) {
             if (HistoList[i]->InheritsFrom("TH1")) { style_th1((TH1*)HistoList[i]); }
@@ -5398,26 +5377,18 @@ void HipoLooper() {
                 insert_index_pimFD = i + 1;
         }
 
-        cout << "Test 6 \n";
-
         std::vector<std::pair<int, TGraph*>> graph_inserts = {
             {insert_index_e, FittedParametersGraph_e}, {insert_index_pipFD, FittedParametersGraph_pipFD}, {insert_index_pimFD, FittedParametersGraph_pimFD}};
-
-        cout << "Test 7 \n";
 
         for (const auto& [index, graph] : graph_inserts) {
             HistoList.insert(HistoList.begin() + index, graph);
             center_titles(graph);
         }
 
-        cout << "Test 8 \n";
-
         for (auto* obj : HistoList_ByThetaSlices) {
             if (obj->InheritsFrom("TH1")) { style_th1((TH1*)obj); }
             center_titles(obj);
         }
-
-        cout << "Test 9 \n";
 
         /////////////////////////////////////////////////////
         // Now create the output PDFs
@@ -5444,8 +5415,6 @@ void HipoLooper() {
             myText->SaveAs(fileName);
             sprintf(fileName, "%s", PDF_fileName.c_str());
 
-            cout << "Test 10a \n";
-
             // Helper lambda for drawing title blocks
             auto draw_title_block = [&](const std::string& title, const std::vector<std::string>& lines, double startY, double stepY, bool OverrideOffset = false) {
                 if (title != "") { titles.DrawLatex(0.05, startY, title.c_str()); }
@@ -5460,8 +5429,6 @@ void HipoLooper() {
                 // titles.DrawLatex(0.05, startY, title.c_str());
                 // for (size_t i = 0; i < lines.size(); ++i) { text.DrawLatex(0.05 + (i == 0 ? 0.05 : 0.10), startY - (i + 1) * stepY, lines[i].c_str()); }
             };
-
-            cout << "Test 10b \n";
 
             // Helper lambda for drawing and beam info
             auto draw_beam_info = [&](const std::string& particle, const std::string& label, double yTop) {
@@ -5497,15 +5464,11 @@ void HipoLooper() {
                                    .c_str());
             };
 
-            cout << "Test 10c \n";
-
             // First page:
             myText->cd();
             titles.DrawLatex(0.05, 0.9, "HipoLooper Output");
             text.DrawLatex(0.05, 0.80, "This output is for the Ar40 implementation in GEMC");
             text.DrawLatex(0.05, 0.70, ("Plots from (e,e') events in: #font[42]{" + TempCodeRun_status + "}").c_str());
-
-            cout << "Test 10d \n";
 
             if (TempIsData) {
                 draw_title_block("", {"TempInputFiles: #font[42]{" + TempInputFiles.at(Tempsample) + "}", "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"}, 0.65, 0.05, true);
@@ -5516,8 +5479,6 @@ void HipoLooper() {
                      "TempOutFolderName:", "#font[42]{" + TempOutFolderName + "}"},
                     0.60, 0.05, true);
             }
-
-            cout << "Test 10e \n";
 
             text.DrawLatex(0.05, 0.40,
                            ("Event counts (ApplyLimiter = " + bt::BoolToString(ApplyLimiter) + (ApplyLimiter ? ", Limiter = " + bt::ToStringWithPrecision(Limiter, 0) : "") + "):").c_str());
@@ -5534,8 +5495,6 @@ void HipoLooper() {
             myText->Print(fileName, "pdf Title: Cover");
             myText->Clear();
 
-            cout << "Test 10f \n";
-
             // Second page:
             titles.SetTextSize(0.05);
             titles.DrawLatex(0.05, 0.90, "Beam position parameters for corrected Vz");
@@ -5546,26 +5505,15 @@ void HipoLooper() {
             myText->Print(fileName, "pdf Title: Parameters");
             myText->Clear();
 
-            cout << "Test 10g \n";
-
-            // Remaining flags, loops, and drawing logic as-is
-            // (You may optionally break this block further into helper lambdas)
-            // ...
-            // (Paste all remaining code from first_electron through ReassignPDFBookmarks here)
-
             // Structured first flags for particles and sectors
             std::map<std::string, bool> first_flags_scalar = {{"{e}", true}, {"{#pi^{+}FD}", true}, {"{#pi^{-}FD}", true}, {"{#pi^{+}CD}", true}, {"{#pi^{-}CD}", true}};
             std::map<std::string, std::array<bool, 6>> first_flags_sector;
 
             for (auto& [particle, _] : first_flags_scalar) { first_flags_sector[particle] = {true, true, true, true, true, true}; }
 
-            cout << "Test 10h \n";
-
             std::map<std::string, bool*> first_flags;
 
             for (auto& [particle, flag] : first_flags_scalar) { first_flags[particle] = &flag; }
-
-            cout << "Test 10i \n";
 
             std::map<std::string, std::map<int, bool*>> sector_flags;
 
@@ -5573,21 +5521,14 @@ void HipoLooper() {
                 for (int sec = 0; sec < 6; ++sec) { sector_flags[particle][sec + 1] = &sector_array[sec]; }
             }
 
-            cout << "Test 10j \n";
-
             std::map<std::string, std::string> particle_labels = {
                 {"{e}", "e^{-}"}, {"{#pi^{+}FD}", "FD #pi^{+}"}, {"{#pi^{-}FD}", "FD #pi^{-}"}, {"{#pi^{+}CD}", "CD #pi^{+}"}, {"{#pi^{-}CD}", "CD #pi^{-}"}};
 
             int plot_counter = 2;
             double yOffset = 0.075;  // Offset for the y position of the text
-            // std::string marker = "BySliceOfTheta";
-
-            cout << "Test 10k \n";
 
             // For histogram processing: track current slice ID for resetting first_flags
             std::string current_slice_id;
-
-            cout << "Test 10l \n";
 
             for (int i = 0; i < TempHistoList.size(); i++) {
                 std::string title = TempHistoList[i]->GetTitle();
@@ -5837,8 +5778,6 @@ void HipoLooper() {
                 ++plot_counter;
             }
 
-            cout << "Test 10m \n";
-
             sprintf(fileName, "%s]", PDF_fileName.c_str());
             myCanvas->Print(fileName, "pdf");
 
@@ -5846,17 +5785,11 @@ void HipoLooper() {
             hf::ReassignPDFBookmarks(bt::GetCurrentDirectory() + "/", PDF_fileName, PDF_fileName);  // Reassign clean bookmarks
         };
 
-        cout << "Test 10 \n";
-
         GeneratePDFOutput(OutputDir, OutFolderName, BaseDir, InputFiles, sample, HistoList, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det, NumOfEvents_wAny_e,
                           NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
-        cout << "Test 11 \n";
-
-        // GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
-        //                   NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
-
-        cout << "Test 12 \n";
+        GeneratePDFOutput(OutputDir, (OutFolderName + "_ByThetaSlices"), BaseDir, InputFiles, sample, HistoList_ByThetaSlices, NumOfEvents, NumOfEvents_wAny_e_det, NumOfEvents_wOne_e_det,
+                          NumOfEvents_wAny_e, NumOfEvents_wOne_e, CodeRun_status, IsData, target_status);
 
         // Helper lambda for using the hf::CompareHistograms function
         int ComparisonNumber = 0;
