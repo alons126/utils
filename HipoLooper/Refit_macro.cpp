@@ -549,8 +549,8 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     }
 
     double x1 = x2 - 0.33;
-    double y1 = y2 - 0.175;
-    // double y1 = y2 - 0.2;
+    // double y1 = y2 - 0.175;
+    double y1 = y2 - 0.2;
     // double y1 = y2 - 0.25;
     // double y1 = y2 - 0.14;
 
@@ -572,30 +572,32 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     leg->SetBorderSize(1);
     leg->SetTextFont(42);
     // leg->SetTextSize(0.02);
-    // leg->SetTextSize(0.0225);
-    leg->SetTextSize(0.023);
+    leg->SetTextSize(0.0225);
+    // leg->SetTextSize(0.0235);
+    // leg->SetTextSize(0.025);
 
     // 1) speac_target_location_TLine (show value)
     if (speacLine) {
-        speacLine->SetLineWidth(3);  // ensure it matches measured line width
+        speacLine->SetLineWidth(2);  // ensure it matches measured line width
 
         const double xSpec = speacLine->GetX1();  // vertical line => x1=x2
         std::ostringstream ss;
-        ss << std::fixed << std::setprecision(3);
-        ss << "Spec. z pos. = " << xSpec << " cm";
+        ss << std::fixed << std::setprecision(1);
+        // ss << std::fixed << std::setprecision(3);
+        ss << "Spec. target pos. = " << xSpec << " cm";
         leg->AddEntry(speacLine, ss.str().c_str(), "l");
     }
 
     // 2) fitted curve
     if (fit) leg->AddEntry(fit, "Gaussian fit", "l");
 
-    // 3) measured_target_location_TLine with fit errors
+    // 3) fitted-peak line with fit errors
     if (measuredLine) {
         if (fs.ok) {
-            std::string lab = std::string("Meas. z pos. = ") + FormatValueWithErr(fs.mu, fs.emu, "cm");
+            std::string lab = std::string("Fitted peak pos. = ") + FormatValueWithErr(fs.mu, fs.emu, "cm");
             leg->AddEntry(measuredLine, lab.c_str(), "l");
         } else {
-            leg->AddEntry(measuredLine, "Meas. z pos. = fit failed", "l");
+            leg->AddEntry(measuredLine, "Fitted peak pos. = fit failed", "l");
         }
     }
 
@@ -620,7 +622,7 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
 
     if (std::isfinite(fs.xmin) && std::isfinite(fs.xmax)) {
         std::ostringstream ss;
-        ss << std::fixed << std::setprecision(2) << "fit range = [" << fs.xmin << ", " << fs.xmax << "] cm";
+        ss << std::fixed << std::setprecision(2) << "Fit range = [" << fs.xmin << ", " << fs.xmax << "] cm";
         leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
     }
 
