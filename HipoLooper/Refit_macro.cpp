@@ -74,13 +74,14 @@ static std::string FormatValueWithErr(double val, double err, const char* unit =
         return ss.str();
     }
 
-    // If the error is very small, avoid rounding to 0.00 by using scientific notation.
-    if (std::fabs(err) < 1e-3) {
+    // If the error is extremely small, use scientific notation.
+    if (std::fabs(err) < 1e-6) {
+        // Keep scientific only for extremely tiny errors
         ss << std::scientific << std::setprecision(2);
         ss << val << " #pm " << err;
     } else {
+        // Default: exactly three decimals
         ss << std::fixed << std::setprecision(2);
-        // ss << std::fixed << std::setprecision(4);
         ss << val << " #pm " << err;
     }
 
@@ -548,7 +549,9 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     }
 
     double x1 = x2 - 0.33;
-    double y1 = y2 - 0.25;
+    double y1 = y2 - 0.175;
+    // double y1 = y2 - 0.2;
+    // double y1 = y2 - 0.25;
     // double y1 = y2 - 0.14;
 
     if (hForStatsAnchor) {
@@ -568,11 +571,20 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     leg->SetLineColor(kBlack);
     leg->SetBorderSize(1);
     leg->SetTextFont(42);
-    leg->SetTextSize(0.02);
+    // leg->SetTextSize(0.02);
     // leg->SetTextSize(0.0225);
+    leg->SetTextSize(0.023);
 
-    // 1) speac_target_location_TLine
-    if (speacLine) leg->AddEntry(speacLine, "Spec. z pos.", "l");
+    // 1) speac_target_location_TLine (show value)
+    if (speacLine) {
+        speacLine->SetLineWidth(3);  // ensure it matches measured line width
+
+        const double xSpec = speacLine->GetX1();  // vertical line => x1=x2
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(3);
+        ss << "Spec. z pos. = " << xSpec << " cm";
+        leg->AddEntry(speacLine, ss.str().c_str(), "l");
+    }
 
     // 2) fitted curve
     if (fit) leg->AddEntry(fit, "Gaussian fit", "l");
@@ -580,7 +592,7 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     // 3) measured_target_location_TLine with fit errors
     if (measuredLine) {
         if (fs.ok) {
-            std::string lab = std::string("Meas. z pos. = ") + FormatValueWithErr(fs.mu, fs.emu, " cm");
+            std::string lab = std::string("Meas. z pos. = ") + FormatValueWithErr(fs.mu, fs.emu, "cm");
             leg->AddEntry(measuredLine, lab.c_str(), "l");
         } else {
             leg->AddEntry(measuredLine, "Meas. z pos. = fit failed", "l");
@@ -588,17 +600,17 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     }
 
     // --- Fit diagnostics ---
-    if (fs.fitStatus != -999) {
-        std::ostringstream ss;
-        ss << "fitStatus = " << fs.fitStatus;
-        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
-    }
+    // if (fs.fitStatus != -999) {
+    //     std::ostringstream ss;
+    //     ss << "fitStatus = " << fs.fitStatus;
+    //     leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    // }
 
-    if (fs.covStatus != -999) {
-        std::ostringstream ss;
-        ss << "covStatus = " << fs.covStatus;
-        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
-    }
+    // if (fs.covStatus != -999) {
+    //     std::ostringstream ss;
+    //     ss << "covStatus = " << fs.covStatus;
+    //     leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    // }
 
     if (fs.ndf > 0 && std::isfinite(fs.chi2)) {
         std::ostringstream ss;
@@ -869,6 +881,7 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
 
             auto* specLine = new TLine(spec_x, 0.0, spec_x, c->GetUymax());
             specLine->SetLineColor(kBlue);
+            specLine->SetLineWidth(3);  // match measured_target_location_TLine width
             specLine->Draw("same");
 
             // MEASURED target line at REFITTED PEAK
