@@ -34,6 +34,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 // ---------- helpers ----------
 
@@ -234,6 +235,11 @@ struct FitSummary {
     double amp = NAN, eamp = NAN;
     double chi2 = NAN;
     int ndf = 0;
+
+    int fitStatus = -999;      // Minuit/fit status (0 is success)
+    int covStatus = -999;      // covariance matrix status (>=2 is good)
+    double edm = NAN;          // estimated distance to minimum
+
     bool ok = false;
 };
 
@@ -296,6 +302,11 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     if (h->GetEntries() <= 0) return s;
     if (h->GetNbinsX() < 5) return s;
 
+    // Ensure proper per-bin uncertainties exist (otherwise ParErrors can be misleading/zero)
+    if (h->GetSumw2N() == 0) {
+        h->Sumw2();
+    }
+
     // Peak position
     int ibinMax = h->GetMaximumBin();
     double xPeak = h->GetXaxis()->GetBinCenter(ibinMax);
@@ -306,6 +317,15 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     double xmin = fr.xmin;
     double xmax = fr.xmax;
     if (!(xmax > xmin)) return s;
+
+    // Require a minimum number of populated bins inside the fit range
+    int nPopulated = 0;
+    const int bmin = h->GetXaxis()->FindBin(xmin);
+    const int bmax = h->GetXaxis()->FindBin(xmax);
+    for (int b = bmin; b <= bmax; ++b) {
+        if (h->GetBinContent(b) > 0) ++nPopulated;
+    }
+    if (nPopulated < 3) return s;
 
     // Bin width for sigma initial guess / safety
     double bw = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
@@ -332,15 +352,28 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     // S: return TFitResultPtr
     TFitResultPtr r = h->Fit(f, "RQ0S");
 
-    // Ensure the fit function is attached to the histogram (and owned) so it is written to the output ROOT file.
-    // ROOT's Fit() usually attaches it automatically, but we keep this explicit for robustness.
+    // Ensure the fit function is attached to the histogram so it is written to the output ROOT file.
     if (auto* lof = h->GetListOfFunctions()) {
         if (!lof->FindObject(f)) lof->Add(f);
     }
 
-    if ((int)r != 0) {
-        // fit failed; keep TF1 around for inspection or delete it
-        // Here: keep it attached so you can see what happened.
+    // Record diagnostics even if the fit is not perfect
+    s.fitStatus = (int)r;  // 0 is success
+    if (r.Get()) {
+        s.covStatus = r->CovMatrixStatus();
+        s.edm = r->Edm();
+        s.chi2 = r->Chi2();
+        s.ndf = r->Ndf();
+    }
+
+    // Require: successful minimization AND usable covariance
+    // covStatus meanings: 0=not calculated, 1=approx, 2=full but not pos-def, 3=full pos-def
+    const bool goodFit = (s.fitStatus == 0);
+    const bool goodCov = (s.covStatus >= 2);
+
+    if (!goodFit || !goodCov || s.ndf <= 0) {
+        // Do not report misleading ~0 errors
+        s.ok = false;
         return s;
     }
 
@@ -352,12 +385,15 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     s.emu = f->GetParError(1);
     s.esigma = f->GetParError(2);
 
-    s.chi2 = r->Chi2();
-    s.ndf = r->Ndf();
-    s.ok = true;
+    // Guard against ROOT returning 0/NaN errors despite cov checks
+    if (!(std::isfinite(s.emu) && s.emu > 0) || !(std::isfinite(s.esigma) && s.esigma > 0)) {
+        s.ok = false;
+        s.emu = NAN;
+        s.esigma = NAN;
+        return s;
+    }
 
-    // Attach function to histogram (ROOT does this, but we ensure it remains)
-    // (No need to Add explicitly; Fit already adds it.)
+    s.ok = true;
     return s;
 }
 
@@ -490,7 +526,7 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     // 3) measured_target_location_TLine with fit errors
     if (measuredLine) {
         std::ostringstream ss;
-        ss << std::fixed << std::setprecision(3);
+        ss << std::fixed << std::setprecision(2);
         if (fs.ok)
             ss << "Meas. z pos. = " << fs.mu << " #pm " << fs.emu << " [cm]";
         else
