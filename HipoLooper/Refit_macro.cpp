@@ -22,6 +22,7 @@
 #include <TSystem.h>
 #include <TSystemDirectory.h>
 #include <TSystemFile.h>
+#include <TLine.h>
 
 #include <algorithm>
 #include <cctype>
@@ -179,6 +180,51 @@ static void DrawAttachedFits(TH1* h) {
     }
 }
 
+// ---------- Measured target TLine helpers ----------
+static bool IsMeasuredTargetLine(const TLine* l) {
+    if (!l) return false;
+    // Measured line was saved as: color (kGreen+1), width 3, style 2
+    return (l->GetLineColor() == (kGreen + 1)) && (l->GetLineWidth() == 3) && (l->GetLineStyle() == 2);
+}
+
+static void RemoveMeasuredTargetLinesFromPad(TPad* pad) {
+    if (!pad) return;
+    TList* prims = pad->GetListOfPrimitives();
+    if (!prims) return;
+
+    std::vector<TObject*> toRemove;
+    TIter it(prims);
+    while (TObject* obj = it()) {
+        if (!obj->InheritsFrom(TLine::Class())) continue;
+        auto* l = (TLine*)obj;
+        if (IsMeasuredTargetLine(l)) {
+            toRemove.push_back(obj);
+        }
+    }
+
+    for (auto* obj : toRemove) {
+        prims->Remove(obj);
+        delete obj;
+    }
+}
+
+static TLine* DrawMeasuredTargetLineAtPeak(TPad* pad, double xPeak) {
+    if (!pad) return nullptr;
+    pad->cd();
+    pad->Update();
+
+    // Use pad coordinates directly to avoid dependency on TFrame
+    double y2 = pad->GetUymax();
+
+    auto* l = new TLine(xPeak, 0., xPeak, y2);
+    l->SetLineColor(kGreen + 1);
+    l->SetLineWidth(3);
+    l->SetLineStyle(2);
+    l->Draw("same");
+    return l;
+}
+
+
 struct FitSummary {
     double mu = NAN, emu = NAN;
     double sigma = NAN, esigma = NAN;
@@ -187,6 +233,7 @@ struct FitSummary {
     int ndf = 0;
     bool ok = false;
 };
+
 
 static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double minRangeBins = 6) {
     FitSummary s;
@@ -230,6 +277,7 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     // Create a fresh Gaussian (unique name per hist to avoid collisions)
     TString fname = TString::Format("gaus_refit_%s", h->GetName());
     auto* f = new TF1(fname, "gaus", xmin, xmax);
+    f->SetLineColor(kViolet);
 
     // Initial parameters: amplitude, mean, sigma
     double amp0 = h->GetBinContent(ibinMax);
@@ -273,77 +321,91 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     return s;
 }
 
-static void UpdateLegendForHist(TLegend* leg, TH1* h, const FitSummary& fs) {
-    if (!leg || !h) return;
+static void RemoveLegendsFromPad(TPad* pad) {
+    if (!pad) return;
+    TList* prims = pad->GetListOfPrimitives();
+    if (!prims) return;
 
-    // Find existing legend entry that corresponds to THIS histogram
-    TLegendEntry* histEntry = nullptr;
-
-    TIter it(leg->GetListOfPrimitives());
+    std::vector<TObject*> toRemove;
+    TIter it(prims);
     while (TObject* obj = it()) {
-        auto* e = dynamic_cast<TLegendEntry*>(obj);
-        if (!e) continue;
-        if (e->GetObject() == h) {
-            histEntry = e;
-            break;
+        if (obj->InheritsFrom(TLegend::Class())) {
+            toRemove.push_back(obj);
         }
     }
 
-    // If none exists, create one (but you said it already exists)
-    if (!histEntry) { histEntry = leg->AddEntry(h, h->GetTitle(), "l"); }
-
-    // Compose new label:
-    // - "Peak" (we use fit mean and its error)
-    // - sigma ± error
-    // - plus fit quality (chi2/ndf)
-    std::ostringstream ss;
-    ss << std::fixed << std::setprecision(3);
-
-    if (fs.ok) {
-        ss << "Peak = " << fs.mu << " #pm " << fs.emu << ", #sigma = " << fs.sigma << " #pm " << fs.esigma;
-
-        if (fs.ndf > 0) { ss << ", #chi^{2}/ndf = " << std::setprecision(2) << (fs.chi2 / fs.ndf); }
-    } else {
-        ss << "Peak fit failed";
+    for (auto* obj : toRemove) {
+        prims->Remove(obj);
+        delete obj;
     }
+}
 
-    histEntry->SetLabel(ss.str().c_str());
+static TLine* FindSpeacTargetLineOnPad(TPad* pad) {
+    if (!pad) return nullptr;
+    TList* prims = pad->GetListOfPrimitives();
+    if (!prims) return nullptr;
 
-    // OPTIONAL: also ensure a fit entry exists in the legend (separate line).
-    // If you prefer a separate entry for the fit curve, uncomment below.
+    TIter it(prims);
+    while (TObject* obj = it()) {
+        if (!obj->InheritsFrom(TLine::Class())) continue;
+        auto* l = (TLine*)obj;
+        // speac_target_location_TLine was saved as blue
+        if (l->GetLineColor() == kBlue) {
+            return l;
+        }
+    }
+    return nullptr;
+}
 
-    /*
-    // Try to find entry for the TF1 attached to histogram (last TF1 in list)
+static TF1* GetAttachedFit(TH1* h) {
+    if (!h) return nullptr;
+    auto* lof = h->GetListOfFunctions();
+    if (!lof) return nullptr;
+
     TF1* lastF = nullptr;
-    if (auto* lof = h->GetListOfFunctions()) {
-      TIter fitIt(lof);
-      while (TObject* o = fitIt()) {
-        if (o->InheritsFrom(TF1::Class())) lastF = (TF1*)o;
-      }
+    TIter it(lof);
+    while (TObject* obj = it()) {
+        if (obj->InheritsFrom(TF1::Class())) {
+            lastF = (TF1*)obj;
+        }
     }
-    if (lastF) {
-      // Look for an existing entry for lastF
-      TLegendEntry* fitEntry = nullptr;
-      TIter it2(leg->GetListOfPrimitives());
-      while (TObject* obj = it2()) {
-        auto* e = dynamic_cast<TLegendEntry*>(obj);
-        if (!e) continue;
-        if (e->GetObject() == lastF) { fitEntry = e; break; }
-      }
-      if (!fitEntry) {
-        fitEntry = leg->AddEntry(lastF, "Gaussian fit", "l");
-      }
-      std::ostringstream sf;
-      sf << std::fixed << std::setprecision(3);
-      if (fs.ok) {
-        sf << "Fit: #mu=" << fs.mu << "#pm" << fs.emu
-           << ", #sigma=" << fs.sigma << "#pm" << fs.esigma;
-      } else {
-        sf << "Fit: failed";
-      }
-      fitEntry->SetLabel(sf.str().c_str());
+    return lastF;
+}
+
+static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, TLine* measuredLine, const FitSummary& fs) {
+    if (!pad) return nullptr;
+    pad->cd();
+
+    // Place legend in a reasonably safe default spot
+    auto* leg = new TLegend(0.55, 0.72, 0.88, 0.88);
+    leg->SetBorderSize(0);
+    leg->SetFillStyle(0);
+    leg->SetTextFont(42);
+
+    // 1) speac_target_location_TLine
+    if (speacLine) {
+        leg->AddEntry(speacLine, "Spec target", "l");
     }
-    */
+
+    // 2) fitted curve
+    if (fit) {
+        leg->AddEntry(fit, "Gaussian fit", "l");
+    }
+
+    // 3) measured_target_location_TLine with fit errors
+    if (measuredLine) {
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(3);
+        if (fs.ok) {
+            ss << "Measured = " << fs.mu << " #pm " << fs.emu;
+        } else {
+            ss << "Measured = fit failed";
+        }
+        leg->AddEntry(measuredLine, ss.str().c_str(), "l");
+    }
+
+    leg->Draw();
+    return leg;
 }
 
 static std::string BaseNameNoExt(const std::string& path) {
@@ -392,38 +454,54 @@ static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& ta
     c->SaveAs(pdf.c_str());
 }
 
-static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir, const std::string& pdfTagPrefix) {
+static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir,
+                          const std::string& pdfTagPrefix) {
     if (!c) return;
 
     // Grid on the top-level canvas
     c->SetGrid(1, 1);
 
-    // Find TH1 and TLegend in the canvas primitives (also search recursively in pads)
-    std::vector<TH1*> hists;
-    std::vector<TLegend*> legends;
+    struct HistOnPad {
+        TH1* h;
+        TPad* pad;
+    };
 
-    auto scanList = [&](TList* lst, auto&& scanRef) -> void {
+    std::vector<HistOnPad> hists;
+    std::vector<TPad*> pads;
+
+    auto scanList = [&](TList* lst, TPad* curPad, auto&& scanRef) -> void {
         if (!lst) return;
         TIter it(lst);
         while (TObject* obj = it()) {
             if (obj->InheritsFrom(TH1::Class())) {
-                hists.push_back((TH1*)obj);
-            } else if (obj->InheritsFrom(TLegend::Class())) {
-                legends.push_back((TLegend*)obj);
+                hists.push_back({(TH1*)obj, curPad});
             } else if (obj->InheritsFrom(TPad::Class())) {
                 auto* p = (TPad*)obj;
                 p->SetGrid(1, 1);
-                scanRef(p->GetListOfPrimitives(), scanRef);
+                pads.push_back(p);
+                scanRef(p->GetListOfPrimitives(), p, scanRef);
             }
         }
     };
 
-    scanList(c->GetListOfPrimitives(), scanList);
+    pads.push_back(c);
+    scanList(c->GetListOfPrimitives(), c, scanList);
+
+    // Remove ONLY the old measured target location TLine(s) (green+1, width 3, style 2)
+    for (TPad* p : pads) {
+        RemoveMeasuredTargetLinesFromPad(p);
+    }
+    // Remove all legends from pads before refitting
+    for (TPad* p : pads) {
+        RemoveLegendsFromPad(p);
+    }
 
     if (hists.empty()) return;
 
-    // If multiple legends exist, we’ll update them all (safe).
-    for (TH1* h : hists) {
+    // Refit and redraw
+    for (const auto& hp : hists) {
+        TH1* h = hp.h;
+        TPad* pad = hp.pad ? hp.pad : c;
         if (!h) continue;
 
         std::string hname = h->GetName();
@@ -431,9 +509,38 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
 
         FitSummary fs = RefitGaussianPeak(h, rangeNSigma, minRangeBins);
 
-        // Update legend label(s)
-        for (TLegend* leg : legends) { UpdateLegendForHist(leg, h, fs); }
+        // Always draw in the correct order so lines/legend are visible:
+        // 1) histogram
+        // 2) fit
+        // 3) lines
+        // 4) legend
+        pad->cd();
+        h->Draw(h->GetDrawOption());
         DrawAttachedFits(h);
+        pad->Update();
+
+        // Remove any measured lines that might have been re-added by redraws (safety)
+        RemoveMeasuredTargetLinesFromPad(pad);
+
+        // Draw the new measured target location line at the *refitted* Gaussian peak (mu)
+        TLine* measuredLine = nullptr;
+        if (fs.ok) {
+            measuredLine = DrawMeasuredTargetLineAtPeak(pad, fs.mu);
+        }
+
+        // Find the speac (blue) line and the fit function for legend
+        TLine* speacLine = FindSpeacTargetLineOnPad(pad);
+        TF1* fit = GetAttachedFit(h);
+
+        // Remove any legends again (in case redraw introduced one)
+        RemoveLegendsFromPad(pad);
+
+        // Create a brand new legend in the requested order:
+        // (1) speac line, (2) fit curve, (3) measured line with fit errors
+        (void)CreateNewLegendWithOrder(pad, speacLine, fit, measuredLine, fs);
+
+        pad->Modified();
+        pad->Update();
     }
 
     // Redraw once after all updates
@@ -473,40 +580,87 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
         TObject* obj = key->ReadObj();
         if (!obj) continue;
 
-        // If this is a canvas, process it (refit + update legend) and also save PDF
+        // REMOVE CANVAS COPYING ENTIRELY: do not process or write canvases to output
         if (obj->InheritsFrom(TCanvas::Class())) {
-            auto* c = (TCanvas*)obj;
-
-            ProcessCanvas(c, wantedHists, rangeNSigma, minRangeBins, outDirForThisFile, base);
-
-            inDir->cd();
-            c->Write(c->GetName(), TObject::kOverwrite);
-            delete c;
+            delete obj;
             continue;
         }
 
-        // If this is a standalone histogram, refit it, save a PDF, and write it
+        // OUTPUT ROOT FILE: ONLY FITTED HISTOGRAMS (strict version)
         if (obj->InheritsFrom(TH1::Class())) {
             auto* h = (TH1*)obj;
             std::string hname = h->GetName();
 
-            if (IsWantedHist(hname, wantedHists)) {
-                (void)RefitGaussianPeak(h, rangeNSigma, minRangeBins);
-
-                // Save a PDF for this histogram
-                std::string tag = base + "__" + hname;
-                SaveHistPDF(h, outDirForThisFile, tag);
+            // Skip non-requested histograms entirely
+            if (!IsWantedHist(hname, wantedHists)) {
+                delete h;
+                continue;
             }
 
+            FitSummary fs = RefitGaussianPeak(h, rangeNSigma, minRangeBins);
+
+            // Write ONLY the refitted histogram to the ROOT file
             inDir->cd();
             h->Write(h->GetName(), TObject::kOverwrite);
+
+            // ----- Fresh PDF drawing from scratch -----
+            TString cname = TString::Format("c_pdf_%s", h->GetName());
+            std::unique_ptr<TCanvas> c(new TCanvas(cname, cname, 900, 700));
+            c->SetGrid(1, 1);
+            c->cd();
+
+            h->Draw(h->GetDrawOption());
+            DrawAttachedFits(h);
+            c->Update();
+
+            // SPEC target line (blue)
+            double spec_x = 0.0;
+            if (FindSubstring(inFile, "C12")) spec_x = (2.5 - 3.0);
+            else if (FindSubstring(inFile, "Ar40")) spec_x = (-2.5 - 3.0);
+
+            auto* specLine = new TLine(spec_x, 0.0, spec_x, c->GetUymax());
+            specLine->SetLineColor(kBlue);
+            specLine->Draw("same");
+
+            // MEASURED target line at REFITTED PEAK
+            TLine* measLine = nullptr;
+            if (fs.ok) {
+                measLine = new TLine(fs.mu, 0.0, fs.mu, c->GetUymax());
+                measLine->SetLineColor(kGreen + 1);
+                measLine->SetLineWidth(3);
+                measLine->SetLineStyle(2);
+                measLine->Draw("same");
+            }
+
+            // ----- New legend (ORDER MATTERS) -----
+            auto* leg = new TLegend(0.55, 0.72, 0.88, 0.88);
+            leg->SetBorderSize(0);
+            leg->SetFillStyle(0);
+            leg->SetTextFont(42);
+
+            leg->AddEntry(specLine, "Spec target", "l");
+            if (auto* fit = GetAttachedFit(h)) leg->AddEntry(fit, "Gaussian fit", "l");
+
+            if (measLine) {
+                std::ostringstream ss;
+                ss << std::fixed << std::setprecision(3)
+                   << "Measured = " << fs.mu << " #pm " << fs.emu;
+                leg->AddEntry(measLine, ss.str().c_str(), "l");
+            }
+
+            leg->Draw();
+
+            c->Modified();
+            c->Update();
+
+            std::string tag = base + "__" + hname;
+            SaveCanvasPDF(c.get(), outDirForThisFile, tag);
+
             delete h;
             continue;
         }
 
-        // Default: copy object as-is
-        inDir->cd();
-        obj->Write(obj->GetName(), TObject::kOverwrite);
+        // Default: do NOT copy any other objects (strict: only TH1s are written)
         delete obj;
     }
 
