@@ -79,7 +79,8 @@ static std::string FormatValueWithErr(double val, double err, const char* unit =
         ss << std::scientific << std::setprecision(2);
         ss << val << " #pm " << err;
     } else {
-        ss << std::fixed << std::setprecision(4);
+        ss << std::fixed << std::setprecision(2);
+        // ss << std::fixed << std::setprecision(4);
         ss << val << " #pm " << err;
     }
 
@@ -261,6 +262,9 @@ struct FitSummary {
     int covStatus = -999;  // covariance matrix status (>=2 is good)
     double edm = NAN;      // estimated distance to minimum
 
+    double xmin = NAN;  // fit range lower bound
+    double xmax = NAN;  // fit range upper bound
+
     bool ok = false;
 };
 
@@ -373,6 +377,10 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
 
     // Bin width for sigma initial guess / safety
     double bw = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
+
+    // Store fit range in summary struct
+    s.xmin = xmin;
+    s.xmax = xmax;
 
     // Remove previous fits and refit
     RemoveExistingFits(h);
@@ -540,7 +548,8 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     }
 
     double x1 = x2 - 0.33;
-    double y1 = y2 - 0.14;
+    double y1 = y2 - 0.25;
+    // double y1 = y2 - 0.14;
 
     if (hForStatsAnchor) {
         pad->Update();
@@ -559,7 +568,8 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     leg->SetLineColor(kBlack);
     leg->SetBorderSize(1);
     leg->SetTextFont(42);
-    leg->SetTextSize(0.0225);
+    leg->SetTextSize(0.02);
+    // leg->SetTextSize(0.0225);
 
     // 1) speac_target_location_TLine
     if (speacLine) leg->AddEntry(speacLine, "Spec. z pos.", "l");
@@ -570,11 +580,36 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     // 3) measured_target_location_TLine with fit errors
     if (measuredLine) {
         if (fs.ok) {
-            std::string lab = std::string("Meas. z pos. = ") + FormatValueWithErr(fs.mu, fs.emu, "[cm]");
+            std::string lab = std::string("Meas. z pos. = ") + FormatValueWithErr(fs.mu, fs.emu, " cm");
             leg->AddEntry(measuredLine, lab.c_str(), "l");
         } else {
             leg->AddEntry(measuredLine, "Meas. z pos. = fit failed", "l");
         }
+    }
+
+    // --- Fit diagnostics ---
+    if (fs.fitStatus != -999) {
+        std::ostringstream ss;
+        ss << "fitStatus = " << fs.fitStatus;
+        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    }
+
+    if (fs.covStatus != -999) {
+        std::ostringstream ss;
+        ss << "covStatus = " << fs.covStatus;
+        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    }
+
+    if (fs.ndf > 0 && std::isfinite(fs.chi2)) {
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(2) << "#chi^{2}/ndf = " << fs.chi2 / fs.ndf;
+        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    }
+
+    if (std::isfinite(fs.xmin) && std::isfinite(fs.xmax)) {
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(2) << "fit range = [" << fs.xmin << ", " << fs.xmax << "] cm";
+        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
     }
 
     leg->Draw();
