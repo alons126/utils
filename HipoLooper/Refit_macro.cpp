@@ -525,17 +525,6 @@ void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = ".
         return;
     }
 
-    // Single output ROOT file in the same directory as the PDFs
-    std::string outRoot = sOutDir;
-    if (!outRoot.empty() && outRoot.back() != '/') outRoot += "/";
-    outRoot += "refit_results.root";
-
-    TFile fout(outRoot.c_str(), "RECREATE");
-    if (fout.IsZombie()) {
-        std::cerr << "ERROR: cannot create output ROOT file: " << outRoot << "\n";
-        return;
-    }
-
     const int VarNumber = 1;  // EDIT THIS if you want a different VarNumber
     for (const auto& inFile : rootFiles) {
         std::cout << "Processing: " << inFile << "\n";
@@ -544,11 +533,19 @@ void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = ".
         std::string perFileDir = JoinPath(sOutDir, std::to_string(VarNumber) + "_" + CodeRun_status);
         EnsureDir(perFileDir);
 
-        CopyAndProcessFile(inFile, fout, wanted, rangeNSigma, minRangeBins, perFileDir);
-    }
+        // Create a dedicated ROOT output file for this input file inside its output directory
+        std::string outRoot = JoinPath(perFileDir, CodeRun_status + "_refit_results.root");
+        TFile fout(outRoot.c_str(), "RECREATE");
+        if (fout.IsZombie()) {
+            std::cerr << "ERROR: cannot create output ROOT file: " << outRoot << "\n";
+            continue;
+        }
 
-    fout.Close();
-    std::cout << "Wrote ROOT output: " << outRoot << "\n";
+        CopyAndProcessFile(inFile, fout, wanted, rangeNSigma, minRangeBins, perFileDir);
+
+        fout.Close();
+        std::cout << "Wrote ROOT output: " << outRoot << "\n";
+    }
 }
 
 // Convenience wrapper:
