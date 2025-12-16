@@ -1,0 +1,406 @@
+// Refit_macro.cpp
+// ROOT macro (compile with ACLiC): root -l -q 'Refit_macro.cpp++("path",".root","h1,h2")'
+// or interactively: .L Refit_macro.cpp++ ; RefitAll("path","","h1,h2")
+
+#include <TAxis.h>
+#include <TCanvas.h>
+#include <TClass.h>
+#include <TF1.h>
+#include <TFile.h>
+#include <TFitResult.h>
+#include <TFitResultPtr.h>
+#include <TH1.h>
+#include <TIterator.h>
+#include <TKey.h>
+#include <TLegend.h>
+#include <TLegendEntry.h>
+#include <TList.h>
+#include <TObject.h>
+#include <TString.h>
+#include <TSystem.h>
+#include <TSystemDirectory.h>
+#include <TSystemFile.h>
+
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+// ---------- helpers ----------
+
+static inline std::string Trim(const std::string& s) {
+    auto b = s.find_first_not_of(" \t\r\n");
+    if (b == std::string::npos) return "";
+    auto e = s.find_last_not_of(" \t\r\n");
+    return s.substr(b, e - b + 1);
+}
+
+static std::vector<std::string> SplitCSV(const std::string& csv) {
+    std::vector<std::string> out;
+    std::string cur;
+    std::istringstream iss(csv);
+    while (std::getline(iss, cur, ',')) {
+        cur = Trim(cur);
+        if (!cur.empty()) out.push_back(cur);
+    }
+    return out;
+}
+
+static bool IsWantedHist(const std::string& hname, const std::vector<std::string>& wanted) {
+    if (wanted.empty()) return true;  // if not specified, refit all TH1 we encounter
+    return std::find(wanted.begin(), wanted.end(), hname) != wanted.end();
+}
+
+static std::vector<std::string> ListRootFiles(const std::string& dir, const std::string& mustContain = "") {
+    std::vector<std::string> files;
+
+    TSystemDirectory d("indir", dir.c_str());
+    TList* flist = d.GetListOfFiles();
+    if (!flist) return files;
+
+    TIter it(flist);
+    while (auto* f = (TSystemFile*)it()) {
+        TString name = f->GetName();
+        if (f->IsDirectory()) continue;
+
+        if (!name.EndsWith(".root")) continue;
+        std::string sname = name.Data();
+        if (!mustContain.empty() && sname.find(mustContain) == std::string::npos) continue;
+
+        std::string full = dir;
+        if (!full.empty() && full.back() != '/') full += "/";
+        full += sname;
+        files.push_back(full);
+    }
+
+    std::sort(files.begin(), files.end());
+    return files;
+}
+
+static void RemoveExistingFits(TH1* h) {
+    if (!h) return;
+    auto* lof = h->GetListOfFunctions();
+    if (!lof) return;
+
+    // Remove TF1 objects from the list-of-functions
+    // (We keep non-fit decorations if they exist, but you can hard-clear if you want.)
+    std::vector<TObject*> toRemove;
+    TIter it(lof);
+    while (TObject* obj = it()) {
+        if (obj->InheritsFrom(TF1::Class())) toRemove.push_back(obj);
+    }
+    for (auto* obj : toRemove) {
+        lof->Remove(obj);
+        delete obj;  // important: avoid leaking old TF1
+    }
+}
+
+struct FitSummary {
+    double mu = NAN, emu = NAN;
+    double sigma = NAN, esigma = NAN;
+    double amp = NAN, eamp = NAN;
+    double chi2 = NAN;
+    int ndf = 0;
+    bool ok = false;
+};
+
+static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double minRangeBins = 6) {
+    FitSummary s;
+    if (!h) return s;
+
+    // Basic sanity
+    if (h->GetEntries() <= 0) return s;
+    if (h->GetNbinsX() < 5) return s;
+
+    // Find peak position
+    int ibinMax = h->GetMaximumBin();
+    double xPeak = h->GetXaxis()->GetBinCenter(ibinMax);
+
+    // Estimate width
+    double rms = h->GetRMS();
+    if (!(rms > 0)) {
+        // fallback: a few bin-widths
+        rms = (h->GetXaxis()->GetXmax() - h->GetXaxis()->GetXmin()) / h->GetNbinsX();
+        rms *= 2.0;
+    }
+
+    double xmin = xPeak - rangeNSigma * rms;
+    double xmax = xPeak + rangeNSigma * rms;
+
+    // Ensure a minimum range in bins
+    double bw = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
+    double minHalfRange = 0.5 * minRangeBins * bw;
+    if ((xmax - xmin) < 2.0 * minHalfRange) {
+        xmin = xPeak - minHalfRange;
+        xmax = xPeak + minHalfRange;
+    }
+
+    // Clamp to axis limits
+    xmin = std::max(xmin, h->GetXaxis()->GetXmin());
+    xmax = std::min(xmax, h->GetXaxis()->GetXmax());
+    if (!(xmax > xmin)) return s;
+
+    // Remove previous fits and refit
+    RemoveExistingFits(h);
+
+    // Create a fresh Gaussian (unique name per hist to avoid collisions)
+    TString fname = TString::Format("gaus_refit_%s", h->GetName());
+    auto* f = new TF1(fname, "gaus", xmin, xmax);
+
+    // Initial parameters: amplitude, mean, sigma
+    double amp0 = h->GetBinContent(ibinMax);
+    double sig0 = std::max(rms / 2.0, 0.5 * bw);
+
+    f->SetParameters(amp0, xPeak, sig0);
+
+    // Fit quietly, use range, return full result
+    // R: use function range
+    // Q: quiet
+    // 0: do not draw
+    // S: return TFitResultPtr
+    TFitResultPtr r = h->Fit(f, "RQ0S");
+
+    if ((int)r != 0) {
+        // fit failed; keep TF1 around for inspection or delete it
+        // Here: keep it attached so you can see what happened.
+        return s;
+    }
+
+    s.amp = f->GetParameter(0);
+    s.mu = f->GetParameter(1);
+    s.sigma = f->GetParameter(2);
+
+    s.eamp = f->GetParError(0);
+    s.emu = f->GetParError(1);
+    s.esigma = f->GetParError(2);
+
+    s.chi2 = r->Chi2();
+    s.ndf = r->Ndf();
+    s.ok = true;
+
+    // Attach function to histogram (ROOT does this, but we ensure it remains)
+    // (No need to Add explicitly; Fit already adds it.)
+    return s;
+}
+
+static void UpdateLegendForHist(TLegend* leg, TH1* h, const FitSummary& fs) {
+    if (!leg || !h) return;
+
+    // Find existing legend entry that corresponds to THIS histogram
+    TLegendEntry* histEntry = nullptr;
+
+    TIter it(leg->GetListOfPrimitives());
+    while (TObject* obj = it()) {
+        auto* e = dynamic_cast<TLegendEntry*>(obj);
+        if (!e) continue;
+        if (e->GetObject() == h) {
+            histEntry = e;
+            break;
+        }
+    }
+
+    // If none exists, create one (but you said it already exists)
+    if (!histEntry) { histEntry = leg->AddEntry(h, h->GetTitle(), "l"); }
+
+    // Compose new label:
+    // - "Peak" (we use fit mean and its error)
+    // - sigma ± error
+    // - plus fit quality (chi2/ndf)
+    std::ostringstream ss;
+    ss << std::fixed << std::setprecision(3);
+
+    if (fs.ok) {
+        ss << "Peak = " << fs.mu << " #pm " << fs.emu << ", #sigma = " << fs.sigma << " #pm " << fs.esigma;
+
+        if (fs.ndf > 0) { ss << ", #chi^{2}/ndf = " << std::setprecision(2) << (fs.chi2 / fs.ndf); }
+    } else {
+        ss << "Peak fit failed";
+    }
+
+    histEntry->SetLabel(ss.str().c_str());
+
+    // OPTIONAL: also ensure a fit entry exists in the legend (separate line).
+    // If you prefer a separate entry for the fit curve, uncomment below.
+
+    /*
+    // Try to find entry for the TF1 attached to histogram (last TF1 in list)
+    TF1* lastF = nullptr;
+    if (auto* lof = h->GetListOfFunctions()) {
+      TIter fitIt(lof);
+      while (TObject* o = fitIt()) {
+        if (o->InheritsFrom(TF1::Class())) lastF = (TF1*)o;
+      }
+    }
+    if (lastF) {
+      // Look for an existing entry for lastF
+      TLegendEntry* fitEntry = nullptr;
+      TIter it2(leg->GetListOfPrimitives());
+      while (TObject* obj = it2()) {
+        auto* e = dynamic_cast<TLegendEntry*>(obj);
+        if (!e) continue;
+        if (e->GetObject() == lastF) { fitEntry = e; break; }
+      }
+      if (!fitEntry) {
+        fitEntry = leg->AddEntry(lastF, "Gaussian fit", "l");
+      }
+      std::ostringstream sf;
+      sf << std::fixed << std::setprecision(3);
+      if (fs.ok) {
+        sf << "Fit: #mu=" << fs.mu << "#pm" << fs.emu
+           << ", #sigma=" << fs.sigma << "#pm" << fs.esigma;
+      } else {
+        sf << "Fit: failed";
+      }
+      fitEntry->SetLabel(sf.str().c_str());
+    }
+    */
+}
+
+static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins) {
+    if (!c) return;
+
+    // Find TH1 and TLegend in the canvas primitives (also search recursively in pads)
+    std::vector<TH1*> hists;
+    std::vector<TLegend*> legends;
+
+    auto scanList = [&](TList* lst, auto&& scanRef) -> void {
+        if (!lst) return;
+        TIter it(lst);
+        while (TObject* obj = it()) {
+            if (obj->InheritsFrom(TH1::Class())) {
+                hists.push_back((TH1*)obj);
+            } else if (obj->InheritsFrom(TLegend::Class())) {
+                legends.push_back((TLegend*)obj);
+            } else if (obj->InheritsFrom(TPad::Class())) {
+                auto* p = (TPad*)obj;
+                scanRef(p->GetListOfPrimitives(), scanRef);
+            }
+        }
+    };
+
+    scanList(c->GetListOfPrimitives(), scanList);
+
+    if (hists.empty()) return;
+
+    // If multiple legends exist, we’ll update them all (safe).
+    for (TH1* h : hists) {
+        if (!h) continue;
+
+        std::string hname = h->GetName();
+        if (!IsWantedHist(hname, wantedHists)) continue;
+
+        FitSummary fs = RefitGaussianPeak(h, rangeNSigma, minRangeBins);
+
+        // Update legend label(s)
+        for (TLegend* leg : legends) { UpdateLegendForHist(leg, h, fs); }
+
+        // Redraw (if you later view the saved canvas, it will show the updated legend)
+        // Ensure fit is drawn too
+        c->cd();
+        h->Draw(h->GetDrawOption());
+        c->Modified();
+        c->Update();
+    }
+}
+
+static void CopyAndProcessFile(const std::string& inFile, const std::string& outFile, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins) {
+    TFile fin(inFile.c_str(), "READ");
+    if (fin.IsZombie()) {
+        std::cerr << "ERROR: cannot open input file: " << inFile << "\n";
+        return;
+    }
+
+    TFile fout(outFile.c_str(), "RECREATE");
+    if (fout.IsZombie()) {
+        std::cerr << "ERROR: cannot create output file: " << outFile << "\n";
+        return;
+    }
+
+    // Loop keys; clone objects; process canvases/hists; write to output
+    TIter nextKey(fin.GetListOfKeys());
+    while (TKey* key = (TKey*)nextKey()) {
+        TObject* obj = key->ReadObj();
+        if (!obj) continue;
+
+        // If this is a canvas, process it (refit + update legend)
+        if (obj->InheritsFrom(TCanvas::Class())) {
+            auto* c = (TCanvas*)obj;
+            ProcessCanvas(c, wantedHists, rangeNSigma, minRangeBins);
+
+            fout.cd();
+            c->Write(c->GetName(), TObject::kOverwrite);
+            delete c;
+            continue;
+        }
+
+        // If this is a standalone histogram, refit it and write it back
+        if (obj->InheritsFrom(TH1::Class())) {
+            auto* h = (TH1*)obj;
+            std::string hname = h->GetName();
+
+            if (IsWantedHist(hname, wantedHists)) {
+                (void)RefitGaussianPeak(h, rangeNSigma, minRangeBins);
+                // No legend to update here (legend usually lives on a canvas).
+            }
+
+            fout.cd();
+            h->Write(h->GetName(), TObject::kOverwrite);
+            delete h;
+            continue;
+        }
+
+        // Default: copy object as-is
+        fout.cd();
+        obj->Write(obj->GetName(), TObject::kOverwrite);
+        delete obj;
+    }
+
+    fout.Close();
+    fin.Close();
+
+    std::cout << "Wrote: " << outFile << "\n";
+}
+
+// ---------- user entry points ----------
+
+// Main entry:
+// - dir: directory containing ROOT files
+// - fileNameMustContain: if non-empty, only files whose name contains this substring are processed
+// - wantedHistsCSV: comma-separated histogram names. If empty => process all TH1 found.
+// - rangeNSigma: fit range = peak ± rangeNSigma * RMS
+// - minRangeBins: enforce minimum fit range in bins
+void RefitAll(const char* dir = ".", const char* fileNameMustContain = "", const char* wantedHistsCSV = "", double rangeNSigma = 2.5, double minRangeBins = 6.0) {
+    std::string sdir = dir ? dir : ".";
+    std::string filter = fileNameMustContain ? fileNameMustContain : "";
+    std::string csv = wantedHistsCSV ? wantedHistsCSV : "";
+
+    std::vector<std::string> wanted = SplitCSV(csv);
+
+    auto files = ListRootFiles(sdir, filter);
+    if (files.empty()) {
+        std::cerr << "No ROOT files found in: " << sdir << (filter.empty() ? "" : (" (filter: " + filter + ")")) << "\n";
+        return;
+    }
+
+    for (const auto& inFile : files) {
+        std::string outFile = inFile;
+        // replace ".root" with "_refit.root"
+        if (outFile.size() >= 5 && outFile.substr(outFile.size() - 5) == ".root") {
+            outFile = outFile.substr(0, outFile.size() - 5) + "_refit.root";
+        } else {
+            outFile += "_refit.root";
+        }
+
+        std::cout << "Processing: " << inFile << "\n";
+        CopyAndProcessFile(inFile, outFile, wanted, rangeNSigma, minRangeBins);
+    }
+}
+
+// Convenience wrapper so you can do:
+// root -l -q 'Refit_macro.cpp++("dir","substring","h1,h2")'
+int Refit_macro(const char* dir, const char* fileNameMustContain, const char* wantedHistsCSV) {
+    RefitAll(dir, fileNameMustContain, wantedHistsCSV);
+    return 0;
+}
