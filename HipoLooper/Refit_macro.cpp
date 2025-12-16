@@ -15,14 +15,15 @@
 #include <TKey.h>
 #include <TLegend.h>
 #include <TLegendEntry.h>
+#include <TLine.h>
 #include <TList.h>
 #include <TObject.h>
 #include <TPad.h>
+#include <TPaveStats.h>
 #include <TString.h>
 #include <TSystem.h>
 #include <TSystemDirectory.h>
 #include <TSystemFile.h>
-#include <TLine.h>
 
 #include <algorithm>
 #include <cctype>
@@ -149,7 +150,6 @@ static std::vector<std::string> ListRootFiles(const std::string& dir, const std:
     return files;
 }
 
-
 static void RemoveExistingFits(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -174,9 +174,7 @@ static void DrawAttachedFits(TH1* h) {
     if (!lof) return;
     TIter it(lof);
     while (TObject* obj = it()) {
-        if (obj->InheritsFrom(TF1::Class())) {
-            obj->Draw("same");
-        }
+        if (obj->InheritsFrom(TF1::Class())) { obj->Draw("same"); }
     }
 }
 
@@ -197,9 +195,7 @@ static void RemoveMeasuredTargetLinesFromPad(TPad* pad) {
     while (TObject* obj = it()) {
         if (!obj->InheritsFrom(TLine::Class())) continue;
         auto* l = (TLine*)obj;
-        if (IsMeasuredTargetLine(l)) {
-            toRemove.push_back(obj);
-        }
+        if (IsMeasuredTargetLine(l)) { toRemove.push_back(obj); }
     }
 
     for (auto* obj : toRemove) {
@@ -224,7 +220,6 @@ static TLine* DrawMeasuredTargetLineAtPeak(TPad* pad, double xPeak) {
     return l;
 }
 
-
 struct FitSummary {
     double mu = NAN, emu = NAN;
     double sigma = NAN, esigma = NAN;
@@ -233,7 +228,6 @@ struct FitSummary {
     int ndf = 0;
     bool ok = false;
 };
-
 
 static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double minRangeBins = 6) {
     FitSummary s;
@@ -329,9 +323,7 @@ static void RemoveLegendsFromPad(TPad* pad) {
     std::vector<TObject*> toRemove;
     TIter it(prims);
     while (TObject* obj = it()) {
-        if (obj->InheritsFrom(TLegend::Class())) {
-            toRemove.push_back(obj);
-        }
+        if (obj->InheritsFrom(TLegend::Class())) { toRemove.push_back(obj); }
     }
 
     for (auto* obj : toRemove) {
@@ -350,9 +342,7 @@ static TLine* FindSpeacTargetLineOnPad(TPad* pad) {
         if (!obj->InheritsFrom(TLine::Class())) continue;
         auto* l = (TLine*)obj;
         // speac_target_location_TLine was saved as blue
-        if (l->GetLineColor() == kBlue) {
-            return l;
-        }
+        if (l->GetLineColor() == kBlue) { return l; }
     }
     return nullptr;
 }
@@ -365,42 +355,81 @@ static TF1* GetAttachedFit(TH1* h) {
     TF1* lastF = nullptr;
     TIter it(lof);
     while (TObject* obj = it()) {
-        if (obj->InheritsFrom(TF1::Class())) {
-            lastF = (TF1*)obj;
-        }
+        if (obj->InheritsFrom(TF1::Class())) { lastF = (TF1*)obj; }
     }
     return lastF;
 }
 
-static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, TLine* measuredLine, const FitSummary& fs) {
+static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
+    if (!h) return;
+    auto* lof = h->GetListOfFunctions();
+    if (!lof) return;
+
+    std::vector<TObject*> toRemove;
+    TIter it(lof);
+    while (TObject* obj = it()) {
+        if (!obj->InheritsFrom(TLine::Class())) continue;
+        auto* l = (TLine*)obj;
+        // Measured line was saved as: color (kGreen+1), width 3, style 2
+        if ((l->GetLineColor() == (kGreen + 1)) && (l->GetLineWidth() == 3) && (l->GetLineStyle() == 2)) { toRemove.push_back(obj); }
+    }
+
+    for (auto* obj : toRemove) {
+        lof->Remove(obj);
+        delete obj;
+    }
+}
+
+static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, TLine* measuredLine, const FitSummary& fs, TH1* hForStatsAnchor) {
     if (!pad) return nullptr;
     pad->cd();
 
-    // Place legend in a reasonably safe default spot
-    auto* leg = new TLegend(0.55, 0.72, 0.88, 0.88);
-    leg->SetBorderSize(0);
-    leg->SetFillStyle(0);
+    // Desired: right X matches stats box right X (if stats exists)
+    double x2 = 0.985;
+    double y2 = 0.88;  // requested: same upper y as old legend
+
+    if (hForStatsAnchor) {
+        pad->Update();
+        auto* st = (TPaveStats*)hForStatsAnchor->FindObject("stats");
+        if (st) { y2 = st->GetY1NDC() - 0.025; }
+    }
+
+    double x1 = x2 - 0.33;
+    double y1 = y2 - 0.14;
+
+    if (hForStatsAnchor) {
+        pad->Update();
+        auto* st = (TPaveStats*)hForStatsAnchor->FindObject("stats");
+        if (st) {
+            x2 = st->GetX2NDC();
+            x1 = x2 - 0.26;
+        }
+    }
+
+    auto* leg = new TLegend(x1, y1, x2, y2);
+
+    // Requested: white fill + black border (ROOT defaults)
+    leg->SetFillStyle(1001);
+    leg->SetFillColor(kWhite);
+    leg->SetLineColor(kBlack);
+    leg->SetBorderSize(1);
     leg->SetTextFont(42);
+    leg->SetTextSize(0.0175);
 
     // 1) speac_target_location_TLine
-    if (speacLine) {
-        leg->AddEntry(speacLine, "Spec target", "l");
-    }
+    if (speacLine) leg->AddEntry(speacLine, "Spec. z pos.", "l");
 
     // 2) fitted curve
-    if (fit) {
-        leg->AddEntry(fit, "Gaussian fit", "l");
-    }
+    if (fit) leg->AddEntry(fit, "Gaussian fit", "l");
 
     // 3) measured_target_location_TLine with fit errors
     if (measuredLine) {
         std::ostringstream ss;
         ss << std::fixed << std::setprecision(3);
-        if (fs.ok) {
-            ss << "Measured = " << fs.mu << " #pm " << fs.emu;
-        } else {
-            ss << "Measured = fit failed";
-        }
+        if (fs.ok)
+            ss << "Meas. z pos. = " << fs.mu << " #pm " << fs.emu << " [cm]";
+        else
+            ss << "Meas. z pos. = fit failed";
         leg->AddEntry(measuredLine, ss.str().c_str(), "l");
     }
 
@@ -414,6 +443,16 @@ static std::string BaseNameNoExt(const std::string& path) {
     std::string s = b.Data();
     if (s.size() >= 5 && s.substr(s.size() - 5) == ".root") s = s.substr(0, s.size() - 5);
     return s;
+}
+
+static void ClearDirRecursive(const std::string& dir) {
+    if (dir.empty()) return;
+
+    // If directory exists, remove it
+    if (!gSystem->AccessPathName(dir.c_str())) {
+        std::string cmd = "rm -rf \"" + dir + "\"";
+        gSystem->Exec(cmd.c_str());
+    }
 }
 
 static void EnsureDir(const std::string& outDir) {
@@ -454,8 +493,7 @@ static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& ta
     c->SaveAs(pdf.c_str());
 }
 
-static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir,
-                          const std::string& pdfTagPrefix) {
+static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir, const std::string& pdfTagPrefix) {
     if (!c) return;
 
     // Grid on the top-level canvas
@@ -488,13 +526,9 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
     scanList(c->GetListOfPrimitives(), c, scanList);
 
     // Remove ONLY the old measured target location TLine(s) (green+1, width 3, style 2)
-    for (TPad* p : pads) {
-        RemoveMeasuredTargetLinesFromPad(p);
-    }
+    for (TPad* p : pads) { RemoveMeasuredTargetLinesFromPad(p); }
     // Remove all legends from pads before refitting
-    for (TPad* p : pads) {
-        RemoveLegendsFromPad(p);
-    }
+    for (TPad* p : pads) { RemoveLegendsFromPad(p); }
 
     if (hists.empty()) return;
 
@@ -524,9 +558,7 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
 
         // Draw the new measured target location line at the *refitted* Gaussian peak (mu)
         TLine* measuredLine = nullptr;
-        if (fs.ok) {
-            measuredLine = DrawMeasuredTargetLineAtPeak(pad, fs.mu);
-        }
+        if (fs.ok) { measuredLine = DrawMeasuredTargetLineAtPeak(pad, fs.mu); }
 
         // Find the speac (blue) line and the fit function for legend
         TLine* speacLine = FindSpeacTargetLineOnPad(pad);
@@ -537,7 +569,7 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
 
         // Create a brand new legend in the requested order:
         // (1) speac line, (2) fit curve, (3) measured line with fit errors
-        (void)CreateNewLegendWithOrder(pad, speacLine, fit, measuredLine, fs);
+        (void)CreateNewLegendWithOrder(pad, speacLine, fit, measuredLine, fs, h);
 
         pad->Modified();
         pad->Update();
@@ -553,6 +585,30 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
     if (!tag.empty()) tag += "__";
     tag += c->GetName();
     SaveCanvasPDF(c, outDir, tag);
+}
+
+static void ResetStatsBoxPosition(TPad* pad, TH1* h) {
+    if (!pad || !h) return;
+
+    pad->Update();
+    auto* st = (TPaveStats*)h->FindObject("stats");
+    if (!st) return;
+
+    // Put stats box in a clean default place (top-right of the frame)
+    st->SetX2NDC(0.985);
+    st->SetX1NDC(0.78);
+    st->SetY2NDC(0.88);
+    st->SetY1NDC(0.72);
+
+    // Make it look like ROOT defaults (optional, but consistent)
+    st->SetFillStyle(1001);
+    st->SetFillColor(kWhite);
+    st->SetLineColor(kBlack);
+    st->SetBorderSize(1);
+    st->SetTextFont(42);
+
+    pad->Modified();
+    pad->Update();
 }
 
 static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins,
@@ -598,6 +654,8 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             }
 
             FitSummary fs = RefitGaussianPeak(h, rangeNSigma, minRangeBins);
+            // Remove any previously-saved measured target line from the histogram itself
+            RemoveMeasuredTargetLinesFromHist(h);
 
             // Write ONLY the refitted histogram to the ROOT file
             inDir->cd();
@@ -612,11 +670,16 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             h->Draw(h->GetDrawOption());
             DrawAttachedFits(h);
             c->Update();
+            ResetStatsBoxPosition((TPad*)c.get(), h);
+            // Safety: remove any measured lines that might appear on the pad
+            RemoveMeasuredTargetLinesFromPad((TPad*)c.get());
 
             // SPEC target line (blue)
             double spec_x = 0.0;
-            if (FindSubstring(inFile, "C12")) spec_x = (2.5 - 3.0);
-            else if (FindSubstring(inFile, "Ar40")) spec_x = (-2.5 - 3.0);
+            if (FindSubstring(inFile, "C12"))
+                spec_x = (2.5 - 3.0);
+            else if (FindSubstring(inFile, "Ar40"))
+                spec_x = (-2.5 - 3.0);
 
             auto* specLine = new TLine(spec_x, 0.0, spec_x, c->GetUymax());
             specLine->SetLineColor(kBlue);
@@ -633,28 +696,20 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             }
 
             // ----- New legend (ORDER MATTERS) -----
-            auto* leg = new TLegend(0.55, 0.72, 0.88, 0.88);
-            leg->SetBorderSize(0);
-            leg->SetFillStyle(0);
-            leg->SetTextFont(42);
-
-            leg->AddEntry(specLine, "Spec target", "l");
-            if (auto* fit = GetAttachedFit(h)) leg->AddEntry(fit, "Gaussian fit", "l");
-
-            if (measLine) {
-                std::ostringstream ss;
-                ss << std::fixed << std::setprecision(3)
-                   << "Measured = " << fs.mu << " #pm " << fs.emu;
-                leg->AddEntry(measLine, ss.str().c_str(), "l");
-            }
-
-            leg->Draw();
+            TF1* fit = GetAttachedFit(h);
+            (void)CreateNewLegendWithOrder((TPad*)c.get(), specLine, fit, measLine, fs, h);
 
             c->Modified();
             c->Update();
 
             std::string tag = base + "__" + hname;
             SaveCanvasPDF(c.get(), outDirForThisFile, tag);
+
+            // Also store the drawn canvas (with grid/lines/legend) in the output ROOT file
+            inDir->cd();
+            TString crootname = TString::Format("c_%s", h->GetName());
+            c->SetName(crootname);
+            c->Write(c->GetName(), TObject::kOverwrite);
 
             delete h;
             continue;
@@ -681,10 +736,11 @@ void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = ".
 
     const int VarNumber = 1;  // EDIT THIS if you want a different VarNumber
     for (const auto& inFile : rootFiles) {
-        std::cout << "Processing: " << inFile << "\n";
+        std::cout << "\n\nProcessing: " << inFile << "\n\n";
 
         std::string CodeRun_status = GetCodeRunStatusOrExit(inFile);
         std::string perFileDir = JoinPath(sOutDir, std::to_string(VarNumber) + "_" + CodeRun_status);
+        ClearDirRecursive(perFileDir);
         EnsureDir(perFileDir);
 
         // Create a dedicated ROOT output file for this input file inside its output directory
