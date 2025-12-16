@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -34,7 +35,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <cmath>
 
 // ---------- helpers ----------
 
@@ -64,6 +64,27 @@ static bool IsWantedHist(const std::string& hname, const std::vector<std::string
 static std::string ToLower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return (char)std::tolower(c); });
     return s;
+}
+
+// Format value and error with sensible precision (avoid rounding small errors to 0.00)
+static std::string FormatValueWithErr(double val, double err, const char* unit = "") {
+    std::ostringstream ss;
+    if (!std::isfinite(val) || !std::isfinite(err)) {
+        ss << "NaN";
+        return ss.str();
+    }
+
+    // If the error is very small, avoid rounding to 0.00 by using scientific notation.
+    if (std::fabs(err) < 1e-3) {
+        ss << std::scientific << std::setprecision(2);
+        ss << val << " #pm " << err;
+    } else {
+        ss << std::fixed << std::setprecision(4);
+        ss << val << " #pm " << err;
+    }
+
+    if (unit && std::string(unit).size()) ss << " " << unit;
+    return ss.str();
 }
 
 static bool FindSubstring(const std::string& s, const std::string& sub) {
@@ -236,9 +257,9 @@ struct FitSummary {
     double chi2 = NAN;
     int ndf = 0;
 
-    int fitStatus = -999;      // Minuit/fit status (0 is success)
-    int covStatus = -999;      // covariance matrix status (>=2 is good)
-    double edm = NAN;          // estimated distance to minimum
+    int fitStatus = -999;  // Minuit/fit status (0 is success)
+    int covStatus = -999;  // covariance matrix status (>=2 is good)
+    double edm = NAN;      // estimated distance to minimum
 
     bool ok = false;
 };
@@ -303,9 +324,7 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     if (h->GetNbinsX() < 5) return s;
 
     // Ensure proper per-bin uncertainties exist (otherwise ParErrors can be misleading/zero)
-    if (h->GetSumw2N() == 0) {
-        h->Sumw2();
-    }
+    if (h->GetSumw2N() == 0) { h->Sumw2(); }
 
     // Peak position
     int ibinMax = h->GetMaximumBin();
@@ -316,6 +335,31 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     FitRange fr = ComputePeakWindowRange(h, 0.90, 1.10, minRangeBins);
     double xmin = fr.xmin;
     double xmax = fr.xmax;
+
+    // If histogram title contains "Ar40", shrink the fit window by a factor of 2 (half the width)
+    {
+        std::string title = h->GetTitle() ? std::string(h->GetTitle()) : std::string();
+        if (FindSubstring(title, "Ar40")) {
+            const double mid = xPeak;  // keep centered on the peak bin center
+            const double half = 0.5 * (xmax - xmin);
+            const double newHalf = 0.5 * half;  // half the width => half-range reduced by 2
+            xmin = mid - newHalf;
+            xmax = mid + newHalf;
+
+            // Enforce a minimum absolute range in bins even after shrinking
+            const double bw_local = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
+            const double minHalfRange = 0.5 * minRangeBins * bw_local;
+            if ((xmax - xmin) < 2.0 * minHalfRange) {
+                xmin = mid - minHalfRange;
+                xmax = mid + minHalfRange;
+            }
+
+            // Clamp to axis
+            xmin = std::max(xmin, h->GetXaxis()->GetXmin());
+            xmax = std::min(xmax, h->GetXaxis()->GetXmax());
+        }
+    }
+
     if (!(xmax > xmin)) return s;
 
     // Require a minimum number of populated bins inside the fit range
@@ -525,13 +569,12 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
 
     // 3) measured_target_location_TLine with fit errors
     if (measuredLine) {
-        std::ostringstream ss;
-        ss << std::fixed << std::setprecision(2);
-        if (fs.ok)
-            ss << "Meas. z pos. = " << fs.mu << " #pm " << fs.emu << " [cm]";
-        else
-            ss << "Meas. z pos. = fit failed";
-        leg->AddEntry(measuredLine, ss.str().c_str(), "l");
+        if (fs.ok) {
+            std::string lab = std::string("Meas. z pos. = ") + FormatValueWithErr(fs.mu, fs.emu, "[cm]");
+            leg->AddEntry(measuredLine, lab.c_str(), "l");
+        } else {
+            leg->AddEntry(measuredLine, "Meas. z pos. = fit failed", "l");
+        }
     }
 
     leg->Draw();
@@ -885,11 +928,11 @@ int Refit_macro(const char* wantedHistsCSV = "") {
     // Put absolute or relative paths to the ROOT files you want to process.
     // IMPORTANT: Do NOT wrap paths with extra quotes.
     std::vector<std::string> rootFiles = {
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root)",
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root)",
         R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root)",
         R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root)",
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root)"};
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root)",
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root)",
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root)"};
     // ----------------------------------------------
 
     // Run the refit over the explicit list, always with the fixed set of histograms
