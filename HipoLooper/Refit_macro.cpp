@@ -178,6 +178,14 @@ static void DrawAttachedFits(TH1* h) {
     }
 }
 
+static void ApplyCanvasMargins(TCanvas* c) {
+    if (!c) return;
+    c->cd();
+    c->SetBottomMargin(0.14);
+    c->SetLeftMargin(0.16);
+    c->SetRightMargin(0.12);
+}
+
 // ---------- Measured target TLine helpers ----------
 static bool IsMeasuredTargetLine(const TLine* l) {
     if (!l) return false;
@@ -229,6 +237,57 @@ struct FitSummary {
     bool ok = false;
 };
 
+struct FitRange {
+    double xmin = 0.0;
+    double xmax = 0.0;
+};
+
+static FitRange ComputePeakWindowRange(TH1* h, double fracLo = 0.90, double fracHi = 1.10, double minRangeBins = 6.0) {
+    FitRange fr;
+    if (!h) return fr;
+
+    const int ibinMax = h->GetMaximumBin();
+    const double xPeak = h->GetXaxis()->GetBinCenter(ibinMax);
+
+    // Bin width and minimal absolute half-range
+    const double bw = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
+    const double minHalfRange = 0.5 * minRangeBins * bw;
+
+    // If peak is very close to 0, a multiplicative window is ill-defined.
+    // Fall back to a fixed window in bin-width units.
+    const double tiny = 1e-12;
+    if (std::fabs(xPeak) < tiny) {
+        fr.xmin = xPeak - minHalfRange;
+        fr.xmax = xPeak + minHalfRange;
+    } else {
+        // Multiplicative window around the peak center.
+        // Preserve the sign convention similar to your reference code.
+        if (xPeak < 0) {
+            fr.xmin = -std::fabs(xPeak * fracHi);
+            fr.xmax = -std::fabs(xPeak * fracLo);
+        } else {
+            fr.xmin = std::fabs(xPeak * fracLo);
+            fr.xmax = std::fabs(xPeak * fracHi);
+        }
+
+        // Enforce a minimum absolute range in bins
+        if ((fr.xmax - fr.xmin) < 2.0 * minHalfRange) {
+            fr.xmin = xPeak - minHalfRange;
+            fr.xmax = xPeak + minHalfRange;
+        }
+    }
+
+    // Clamp to axis limits
+    fr.xmin = std::max(fr.xmin, h->GetXaxis()->GetXmin());
+    fr.xmax = std::min(fr.xmax, h->GetXaxis()->GetXmax());
+    if (!(fr.xmax > fr.xmin)) {
+        fr.xmin = h->GetXaxis()->GetXmin();
+        fr.xmax = h->GetXaxis()->GetXmax();
+    }
+
+    return fr;
+}
+
 static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double minRangeBins = 6) {
     FitSummary s;
     if (!h) return s;
@@ -237,33 +296,19 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     if (h->GetEntries() <= 0) return s;
     if (h->GetNbinsX() < 5) return s;
 
-    // Find peak position
+    // Peak position
     int ibinMax = h->GetMaximumBin();
     double xPeak = h->GetXaxis()->GetBinCenter(ibinMax);
 
-    // Estimate width
-    double rms = h->GetRMS();
-    if (!(rms > 0)) {
-        // fallback: a few bin-widths
-        rms = (h->GetXaxis()->GetXmax() - h->GetXaxis()->GetXmin()) / h->GetNbinsX();
-        rms *= 2.0;
-    }
-
-    double xmin = xPeak - rangeNSigma * rms;
-    double xmax = xPeak + rangeNSigma * rms;
-
-    // Ensure a minimum range in bins
-    double bw = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
-    double minHalfRange = 0.5 * minRangeBins * bw;
-    if ((xmax - xmin) < 2.0 * minHalfRange) {
-        xmin = xPeak - minHalfRange;
-        xmax = xPeak + minHalfRange;
-    }
-
-    // Clamp to axis limits
-    xmin = std::max(xmin, h->GetXaxis()->GetXmin());
-    xmax = std::min(xmax, h->GetXaxis()->GetXmax());
+    // Compute fit window around the maximum bin center
+    // (multiplicative window around peak; robust fallback near 0)
+    FitRange fr = ComputePeakWindowRange(h, 0.90, 1.10, minRangeBins);
+    double xmin = fr.xmin;
+    double xmax = fr.xmax;
     if (!(xmax > xmin)) return s;
+
+    // Bin width for sigma initial guess / safety
+    double bw = h->GetXaxis()->GetBinWidth(std::max(1, ibinMax));
 
     // Remove previous fits and refit
     RemoveExistingFits(h);
@@ -275,7 +320,8 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
 
     // Initial parameters: amplitude, mean, sigma
     double amp0 = h->GetBinContent(ibinMax);
-    double sig0 = std::max(rms / 2.0, 0.5 * bw);
+    // Initial sigma guess: a fraction of the fit window width, with a floor of half a bin
+    double sig0 = std::max(0.25 * (xmax - xmin), 0.5 * bw);
 
     f->SetParameters(amp0, xPeak, sig0);
 
@@ -360,7 +406,6 @@ static TF1* GetAttachedFit(TH1* h) {
     return lastF;
 }
 
-
 static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -391,9 +436,7 @@ static void RemoveLegendObjectsFromHist(TH1* h) {
     TIter it(lof);
     while (TObject* obj = it()) {
         // Legends (and sometimes their entries) can be (mis)attached to histograms
-        if (obj->InheritsFrom(TLegend::Class()) || obj->InheritsFrom(TLegendEntry::Class())) {
-            toRemove.push_back(obj);
-        }
+        if (obj->InheritsFrom(TLegend::Class()) || obj->InheritsFrom(TLegendEntry::Class())) { toRemove.push_back(obj); }
     }
 
     for (auto* obj : toRemove) {
@@ -424,7 +467,7 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
         auto* st = (TPaveStats*)hForStatsAnchor->FindObject("stats");
         if (st) {
             x2 = st->GetX2NDC();
-            x1 = x2 - 0.26;
+            x1 = x2 - 0.3;
         }
     }
 
@@ -436,7 +479,7 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     leg->SetLineColor(kBlack);
     leg->SetBorderSize(1);
     leg->SetTextFont(42);
-    leg->SetTextSize(0.0175);
+    leg->SetTextSize(0.0225);
 
     // 1) speac_target_location_TLine
     if (speacLine) leg->AddEntry(speacLine, "Spec. z pos.", "l");
@@ -686,10 +729,13 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             h->Write(h->GetName(), TObject::kOverwrite);
 
             // ----- Fresh PDF drawing from scratch -----
+            int pixelx = 1980;
+            int pixely = 1530;
             TString cname = TString::Format("c_pdf_%s", h->GetName());
-            std::unique_ptr<TCanvas> c(new TCanvas(cname, cname, 900, 700));
+            std::unique_ptr<TCanvas> c(new TCanvas(cname, cname, pixelx, pixely));
             c->SetGrid(1, 1);
             c->cd();
+            ApplyCanvasMargins(c.get());
 
             h->Draw(h->GetDrawOption());
             DrawAttachedFits(h);
@@ -811,7 +857,8 @@ int Refit_macro(const char* wantedHistsCSV = "") {
     // ----------------------------------------------
 
     // Run the refit over the explicit list, always with the fixed set of histograms
-    const char* wantedHists = "Vz_e_AC_1e_cut,Vz_pipFD_AC_1e_cut,Vz_pimFD_AC_1e_cut,Vz_pipCD_AC_zoomin_1e_cut,Vz_pimCD_AC_zoomin_1e_cut";
+    const char* wantedHists = "Vz_pipCD_AC_zoomin_1e_cut,Vz_pimCD_AC_zoomin_1e_cut";
+    // const char* wantedHists = "Vz_e_AC_1e_cut,Vz_pipFD_AC_1e_cut,Vz_pimFD_AC_1e_cut,Vz_pipCD_AC_zoomin_1e_cut,Vz_pimCD_AC_zoomin_1e_cut";
     RefitAll(rootFiles, outDir, wantedHists);
     return 0;
 }
