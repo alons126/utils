@@ -1,6 +1,7 @@
 // Refit_macro.cpp
-// ROOT macro (compile with ACLiC): root -l -q 'Refit_macro.cpp++("path",".root","h1,h2")'
-// or interactively: .L Refit_macro.cpp++ ; RefitAll("path","","h1,h2")
+// ROOT macro (compile with ACLiC): root -l -q 'Refit_macro.cpp++("h1,h2")'
+// If you want to refit ALL histograms found, pass an empty string: root -l -q 'Refit_macro.cpp++("")'
+// Edit the file list + outDir inside `Refit_macro()`.
 
 #include <TAxis.h>
 #include <TCanvas.h>
@@ -16,6 +17,7 @@
 #include <TLegendEntry.h>
 #include <TList.h>
 #include <TObject.h>
+#include <TPad.h>
 #include <TString.h>
 #include <TSystem.h>
 #include <TSystemDirectory.h>
@@ -24,6 +26,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -54,6 +57,8 @@ static bool IsWantedHist(const std::string& hname, const std::vector<std::string
 }
 
 static std::vector<std::string> ListRootFiles(const std::string& dir, const std::string& mustContain = "") {
+    // NOTE: This helper is kept for backwards compatibility, but the main entry point
+    // `Refit_macro()` below uses an explicit hard-coded list of ROOT files.
     std::vector<std::string> files;
 
     TSystemDirectory d("indir", dir.c_str());
@@ -258,7 +263,51 @@ static void UpdateLegendForHist(TLegend* leg, TH1* h, const FitSummary& fs) {
     */
 }
 
-static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins) {
+static std::string BaseNameNoExt(const std::string& path) {
+    TString p(path.c_str());
+    TString b = gSystem->BaseName(p);
+    std::string s = b.Data();
+    if (s.size() >= 5 && s.substr(s.size() - 5) == ".root") s = s.substr(0, s.size() - 5);
+    return s;
+}
+
+static void EnsureDir(const std::string& outDir) {
+    if (outDir.empty()) return;
+    gSystem->mkdir(outDir.c_str(), true);
+}
+
+static void SaveCanvasPDF(TCanvas* c, const std::string& outDir, const std::string& tag) {
+    if (!c) return;
+    EnsureDir(outDir);
+    std::string pdf = outDir;
+    if (!pdf.empty() && pdf.back() != '/') pdf += "/";
+    pdf += tag;
+    pdf += ".pdf";
+    c->SaveAs(pdf.c_str());
+}
+
+static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& tag) {
+    if (!h) return;
+    EnsureDir(outDir);
+
+    // Draw histogram on a temporary canvas and save it
+    TString cname = TString::Format("c_tmp_%s", h->GetName());
+    std::unique_ptr<TCanvas> c(new TCanvas(cname, cname, 900, 700));
+    c->cd();
+    h->Draw(h->GetDrawOption());
+
+    // If there is a fit attached, draw it too (Fit already adds it to the function list)
+    c->Modified();
+    c->Update();
+
+    std::string pdf = outDir;
+    if (!pdf.empty() && pdf.back() != '/') pdf += "/";
+    pdf += tag;
+    pdf += ".pdf";
+    c->SaveAs(pdf.c_str());
+}
+
+static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir, const std::string& pdfTagPrefix) {
     if (!c) return;
 
     // Find TH1 and TLegend in the canvas primitives (also search recursively in pads)
@@ -295,26 +344,35 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
 
         // Update legend label(s)
         for (TLegend* leg : legends) { UpdateLegendForHist(leg, h, fs); }
-
-        // Redraw (if you later view the saved canvas, it will show the updated legend)
-        // Ensure fit is drawn too
-        c->cd();
-        h->Draw(h->GetDrawOption());
-        c->Modified();
-        c->Update();
     }
+
+    // Redraw once after all updates
+    c->cd();
+    c->Modified();
+    c->Update();
+
+    // Save canvas as PDF
+    std::string tag = pdfTagPrefix;
+    if (!tag.empty()) tag += "__";
+    tag += c->GetName();
+    SaveCanvasPDF(c, outDir, tag);
 }
 
-static void CopyAndProcessFile(const std::string& inFile, const std::string& outFile, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins) {
+static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir) {
     TFile fin(inFile.c_str(), "READ");
     if (fin.IsZombie()) {
         std::cerr << "ERROR: cannot open input file: " << inFile << "\n";
         return;
     }
 
-    TFile fout(outFile.c_str(), "RECREATE");
-    if (fout.IsZombie()) {
-        std::cerr << "ERROR: cannot create output file: " << outFile << "\n";
+    const std::string base = BaseNameNoExt(inFile);
+
+    // Create a directory inside the output ROOT file for this input file
+    fout.cd();
+    TDirectory* inDir = fout.GetDirectory(base.c_str());
+    if (!inDir) inDir = fout.mkdir(base.c_str());
+    if (!inDir) {
+        std::cerr << "ERROR: cannot create output subdirectory in ROOT file for: " << base << "\n";
         return;
     }
 
@@ -324,83 +382,98 @@ static void CopyAndProcessFile(const std::string& inFile, const std::string& out
         TObject* obj = key->ReadObj();
         if (!obj) continue;
 
-        // If this is a canvas, process it (refit + update legend)
+        // If this is a canvas, process it (refit + update legend) and also save PDF
         if (obj->InheritsFrom(TCanvas::Class())) {
             auto* c = (TCanvas*)obj;
-            ProcessCanvas(c, wantedHists, rangeNSigma, minRangeBins);
 
-            fout.cd();
+            ProcessCanvas(c, wantedHists, rangeNSigma, minRangeBins, outDir, base);
+
+            inDir->cd();
             c->Write(c->GetName(), TObject::kOverwrite);
             delete c;
             continue;
         }
 
-        // If this is a standalone histogram, refit it and write it back
+        // If this is a standalone histogram, refit it, save a PDF, and write it
         if (obj->InheritsFrom(TH1::Class())) {
             auto* h = (TH1*)obj;
             std::string hname = h->GetName();
 
             if (IsWantedHist(hname, wantedHists)) {
                 (void)RefitGaussianPeak(h, rangeNSigma, minRangeBins);
-                // No legend to update here (legend usually lives on a canvas).
+
+                // Save a PDF for this histogram
+                std::string tag = base + "__" + hname;
+                SaveHistPDF(h, outDir, tag);
             }
 
-            fout.cd();
+            inDir->cd();
             h->Write(h->GetName(), TObject::kOverwrite);
             delete h;
             continue;
         }
 
         // Default: copy object as-is
-        fout.cd();
+        inDir->cd();
         obj->Write(obj->GetName(), TObject::kOverwrite);
         delete obj;
     }
 
-    fout.Close();
     fin.Close();
-
-    std::cout << "Wrote: " << outFile << "\n";
 }
 
-// ---------- user entry points ----------
+void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = "./refit_outputs", const char* wantedHistsCSV = "", double rangeNSigma = 2.5, double minRangeBins = 6.0) {
+    std::string sOutDir = outDir ? outDir : "./refit_outputs";
+    EnsureDir(sOutDir);
 
-// Main entry:
-// - dir: directory containing ROOT files
-// - fileNameMustContain: if non-empty, only files whose name contains this substring are processed
-// - wantedHistsCSV: comma-separated histogram names. If empty => process all TH1 found.
-// - rangeNSigma: fit range = peak ± rangeNSigma * RMS
-// - minRangeBins: enforce minimum fit range in bins
-void RefitAll(const char* dir = ".", const char* fileNameMustContain = "", const char* wantedHistsCSV = "", double rangeNSigma = 2.5, double minRangeBins = 6.0) {
-    std::string sdir = dir ? dir : ".";
-    std::string filter = fileNameMustContain ? fileNameMustContain : "";
     std::string csv = wantedHistsCSV ? wantedHistsCSV : "";
-
     std::vector<std::string> wanted = SplitCSV(csv);
 
-    auto files = ListRootFiles(sdir, filter);
-    if (files.empty()) {
-        std::cerr << "No ROOT files found in: " << sdir << (filter.empty() ? "" : (" (filter: " + filter + ")")) << "\n";
+    if (rootFiles.empty()) {
+        std::cerr << "No input ROOT files provided in the internal list.\n";
         return;
     }
 
-    for (const auto& inFile : files) {
-        std::string outFile = inFile;
-        // replace ".root" with "_refit.root"
-        if (outFile.size() >= 5 && outFile.substr(outFile.size() - 5) == ".root") {
-            outFile = outFile.substr(0, outFile.size() - 5) + "_refit.root";
-        } else {
-            outFile += "_refit.root";
-        }
+    // Single output ROOT file in the same directory as the PDFs
+    std::string outRoot = sOutDir;
+    if (!outRoot.empty() && outRoot.back() != '/') outRoot += "/";
+    outRoot += "refit_results.root";
 
-        std::cout << "Processing: " << inFile << "\n";
-        CopyAndProcessFile(inFile, outFile, wanted, rangeNSigma, minRangeBins);
+    TFile fout(outRoot.c_str(), "RECREATE");
+    if (fout.IsZombie()) {
+        std::cerr << "ERROR: cannot create output ROOT file: " << outRoot << "\n";
+        return;
     }
+
+    for (const auto& inFile : rootFiles) {
+        std::cout << "Processing: " << inFile << "\n";
+        CopyAndProcessFile(inFile, fout, wanted, rangeNSigma, minRangeBins, sOutDir);
+    }
+
+    fout.Close();
+    std::cout << "Wrote ROOT output: " << outRoot << "\n";
 }
 
-// Convenience wrapper so you can do:
-// root -l -q 'Refit_macro.cpp++("dir","substring","h1,h2")'
-int Refit_macro(const char* dir, const char* fileNameMustContain, const char* wantedHistsCSV) {
-    RefitAll(dir, fileNameMustContain, wantedHistsCSV);
+// Convenience wrapper:
+// root -l -q 'Refit_macro.cpp++("h1,h2")'
+// Output directory is set inside the function below.
+int Refit_macro(const char* wantedHistsCSV = "") {
+    // --------- USER OUTPUT DIRECTORY (EDIT THIS) ---------
+    const char* outDir = "/Users/alon/Downloads";  // PDFs + refit_results.root will be written here
+    // -----------------------------------------------------
+
+    // --------- USER INPUT LIST (EDIT THIS) ---------
+    // Put absolute or relative paths to the ROOT files you want to process.
+    // IMPORTANT: Do NOT wrap paths with extra quotes.
+    std::vector<std::string> rootFiles = {
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root)",
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root)",
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root)",
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root)",
+        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root)"};
+    // ----------------------------------------------
+
+    // Run the refit over the explicit list
+    RefitAll(rootFiles, outDir, wantedHistsCSV);
     return 0;
 }
