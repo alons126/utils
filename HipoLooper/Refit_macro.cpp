@@ -24,6 +24,8 @@
 #include <TSystemFile.h>
 
 #include <algorithm>
+#include <cctype>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -56,6 +58,68 @@ static bool IsWantedHist(const std::string& hname, const std::vector<std::string
     return std::find(wanted.begin(), wanted.end(), hname) != wanted.end();
 }
 
+static std::string ToLower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return (char)std::tolower(c); });
+    return s;
+}
+
+static bool FindSubstring(const std::string& s, const std::string& sub) {
+    // Case-insensitive substring search
+    const std::string sl = ToLower(s);
+    const std::string subl = ToLower(sub);
+    return sl.find(subl) != std::string::npos;
+}
+
+static std::string GetCodeRunStatusOrExit(const std::string& inputPath) {
+    // Use "data" to identify data files
+    bool IsData = FindSubstring(inputPath, "data");
+
+    bool Is2GeV = (FindSubstring(inputPath, "2070MeV") || FindSubstring(inputPath, "2gev") || FindSubstring(inputPath, "2GeV"));
+    bool Is4GeV = (FindSubstring(inputPath, "4029MeV") || FindSubstring(inputPath, "4gev") || FindSubstring(inputPath, "4GeV"));
+    bool Is6GeV = (FindSubstring(inputPath, "5986MeV") || FindSubstring(inputPath, "6gev") || FindSubstring(inputPath, "6GeV"));
+
+    double Ebeam = Is2GeV ? 2.07052 : Is4GeV ? 4.02962 : Is6GeV ? 5.98636 : 0.0;
+    if (Ebeam == 0.0) {
+        std::cerr << "\n\nError! Ebeam not found in input path string! Aborting...\n\n";
+        std::cerr << "Input path: " << inputPath << "\n";
+        exit(1);
+    }
+
+    std::string target_status = FindSubstring(inputPath, "C12") ? "C12" : FindSubstring(inputPath, "Ar40") ? "Ar40" : "_Unknown";
+
+    if (target_status == "_Unknown") {
+        std::cerr << "\n\nError! Target not found in input path string! Aborting...\n\n";
+        std::cerr << "Input path: " << inputPath << "\n";
+        exit(1);
+    }
+
+    std::string sample_type_status = IsData ? "_data" : "_sim";
+    std::string genie_tune_status = !IsData ? "_G18_" : "_";
+    std::string Ebeam_status_1 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
+
+    if (Ebeam_status_1 == "_Unknown") {
+        std::cerr << "\n\nError! Ebeam not found in input path string! Aborting...\n\n";
+        std::cerr << "Input path: " << inputPath << "\n";
+        exit(1);
+    }
+
+    std::string Run_status = FindSubstring(inputPath, "015664")   ? "_run_015664"
+                             : FindSubstring(inputPath, "015778") ? "_run_015778"
+                             : FindSubstring(inputPath, "015672") ? "_run_015672"
+                             : FindSubstring(inputPath, "015743") ? "_run_015743"
+                             : FindSubstring(inputPath, "015792") ? "_run_015792"
+                                                                  : "";
+
+    std::string CodeRun_status = target_status + sample_type_status + genie_tune_status + Ebeam_status_1 + Run_status;
+    return CodeRun_status;
+}
+
+static std::string JoinPath(const std::string& a, const std::string& b) {
+    if (a.empty()) return b;
+    if (a.back() == '/') return a + b;
+    return a + "/" + b;
+}
+
 static std::vector<std::string> ListRootFiles(const std::string& dir, const std::string& mustContain = "") {
     // NOTE: This helper is kept for backwards compatibility, but the main entry point
     // `Refit_macro()` below uses an explicit hard-coded list of ROOT files.
@@ -84,6 +148,7 @@ static std::vector<std::string> ListRootFiles(const std::string& dir, const std:
     return files;
 }
 
+
 static void RemoveExistingFits(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -99,6 +164,18 @@ static void RemoveExistingFits(TH1* h) {
     for (auto* obj : toRemove) {
         lof->Remove(obj);
         delete obj;  // important: avoid leaking old TF1
+    }
+}
+
+static void DrawAttachedFits(TH1* h) {
+    if (!h) return;
+    auto* lof = h->GetListOfFunctions();
+    if (!lof) return;
+    TIter it(lof);
+    while (TObject* obj = it()) {
+        if (obj->InheritsFrom(TF1::Class())) {
+            obj->Draw("same");
+        }
     }
 }
 
@@ -166,6 +243,12 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     // 0: do not draw
     // S: return TFitResultPtr
     TFitResultPtr r = h->Fit(f, "RQ0S");
+
+    // Ensure the fit function is attached to the histogram (and owned) so it is written to the output ROOT file.
+    // ROOT's Fit() usually attaches it automatically, but we keep this explicit for robustness.
+    if (auto* lof = h->GetListOfFunctions()) {
+        if (!lof->FindObject(f)) lof->Add(f);
+    }
 
     if ((int)r != 0) {
         // fit failed; keep TF1 around for inspection or delete it
@@ -283,6 +366,8 @@ static void SaveCanvasPDF(TCanvas* c, const std::string& outDir, const std::stri
     if (!pdf.empty() && pdf.back() != '/') pdf += "/";
     pdf += tag;
     pdf += ".pdf";
+    c->Modified();
+    c->Update();
     c->SaveAs(pdf.c_str());
 }
 
@@ -294,9 +379,9 @@ static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& ta
     TString cname = TString::Format("c_tmp_%s", h->GetName());
     std::unique_ptr<TCanvas> c(new TCanvas(cname, cname, 900, 700));
     c->cd();
+    c->SetGrid(1, 1);
     h->Draw(h->GetDrawOption());
-
-    // If there is a fit attached, draw it too (Fit already adds it to the function list)
+    DrawAttachedFits(h);
     c->Modified();
     c->Update();
 
@@ -309,6 +394,9 @@ static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& ta
 
 static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir, const std::string& pdfTagPrefix) {
     if (!c) return;
+
+    // Grid on the top-level canvas
+    c->SetGrid(1, 1);
 
     // Find TH1 and TLegend in the canvas primitives (also search recursively in pads)
     std::vector<TH1*> hists;
@@ -324,6 +412,7 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
                 legends.push_back((TLegend*)obj);
             } else if (obj->InheritsFrom(TPad::Class())) {
                 auto* p = (TPad*)obj;
+                p->SetGrid(1, 1);
                 scanRef(p->GetListOfPrimitives(), scanRef);
             }
         }
@@ -344,6 +433,7 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
 
         // Update legend label(s)
         for (TLegend* leg : legends) { UpdateLegendForHist(leg, h, fs); }
+        DrawAttachedFits(h);
     }
 
     // Redraw once after all updates
@@ -358,7 +448,8 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
     SaveCanvasPDF(c, outDir, tag);
 }
 
-static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir) {
+static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins,
+                               const std::string& outDirForThisFile) {
     TFile fin(inFile.c_str(), "READ");
     if (fin.IsZombie()) {
         std::cerr << "ERROR: cannot open input file: " << inFile << "\n";
@@ -386,7 +477,7 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
         if (obj->InheritsFrom(TCanvas::Class())) {
             auto* c = (TCanvas*)obj;
 
-            ProcessCanvas(c, wantedHists, rangeNSigma, minRangeBins, outDir, base);
+            ProcessCanvas(c, wantedHists, rangeNSigma, minRangeBins, outDirForThisFile, base);
 
             inDir->cd();
             c->Write(c->GetName(), TObject::kOverwrite);
@@ -404,7 +495,7 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
 
                 // Save a PDF for this histogram
                 std::string tag = base + "__" + hname;
-                SaveHistPDF(h, outDir, tag);
+                SaveHistPDF(h, outDirForThisFile, tag);
             }
 
             inDir->cd();
@@ -445,9 +536,15 @@ void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = ".
         return;
     }
 
+    const int VarNumber = 1;  // EDIT THIS if you want a different VarNumber
     for (const auto& inFile : rootFiles) {
         std::cout << "Processing: " << inFile << "\n";
-        CopyAndProcessFile(inFile, fout, wanted, rangeNSigma, minRangeBins, sOutDir);
+
+        std::string CodeRun_status = GetCodeRunStatusOrExit(inFile);
+        std::string perFileDir = JoinPath(sOutDir, std::to_string(VarNumber) + "_" + CodeRun_status);
+        EnsureDir(perFileDir);
+
+        CopyAndProcessFile(inFile, fout, wanted, rangeNSigma, minRangeBins, perFileDir);
     }
 
     fout.Close();
@@ -458,6 +555,7 @@ void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = ".
 // root -l -q 'Refit_macro.cpp++("h1,h2")'
 // Output directory is set inside the function below.
 int Refit_macro(const char* wantedHistsCSV = "") {
+    (void)wantedHistsCSV;
     // --------- USER OUTPUT DIRECTORY (EDIT THIS) ---------
     const char* outDir = "/Users/alon/Downloads";  // PDFs + refit_results.root will be written here
     // -----------------------------------------------------
@@ -473,7 +571,8 @@ int Refit_macro(const char* wantedHistsCSV = "") {
         R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root)"};
     // ----------------------------------------------
 
-    // Run the refit over the explicit list
-    RefitAll(rootFiles, outDir, wantedHistsCSV);
+    // Run the refit over the explicit list, always with the fixed set of histograms
+    const char* wantedHists = "Vz_e_AC_1e_cut,Vz_pipFD_AC_1e_cut,Vz_pimFD_AC_1e_cut,Vz_pipCD_AC_zoomin_1e_cut,Vz_pimCD_AC_zoomin_1e_cut";
+    RefitAll(rootFiles, outDir, wantedHists);
     return 0;
 }
