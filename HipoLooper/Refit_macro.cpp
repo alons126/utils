@@ -360,6 +360,7 @@ static TF1* GetAttachedFit(TH1* h) {
     return lastF;
 }
 
+
 static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -372,6 +373,27 @@ static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
         auto* l = (TLine*)obj;
         // Measured line was saved as: color (kGreen+1), width 3, style 2
         if ((l->GetLineColor() == (kGreen + 1)) && (l->GetLineWidth() == 3) && (l->GetLineStyle() == 2)) { toRemove.push_back(obj); }
+    }
+
+    for (auto* obj : toRemove) {
+        lof->Remove(obj);
+        delete obj;
+    }
+}
+
+// Remove any TLegend or TLegendEntry objects attached to a histogram's list-of-functions
+static void RemoveLegendObjectsFromHist(TH1* h) {
+    if (!h) return;
+    auto* lof = h->GetListOfFunctions();
+    if (!lof) return;
+
+    std::vector<TObject*> toRemove;
+    TIter it(lof);
+    while (TObject* obj = it()) {
+        // Legends (and sometimes their entries) can be (mis)attached to histograms
+        if (obj->InheritsFrom(TLegend::Class()) || obj->InheritsFrom(TLegendEntry::Class())) {
+            toRemove.push_back(obj);
+        }
     }
 
     for (auto* obj : toRemove) {
@@ -656,6 +678,8 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             FitSummary fs = RefitGaussianPeak(h, rangeNSigma, minRangeBins);
             // Remove any previously-saved measured target line from the histogram itself
             RemoveMeasuredTargetLinesFromHist(h);
+            // Some producer macros attach TLegend objects to the histogram; remove them so they don't reappear in PDFs
+            RemoveLegendObjectsFromHist(h);
 
             // Write ONLY the refitted histogram to the ROOT file
             inDir->cd();
@@ -673,6 +697,8 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             ResetStatsBoxPosition((TPad*)c.get(), h);
             // Safety: remove any measured lines that might appear on the pad
             RemoveMeasuredTargetLinesFromPad((TPad*)c.get());
+            // Safety: ensure the pad has no pre-existing legends before drawing the new one
+            RemoveLegendsFromPad((TPad*)c.get());
 
             // SPEC target line (blue)
             double spec_x = 0.0;
@@ -699,6 +725,12 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
             TF1* fit = GetAttachedFit(h);
             (void)CreateNewLegendWithOrder((TPad*)c.get(), specLine, fit, measLine, fs, h);
 
+            c->Modified();
+            c->Update();
+
+            // Final safety: remove any unexpected legends and redraw only our new legend
+            RemoveLegendsFromPad((TPad*)c.get());
+            (void)CreateNewLegendWithOrder((TPad*)c.get(), specLine, fit, measLine, fs, h);
             c->Modified();
             c->Update();
 
