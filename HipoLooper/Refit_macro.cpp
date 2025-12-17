@@ -36,8 +36,17 @@
 #include <string>
 #include <vector>
 
-// ---------- helpers ----------
+// ======================================================================================================================================================================
+// Helpers
+// ======================================================================================================================================================================
 
+// Trim function --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#pragma region /* Trim function */
+
+/// Trim leading/trailing whitespace (spaces, tabs, newlines) from a string.
+/// @param s Input string.
+/// @return Trimmed string.
 static inline std::string Trim(const std::string& s) {
     auto b = s.find_first_not_of(" \t\r\n");
     if (b == std::string::npos) return "";
@@ -45,6 +54,11 @@ static inline std::string Trim(const std::string& s) {
     return s.substr(b, e - b + 1);
 }
 
+#pragma endregion
+
+/// Split a comma-separated list into tokens, trimming whitespace and dropping empty entries.
+/// @param csv Comma-separated string.
+/// @return Vector of non-empty tokens.
 static std::vector<std::string> SplitCSV(const std::string& csv) {
     std::vector<std::string> out;
     std::string cur;
@@ -56,17 +70,30 @@ static std::vector<std::string> SplitCSV(const std::string& csv) {
     return out;
 }
 
+/// Decide whether a histogram name should be processed.
+/// If `wanted` is empty, all histograms are accepted.
+/// @param hname Histogram name.
+/// @param wanted Exact histogram names to accept.
+/// @return True if histogram should be refit/processed.
 static bool IsWantedHist(const std::string& hname, const std::vector<std::string>& wanted) {
     if (wanted.empty()) return true;  // if not specified, refit all TH1 we encounter
     return std::find(wanted.begin(), wanted.end(), hname) != wanted.end();
 }
 
+/// Convert a string to lowercase (ASCII).
+/// @param s Input string.
+/// @return Lowercased copy.
 static std::string ToLower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return (char)std::tolower(c); });
     return s;
 }
 
-// Format value and error with sensible precision (avoid rounding small errors to 0.00)
+/// Format a value ± uncertainty for ROOT TLatex rendering in legends.
+/// Uses fixed precision for typical errors and scientific notation for extremely small errors.
+/// @param val Central value.
+/// @param err Uncertainty.
+/// @param unit Optional unit suffix (e.g., "cm").
+/// @return Formatted string like "-5.690 #pm 0.001 cm".
 static std::string FormatValueWithErr(double val, double err, const char* unit = "") {
     std::ostringstream ss;
     if (!std::isfinite(val) || !std::isfinite(err)) {
@@ -89,6 +116,10 @@ static std::string FormatValueWithErr(double val, double err, const char* unit =
     return ss.str();
 }
 
+/// Case-insensitive substring search.
+/// @param s Haystack string.
+/// @param sub Needle substring.
+/// @return True if `sub` occurs in `s` ignoring case.
 static bool FindSubstring(const std::string& s, const std::string& sub) {
     // Case-insensitive substring search
     const std::string sl = ToLower(s);
@@ -96,6 +127,11 @@ static bool FindSubstring(const std::string& s, const std::string& sub) {
     return sl.find(subl) != std::string::npos;
 }
 
+/// Build the CodeRun_status tag from an input ROOT file path.
+/// Encodes target (C12/Ar40), data/sim, tune, beam energy, and run number.
+/// Aborts the macro if required fields cannot be inferred.
+/// @param inputPath Full input file path string.
+/// @return CodeRun_status string (e.g., "Ar40_data_G18_4GeV_run_015743").
 static std::string GetCodeRunStatusOrExit(const std::string& inputPath) {
     // Use "data" to identify data files
     bool IsData = FindSubstring(inputPath, "data");
@@ -140,12 +176,21 @@ static std::string GetCodeRunStatusOrExit(const std::string& inputPath) {
     return CodeRun_status;
 }
 
+/// Join two filesystem path components with a single '/'.
+/// @param a Base directory.
+/// @param b Child component.
+/// @return Combined path.
 static std::string JoinPath(const std::string& a, const std::string& b) {
     if (a.empty()) return b;
     if (a.back() == '/') return a + b;
     return a + "/" + b;
 }
 
+/// List .root files in a directory (optionally requiring a substring).
+/// NOTE: kept for backwards compatibility; the main macro uses an explicit hard-coded list.
+/// @param dir Directory to scan.
+/// @param mustContain Optional substring filter.
+/// @return Sorted vector of full paths.
 static std::vector<std::string> ListRootFiles(const std::string& dir, const std::string& mustContain = "") {
     // NOTE: This helper is kept for backwards compatibility, but the main entry point
     // `Refit_macro()` below uses an explicit hard-coded list of ROOT files.
@@ -174,6 +219,9 @@ static std::vector<std::string> ListRootFiles(const std::string& dir, const std:
     return files;
 }
 
+/// Remove TF1 fit functions from a histogram's ListOfFunctions and delete them.
+/// Prevents old fits from being drawn/saved and avoids TF1 memory leaks.
+/// @param h Histogram to clean.
 static void RemoveExistingFits(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -192,6 +240,8 @@ static void RemoveExistingFits(TH1* h) {
     }
 }
 
+/// Draw any TF1 functions attached to a histogram (from ListOfFunctions) on the current pad.
+/// @param h Histogram whose attached fits should be drawn.
 static void DrawAttachedFits(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -202,6 +252,8 @@ static void DrawAttachedFits(TH1* h) {
     }
 }
 
+/// Apply consistent canvas margins for publication-style plots.
+/// @param c Canvas to modify.
 static void ApplyCanvasMargins(TCanvas* c) {
     if (!c) return;
     c->cd();
@@ -210,13 +262,19 @@ static void ApplyCanvasMargins(TCanvas* c) {
     c->SetRightMargin(0.12);
 }
 
-// ---------- Measured target TLine helpers ----------
+// ---------- Measured-line helpers ------------------
+
+/// Identify the measured target-location TLine by its style (color/width/style).
+/// @param l Line pointer.
+/// @return True if it matches the measured line styling.
 static bool IsMeasuredTargetLine(const TLine* l) {
     if (!l) return false;
     // Measured line was saved as: color (kGreen+1), width 3, style 2
     return (l->GetLineColor() == (kGreen + 1)) && (l->GetLineWidth() == 3) && (l->GetLineStyle() == 2);
 }
 
+/// Remove measured target-location TLine objects from a pad's primitives and delete them.
+/// @param pad Pad to clean.
 static void RemoveMeasuredTargetLinesFromPad(TPad* pad) {
     if (!pad) return;
     TList* prims = pad->GetListOfPrimitives();
@@ -236,6 +294,11 @@ static void RemoveMeasuredTargetLinesFromPad(TPad* pad) {
     }
 }
 
+/// Draw a vertical measured target-location line at x = fitted peak position using pad y-range.
+/// Styling matches the original measured line (green, width 3, dashed).
+/// @param pad Target pad.
+/// @param xPeak X position of the fitted peak.
+/// @return Newly created TLine (owned by the pad/caller).
 static TLine* DrawMeasuredTargetLineAtPeak(TPad* pad, double xPeak) {
     if (!pad) return nullptr;
     pad->cd();
@@ -252,6 +315,10 @@ static TLine* DrawMeasuredTargetLineAtPeak(TPad* pad, double xPeak) {
     return l;
 }
 
+// ---------- Fit structs ----------------------------
+
+/// Container for Gaussian fit results and diagnostics.
+/// `ok` is true only when minimization and covariance are acceptable and errors are finite.
 struct FitSummary {
     double mu = NAN, emu = NAN;
     double sigma = NAN, esigma = NAN;
@@ -269,11 +336,20 @@ struct FitSummary {
     bool ok = false;
 };
 
+/// Simple [xmin, xmax] range helper used to define fit windows.
 struct FitRange {
     double xmin = 0.0;
     double xmax = 0.0;
 };
 
+/// Compute a fit window around the histogram maximum-bin center.
+/// Uses a multiplicative window (fracLo/fracHi) and falls back to a fixed bin-width window near zero.
+/// Enforces a minimum span in bins and clamps to axis limits.
+/// @param h Histogram.
+/// @param fracLo Lower multiplicative factor around peak (e.g., 0.90).
+/// @param fracHi Upper multiplicative factor around peak (e.g., 1.10).
+/// @param minRangeBins Minimum span expressed in bin widths.
+/// @return FitRange with xmin/xmax.
 static FitRange ComputePeakWindowRange(TH1* h, double fracLo = 0.90, double fracHi = 1.10, double minRangeBins = 6.0) {
     FitRange fr;
     if (!h) return fr;
@@ -320,6 +396,15 @@ static FitRange ComputePeakWindowRange(TH1* h, double fracLo = 0.90, double frac
     return fr;
 }
 
+/// Refit a histogram peak with a Gaussian in a peak-centered window.
+/// - Removes prior TF1 fits.
+/// - Ensures Sumw2 so fit uncertainties are meaningful.
+/// - Optionally shrinks range for Ar40-titled histograms.
+/// - Requires usable covariance before marking the fit as ok.
+/// @param h Histogram to refit.
+/// @param rangeNSigma Legacy parameter (kept for interface compatibility; not used in window definition).
+/// @param minRangeBins Minimum fit window size in bins.
+/// @return FitSummary containing parameters, uncertainties, chi2/ndf, diagnostics, and fit window.
 static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double minRangeBins = 6) {
     FitSummary s;
     if (!h) return s;
@@ -450,6 +535,10 @@ static FitSummary RefitGaussianPeak(TH1* h, double rangeNSigma = 2.5, double min
     return s;
 }
 
+// ---------- Legend helpers -------------------------
+
+/// Remove TLegend objects from a pad's primitives and delete them.
+/// @param pad Pad to clean.
 static void RemoveLegendsFromPad(TPad* pad) {
     if (!pad) return;
     TList* prims = pad->GetListOfPrimitives();
@@ -467,6 +556,9 @@ static void RemoveLegendsFromPad(TPad* pad) {
     }
 }
 
+/// Find the SPEAC target-location line on a pad (identified by blue color).
+/// @param pad Pad to scan.
+/// @return Pointer to the first matching blue TLine, or nullptr.
 static TLine* FindSpeacTargetLineOnPad(TPad* pad) {
     if (!pad) return nullptr;
     TList* prims = pad->GetListOfPrimitives();
@@ -482,6 +574,9 @@ static TLine* FindSpeacTargetLineOnPad(TPad* pad) {
     return nullptr;
 }
 
+/// Return the last TF1 attached to a histogram (from ListOfFunctions), if any.
+/// @param h Histogram.
+/// @return TF1 pointer or nullptr.
 static TF1* GetAttachedFit(TH1* h) {
     if (!h) return nullptr;
     auto* lof = h->GetListOfFunctions();
@@ -495,6 +590,8 @@ static TF1* GetAttachedFit(TH1* h) {
     return lastF;
 }
 
+/// Remove measured target-location TLine objects attached to a histogram's ListOfFunctions.
+/// @param h Histogram to clean.
 static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -515,7 +612,9 @@ static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
     }
 }
 
-// Remove any TLegend or TLegendEntry objects attached to a histogram's list-of-functions
+/// Remove any TLegend/TLegendEntry objects (mis)attached to a histogram's ListOfFunctions.
+/// Prevents old legends from reappearing when drawing the histogram.
+/// @param h Histogram to clean.
 static void RemoveLegendObjectsFromHist(TH1* h) {
     if (!h) return;
     auto* lof = h->GetListOfFunctions();
@@ -534,6 +633,17 @@ static void RemoveLegendObjectsFromHist(TH1* h) {
     }
 }
 
+/// Create and draw a new legend with controlled ordering and styling.
+/// Order: (1) spec target line, (2) Gaussian fit, (3) fitted peak line (+ uncertainties),
+/// then diagnostics lines (chi2/ndf, fit range).
+/// The legend is positioned relative to the stats box when present.
+/// @param pad Target pad.
+/// @param speacLine Blue spec target line.
+/// @param fit Gaussian TF1.
+/// @param measuredLine Green dashed fitted-peak line.
+/// @param fs Fit results/diagnostics.
+/// @param hForStatsAnchor Histogram used to locate the stats box.
+/// @return Newly created TLegend.
 static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, TLine* measuredLine, const FitSummary& fs, TH1* hForStatsAnchor) {
     if (!pad) return nullptr;
     pad->cd();
@@ -630,6 +740,11 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
     return leg;
 }
 
+// ---------- File/path + output helpers -------------
+
+/// Extract a file basename without the ".root" extension.
+/// @param path Full path.
+/// @return Basename without extension.
 static std::string BaseNameNoExt(const std::string& path) {
     TString p(path.c_str());
     TString b = gSystem->BaseName(p);
@@ -638,6 +753,8 @@ static std::string BaseNameNoExt(const std::string& path) {
     return s;
 }
 
+/// Delete an output directory recursively (rm -rf) to clear outputs from previous runs.
+/// @param dir Directory path.
 static void ClearDirRecursive(const std::string& dir) {
     if (dir.empty()) return;
 
@@ -648,11 +765,17 @@ static void ClearDirRecursive(const std::string& dir) {
     }
 }
 
+/// Ensure a directory exists (creates parents if needed).
+/// @param outDir Directory path.
 static void EnsureDir(const std::string& outDir) {
     if (outDir.empty()) return;
     gSystem->mkdir(outDir.c_str(), true);
 }
 
+/// Save a canvas as a PDF into `outDir` using `tag` as filename stem.
+/// @param c Canvas.
+/// @param outDir Output directory.
+/// @param tag Filename stem (without extension).
 static void SaveCanvasPDF(TCanvas* c, const std::string& outDir, const std::string& tag) {
     if (!c) return;
     EnsureDir(outDir);
@@ -665,6 +788,11 @@ static void SaveCanvasPDF(TCanvas* c, const std::string& outDir, const std::stri
     c->SaveAs(pdf.c_str());
 }
 
+/// Convenience: draw a histogram on a temporary canvas and save as PDF.
+/// (Not used in the strict output path but kept as a utility.)
+/// @param h Histogram.
+/// @param outDir Output directory.
+/// @param tag Filename stem.
 static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& tag) {
     if (!h) return;
     EnsureDir(outDir);
@@ -686,6 +814,17 @@ static void SaveHistPDF(TH1* h, const std::string& outDir, const std::string& ta
     c->SaveAs(pdf.c_str());
 }
 
+// ---------- High-level processing ------------------
+
+/// Process an input canvas by refitting any wanted histograms found on its pads,
+/// removing old measured lines/legends, redrawing fit + new lines, and saving as PDF.
+/// NOTE: current workflow skips input canvases, but this is kept for compatibility.
+/// @param c Input canvas.
+/// @param wantedHists Names of histograms to refit.
+/// @param rangeNSigma Legacy parameter (kept for interface compatibility).
+/// @param minRangeBins Minimum fit window size in bins.
+/// @param outDir Output directory.
+/// @param pdfTagPrefix Prefix for the saved PDF filename.
 static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins, const std::string& outDir, const std::string& pdfTagPrefix) {
     if (!c) return;
 
@@ -780,6 +919,10 @@ static void ProcessCanvas(TCanvas* c, const std::vector<std::string>& wantedHist
     SaveCanvasPDF(c, outDir, tag);
 }
 
+/// Reset the stats box to a consistent top-right location and ROOT-default styling.
+/// Requires the histogram to have already been drawn on the pad.
+/// @param pad Pad containing the stats box.
+/// @param h Histogram whose stats box is adjusted.
 static void ResetStatsBoxPosition(TPad* pad, TH1* h) {
     if (!pad || !h) return;
 
@@ -804,6 +947,17 @@ static void ResetStatsBoxPosition(TPad* pad, TH1* h) {
     pad->Update();
 }
 
+/// Read an input ROOT file, refit only the wanted histograms, and write outputs.
+/// Outputs per input file:\n
+/// - A ROOT file containing only the refitted histograms plus per-hist canvases for viewing.\n
+/// - PDFs for each refitted histogram (freshly drawn).\n
+/// This function does not copy non-TH1 objects.\n
+/// @param inFile Input ROOT path.\n
+/// @param fout Output ROOT file handle (already opened).\n
+/// @param wantedHists List of histogram names to refit.\n
+/// @param rangeNSigma Legacy parameter (kept for interface compatibility).\n
+/// @param minRangeBins Minimum fit window size in bins.\n
+/// @param outDirForThisFile Output directory for PDFs.\n
 static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std::vector<std::string>& wantedHists, double rangeNSigma, double minRangeBins,
                                const std::string& outDirForThisFile) {
     TFile fin(inFile.c_str(), "READ");
@@ -929,6 +1083,13 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
     fin.Close();
 }
 
+/// High-level driver: loop over an explicit list of ROOT files, create a per-file output directory,
+/// clear previous outputs, and write one output ROOT file per input.
+/// @param rootFiles Explicit list of input ROOT files.
+/// @param outDir Top-level output directory.
+/// @param wantedHistsCSV Optional CSV list of hist names; empty means refit all encountered.
+/// @param rangeNSigma Legacy parameter (kept for interface compatibility).
+/// @param minRangeBins Minimum fit window size in bins.
 void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = "./refit_outputs", const char* wantedHistsCSV = "", double rangeNSigma = 2.5, double minRangeBins = 6.0) {
     std::string sOutDir = outDir ? outDir : "./refit_outputs";
     EnsureDir(sOutDir);
@@ -965,6 +1126,10 @@ void RefitAll(const std::vector<std::string>& rootFiles, const char* outDir = ".
     }
 }
 
+/// ROOT macro entry point.
+/// Edit the internal ROOT file list and output directory here.
+/// @param wantedHistsCSV Unused; kept for ACLiC calling convention compatibility.
+/// @return 0 on completion.
 // Convenience wrapper:
 // root -l -q 'Refit_macro.cpp++("h1,h2")'
 // Output directory is set inside the function below.
