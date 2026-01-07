@@ -4192,6 +4192,8 @@ void HipoLooper() {
 
             //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
 
+            cout << "\033[36mTest number:\033[0m 4a" << endl;  // test 4a
+
 #pragma region Electrons BPID
 
             h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -4337,6 +4339,8 @@ void HipoLooper() {
             }
 
 #pragma endregion
+
+            cout << "\033[36mTest number:\033[0m 4b" << endl;  // test 4b
 
             if (electrons.size() != 1) { continue; }
 
