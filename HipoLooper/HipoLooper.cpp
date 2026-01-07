@@ -641,7 +641,7 @@ void HipoLooper() {
                 new TH1D("corrected_Vz_e_AC_zoomin_sector1_1e_cut",
                          ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector1);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -8, -4);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_sector1_1e_cut);
-        } else if (bt::FindSubstring(target_status, "C12")) {
+        } else if (bt::FindSubstring(target_status, "C")) {
             // h_corrected_Vz_e_BC_zoomin_sector1_1e_cut =
             //     new TH1D("corrected_Vz_e_BC_zoomin_sector1_1e_cut",
             //              ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (before e^{-} cuts, sector1);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
@@ -811,6 +811,9 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector2_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector2_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector2);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector2_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector2_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         // TH1D *h_corrected_Vz_e_BC_sector2_1e_cut = new TH1D(
@@ -841,6 +844,9 @@ void HipoLooper() {
                 new TH1D("corrected_Vz_e_AC_zoomin_sector2_1e_cut",
                          ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector2);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_sector2_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector2_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         TH1D* h_Vx_e_BC_sector2_1e_cut =
@@ -999,6 +1005,9 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector3_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector3_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector3);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector3_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector3_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         // TH1D *h_corrected_Vz_e_BC_sector3_1e_cut = new TH1D(
@@ -1029,6 +1038,9 @@ void HipoLooper() {
                 new TH1D("corrected_Vz_e_AC_zoomin_sector3_1e_cut",
                          ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector3);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_sector3_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector3_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         TH1D* h_Vx_e_BC_sector3_1e_cut =
@@ -1187,6 +1199,9 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector4_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector4_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector4);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector4_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector4_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         // TH1D *h_corrected_Vz_e_BC_sector4_1e_cut = new TH1D(
@@ -1217,6 +1232,9 @@ void HipoLooper() {
                 new TH1D("corrected_Vz_e_AC_zoomin_sector4_1e_cut",
                          ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector4);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_sector4_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector4_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         TH1D* h_Vx_e_BC_sector4_1e_cut =
@@ -1375,6 +1393,9 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector5_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector5_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector5);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector5_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector5_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         // TH1D *h_corrected_Vz_e_BC_sector5_1e_cut = new TH1D(
@@ -1405,6 +1426,9 @@ void HipoLooper() {
                 new TH1D("corrected_Vz_e_AC_zoomin_sector5_1e_cut",
                          ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector5);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_sector5_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector5_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         TH1D* h_Vx_e_BC_sector5_1e_cut =
@@ -1563,6 +1587,9 @@ void HipoLooper() {
             h_Vz_e_AC_zoomin_sector6_1e_cut =
                 new TH1D("Vz_e_AC_zoomin_sector6_1e_cut", ("V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector6);V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_Vz_e_AC_zoomin_sector6_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector6_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         // TH1D *h_corrected_Vz_e_BC_sector6_1e_cut = new TH1D(
@@ -1593,6 +1620,9 @@ void HipoLooper() {
                 new TH1D("corrected_Vz_e_AC_zoomin_sector6_1e_cut",
                          ("Corrected V_{z}^{e} in (e,e') - zoom-in - " + CodeRun_status + " (after e^{-} cuts, sector6);Corrected V_{z}^{e} [cm];Counts").c_str(), 75, -4, 1);
             HistoList.push_back(h_corrected_Vz_e_AC_zoomin_sector6_1e_cut);
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, corrected_Vz_e_AC_zoomin_sector6_1e_cut has not been set! Aborting...\n\n";
+            exit(1);
         }
 
         TH1D* h_Vx_e_BC_sector6_1e_cut =
