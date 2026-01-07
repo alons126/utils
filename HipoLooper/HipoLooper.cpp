@@ -589,6 +589,9 @@ void HipoLooper() {
 
 #pragma endregion
 
+
+        cout << "\033[36mTest number:\033[0m x2" << endl;
+
 #pragma region electron histograms - sector 1
 
         TH1D* h_Vz_e_BC_sector1_1e_cut =
@@ -1725,7 +1728,7 @@ void HipoLooper() {
 
 
 
-        cout << "\033[36mTest number:\033[0m x2" << endl;
+        cout << "\033[36mTest number:\033[0m x3" << endl;
 
 
 #pragma endregion
