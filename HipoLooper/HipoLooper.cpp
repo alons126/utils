@@ -415,6 +415,8 @@ void HipoLooper() {
         //     return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         // };
 
+        cout << "\033[36mTest number:\033[0m x1" << endl;
+
 #pragma region electron histograms
 
 #pragma region electron histograms - all sectors
