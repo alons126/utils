@@ -124,15 +124,21 @@ static std::string FormatValueWithErr(double val, double err, const char* unit =
     }
 
     // If the error is extremely small, use scientific notation.
-    if (std::fabs(err) < 1e-6) {
-        // Keep scientific only for extremely tiny errors
-        ss << std::scientific << std::setprecision(2);
-        ss << val << " #pm " << err;
-    } else {
-        // Default: exactly three decimals
-        ss << std::fixed << std::setprecision(2);
-        ss << val << " #pm " << err;
-    }
+    // Peak without error
+    ss << std::fixed << std::setprecision(2);
+    ss << val;
+
+    // // If the error is extremely small, use scientific notation.
+    //  // Peak with error
+    // if (std::fabs(err) < 1e-6) {
+    //     // Keep scientific only for extremely tiny errors
+    //     ss << std::scientific << std::setprecision(2);
+    //     ss << val << " #pm " << err;
+    // } else {
+    //     // Default: exactly three decimals
+    //     ss << std::fixed << std::setprecision(2);
+    //     ss << val << " #pm " << err;
+    // }
 
     if (unit && std::string(unit).size()) ss << " " << unit;
     return ss.str();
@@ -176,15 +182,28 @@ static std::string GetCodeRunStatusOrExit(const std::string& inputPath) {
 
     double Ebeam = Is2GeV ? 2.07052 : Is4GeV ? 4.02962 : Is6GeV ? 5.98636 : 0.0;
     if (Ebeam == 0.0) {
-        std::cerr << "\n\nError! Ebeam not found in input path string! Aborting...\n\n";
+        std::cerr << "\n\n\033[31mError!\033[0m Ebeam not found in input path string! Aborting...\n\n";
         std::cerr << "Input path: " << inputPath << "\n";
         exit(1);
     }
 
-    std::string target_status = FindSubstring(inputPath, "C12") ? "C12" : FindSubstring(inputPath, "Ar40") ? "Ar40" : "_Unknown";
+    std::string target_status =
+        // First, check whether this is target variation sample in simulation:
+        (FindSubstring(inputPath, "rgm_fall2021_C") || FindSubstring(inputPath, "rgm_fall2021_Ar")) ?
+                                                                                                    // If yes, resolve the exact RGM target variant in descending priority
+            (FindSubstring(inputPath, "rgm_fall2021_C_v2_S")   ? "rgm_fall2021_C_v2_S"  // Short C foil
+             : FindSubstring(inputPath, "rgm_fall2021_C_v2_L") ? "rgm_fall2021_C_v2_L"  // Long C foil
+             : FindSubstring(inputPath, "rgm_fall2021_C")      ? "rgm_fall2021_C"       // Nominal C target
+             : FindSubstring(inputPath, "rgm_fall2021_Ar")     ? "rgm_fall2021_Ar"      // Argon cryocell
+                                                               : "_Unknown")                // RGM tag present but no known variant
+                                                                                                    :
+                                                                                                    // Otherwise, fall back to directory-based matching (data or other simulation samples)
+            (FindSubstring(inputPath, "/C12/") || FindSubstring(inputPath, "/C/"))     ? "C12"        // Carbon target
+            : (FindSubstring(inputPath, "/Ar40/") || FindSubstring(inputPath, "/Ar/")) ? "Ar40"       // Argon target
+                                                                                       : "_Unknown";  // No target identified
 
     if (target_status == "_Unknown") {
-        std::cerr << "\n\nError! Target not found in input path string! Aborting...\n\n";
+        std::cerr << "\n\n\033[31mError!\033[0m Target not found in input path string! Aborting...\n\n";
         std::cerr << "Input path: " << inputPath << "\n";
         exit(1);
     }
@@ -194,7 +213,7 @@ static std::string GetCodeRunStatusOrExit(const std::string& inputPath) {
     std::string Ebeam_status_1 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
 
     if (Ebeam_status_1 == "_Unknown") {
-        std::cerr << "\n\nError! Ebeam not found in input path string! Aborting...\n\n";
+        std::cerr << "\n\n\033[31mError!\033[0m Ebeam not found in input path string! Aborting...\n\n";
         std::cerr << "Input path: " << inputPath << "\n";
         exit(1);
     }
@@ -347,7 +366,8 @@ static bool IsMeasuredTargetLine(const TLine* l) {
 
 #pragma endregion
 
-// RemoveMeasuredTargetLinesFromPad function --------------------------------------------------------------------------------------------------------------------------------------------------------
+// RemoveMeasuredTargetLinesFromPad function
+// --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* RemoveMeasuredTargetLinesFromPad function */
 
@@ -374,7 +394,8 @@ static void RemoveMeasuredTargetLinesFromPad(TPad* pad) {
 
 #pragma endregion
 
-// DrawMeasuredTargetLineAtPeak function --------------------------------------------------------------------------------------------------------------------------------------------------------
+// DrawMeasuredTargetLineAtPeak function
+// --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* DrawMeasuredTargetLineAtPeak function */
 
@@ -722,7 +743,8 @@ static TF1* GetAttachedFit(TH1* h) {
 
 #pragma endregion
 
-// RemoveMeasuredTargetLinesFromHist function --------------------------------------------------------------------------------------------------------------------------------------------------------
+// RemoveMeasuredTargetLinesFromHist function
+// --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* RemoveMeasuredTargetLinesFromHist function */
 
@@ -750,7 +772,8 @@ static void RemoveMeasuredTargetLinesFromHist(TH1* h) {
 
 #pragma endregion
 
-// RemoveLegendObjectsFromHist function --------------------------------------------------------------------------------------------------------------------------------------------------------
+// RemoveLegendObjectsFromHist function
+// --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* RemoveLegendObjectsFromHist function */
 
@@ -840,7 +863,7 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
 
         const double xSpec = speacLine->GetX1();  // vertical line => x1=x2
         std::ostringstream ss;
-        ss << std::fixed << std::setprecision(1);
+        ss << std::fixed << std::setprecision(2);
         // ss << std::fixed << std::setprecision(3);
         ss << "Spec. target pos. = " << xSpec << " cm";
         leg->AddEntry(speacLine, ss.str().c_str(), "l");
@@ -859,30 +882,30 @@ static TLegend* CreateNewLegendWithOrder(TPad* pad, TLine* speacLine, TF1* fit, 
         }
     }
 
-    // --- Fit diagnostics ---
-    // if (fs.fitStatus != -999) {
+    // // --- Fit diagnostics ---
+    // // if (fs.fitStatus != -999) {
+    // //     std::ostringstream ss;
+    // //     ss << "fitStatus = " << fs.fitStatus;
+    // //     leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    // // }
+
+    // // if (fs.covStatus != -999) {
+    // //     std::ostringstream ss;
+    // //     ss << "covStatus = " << fs.covStatus;
+    // //     leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
+    // // }
+
+    // if (fs.ndf > 0 && std::isfinite(fs.chi2)) {
     //     std::ostringstream ss;
-    //     ss << "fitStatus = " << fs.fitStatus;
+    //     ss << std::fixed << std::setprecision(2) << "#chi^{2}/ndf = " << fs.chi2 / fs.ndf;
     //     leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
     // }
 
-    // if (fs.covStatus != -999) {
+    // if (std::isfinite(fs.xmin) && std::isfinite(fs.xmax)) {
     //     std::ostringstream ss;
-    //     ss << "covStatus = " << fs.covStatus;
+    //     ss << std::fixed << std::setprecision(2) << "Fit range = [" << fs.xmin << ", " << fs.xmax << "] cm";
     //     leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
     // }
-
-    if (fs.ndf > 0 && std::isfinite(fs.chi2)) {
-        std::ostringstream ss;
-        ss << std::fixed << std::setprecision(2) << "#chi^{2}/ndf = " << fs.chi2 / fs.ndf;
-        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
-    }
-
-    if (std::isfinite(fs.xmin) && std::isfinite(fs.xmax)) {
-        std::ostringstream ss;
-        ss << std::fixed << std::setprecision(2) << "Fit range = [" << fs.xmin << ", " << fs.xmax << "] cm";
-        leg->AddEntry((TObject*)nullptr, ss.str().c_str(), "");
-    }
 
     leg->Draw();
     return leg;
@@ -1230,10 +1253,19 @@ static void CopyAndProcessFile(const std::string& inFile, TFile& fout, const std
 
             // SPEC target line (blue)
             double spec_x = 0.0;
-            if (FindSubstring(inFile, "C12"))
+            if (FindSubstring(inFile, "rgm_fall2021_C")) {
+                if (FindSubstring(inFile, "rgm_fall2021_C_v2_S")) {
+                    spec_x = -2.1;  // rgm_fall2021_C_v2_S variation
+                } else if (FindSubstring(inFile, "rgm_fall2021_C_v2_L")) {
+                    spec_x = -2.32;  // rgm_fall2021_C_v2_L variation
+                } else {
+                    spec_x = 2.5;  // rgm_fall2021_C variation
+                }
+            } else if (FindSubstring(inFile, "C12")) {
                 spec_x = (2.5 - 3.0);
-            else if (FindSubstring(inFile, "Ar40"))
+            } else if (FindSubstring(inFile, "Ar40") || FindSubstring(inFile, "rgm_fall2021_Ar")) {
                 spec_x = (-2.5 - 3.0);
+            }
 
             auto* specLine = new TLine(spec_x, 0.0, spec_x, c->GetUymax());
             specLine->SetLineColor(kBlue);
@@ -1355,11 +1387,21 @@ int Refit_macro(const char* wantedHistsCSV = "") {
     // Put absolute or relative paths to the ROOT files you want to process.
     // IMPORTANT: Do NOT wrap paths with extra quotes.
     std::vector<std::string> rootFiles = {
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root)",
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root)",
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root)",
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root)",
-        R"(/Users/alon/Code runs/utils/HipoLooper (Ar40 imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root)"};
+        R"(/Users/alon/Downloads/29_HipoLooper_v29_rgm_fall2021_Ar_sim_G18_4GeV__gen_validation_tests/29_HipoLooper_v29_rgm_fall2021_Ar_sim_G18_4GeV__gen_validation_tests.root)",
+        R"(/Users/alon/Downloads/29_HipoLooper_v29_rgm_fall2021_C_sim_G18_2GeV__gen_validation_tests/29_HipoLooper_v29_rgm_fall2021_C_sim_G18_2GeV__gen_validation_tests.root)",
+        R"(/Users/alon/Downloads/29_HipoLooper_v29_rgm_fall2021_C_v2_L_sim_G18_4GeV__gen_validation_tests/29_HipoLooper_v29_rgm_fall2021_C_v2_L_sim_G18_4GeV__gen_validation_tests.root)",
+        R"(/Users/alon/Downloads/29_HipoLooper_v29_rgm_fall2021_C_v2_S_sim_G18_2GeV__gen_validation_tests/29_HipoLooper_v29_rgm_fall2021_C_v2_S_sim_G18_2GeV__gen_validation_tests.root)"};
+    // std::vector<std::string> rootFiles = {
+    // R"(/Users/alon/Code runs/utils/HipoLooper (Ar40
+    // imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_2GeV_run_015672__redo_full_Vx_Vy_sampling.root)",
+    // R"(/Users/alon/Code runs/utils/HipoLooper (Ar40
+    // imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_4GeV_run_015743__redo_full_Vx_Vy_sampling.root)",
+    // R"(/Users/alon/Code runs/utils/HipoLooper (Ar40
+    // imp)/22_HipoLooper_v22/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_Ar40_data_6GeV_run_015792__redo_full_Vx_Vy_sampling.root)",
+    // R"(/Users/alon/Code runs/utils/HipoLooper (Ar40
+    // imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_2GeV_run_015664__redo_full_Vx_Vy_sampling.root)",
+    // R"(/Users/alon/Code runs/utils/HipoLooper (Ar40
+    // imp)/22_HipoLooper_v22/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling/22_HipoLooper_v22_C12_data_4GeV_run_015778__redo_full_Vx_Vy_sampling.root)"};
     // ----------------------------------------------
 
     // Run the refit over the explicit list, always with the fixed set of histograms
