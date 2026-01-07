@@ -215,7 +215,8 @@ void HipoLooper() {
 
 #pragma endregion
 
-        std::cout << "\033[33m" << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n" << "\033[0m";
+        std::cout << "\033[33m" << "\n\nRunning on \033[0m" << SampleName << "\033[33m with \033[0m" << Ebeam << "\033[33m GeV beam energy" << "\033[0m\n";
+        std::cout << "\033[33m" << "Sample file are located at \033[0m" << InputFiles.at(sample) << "\n\n" << "\033[0m";
 
 #pragma region Prepare histograms
 
