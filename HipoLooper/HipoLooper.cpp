@@ -4078,6 +4078,8 @@ void HipoLooper() {
         int NumOfEvents_wAny_e_det = 0, NumOfEvents_wOne_e_det = 0;
         int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
+        int test_number = 0;
+
         while (chain.Next() == true) {
             // Display completed:
             ++NumOfEvents;
@@ -4085,6 +4087,10 @@ void HipoLooper() {
             if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
 
             if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
+
+
+            cout << "Test number: " << test_number++ << endl;
+
 
             clasAna.Run(c12);
             auto electrons = clasAna.getByPid(11);
@@ -4133,6 +4139,11 @@ void HipoLooper() {
             bool ElectronInECIN = (electrons_det[0]->cal(clas12::ECIN)->getDetector() == 7);                              // ECIN hit
             bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
             auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
+
+
+            cout << "Test number: " << test_number++ << endl;
+
+
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
