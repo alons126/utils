@@ -50,11 +50,12 @@ void HipoLooper() {
 
     std::cout << "\033[33m" << "\n\nInitiating HipoLooper.cpp...\n\n" << "\033[0m";
 
-    int version = 28;  // Version of the code
+    int version = 29;  // Version of the code
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "Ar40_target_zpos_test";  // General status of the analysis
+    std::string General_status = "gen_validation_tests";  // General status of the analysis
+    // std::string General_status = "Ar40_target_zpos_test";  // General status of the analysis
     // std::string General_status = "";  // General status of the analysis
 
     General_status = "__" + General_status;
@@ -94,7 +95,12 @@ void HipoLooper() {
     // // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_test/reconhipo/*.hipo");
     // // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/5986MeV_Q2_0_40_Ar40_test/reconhipo/*.hipo");
 
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_target_zpos_test/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_target_zpos_test/reconhipo/*.hipo");
+
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_Ar_test/*.hipo");
+    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_v2_S_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_C_v2_L_test/reconhipo/*.hipo");
 
     std::vector<std::vector<double>> theta_slices;
     double theta_start = 10.0;  // Degrees
@@ -120,9 +126,40 @@ void HipoLooper() {
         bool Is4GeV = (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev"));
         bool Is6GeV = (bt::FindSubstring(InputFiles.at(sample), "5986MeV") || bt::FindSubstring(InputFiles.at(sample), "6gev"));
 
-        std::string target_status = (bt::FindSubstring(InputFiles.at(sample), "/C12/") || bt::FindSubstring(InputFiles.at(sample), "/C/"))     ? "C12"
-                                    : (bt::FindSubstring(InputFiles.at(sample), "/Ar40/") || bt::FindSubstring(InputFiles.at(sample), "/Ar/")) ? "Ar40"
-                                                                                                                                               : "_Unknown";
+        std::string target_status =
+            // First, check whether this is target variation sample in simulation:
+            (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C") || bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_Ar"))
+                ?
+                // If yes, resolve the exact RGM target variant in descending priority
+                (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C_v2_S")   ? "rgm_fall2021_C_v2_S"  // Short C foil
+                 : bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C_v2_L") ? "rgm_fall2021_C_v2_L"  // Long C foil
+                 : bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C")      ? "rgm_fall2021_C"       // Nominal C target
+                 : bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_Ar")     ? "rgm_fall2021_Ar"      // Argon cryocell
+                                                                                   : "_Unknown")                // RGM tag present but no known variant
+                :
+                // Otherwise, fall back to directory-based matching (data or other simulation samples)
+                (bt::FindSubstring(InputFiles.at(sample), "/C12/") || bt::FindSubstring(InputFiles.at(sample), "/C/"))     ? "C12"        // Carbon target
+                : (bt::FindSubstring(InputFiles.at(sample), "/Ar40/") || bt::FindSubstring(InputFiles.at(sample), "/Ar/")) ? "Ar40"       // Argon target
+                                                                                                                           : "_Unknown";  // No target identified
+        // std::string target_status;
+
+        // if (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C") || bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_Ar")) {
+        //     if (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C_v2_S")) {
+        //         target_status = "rgm_fall2021_C_v2_S";
+        //     } else if (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C_v2_L")) {
+        //         target_status = "rgm_fall2021_C_v2_L";
+        //     } else if (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_C")) {
+        //         target_status = "rgm_fall2021_C";
+        //     } else if (bt::FindSubstring(InputFiles.at(sample), "rgm_fall2021_Ar")) {
+        //         target_status = "rgm_fall2021_Ar";
+        //     } else {
+        //         target_status = "_Unknown";
+        //     }
+        // } else {
+        //     target_status = (bt::FindSubstring(InputFiles.at(sample), "/C12/") || bt::FindSubstring(InputFiles.at(sample), "/C/"))     ? "C12"
+        //                     : (bt::FindSubstring(InputFiles.at(sample), "/Ar40/") || bt::FindSubstring(InputFiles.at(sample), "/Ar/")) ? "Ar40"
+        //                                                                                                                                : "_Unknown";
+        // }
 
         if (target_status == "_Unknown") { std::cerr << "\n\nError! Target not found in InputFiles string! Aborting...\n\n", exit(1); }
 
@@ -5332,8 +5369,8 @@ void HipoLooper() {
 #pragma endregion
 
 #pragma region Plotting and saving histograms
-        
-    std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
+
+        std::cout << "\033[33m" << "\n\nPlotting and saving histograms..." << "\n\n" << "\033[0m";
 
         /////////////////////////////////////////////////////
         // Organize histograms
