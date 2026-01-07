@@ -4305,6 +4305,8 @@ void HipoLooper() {
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
+            cout << "\033[36mTest number:\033[0m 5" << endl;  // test 5
+
 #pragma region Electrons APID
 
             double Vx_e = electrons[0]->par()->getVx();
@@ -4816,6 +4818,8 @@ void HipoLooper() {
             }
 #pragma endregion
 
+            cout << "\033[36mTest number:\033[0m 6" << endl;  // test 6
+
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region piminus BPID
@@ -5095,6 +5099,8 @@ void HipoLooper() {
             }
 
 #pragma endregion
+
+            cout << "\033[36mTest number:\033[0m 7" << endl;  // test 7
         }
 
         std::cout << "\033[33m" << "\n\nEvent loop finished..." << "\n\n" << "\033[0m";
