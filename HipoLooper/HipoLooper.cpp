@@ -4360,15 +4360,21 @@ void HipoLooper() {
             double Vy_e = electrons[0]->par()->getVy();
             double Vz_e = electrons[0]->par()->getVz();
 
+            cout << "\033[36mTest number:\033[0m 5b" << endl;  // test 5
+
             auto r_e = compute_r(Beam_Coordinates, "e");
             auto phi_beam_e_rad = compute_phi_beam_rad(Beam_Coordinates, "e");
             auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad, "e");
             // auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad);
 
+            cout << "\033[36mTest number:\033[0m 5c" << endl;  // test 5
+
             h_Vx_e_AC_1e_cut->Fill(Vx_e, weight);
             h_Vy_e_AC_1e_cut->Fill(Vy_e, weight);
             h_Vz_e_AC_1e_cut->Fill(Vz_e, weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(Vz_e, weight);
+
+            cout << "\033[36mTest number:\033[0m 5d" << endl;  // test 5
 
             h_corrected_Vz_e_AC_1e_cut->Fill(corrected_Vz_e, weight);
             h_corrected_Vz_e_AC_zoomin_1e_cut->Fill(corrected_Vz_e, weight);
@@ -4384,6 +4390,8 @@ void HipoLooper() {
             h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
             h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
+            cout << "\033[36mTest number:\033[0m 5e" << endl;  // test 5
+
             raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_1e_cut, weight);
 
             h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -4398,6 +4406,8 @@ void HipoLooper() {
             h_SF_VS_Lu_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
             h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+
+            cout << "\033[36mTest number:\033[0m 5f" << endl;  // test 5
 
             if (electrons[0]->getSector() == 1) {
                 h_Vx_e_AC_sector1_1e_cut->Fill(Vx_e, weight);
