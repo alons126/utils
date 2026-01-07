@@ -4069,6 +4069,8 @@ void HipoLooper() {
 
 #pragma endregion
 
+        cout << "Test number: " << test_number++ << endl;
+
         clas12ana clasAna;
 
         clasAna.setVertexCorrCuts(true);  // making f_corr_vertexCuts = true
