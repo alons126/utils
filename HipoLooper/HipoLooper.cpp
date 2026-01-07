@@ -252,6 +252,7 @@ void HipoLooper() {
             }
         } else if (bt::FindSubstring(target_status, "C")) {
             HistoList_zoomin_limits = {-4.0, 1.0};
+            Vz_2D_limits = {-4.0, 1.0};
         } else {
             std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, HistoList_zoomin_limits has not been set! Aborting...\n\n";
             exit(1);
@@ -588,7 +589,6 @@ void HipoLooper() {
         HistoList.push_back(h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut);
 
 #pragma endregion
-
 
         cout << "\033[36mTest number:\033[0m x2" << endl;
 
@@ -1726,10 +1726,7 @@ void HipoLooper() {
 
 #pragma endregion
 
-
-
         cout << "\033[36mTest number:\033[0m x3" << endl;
-
 
 #pragma endregion
 
