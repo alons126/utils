@@ -115,7 +115,6 @@ void HipoLooper() {
         int test_number = 0;
 
         cout << "Test number: " << test_number++ << endl;
-        std::cout << "\033[33m" << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n" << "\033[0m";
 
 #pragma region Setup and configuration
 
@@ -215,6 +214,8 @@ void HipoLooper() {
         const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
 
 #pragma endregion
+
+        std::cout << "\033[33m" << "\n\nRunning on " << SampleName << " with " << Ebeam << " GeV beam energy\n\n" << "\033[0m";
 
 #pragma region Prepare histograms
 
