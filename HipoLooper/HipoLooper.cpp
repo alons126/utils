@@ -114,7 +114,7 @@ void HipoLooper() {
     for (int sample = 0; sample < InputFiles.size(); sample++) {
         int test_number = 0;
 
-        cout << "\033[36mTest number:\033[0m " << test_number++ << endl;  // test 1
+        cout << "\033[36mTest number:\033[0m 1" << endl;  // test 1
 
 #pragma region Setup and configuration
 
@@ -4072,7 +4072,7 @@ void HipoLooper() {
 
 #pragma endregion
 
-        cout << "\033[36mTest number:\033[0m " << test_number++ << endl;  // test 2
+        cout << "\033[36mTest number:\033[0m 2" << endl;  // test 1
 
         clas12ana clasAna;
 
@@ -4097,7 +4097,7 @@ void HipoLooper() {
 
             if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
 
-            cout << "\033[36mTest number:\033[0m " << test_number++ << endl;
+            cout << "\033[36mTest number:\033[0m 2" << endl;  // test 2
 
             clasAna.Run(c12);
             auto electrons = clasAna.getByPid(11);
@@ -4147,7 +4147,7 @@ void HipoLooper() {
             bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
             auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
 
-            cout << "\033[36mTest number:\033[0m " << test_number++ << endl;
+            cout << "\033[36mTest number:\033[0m 4" << endl;  // test 4
 
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
