@@ -301,6 +301,43 @@ void HipoLooper() {
         // Beam_Coordinates["Ar40_data_6GeV_run_015792_pipFD"] = {0.1667, 0.1388};
         // Beam_Coordinates["Ar40_data_6GeV_run_015792_pimFD"] = {0.1455, 0.1524};
 
+        Beam_Coordinates["Ar40_sim_2GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["Ar40_sim_2GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["Ar40_sim_2GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["Ar40_sim_4GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["Ar40_sim_4GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["Ar40_sim_4GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["Ar40_sim_6GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["Ar40_sim_6GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["Ar40_sim_6GeV_pimFD"] = {0.0, 0.0};
+
+        Beam_Coordinates["C12_sim_2GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["C12_sim_2GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["C12_sim_2GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["C12_sim_4GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["C12_sim_4GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["C12_sim_4GeV_pimFD"] = {0.0, 0.0};
+
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_2GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_2GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_2GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_4GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_4GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_4GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_6GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_6GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_Ar_sim_G18_6GeV_pimFD"] = {0.0, 0.0};
+
+        Beam_Coordinates["rgm_fall2021_C_sim_G18_2GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["rgm_fall2021_C_sim_G18_2GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_C_sim_G18_2GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_C_v2_S_sim_G18_2GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["rgm_fall2021_C_v2_S_sim_G18_2GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_C_v2_S_sim_G18_2GeV_pimFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_C_v2_L_sim_G18_4GeV_e"] = {0.0, 0.0};  // {A in cm, phi_beam in rad}
+        Beam_Coordinates["rgm_fall2021_C_v2_L_sim_G18_4GeV_pipFD"] = {0.0, 0.0};
+        Beam_Coordinates["rgm_fall2021_C_v2_L_sim_G18_4GeV_pimFD"] = {0.0, 0.0};
+
         // Lambda to compute r = sqrt(Vx² + Vy²)
         auto compute_r = [&CodeRun_status, &IsData](const std::map<std::string, std::pair<double, double>>& Beam_Coor, const std::string& particle) -> double {
             if (IsData) {
