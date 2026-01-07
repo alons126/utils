@@ -114,7 +114,7 @@ void HipoLooper() {
     for (int sample = 0; sample < InputFiles.size(); sample++) {
         int test_number = 0;
 
-        cout << "\033[36mTest number:\033[0m " << test_number++ << endl;
+        cout << "\033[36mTest number:\033[0m " << test_number++ << endl;  // test 1
 
 #pragma region Setup and configuration
 
@@ -124,7 +124,7 @@ void HipoLooper() {
                        : (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev")) ? 4.02962
                        : (bt::FindSubstring(InputFiles.at(sample), "5986MeV") || bt::FindSubstring(InputFiles.at(sample), "6gev")) ? 5.98636
                                                                                                                                    : 0.0;
-        if (Ebeam == 0.0) { std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
+        if (Ebeam == 0.0) { std::cerr << "\n\n\033[31mError!\033[0m Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         bool Is2GeV = (bt::FindSubstring(InputFiles.at(sample), "2070MeV") || bt::FindSubstring(InputFiles.at(sample), "2gev"));
         bool Is4GeV = (bt::FindSubstring(InputFiles.at(sample), "4029MeV") || bt::FindSubstring(InputFiles.at(sample), "4gev"));
@@ -165,16 +165,16 @@ void HipoLooper() {
         //                                                                                                                                : "_Unknown";
         // }
 
-        if (target_status == "_Unknown") { std::cerr << "\n\nError! Target not found in InputFiles string! Aborting...\n\n", exit(1); }
+        if (target_status == "_Unknown") { std::cerr << "\n\n\033[31mError!\033[0m Target not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         std::string sample_type_status = IsData ? "_data" : "_sim";
         std::string genie_tune_status = !IsData ? "_G18_" : "_";
         std::string Ebeam_status_1 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
         std::string Ebeam_status_2 = Is2GeV ? "_2GeV" : Is4GeV ? "_4GeV" : Is6GeV ? "_6GeV" : "_Unknown";
 
-        if (Ebeam_status_1 == "_Unknown") { std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
+        if (Ebeam_status_1 == "_Unknown") { std::cerr << "\n\n\033[31mError!\033[0m Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
 
-        if (Ebeam_status_2 == "_Unknown") { std::cerr << "\n\nError! Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
+        if (Ebeam_status_2 == "_Unknown") { std::cerr << "\n\n\033[31mError!\033[0m Ebeam not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         std::string Run_status = bt::FindSubstring(InputFiles.at(sample), "015664")   ? "_run_015664"
                                  : bt::FindSubstring(InputFiles.at(sample), "015778") ? "_run_015778"
@@ -239,7 +239,7 @@ void HipoLooper() {
         std::vector<double> HistoList_zoomin_limits;
         std::vector<double> Vz_2D_limits;
 
-        if (target_status == "Ar40") {
+        if (bt::FindSubstring(target_status, "Ar")) {
             HistoList_zoomin_limits = {-8.0, -4.0};
 
             if (Is2GeV) {
@@ -250,8 +250,10 @@ void HipoLooper() {
             } else if (Is6GeV) {
                 Vz_2D_limits = {-8, -2};
             }
-        } else if (target_status == "C12") {
+        } else if (bt::FindSubstring(target_status, "C")) {
             HistoList_zoomin_limits = {-4.0, 1.0};
+        } else {
+            std::cerr << "\n\n\033[31mError!\033[0m could not configure target_status, HistoList_zoomin_limits has not been set! Aborting...\n\n";
         }
 
         std::map<std::string, std::pair<double, double>> Beam_Coordinates;
@@ -305,7 +307,7 @@ void HipoLooper() {
                 std::string key = CodeRun_status + "_" + particle;
 
                 if (Beam_Coor.count(key) == 0) {
-                    std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                    std::cerr << "\n\n\033[31mError!\033[0m Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
                     return std::numeric_limits<double>::quiet_NaN();
                 }
 
@@ -313,7 +315,7 @@ void HipoLooper() {
                 double Vy_peak = Beam_Coor.at(key).second;
 
                 if (Vx_peak == 0. || Vy_peak == 0.) {
-                    std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
+                    std::cerr << "\n\n\033[31mError!\033[0m Vx_peak is for " << particle << " zero! Aborting...\n\n";
                     std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
                 }
 
@@ -329,7 +331,7 @@ void HipoLooper() {
                 std::string key = CodeRun_status + "_" + particle;
 
                 if (Beam_Coor.count(key) == 0) {
-                    std::cerr << "\n\nError! Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
+                    std::cerr << "\n\n\033[31mError!\033[0m Beam_Coor does not contain key: " << key << ". Aborting...\n\n";
                     return std::numeric_limits<double>::quiet_NaN();
                 }
 
@@ -337,7 +339,7 @@ void HipoLooper() {
                 double Vy_peak = Beam_Coor.at(key).second;
 
                 if (Vx_peak == 0. || Vy_peak == 0.) {
-                    std::cerr << "\n\nError! Vx_peak is for " << particle << " zero! Aborting...\n\n";
+                    std::cerr << "\n\n\033[31mError!\033[0m Vx_peak is for " << particle << " zero! Aborting...\n\n";
                     std::cerr << "CodeRun_status: " << CodeRun_status << " Vx_peak: " << Vx_peak << " Vy_peak: " << Vy_peak << std::endl;
                 }
 
@@ -357,7 +359,7 @@ void HipoLooper() {
 
                 auto it = Beam_Coordinates.find(key);
                 if (it == Beam_Coordinates.end()) {
-                    std::cerr << "\n\nError! Beam_Coordinates does not contain key: " << key << ". Aborting...\n\n";
+                    std::cerr << "\n\n\033[31mError!\033[0m Beam_Coordinates does not contain key: " << key << ". Aborting...\n\n";
                     return std::numeric_limits<double>::quiet_NaN();
                 }
 
@@ -4070,7 +4072,7 @@ void HipoLooper() {
 
 #pragma endregion
 
-        cout << "\033[36mTest number:\033[0m " << test_number++ << endl;
+        cout << "\033[36mTest number:\033[0m " << test_number++ << endl;  // test 2
 
         clas12ana clasAna;
 
