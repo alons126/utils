@@ -97,7 +97,7 @@ void HipoLooper() {
 
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_Ar40_target_zpos_test/reconhipo/*.hipo");
 
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_Ar_test/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_Ar_test/reconhipo/*.hipo");
     InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_test/reconhipo/*.hipo");
     InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_v2_S_test/reconhipo/*.hipo");
     InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_C_v2_L_test/reconhipo/*.hipo");
@@ -112,10 +112,6 @@ void HipoLooper() {
     // for (double start = 0.0; start < 40.0; start += 2.5) { theta_slices.push_back({start, start + 2.5}); }
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
-        int test_number = 0;
-
-        cout << "\033[36mTest number:\033[0m 1" << endl;  // test 1
-
 #pragma region Setup and configuration
 
         bool IsData = bt::FindSubstring(InputFiles.at(sample), "cache");
@@ -416,8 +412,6 @@ void HipoLooper() {
         //     return Vz_rec + (r / std::tan(theta_particle_rad)) * std::cos(phi_particle_rad - phi_beam_rad);
         // };
 
-        cout << "\033[36mTest number:\033[0m x1" << endl;
-
 #pragma region electron histograms
 
 #pragma region electron histograms - all sectors
@@ -589,8 +583,6 @@ void HipoLooper() {
         HistoList.push_back(h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut);
 
 #pragma endregion
-
-        cout << "\033[36mTest number:\033[0m x2" << endl;
 
 #pragma region electron histograms - sector 1
 
@@ -1755,8 +1747,6 @@ void HipoLooper() {
         HistoList.push_back(h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector6_1e_cut);
 
 #pragma endregion
-
-        cout << "\033[36mTest number:\033[0m x3" << endl;
 
 #pragma endregion
 
@@ -4156,8 +4146,6 @@ void HipoLooper() {
 
 #pragma endregion
 
-        cout << "\033[36mTest number:\033[0m 2" << endl;  // test 1
-
         clas12ana clasAna;
 
         clasAna.setVertexCorrCuts(true);  // making f_corr_vertexCuts = true
@@ -4180,8 +4168,6 @@ void HipoLooper() {
             if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
 
             if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
-
-            cout << "\033[36mTest number:\033[0m 2" << endl;  // test 2
 
             clasAna.Run(c12);
             auto electrons = clasAna.getByPid(11);
@@ -4231,8 +4217,6 @@ void HipoLooper() {
             bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
             auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
 
-            cout << "\033[36mTest number:\033[0m 4" << endl;  // test 4
-
             //  =======================================================================================================================================================================
             //  (e,e') (reco)
             //  =======================================================================================================================================================================
@@ -4246,15 +4230,11 @@ void HipoLooper() {
             h_Vz_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
             h_Vz_e_BC_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-            cout << "\033[36mTest number:\033[0m 4a" << endl;  // test 4a
-
             raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_1e_cut, weight);
 
             h_nphe_BC_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
             h_Edep_PCAL_VS_EC_BC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
-
-            cout << "\033[36mTest number:\033[0m 4b" << endl;  // test 4a
 
             h_SF_VS_Edep_PCAL_BC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
@@ -4263,11 +4243,7 @@ void HipoLooper() {
             h_SF_VS_Lw_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
             h_SF_VS_Lu_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-            cout << "\033[36mTest number:\033[0m 4c" << endl;  // test 4a
-
             h_E_PCALoP_e_VS_E_PCALoP_e_BC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-
-            cout << "\033[36mTest number:\033[0m 4d" << endl;  // test 4a
 
             if (electrons_det[0]->getSector() == 1) {
                 h_Vx_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -4393,13 +4369,9 @@ void HipoLooper() {
 
 #pragma endregion
 
-            cout << "\033[36mTest number:\033[0m 5" << endl;  // test 4b
-
             if (electrons.size() != 1) { continue; }
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
-
-            cout << "\033[36mTest number:\033[0m 5a" << endl;  // test 5
 
 #pragma region Electrons APID
 
@@ -4407,21 +4379,15 @@ void HipoLooper() {
             double Vy_e = electrons[0]->par()->getVy();
             double Vz_e = electrons[0]->par()->getVz();
 
-            cout << "\033[36mTest number:\033[0m 5b" << endl;  // test 5
-
             auto r_e = compute_r(Beam_Coordinates, "e");
             auto phi_beam_e_rad = compute_phi_beam_rad(Beam_Coordinates, "e");
             auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad, "e");
             // auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad);
 
-            cout << "\033[36mTest number:\033[0m 5c" << endl;  // test 5
-
             h_Vx_e_AC_1e_cut->Fill(Vx_e, weight);
             h_Vy_e_AC_1e_cut->Fill(Vy_e, weight);
             h_Vz_e_AC_1e_cut->Fill(Vz_e, weight);
             h_Vz_e_AC_zoomin_1e_cut->Fill(Vz_e, weight);
-
-            cout << "\033[36mTest number:\033[0m 5d" << endl;  // test 5
 
             h_corrected_Vz_e_AC_1e_cut->Fill(corrected_Vz_e, weight);
             h_corrected_Vz_e_AC_zoomin_1e_cut->Fill(corrected_Vz_e, weight);
@@ -4437,8 +4403,6 @@ void HipoLooper() {
             h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
             h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-            cout << "\033[36mTest number:\033[0m 5e" << endl;  // test 5
-
             raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_1e_cut, weight);
 
             h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
@@ -4453,8 +4417,6 @@ void HipoLooper() {
             h_SF_VS_Lu_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
             h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-
-            cout << "\033[36mTest number:\033[0m 5f" << endl;  // test 5
 
             if (electrons[0]->getSector() == 1) {
                 h_Vx_e_AC_sector1_1e_cut->Fill(Vx_e, weight);
@@ -4922,8 +4884,6 @@ void HipoLooper() {
             }
 #pragma endregion
 
-            cout << "\033[36mTest number:\033[0m 6" << endl;  // test 6
-
             //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region piminus BPID
@@ -5203,8 +5163,6 @@ void HipoLooper() {
             }
 
 #pragma endregion
-
-            cout << "\033[36mTest number:\033[0m 7" << endl;  // test 7
         }
 
         std::cout << "\033[33m" << "\n\nEvent loop finished..." << "\n\n" << "\033[0m";
