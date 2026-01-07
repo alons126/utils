@@ -4192,8 +4192,6 @@ void HipoLooper() {
 
             //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
 
-            cout << "\033[36mTest number:\033[0m 4a" << endl;  // test 4a
-
 #pragma region Electrons BPID
 
             h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -4201,11 +4199,15 @@ void HipoLooper() {
             h_Vz_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
             h_Vz_e_BC_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
+            cout << "\033[36mTest number:\033[0m 4a" << endl;  // test 4a
+
             raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_1e_cut, weight);
 
             h_nphe_BC_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
             h_Edep_PCAL_VS_EC_BC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+
+            cout << "\033[36mTest number:\033[0m 4b" << endl;  // test 4a
 
             h_SF_VS_Edep_PCAL_BC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
             h_SF_VS_P_e_BC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
@@ -4214,7 +4216,11 @@ void HipoLooper() {
             h_SF_VS_Lw_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
             h_SF_VS_Lu_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
+            cout << "\033[36mTest number:\033[0m 4c" << endl;  // test 4a
+
             h_E_PCALoP_e_VS_E_PCALoP_e_BC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+
+            cout << "\033[36mTest number:\033[0m 4d" << endl;  // test 4a
 
             if (electrons_det[0]->getSector() == 1) {
                 h_Vx_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
@@ -4340,13 +4346,13 @@ void HipoLooper() {
 
 #pragma endregion
 
-            cout << "\033[36mTest number:\033[0m 4b" << endl;  // test 4b
+            cout << "\033[36mTest number:\033[0m 5" << endl;  // test 4b
 
             if (electrons.size() != 1) { continue; }
 
             if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
-            cout << "\033[36mTest number:\033[0m 5" << endl;  // test 5
+            cout << "\033[36mTest number:\033[0m 5a" << endl;  // test 5
 
 #pragma region Electrons APID
 
