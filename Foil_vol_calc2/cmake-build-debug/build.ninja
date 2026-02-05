@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_Foil_vol_calc2: phony || .
 build CMakeFiles/Foil_vol_calc2.dir/main.cpp.o: CXX_COMPILER__Foil_vol_calc2_unscanned_Debug /Users/alon/Projects/utils/Foil_vol_calc2/main.cpp || cmake_object_order_depends_target_Foil_vol_calc2
   CONFIG = Debug
   DEP_FILE = CMakeFiles/Foil_vol_calc2.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk -fcolor-diagnostics
+  FLAGS = -g -std=gnu++20 -arch arm64 -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/Foil_vol_calc2.dir
   OBJECT_FILE_DIR = CMakeFiles/Foil_vol_calc2.dir
   TARGET_COMPILE_PDB = CMakeFiles/Foil_vol_calc2.dir/
@@ -68,7 +68,7 @@ build CMakeFiles/Foil_vol_calc2.dir/main.cpp.o: CXX_COMPILER__Foil_vol_calc2_uns
 
 build Foil_vol_calc2: CXX_EXECUTABLE_LINKER__Foil_vol_calc2_Debug CMakeFiles/Foil_vol_calc2.dir/main.cpp.o
   CONFIG = Debug
-  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk
+  FLAGS = -g -arch arm64
   OBJECT_DIR = CMakeFiles/Foil_vol_calc2.dir
   POST_BUILD = :
   PRE_LINK = :
