@@ -1,3 +1,10 @@
+# VSCode settings:
+.vscode/*
+
+# CLion settings:
+.idea/*
+
+# MacOS system files:
 .DS_Store
 ./Foil_vol_calc2/.DS_Store
 ./Foil_vol_calc2/cmake-build-debug/.DS_Store
@@ -36,3 +43,7 @@
 ./gst_looper/source/classes/clas12ana/.DS_Store
 ./gst_looper/source/functions/.DS_Store
 ./gst_looper/source/includes/.DS_Store
+
+# CMake build directories:
+cmake-build-debug/
+build/

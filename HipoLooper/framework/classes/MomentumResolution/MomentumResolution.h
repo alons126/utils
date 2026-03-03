@@ -46,7 +46,7 @@
     // Include CLAS12 libraries:
     #include "../../includes/clas12_include.h"
 
-using namespace utilities;
+namespace bt = basic_tools;
 
 class MomentumResolution {
    private:

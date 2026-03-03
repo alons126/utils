@@ -10,7 +10,7 @@
 // Constructor ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* Constructor */
-Directories::Directories(const std::string &plots_path, const bool Clear_Old_Directories) {
+Directories::Directories(const std::string& plots_path, const bool Clear_Old_Directories) {
     ClearOldDirectories = Clear_Old_Directories;
 
     std::string Plots_Folder = plots_path;         // Plots_Folder = Parent_Folder
@@ -23,7 +23,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma region /* Cut parameters plots directories */
 
 #pragma region /* Number of Photo-electrons (Nphe) plots directories */
-    for (string folders_name : Nphe_Daughter_Folders) { MakeDirectory(create_Nphe_Dir, Nphe_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Nphe_Daughter_Folders) { this->MakeDirectory(create_Nphe_Dir, Nphe_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Nphe_dir_map["Nphe_Parent_Directory"] = Plots_Folder + "/" + Nphe_Parent_Directory + "/";
 
@@ -45,7 +45,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Chi2 plots directories */
-    for (string folders_name : Chi2_Daughter_Folders) { MakeDirectory(create_chi2_Dir, Chi2_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Chi2_Daughter_Folders) { this->MakeDirectory(create_chi2_Dir, Chi2_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Chi2_dir_map["Chi2_Parent_Directory"] = Plots_Folder + "/" + Chi2_Parent_Directory + "/";
 
@@ -65,7 +65,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Vertex plots directories */
-    for (string folders_name : Vertex_Daughter_Folders) { MakeDirectory(create_Vertex_Dir, Vertex_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Vertex_Daughter_Folders) { this->MakeDirectory(create_Vertex_Dir, Vertex_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Vertex_dir_map["Vertex_Parent_Directory"] = Plots_Folder + "/" + Vertex_Parent_Directory + "/";
 
@@ -115,7 +115,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Sampling Fraction (SF) plots directories */
-    for (string folders_name : SF_Daughter_Folders) { MakeDirectory(create_SF_Dir, SF_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : SF_Daughter_Folders) { this->MakeDirectory(create_SF_Dir, SF_Parent_Directory, folders_name, false, Plots_Folder); }
 
     SF_dir_map["SF_Parent_Directory"] = Plots_Folder + "/" + SF_Parent_Directory + "/";
 
@@ -142,7 +142,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Edge cuts histograms plots directories */
-    for (string folders_name : ECAL_Fiducial_Daughter_Folders) { MakeDirectory(create_fiducial_Dir, ECAL_Fiducial_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : ECAL_Fiducial_Daughter_Folders) { this->MakeDirectory(create_fiducial_Dir, ECAL_Fiducial_Parent_Directory, folders_name, false, Plots_Folder); }
 
     ECAL_fiducial_dir_map["ECAL_Fiducial_Parent_Directory"] = Plots_Folder + "/" + ECAL_Fiducial_Parent_Directory + "/";
 
@@ -161,7 +161,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Momentum plots directories */
-    for (string folders_name : Momentum_Daughter_Folders) { MakeDirectory(create_Momentum_Dir, Momentum_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Momentum_Daughter_Folders) { this->MakeDirectory(create_Momentum_Dir, Momentum_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Momentum_dir_map["Momentum_Parent_Directory"] = Plots_Folder + "/" + Momentum_Parent_Directory + "/";
 
@@ -192,7 +192,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Reaction monitoring plots directories */
-    for (string folders_name : ReacMon_Daughter_Folders) { MakeDirectory(create_ReacMon_Dir, ReacMon_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : ReacMon_Daughter_Folders) { this->MakeDirectory(create_ReacMon_Dir, ReacMon_Parent_Directory, folders_name, false, Plots_Folder); }
 
     ReacMon_dir_map["ReacMon_Parent_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/";
 
@@ -230,10 +230,8 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
     ReacMon_dir_map["ReacMon_pFDpCD_Q2_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/05_Q2_plots_pFDpCD") + "/";
     ReacMon_dir_map["ReacMon_pFDpCD_xB_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/06_xB_plots_pFDpCD") + "/";
     ReacMon_dir_map["ReacMon_pFDpCD_theta_q_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/07_theta_q_plots_pFDpCD") + "/";
-    ReacMon_dir_map["ReacMon_pFDpCD_theta_q_N_Directory"] =
-        Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/08_theta_q_N_plots_pFDpCD") + "/";
-    ReacMon_dir_map["ReacMon_pFDpCD_theta_q_r_Directory"] =
-        Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/09_theta_q_r_plots_pFDpCD") + "/";
+    ReacMon_dir_map["ReacMon_pFDpCD_theta_q_N_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/08_theta_q_N_plots_pFDpCD") + "/";
+    ReacMon_dir_map["ReacMon_pFDpCD_theta_q_r_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "05_pFDpCD/09_theta_q_r_plots_pFDpCD") + "/";
 
     ReacMon_dir_map["ReacMon_nFDpCD_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD") + "/";
     ReacMon_dir_map["ReacMon_nFDpCD_P_miss_1N_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/01_P_miss_1N_plots_nFDpCD") + "/";
@@ -243,14 +241,12 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
     ReacMon_dir_map["ReacMon_nFDpCD_Q2_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/05_Q2_plots_nFDpCD") + "/";
     ReacMon_dir_map["ReacMon_nFDpCD_xB_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/06_xB_plots_nFDpCD") + "/";
     ReacMon_dir_map["ReacMon_nFDpCD_theta_q_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/07_theta_q_plots_nFDpCD") + "/";
-    ReacMon_dir_map["ReacMon_nFDpCD_theta_q_N_Directory"] =
-        Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/08_theta_q_N_plots_nFDpCD") + "/";
-    ReacMon_dir_map["ReacMon_nFDpCD_theta_q_r_Directory"] =
-        Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/09_theta_q_r_plots_nFDpCD") + "/";
+    ReacMon_dir_map["ReacMon_nFDpCD_theta_q_N_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/08_theta_q_N_plots_nFDpCD") + "/";
+    ReacMon_dir_map["ReacMon_nFDpCD_theta_q_r_Directory"] = Plots_Folder + "/" + ReacMon_Parent_Directory + "/" + Find(ReacMon_Daughter_Folders, "06_nFDpCD/09_theta_q_r_plots_nFDpCD") + "/";
 #pragma endregion
 
 #pragma region /* W plots directories */
-    for (string folders_name : W_Daughter_Folders) { MakeDirectory(create_W_Dir, W_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : W_Daughter_Folders) { this->MakeDirectory(create_W_Dir, W_Parent_Directory, folders_name, false, Plots_Folder); }
 
     W_dir_map["W_Parent_Directory"] = Plots_Folder + "/" + W_Parent_Directory + "/";
 
@@ -268,7 +264,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Beta plots directories */
-    for (string folders_name : Beta_Daughter_Folders) { MakeDirectory(create_Beta_Dir, Beta_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Beta_Daughter_Folders) { this->MakeDirectory(create_Beta_Dir, Beta_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Beta_dir_map["Beta_Parent_Directory"] = Plots_Folder + "/" + Beta_Parent_Directory + "/";
 
@@ -315,7 +311,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Angle plots directories */
-    for (string folders_name : Angle_Daughter_Folders) { MakeDirectory(create_Angle_Dir, Angle_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Angle_Daughter_Folders) { this->MakeDirectory(create_Angle_Dir, Angle_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Angle_dir_map["Angle_Parent_Directory"] = Plots_Folder + "/" + Angle_Parent_Directory + "/";
 
@@ -436,7 +432,9 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Momentum transfer directories */
-    for (string folders_name : Momentum_transfer_Daughter_Folders) { MakeDirectory(create_Momentum_transfer_Dir, Momentum_transfer_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Momentum_transfer_Daughter_Folders) {
+        this->MakeDirectory(create_Momentum_transfer_Dir, Momentum_transfer_Parent_Directory, folders_name, false, Plots_Folder);
+    }
 
     Momentum_transfer_dir_map["Momentum_transfer_Parent_Directory"] = Plots_Folder + "/" + Momentum_transfer_Parent_Directory + "/";
 
@@ -460,7 +458,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* E_e plots directories */
-    for (string folders_name : E_e_Daughter_Folders) { MakeDirectory(create_E_e_Dir, E_e_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : E_e_Daughter_Folders) { this->MakeDirectory(create_E_e_Dir, E_e_Parent_Directory, folders_name, false, Plots_Folder); }
 
     E_e_dir_map["E_e_Parent_Directory"] = Plots_Folder + "/" + E_e_Parent_Directory + "/";
 
@@ -495,7 +493,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* ETrans plots directories */
-    for (string folders_name : Omega_Daughter_Folders) { MakeDirectory(create_ETrans_Dir, Omega_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Omega_Daughter_Folders) { this->MakeDirectory(create_ETrans_Dir, Omega_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Omega_dir_map["Omega_Parent_Directory"] = Plots_Folder + "/" + Omega_Parent_Directory + "/";
 
@@ -581,7 +579,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Ecal plots directories */
-    for (string folders_name : Ecal_Daughter_Folders) { MakeDirectory(create_Ecal_Dir, Ecal_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Ecal_Daughter_Folders) { this->MakeDirectory(create_Ecal_Dir, Ecal_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Ecal_dir_map["Ecal_Parent_Directory"] = Plots_Folder + "/" + Ecal_Parent_Directory + "/";
 
@@ -642,7 +640,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* TKI plots directories */
-    for (string folders_name : TKI_Daughter_Folders) { MakeDirectory(create_TKI_Dir, TKI_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : TKI_Daughter_Folders) { this->MakeDirectory(create_TKI_Dir, TKI_Parent_Directory, folders_name, false, Plots_Folder); }
 
     TKI_dir_map["TKI_Parent_Directory"] = Plots_Folder + "/" + TKI_Parent_Directory + "/";
 
@@ -673,7 +671,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* ToF plots directories */
-    for (string folders_name : ToF_Daughter_Folders) { MakeDirectory(create_ToF_Dir, ToF_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : ToF_Daughter_Folders) { this->MakeDirectory(create_ToF_Dir, ToF_Parent_Directory, folders_name, false, Plots_Folder); }
 
     ToF_dir_map["ToF_Parent_Directory"] = Plots_Folder + "/" + ToF_Parent_Directory + "/";
 
@@ -684,7 +682,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Efficiency & Acceptance Correction plots directories */
-    for (string folders_name : Eff_and_ACorr_Daughter_Folders) { MakeDirectory(create_Eff_and_ACorr_Dir, Eff_and_ACorr_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Eff_and_ACorr_Daughter_Folders) { this->MakeDirectory(create_Eff_and_ACorr_Dir, Eff_and_ACorr_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Eff_and_ACorr_dir_map["Eff_and_ACorr_Parent_Directory"] = Plots_Folder + "/" + Eff_and_ACorr_Parent_Directory + "/";
 
@@ -752,7 +750,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Acceptance maps directories */
-    for (string folders_name : Hit_Maps_Daughter_Folders) { MakeDirectory(create_Acceptance_Maps_Dir, AMaps_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Hit_Maps_Daughter_Folders) { this->MakeDirectory(create_Acceptance_Maps_Dir, AMaps_Parent_Directory, folders_name, false, Plots_Folder); }
 
     AMaps_dir_map["AMaps_Parent_Directory"] = Plots_Folder + "/" + AMaps_Parent_Directory + "/";
 
@@ -764,7 +762,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Resolution plots directories */
-    for (string folders_name : Resolution_Daughter_Folders) { MakeDirectory(create_Resolution_Dir, Resolution_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Resolution_Daughter_Folders) { this->MakeDirectory(create_Resolution_Dir, Resolution_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Resolution_dir_map["Resolution_Parent_Directory"] = Plots_Folder + "/" + Resolution_Parent_Directory + "/";
 
@@ -792,7 +790,7 @@ Directories::Directories(const std::string &plots_path, const bool Clear_Old_Dir
 #pragma endregion
 
 #pragma region /* Multiplicity plots directories */
-    for (string folders_name : Multiplicity_Daughter_Folders) { MakeDirectory(create_Multiplicity_Dir, Multiplicity_Parent_Directory, folders_name, false, Plots_Folder); }
+    for (string folders_name : Multiplicity_Daughter_Folders) { this->MakeDirectory(create_Multiplicity_Dir, Multiplicity_Parent_Directory, folders_name, false, Plots_Folder); }
 
     Multiplicity_dir_map["Multiplicity_Parent_Directory"] = Plots_Folder + "/" + Multiplicity_Parent_Directory + "/";
 
@@ -829,22 +827,15 @@ string Directories::Find(vector<string> Vector, std::string String) {
 
 // MakeDirectory function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-void Directories::MakeDirectory(const bool &Create_Directory, const std::string &Plots_Parent_Folder, const std::string &Plots_Daughter_Folder, const bool &Clear_Parent_Folder_content,
-                                const std::string &Parent_Folder) {
-    std::string MakeDirectory = "mkdir -p " + Parent_Folder;
+void Directories::MakeDirectory(const bool& Create_Directory, const std::string& Plots_Parent_Folder, const std::string& Plots_Daughter_Folder, const bool& Clear_Parent_Folder_content,
+                                      const std::string& Parent_Folder) {
+    std::string MakeDir = "mkdir -p " + Parent_Folder;
     std::string RemoveDirectoryContent = "rm -r " + Parent_Folder + "/" + Plots_Parent_Folder + "/*";
 
     if (Create_Directory) {
         if (Clear_Parent_Folder_content) { system(RemoveDirectoryContent.c_str()); }
 
-        system((MakeDirectory + "/" + Plots_Parent_Folder + "/" + Plots_Daughter_Folder).c_str());
+        system((MakeDir + "/" + Plots_Parent_Folder + "/" + Plots_Daughter_Folder).c_str());
     }
-
-    //    if (Clear_Parent_Folder_content == true && Create_Directory == true) {
-    //        system(RemoveDirectoryContent.c_str());
-    //        system((MakeDirectory + "/" + Plots_Parent_Folder + "/" + Plots_Daughter_Folder).c_str());
-    //    } else if (Clear_Parent_Folder_content == false && Create_Directory == true) {
-    //        system((MakeDirectory + "/" + Plots_Parent_Folder + "/" + Plots_Daughter_Folder).c_str());
-    //    }
 }
 #endif  // DIRECTORIES_H
