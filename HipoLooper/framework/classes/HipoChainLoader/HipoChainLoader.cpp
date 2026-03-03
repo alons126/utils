@@ -67,7 +67,7 @@ std::pair<clas12root::HipoChain, HipoChainLoader::Result> HipoChainLoader::Build
         throw std::runtime_error(oss.str());
     }
 
-    return {std::move(chain), std::move(res)};
+    return std::pair<clas12root::HipoChain, HipoChainLoader::Result>(chain, res);
 }
 
 std::vector<std::string> HipoChainLoader::ExpandGlobFiles_(const std::string& pattern) {

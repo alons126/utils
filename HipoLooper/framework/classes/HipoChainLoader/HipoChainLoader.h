@@ -57,7 +57,7 @@ class HipoChainLoader {
         std::string log_path;
         bool append_log;
 
-        std::vector<int> reader_tags;
+        std::vector<long> reader_tags;
         bool turn_off_qadb;
 
         // If true, treat files with nRecords <= 0 as bad.
