@@ -27,6 +27,9 @@ HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, con
 HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& chain, const std::vector<std::string>& files, const std::string& SampleName) const {
     Result res;
     res.n_globbed = static_cast<int>(files.size());
+    Num_of_good_hipo_files = 0;
+    Num_of_bad_hipo_files = 0;
+    Total_num_of_hipo_files = 0;
 
     if (files.empty()) {
         std::ostringstream oss;

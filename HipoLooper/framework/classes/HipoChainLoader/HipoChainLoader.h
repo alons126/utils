@@ -116,7 +116,7 @@ class HipoChainLoader {
                                 const std::string& InputHipoFiles);
 
     // Getters for file counts ------------------------------------------------------------------------------------------------------------------------------------------
-    
+
     int GetNumOfGoodHipoFiles() const { return Num_of_good_hipo_files; }
     int GetNumOfBadHipoFiles() const { return Num_of_bad_hipo_files; }
     int GetTotalNumOfHipoFiles() const { return Total_num_of_hipo_files; }
@@ -124,9 +124,9 @@ class HipoChainLoader {
    private:
     Options opt_;
 
-    int Num_of_good_hipo_files = 0;
-    int Num_of_bad_hipo_files = 0;
-    int Total_num_of_hipo_files = 0;
+    mutable int Num_of_good_hipo_files = 0;
+    mutable int Num_of_bad_hipo_files = 0;
+    mutable int Total_num_of_hipo_files = 0;
 
     // ExpandGlobFiles function -----------------------------------------------------------------------------------------------------------------------------------------
 
