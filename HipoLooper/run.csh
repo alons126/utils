@@ -17,6 +17,12 @@ echo "${COLOR_START}HEAD:${COLOR_END}"
 git log -1 --oneline
 echo ""
 
+# Display the name of the current branch. The --show-current option is used to show only the name of the
+# current branch. This command is useful for quickly checking which branch you are currently on.
+echo "${COLOR_START}Branch:${COLOR_END}"
+git branch --show-current
+echo ""
+
 echo "\033[35m- Launching data-analysis code -------------------------------------\033[0m"
 echo ""
 
