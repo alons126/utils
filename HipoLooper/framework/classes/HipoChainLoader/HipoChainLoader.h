@@ -17,6 +17,7 @@
     #include <fstream>
     #include <iomanip>
     #include <iostream>
+    #include <memory>
     #include <sstream>
     #include <stdexcept>
     #include <string>
@@ -95,6 +96,15 @@ class HipoChainLoader {
     // Convenience overload that constructs and returns a heap-allocated chain.
     std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtr(const std::string& glob_pattern, const std::string& sample_name_for_log = "") const;
 
+    // Build a chain using the legacy run-list expansion logic, but still applying the fork-guard file validation.
+    Result BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir,
+                         const std::string& InputHipoFiles, const std::string& sample_name_for_log = "") const;
+
+    // Convenience overload that constructs and returns a heap-allocated chain.
+    std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtrFromList(const ExperimentParameters& Experiment, const std::string& sn, const std::string& RecoSamplePath,
+                                                                               const std::string& ReconHipoDir, const std::string& InputHipoFiles,
+                                                                               const std::string& sample_name_for_log = "") const;
+
     // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
 
     // This is the old function used to add runs to the HipoChain
@@ -124,6 +134,13 @@ class HipoChainLoader {
     // WriteSkippedLog function -----------------------------------------------------------------------------------------------------------------------------------------
 
     void WriteSkippedLog(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const;
+
+    // Internal: shared implementation that takes an already-expanded file list.
+    Result BuildFromFiles_(clas12root::HipoChain& chain, const std::vector<std::string>& files, const std::string& sample_name_for_log) const;
+
+    // Internal: reproduce AddToHipoChainFromList decision logic, but return input glob patterns instead of mutating the chain.
+    static std::vector<std::string> MakeInputGlobsFromList_(const ExperimentParameters& Experiment, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir,
+                                                            const std::string& InputHipoFiles);
 };
 
 #endif  // HIPOCHAINLOADER_H
