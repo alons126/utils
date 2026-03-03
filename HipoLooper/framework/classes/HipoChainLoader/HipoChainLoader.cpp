@@ -158,7 +158,8 @@ void HipoChainLoader::WriteSkippedLog_(const std::vector<std::string>& skipped, 
 
 #pragma region /* AddToHipoChain function */
 // This is the old function used to add runs to the HipoChain
-void HipoChainLoader::AddToHipoChain(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
+void HipoChainLoader::AddToHipoChain(const ExperimentParameters& Experiment, HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir,
+                                     const std::string& InputHipoFiles) {
     bool PrintOut = true;
 
     if (sampleType == DATA_TYPE) {
@@ -214,29 +215,35 @@ void HipoChainLoader::AddToHipoChain(HipoChain& chain, const std::string& sn, co
 // AddToHipoChainFromList function --------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* AddToHipoChainFromList function */
-void HipoChainLoader::AddToHipoChainFromList(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
+void HipoChainLoader::AddToHipoChainFromList(const ExperimentParameters& Experiment, HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath,
+                                             const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
     const bool PrintOut = true;
 
     // Determine the effective sample type as robustly as possible.
     // The legacy implementation keyed off DataSample/SimulationSample, which are not guaranteed to be set in all code paths.
     // Here we prefer the configured `sampleType`, and fall back to inference from `sn` and `RecoSamplePath` if needed.
     auto infer_sample_type = [&](void) -> int {
-        if (sampleType == DATA_TYPE || sampleType == GENIE_SIMULATION_TYPE || sampleType == UNIFORM_TYPE) { return sampleType; }
+        if (Experiment.GetSampleType() == ExperimentParameters::DATA_TYPE || Experiment.GetSampleType() == ExperimentParameters::GENIE_SIMULATION_TYPE ||
+            Experiment.GetSampleType() == ExperimentParameters::UNIFORM_TYPE) {
+            return Experiment.GetSampleType();
+        }
 
         // Fallback: infer from `sn`
-        if (bt::FindSubstring(sn, "_data_") || bt::FindSubstring(sn, "_data")) { return DATA_TYPE; }
+        if (bt::FindSubstring(sn, "_data_") || bt::FindSubstring(sn, "_data")) { return ExperimentParameters::DATA_TYPE; }
         if (bt::FindSubstring(sn, "_simulation_") || bt::FindSubstring(sn, "GENIE") || bt::FindSubstring(sn, "G18") || bt::FindSubstring(sn, "GEM21") || bt::FindSubstring(sn, "SuSa") ||
             bt::FindSubstring(sn, "Uniform")) {
             // Note: "Uniform" here is used as a proxy for uniform samples.
-            return (bt::FindSubstring(sn, "Uniform")) ? UNIFORM_TYPE : GENIE_SIMULATION_TYPE;
+            return (bt::FindSubstring(sn, "Uniform")) ? ExperimentParameters::UNIFORM_TYPE : ExperimentParameters::GENIE_SIMULATION_TYPE;
         }
 
         // Fallback: infer from `RecoSamplePath`
-        if (bt::FindSubstring(RecoSamplePath, "clas12/rg-m/production") || (bt::FindSubstring(RecoSamplePath, "rg-m") && bt::FindSubstring(RecoSamplePath, "dst"))) { return DATA_TYPE; }
-        if (bt::FindSubstring(RecoSamplePath, "GENIE_Reco_Samples")) { return GENIE_SIMULATION_TYPE; }
-        if (bt::FindSubstring(RecoSamplePath, "Uniform")) { return UNIFORM_TYPE; }
+        if (bt::FindSubstring(RecoSamplePath, "clas12/rg-m/production") || (bt::FindSubstring(RecoSamplePath, "rg-m") && bt::FindSubstring(RecoSamplePath, "dst"))) {
+            return ExperimentParameters::DATA_TYPE;
+        }
+        if (bt::FindSubstring(RecoSamplePath, "GENIE_Reco_Samples")) { return ExperimentParameters::GENIE_SIMULATION_TYPE; }
+        if (bt::FindSubstring(RecoSamplePath, "Uniform")) { return ExperimentParameters::UNIFORM_TYPE; }
 
-        return UNKNOWN_TYPE;
+        return ExperimentParameters::UNKNOWN_TYPE;
     };
 
     const int effectiveType = infer_sample_type();
@@ -258,14 +265,14 @@ void HipoChainLoader::AddToHipoChainFromList(HipoChain& chain, const std::string
     };
 
     // Simulation-like samples: the caller should provide an explicit glob.
-    if (effectiveType == GENIE_SIMULATION_TYPE || effectiveType == UNIFORM_TYPE) {
+    if (effectiveType == ExperimentParameters::GENIE_SIMULATION_TYPE || effectiveType == ExperimentParameters::UNIFORM_TYPE) {
         chain.Add(InputHipoFiles.c_str());
         if (PrintOut) { std::cout << env::SYSTEM_COLOR << InputHipoFiles << " directory added to HipoChain!\n\n" << env::RESET_COLOR; }
         return;
     }
 
     // Data samples
-    if (effectiveType == DATA_TYPE) {
+    if (effectiveType == ExperimentParameters::DATA_TYPE) {
         const std::vector<std::string>* runs = nullptr;
 
         // Allow names that include a run suffix (e.g. "..._run_015186").

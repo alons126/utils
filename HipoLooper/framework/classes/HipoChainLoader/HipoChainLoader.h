@@ -28,9 +28,8 @@
     #include "../../namespaces/general_utilities/utilities.h"
     #include "../../namespaces/setup/debugging.h"
 
-    // Include libraries:
-    #include "../../namespaces/general_utilities/utilities.h"
-    #include "../../namespaces/setup/debugging.h"
+    // Include classes:
+    #include "../../classes/ExperimentParameters.cpp"
 
     // Include CLAS12 libraries:
     #include "../../includes/clas12_include.h"
@@ -99,11 +98,13 @@ class HipoChainLoader {
     // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
 
     // This is the old function used to add runs to the HipoChain
-    void AddToHipoChain(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles);
+    void AddToHipoChain(const ExperimentParameters& Experiment, HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir,
+                        const std::string& InputHipoFiles);
 
     // AddToHipoChainFromList function ----------------------------------------------------------------------------------------------------------------------------------
 
-    void AddToHipoChainFromList(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles);
+    void AddToHipoChainFromList(const ExperimentParameters& Experiment, HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir,
+                                const std::string& InputHipoFiles);
 
    private:
     Options opt_;

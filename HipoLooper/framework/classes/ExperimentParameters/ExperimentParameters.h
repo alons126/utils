@@ -205,6 +205,18 @@ class ExperimentParameters : public TargetParameters {
     // Getter = functions
     // ==================================================================================================================================================================
 
+    // GetSampleType function -------------------------------------------------------------------------------------------------------------------------------------------
+
+    ExperimentParameters::SampleType GetSampleType() const { return sampleType; }
+
+    // GetGENIETune function --------------------------------------------------------------------------------------------------------------------------------------------
+
+    ExperimentParameters::GENIETune GetGENIETune() const { return genieTune; }
+
+    // GetQ2Cut function ------------------------------------------------------------------------------------------------------------------------------------------------
+
+    ExperimentParameters::Q2Cut GetQ2Cut() const { return Q2cut; }
+
     // IsSimulationSample function --------------------------------------------------------------------------------------------------------------------------------------
 
     bool IsSimulationSample() const { return (sampleType == GENIE_SIMULATION_TYPE || sampleType == UNIFORM_TYPE); };
