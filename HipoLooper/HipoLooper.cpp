@@ -104,6 +104,11 @@ void HipoLooper() {
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_v2_S_test/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_C_v2_L_test/reconhipo/*.hipo");
 
+    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_C_S");
+    // InputFiles.push_back(BaseDir + "/C12/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_C_S");
+    // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_C_L");
+    // InputFiles.push_back(BaseDir + "/C12/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_C_L");
+
     InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
     // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
