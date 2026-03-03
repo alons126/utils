@@ -4,6 +4,13 @@
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 60
 
+#include <glob.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#include <cerrno>
+#include <cstring>
 #include <fstream>
 #include <unordered_set>
 
@@ -51,6 +58,62 @@ namespace am = analysis_math;
 namespace raf = reco_analysis_functions;
 namespace hf = histogram_functions;
 namespace vc = variable_correctors;
+
+// Expand a filesystem glob (e.g. "/path/*.hipo") into a concrete list of files.
+// Returns an empty vector if no files match.
+static std::vector<std::string> ExpandGlobFiles(const std::string& pattern) {
+    std::vector<std::string> files;
+
+    glob_t glob_result;
+    std::memset(&glob_result, 0, sizeof(glob_result));
+
+    const int ret = ::glob(pattern.c_str(), GLOB_TILDE, nullptr, &glob_result);
+    if (ret == 0) {
+        files.reserve(glob_result.gl_pathc);
+        for (size_t i = 0; i < glob_result.gl_pathc; ++i) {
+            if (glob_result.gl_pathv[i]) { files.emplace_back(glob_result.gl_pathv[i]); }
+        }
+    }
+
+    ::globfree(&glob_result);
+
+    std::sort(files.begin(), files.end());
+    return files;
+}
+
+// Check whether a HIPO file can be opened and has a positive record count.
+// This is done in a forked child process so that hard failures (assert/abort)
+// do not kill the parent process.
+static bool IsGoodHipoFile_ForkGuard(const std::string& file) {
+    const pid_t pid = ::fork();
+    if (pid < 0) {
+        // If fork failed, be conservative and treat as bad.
+        return false;
+    }
+
+    if (pid == 0) {
+        // Child process: probe the file.
+        // Any abort/assert will only kill the child.
+        int code = 1;
+        try {
+            hipo::reader r;
+            r.open(file.c_str());
+            const long nrec = r.getNRecords();
+            code = (nrec > 0) ? 0 : 1;
+        } catch (...) { code = 1; }
+        _exit(code);
+    }
+
+    // Parent process: wait for child and interpret result.
+    int status = 0;
+    const pid_t w = ::waitpid(pid, &status, 0);
+    if (w < 0) { return false; }
+
+    if (WIFEXITED(status)) { return WEXITSTATUS(status) == 0; }
+
+    // Child died due to a signal (e.g. abort/assert/segfault) => bad file.
+    return false;
+}
 
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
@@ -214,43 +277,57 @@ void HipoLooper() {
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
         TString Beam_energy_TString = Ebeam_status_1;
 
+        // ---------------------------------------------------------------------
+        // Build the chain from a glob, but probe each file first.
+        // We intentionally do NOT call HipoChain::GetNRecords() here, because it
+        // opens all files in-process and can hit hard abort/assert failures.
+        // Instead, we probe each file in a forked child process so a bad file
+        // cannot crash this job.
+        // ---------------------------------------------------------------------
+        const std::vector<std::string> expanded_files = ExpandGlobFiles(InputFiles.at(sample));
+        if (expanded_files.empty()) {
+            std::cerr << "\n\n\033[31mError!\033[0m No files matched glob: " << InputFiles.at(sample) << "\n\n";
+            exit(1);
+        }
+
+        std::vector<std::string> skipped;
+        skipped.reserve(expanded_files.size());
+
         clas12root::HipoChain chain;
-        chain.Add(InputFiles.at(sample));
+        for (const auto& f : expanded_files) {
+            if (IsGoodHipoFile_ForkGuard(f)) {
+                chain.Add(f);
+            } else {
+                skipped.push_back(f);
+            }
+        }
+
         chain.SetReaderTags({0});
         chain.db()->turnOffQADB();
         auto config_c12 = chain.GetC12Reader();
         const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
 
-        //
-        std::vector<std::string> files_before;
-        files_before.reserve(chain.GetNFiles());
-        for (int i = 0; i < chain.GetNFiles(); ++i) { files_before.emplace_back(chain.GetFileName(i).Data()); }
-
-        // This call removes bad files internally (getNRecords() <= 0)
-        (void)chain.GetNRecords();
-
-        std::unordered_set<std::string> files_after_set;
-        files_after_set.reserve(chain.GetNFiles() * 2 + 1);
-        for (int i = 0; i < chain.GetNFiles(); ++i) { files_after_set.insert(chain.GetFileName(i).Data()); }
-
-        std::vector<std::string> skipped;
-        for (const auto& f : files_before) {
-            if (files_after_set.find(f) == files_after_set.end()) { skipped.push_back(f); }
-        }
-
         if (!skipped.empty()) {
             const std::string logPath = OutputDir + "/skipped_hipo_files.txt";
             std::ofstream out(logPath, std::ios::app);
-            out << "Sample: " << SampleName << "\n";
-            out << "Skipped bad HIPO files (removed from chain):\n";
-            for (const auto& f : skipped) out << "  " << f << "\n";
-            out << "\n";
+            if (!out) {
+                std::cerr << "\n\n\033[31mError!\033[0m Could not open skipped-file log: " << logPath << "\n\n";
+            } else {
+                out << "Sample: " << SampleName << "\n";
+                out << "Skipped bad HIPO files (fork-guard probe failed):\n";
+                for (const auto& f : skipped) out << "  " << f << "\n";
+                out << "\n";
+            }
 
             std::cout << "\033[33m\nSkipped " << skipped.size() << " bad HIPO file(s). Logged to:\033[0m " << logPath << "\n";
             for (const auto& f : skipped) { std::cout << "\033[33m  skipped:\033[0m " << f << "\n"; }
             std::cout << std::endl;
         }
-        //
+
+        if (chain.GetNFiles() == 0) {
+            std::cerr << "\n\n\033[31mError!\033[0m After filtering bad files, chain has 0 files. Aborting.\n\n";
+            exit(1);
+        }
 
 #pragma endregion
 
@@ -4209,1027 +4286,1021 @@ void HipoLooper() {
         // bool SkipFile = false;
 
         while (chain.Next() == true) {
-        // while (true) {
-        //     try {
-        //         // if (SkipFile) {
-        //         //     if (chain.ReallyNextFile()) {
-        //         //         SkipFile = false;  // reset flag after skipping
-        //         //         continue;
-        //         //     } else {
-        //         //         break;
-        //         //     }
-        //         // }
+            // while (true) {
+            //     try {
+            //         // if (SkipFile) {
+            //         //     if (chain.ReallyNextFile()) {
+            //         //         SkipFile = false;  // reset flag after skipping
+            //         //         continue;
+            //         //     } else {
+            //         //         break;
+            //         //     }
+            //         // }
 
 #pragma region loop content
 
 #pragma region Loop setup
-                // Display completed:
-                ++NumOfEvents;
-                if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m" << "\n\n" << NumOfEvents / 1000000 << " million completed\n\n" << "\033[0m"; }
-                if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
+            // Display completed:
+            ++NumOfEvents;
+            if ((NumOfEvents % 1000000) == 0) { std::cerr << "\033[33m" << "\n\n" << NumOfEvents / 1000000 << " million completed\n\n" << "\033[0m"; }
+            if ((NumOfEvents % 100000) == 0) { std::cerr << "\n...\n"; }
 
-                if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
+            if ((ApplyLimiter && NumOfEvents > Limiter)) { break; }
 
-                clasAna.Run(c12);
-                auto electrons = clasAna.getByPid(11);
-                auto protons = clasAna.getByPid(2212);
-                auto piplus = clasAna.getByPid(211);
-                auto piminus = clasAna.getByPid(-211);
+            clasAna.Run(c12);
+            auto electrons = clasAna.getByPid(11);
+            auto protons = clasAna.getByPid(2212);
+            auto piplus = clasAna.getByPid(211);
+            auto piminus = clasAna.getByPid(-211);
 
-                // get particles by type
-                auto allParticles = c12->getDetParticles();
-                auto electrons_det = c12->getByID(11);
-                auto piplus_det = c12->getByID(211);
-                auto piminus_det = c12->getByID(-211);
+            // get particles by type
+            auto allParticles = c12->getDetParticles();
+            auto electrons_det = c12->getByID(11);
+            auto piplus_det = c12->getByID(211);
+            auto piminus_det = c12->getByID(-211);
 
-                if (electrons_det.size() > 0) { ++NumOfEvents_wAny_e_det; }
-                if (electrons_det.size() == 1) { ++NumOfEvents_wOne_e_det; }
-                if (electrons.size() > 0) { ++NumOfEvents_wAny_e; }
-                if (electrons.size() == 1) { ++NumOfEvents_wOne_e; }
+            if (electrons_det.size() > 0) { ++NumOfEvents_wAny_e_det; }
+            if (electrons_det.size() == 1) { ++NumOfEvents_wOne_e_det; }
+            if (electrons.size() > 0) { ++NumOfEvents_wAny_e; }
+            if (electrons.size() == 1) { ++NumOfEvents_wOne_e; }
 
-                if (electrons_det.size() != 1) { continue; }
+            if (electrons_det.size() != 1) { continue; }
 
-                double weight = 1;
+            double weight = 1;
 
-                double starttime = c12->event()->getStartTime();
+            double starttime = c12->event()->getStartTime();
 
-                TVector3 P_b(0, 0, Ebeam);
+            TVector3 P_b(0, 0, Ebeam);
 
-                TVector3 reco_P_e;
-                reco_P_e.SetMagThetaPhi(electrons_det[0]->getP(), electrons_det[0]->getTheta(), electrons_det[0]->getPhi());
+            TVector3 reco_P_e;
+            reco_P_e.SetMagThetaPhi(electrons_det[0]->getP(), electrons_det[0]->getTheta(), electrons_det[0]->getPhi());
 
-                double vtz_e_det = electrons_det[0]->par()->getVz();
+            double vtz_e_det = electrons_det[0]->par()->getVz();
 
-                TVector3 P_q = P_b - reco_P_e;
+            TVector3 P_q = P_b - reco_P_e;
 
-                double nu = Ebeam - reco_P_e.Mag();
-                double QSq = P_q.Mag2() - (nu * nu);
-                double xB = QSq / (2 * m_n * nu);
-                double WSq = (m_n * m_n) - QSq + (2 * nu * m_n);
-                double theta_e = reco_P_e.Theta() * 180 / M_PI;
-                double EoP_e = (electrons_det[0]->cal(clas12::PCAL)->getEnergy() + electrons_det[0]->cal(ECIN)->getEnergy() + electrons_det[0]->cal(ECOUT)->getEnergy()) / reco_P_e.Mag();
-                double E_PCALoP_e = electrons_det[0]->cal(clas12::PCAL)->getEnergy() / reco_P_e.Mag();
-                double E_ECINoP_e = electrons_det[0]->cal(clas12::ECIN)->getEnergy() / reco_P_e.Mag();
-                double Edep_PCAL = electrons_det[0]->cal(clas12::PCAL)->getEnergy();
-                double Edep_EC = electrons_det[0]->cal(clas12::ECIN)->getEnergy() + electrons_det[0]->cal(clas12::ECOUT)->getEnergy();
+            double nu = Ebeam - reco_P_e.Mag();
+            double QSq = P_q.Mag2() - (nu * nu);
+            double xB = QSq / (2 * m_n * nu);
+            double WSq = (m_n * m_n) - QSq + (2 * nu * m_n);
+            double theta_e = reco_P_e.Theta() * 180 / M_PI;
+            double EoP_e = (electrons_det[0]->cal(clas12::PCAL)->getEnergy() + electrons_det[0]->cal(ECIN)->getEnergy() + electrons_det[0]->cal(ECOUT)->getEnergy()) / reco_P_e.Mag();
+            double E_PCALoP_e = electrons_det[0]->cal(clas12::PCAL)->getEnergy() / reco_P_e.Mag();
+            double E_ECINoP_e = electrons_det[0]->cal(clas12::ECIN)->getEnergy() / reco_P_e.Mag();
+            double Edep_PCAL = electrons_det[0]->cal(clas12::PCAL)->getEnergy();
+            double Edep_EC = electrons_det[0]->cal(clas12::ECIN)->getEnergy() + electrons_det[0]->cal(clas12::ECOUT)->getEnergy();
 
-                bool ElectronInPCAL = (electrons_det[0]->cal(clas12::PCAL)->getDetector() == 7);                              // PCAL hit
-                bool ElectronInECIN = (electrons_det[0]->cal(clas12::ECIN)->getDetector() == 7);                              // ECIN hit
-                bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
-                auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
+            bool ElectronInPCAL = (electrons_det[0]->cal(clas12::PCAL)->getDetector() == 7);                              // PCAL hit
+            bool ElectronInECIN = (electrons_det[0]->cal(clas12::ECIN)->getDetector() == 7);                              // ECIN hit
+            bool ElectronInECOUT = (electrons_det[0]->cal(clas12::ECOUT)->getDetector() == 7);                            // ECOUT hit
+            auto Electron_ECAL_detlayer = ElectronInPCAL ? clas12::PCAL : ElectronInECIN ? clas12::ECIN : clas12::ECOUT;  // find first layer of hit
 
 #pragma endregion
 
-                //  =======================================================================================================================================================================
-                //  (e,e') (reco)
-                //  =======================================================================================================================================================================
+            //  =======================================================================================================================================================================
+            //  (e,e') (reco)
+            //  =======================================================================================================================================================================
 
-                //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
+            //  - Electron cuts -----------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region Electrons BPID
 
-                h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                h_Vy_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                h_Vz_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                h_Vz_e_BC_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vx_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+            h_Vy_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+            h_Vz_e_BC_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            h_Vz_e_BC_zoomin_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_1e_cut, weight);
+            raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_1e_cut, weight);
 
-                h_nphe_BC_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+            h_nphe_BC_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                h_Edep_PCAL_VS_EC_BC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+            h_Edep_PCAL_VS_EC_BC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                h_SF_VS_Edep_PCAL_BC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                h_SF_VS_P_e_BC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+            h_SF_VS_Edep_PCAL_BC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+            h_SF_VS_P_e_BC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                h_SF_VS_Lv_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                h_SF_VS_Lw_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                h_SF_VS_Lu_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+            h_SF_VS_Lv_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+            h_SF_VS_Lw_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+            h_SF_VS_Lu_BC_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                h_E_PCALoP_e_VS_E_PCALoP_e_BC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            h_E_PCALoP_e_VS_E_PCALoP_e_BC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
 
-                if (electrons_det[0]->getSector() == 1) {
-                    h_Vx_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                    h_Vy_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                    h_Vz_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                    h_Vz_e_BC_zoomin_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+            if (electrons_det[0]->getSector() == 1) {
+                h_Vx_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+                h_Vy_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+                h_Vz_e_BC_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_Vz_e_BC_zoomin_sector1_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                    raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector1_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector1_1e_cut, weight);
 
-                    h_nphe_BC_sector1_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_BC_sector1_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_BC_sector1_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_BC_sector1_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_BC_sector1_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_BC_sector1_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_BC_sector1_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_BC_sector1_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_BC_sector1_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector1_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons_det[0]->getSector() == 2) {
-                    h_Vx_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                    h_Vy_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                    h_Vz_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                    h_Vz_e_BC_zoomin_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector1_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons_det[0]->getSector() == 2) {
+                h_Vx_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+                h_Vy_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+                h_Vz_e_BC_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_Vz_e_BC_zoomin_sector2_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                    raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector2_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector2_1e_cut, weight);
 
-                    h_nphe_BC_sector2_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_BC_sector2_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_BC_sector2_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_BC_sector2_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_BC_sector2_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_BC_sector2_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_BC_sector2_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_BC_sector2_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_BC_sector2_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector2_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons_det[0]->getSector() == 3) {
-                    h_Vx_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                    h_Vy_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                    h_Vz_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                    h_Vz_e_BC_zoomin_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector2_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons_det[0]->getSector() == 3) {
+                h_Vx_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+                h_Vy_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+                h_Vz_e_BC_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_Vz_e_BC_zoomin_sector3_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                    raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector3_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector3_1e_cut, weight);
 
-                    h_nphe_BC_sector3_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_BC_sector3_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_BC_sector3_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_BC_sector3_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_BC_sector3_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_BC_sector3_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_BC_sector3_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_BC_sector3_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_BC_sector3_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector3_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons_det[0]->getSector() == 4) {
-                    h_Vx_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                    h_Vy_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                    h_Vz_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                    h_Vz_e_BC_zoomin_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector3_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons_det[0]->getSector() == 4) {
+                h_Vx_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+                h_Vy_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+                h_Vz_e_BC_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_Vz_e_BC_zoomin_sector4_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                    raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector4_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector4_1e_cut, weight);
 
-                    h_nphe_BC_sector4_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_BC_sector4_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_BC_sector4_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_BC_sector4_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_BC_sector4_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_BC_sector4_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_BC_sector4_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_BC_sector4_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_BC_sector4_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector4_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons_det[0]->getSector() == 5) {
-                    h_Vx_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                    h_Vy_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                    h_Vz_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                    h_Vz_e_BC_zoomin_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector4_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons_det[0]->getSector() == 5) {
+                h_Vx_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+                h_Vy_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+                h_Vz_e_BC_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_Vz_e_BC_zoomin_sector5_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                    raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector5_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector5_1e_cut, weight);
 
-                    h_nphe_BC_sector5_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_BC_sector5_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_SF_VS_Edep_PCAL_BC_sector5_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_Edep_PCAL_VS_EC_BC_sector5_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_SF_VS_Edep_PCAL_BC_sector5_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_Edep_PCAL_VS_EC_BC_sector5_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_P_e_BC_sector5_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_P_e_BC_sector5_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_BC_sector5_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_BC_sector5_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_BC_sector5_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_BC_sector5_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_BC_sector5_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_BC_sector5_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector5_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons_det[0]->getSector() == 6) {
-                    h_Vx_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
-                    h_Vy_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
-                    h_Vz_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
-                    h_Vz_e_BC_zoomin_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector5_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons_det[0]->getSector() == 6) {
+                h_Vx_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVx(), weight);
+                h_Vy_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVy(), weight);
+                h_Vz_e_BC_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
+                h_Vz_e_BC_zoomin_sector6_1e_cut->Fill(electrons_det[0]->par()->getVz(), weight);
 
-                    raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector6_1e_cut, weight);
+                raf::fillDCdebug(electrons_det[0], h_dc_e_hit_map_BC_sector6_1e_cut, weight);
 
-                    h_nphe_BC_sector6_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_BC_sector6_1e_cut->Fill(electrons_det[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_BC_sector6_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_BC_sector6_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_BC_sector6_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_BC_sector6_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_BC_sector6_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_BC_sector6_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_BC_sector6_1e_cut->Fill(electrons_det[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector6_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                }
+                h_E_PCALoP_e_VS_E_PCALoP_e_BC_sector6_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            }
 
 #pragma endregion
 
-                if (electrons.size() != 1) { continue; }
+            if (electrons.size() != 1) { continue; }
 
-                if (electrons[0]->par()->getBeta() > 1.2) { continue; }
+            if (electrons[0]->par()->getBeta() > 1.2) { continue; }
 
 #pragma region Electrons APID
 
-                double Vx_e = electrons[0]->par()->getVx();
-                double Vy_e = electrons[0]->par()->getVy();
-                double Vz_e = electrons[0]->par()->getVz();
+            double Vx_e = electrons[0]->par()->getVx();
+            double Vy_e = electrons[0]->par()->getVy();
+            double Vz_e = electrons[0]->par()->getVz();
 
-                auto r_e = compute_r(Beam_Coordinates, "e");
-                auto phi_beam_e_rad = compute_phi_beam_rad(Beam_Coordinates, "e");
-                auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad, "e");
-                // auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad);
+            auto r_e = compute_r(Beam_Coordinates, "e");
+            auto phi_beam_e_rad = compute_phi_beam_rad(Beam_Coordinates, "e");
+            auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad, "e");
+            // auto corrected_Vz_e = correct_Vz(Vz_e, r_e, electrons[0]->getTheta(), electrons[0]->getPhi(), phi_beam_e_rad);
 
-                h_Vx_e_AC_1e_cut->Fill(Vx_e, weight);
-                h_Vy_e_AC_1e_cut->Fill(Vy_e, weight);
-                h_Vz_e_AC_1e_cut->Fill(Vz_e, weight);
-                h_Vz_e_AC_zoomin_1e_cut->Fill(Vz_e, weight);
+            h_Vx_e_AC_1e_cut->Fill(Vx_e, weight);
+            h_Vy_e_AC_1e_cut->Fill(Vy_e, weight);
+            h_Vz_e_AC_1e_cut->Fill(Vz_e, weight);
+            h_Vz_e_AC_zoomin_1e_cut->Fill(Vz_e, weight);
 
-                h_corrected_Vz_e_AC_1e_cut->Fill(corrected_Vz_e, weight);
-                h_corrected_Vz_e_AC_zoomin_1e_cut->Fill(corrected_Vz_e, weight);
+            h_corrected_Vz_e_AC_1e_cut->Fill(corrected_Vz_e, weight);
+            h_corrected_Vz_e_AC_zoomin_1e_cut->Fill(corrected_Vz_e, weight);
 
-                h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+            h_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+            h_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
 
-                h_corrected_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
-                h_corrected_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+            h_corrected_Vz_VS_phi_e_AC_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+            h_corrected_Vz_VS_theta_e_AC_1e_cut->Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
 
-                h_Vz_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                h_Vz_e_AC_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+            h_Vz_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+            h_Vz_e_AC_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+            h_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+            h_corrected_Vz_VS_phi_e_AC_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_1e_cut, weight);
+            raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_1e_cut, weight);
 
-                h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+            h_nphe_AC_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                h_Edep_PCAL_VS_EC_AC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+            h_Edep_PCAL_VS_EC_AC_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                h_SF_VS_Edep_PCAL_AC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                h_SF_VS_P_e_AC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+            h_SF_VS_Edep_PCAL_AC_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+            h_SF_VS_P_e_AC_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                h_SF_VS_Lv_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                h_SF_VS_Lw_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                h_SF_VS_Lu_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+            h_SF_VS_Lv_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+            h_SF_VS_Lw_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+            h_SF_VS_Lu_AC_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            h_E_PCALoP_e_VS_E_PCALoP_e_AC_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
 
-                if (electrons[0]->getSector() == 1) {
-                    h_Vx_e_AC_sector1_1e_cut->Fill(Vx_e, weight);
-                    h_Vy_e_AC_sector1_1e_cut->Fill(Vy_e, weight);
-                    h_Vz_e_AC_sector1_1e_cut->Fill(Vz_e, weight);
-                    h_Vz_e_AC_zoomin_sector1_1e_cut->Fill(Vz_e, weight);
+            if (electrons[0]->getSector() == 1) {
+                h_Vx_e_AC_sector1_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector1_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector1_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector1_1e_cut->Fill(Vz_e, weight);
 
-                    h_corrected_Vz_e_AC_sector1_1e_cut->Fill(corrected_Vz_e, weight);
-                    h_corrected_Vz_e_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_sector1_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_e, weight);
 
-                    h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    // h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                // h_Vz_VS_phi_e_AC_zoomin_sector1_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                    h_Vz_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                    h_Vz_e_AC_sector1_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                    h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+                h_Vz_e_AC_sector1_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector1_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                    raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector1_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector1_1e_cut, weight);
 
-                    h_nphe_AC_sector1_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_AC_sector1_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_AC_sector1_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_AC_sector1_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_AC_sector1_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_AC_sector1_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_AC_sector1_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_AC_sector1_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_AC_sector1_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector1_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons[0]->getSector() == 2) {
-                    h_Vx_e_AC_sector2_1e_cut->Fill(Vx_e, weight);
-                    h_Vy_e_AC_sector2_1e_cut->Fill(Vy_e, weight);
-                    h_Vz_e_AC_sector2_1e_cut->Fill(Vz_e, weight);
-                    h_Vz_e_AC_zoomin_sector2_1e_cut->Fill(Vz_e, weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector1_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons[0]->getSector() == 2) {
+                h_Vx_e_AC_sector2_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector2_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector2_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector2_1e_cut->Fill(Vz_e, weight);
 
-                    h_corrected_Vz_e_AC_sector2_1e_cut->Fill(corrected_Vz_e, weight);
-                    h_corrected_Vz_e_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_sector2_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_e, weight);
 
-                    h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    // h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                // h_Vz_VS_phi_e_AC_zoomin_sector2_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                    h_Vz_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                    h_Vz_e_AC_sector2_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                    h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+                h_Vz_e_AC_sector2_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector2_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                    raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector2_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector2_1e_cut, weight);
 
-                    h_nphe_AC_sector2_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_AC_sector2_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_AC_sector2_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_AC_sector2_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_AC_sector2_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_AC_sector2_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_AC_sector2_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_AC_sector2_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_AC_sector2_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector2_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons[0]->getSector() == 3) {
-                    h_Vx_e_AC_sector3_1e_cut->Fill(Vx_e, weight);
-                    h_Vy_e_AC_sector3_1e_cut->Fill(Vy_e, weight);
-                    h_Vz_e_AC_sector3_1e_cut->Fill(Vz_e, weight);
-                    h_Vz_e_AC_zoomin_sector3_1e_cut->Fill(Vz_e, weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector2_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons[0]->getSector() == 3) {
+                h_Vx_e_AC_sector3_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector3_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector3_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector3_1e_cut->Fill(Vz_e, weight);
 
-                    h_corrected_Vz_e_AC_sector3_1e_cut->Fill(corrected_Vz_e, weight);
-                    h_corrected_Vz_e_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_sector3_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_e, weight);
 
-                    h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    // h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                // h_Vz_VS_phi_e_AC_zoomin_sector3_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                    h_Vz_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                    h_Vz_e_AC_sector3_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                    h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+                h_Vz_e_AC_sector3_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector3_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                    raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector3_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector3_1e_cut, weight);
 
-                    h_nphe_AC_sector3_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_AC_sector3_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_AC_sector3_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_AC_sector3_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_AC_sector3_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_AC_sector3_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_AC_sector3_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_AC_sector3_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_AC_sector3_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector3_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons[0]->getSector() == 4) {
-                    h_Vx_e_AC_sector4_1e_cut->Fill(Vx_e, weight);
-                    h_Vy_e_AC_sector4_1e_cut->Fill(Vy_e, weight);
-                    h_Vz_e_AC_sector4_1e_cut->Fill(Vz_e, weight);
-                    h_Vz_e_AC_zoomin_sector4_1e_cut->Fill(Vz_e, weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector3_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons[0]->getSector() == 4) {
+                h_Vx_e_AC_sector4_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector4_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector4_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector4_1e_cut->Fill(Vz_e, weight);
 
-                    h_corrected_Vz_e_AC_sector4_1e_cut->Fill(corrected_Vz_e, weight);
-                    h_corrected_Vz_e_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_sector4_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_e, weight);
 
-                    h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    // h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                // h_Vz_VS_phi_e_AC_zoomin_sector4_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                    h_Vz_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                    h_Vz_e_AC_sector4_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                    h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+                h_Vz_e_AC_sector4_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector4_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                    raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector4_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector4_1e_cut, weight);
 
-                    h_nphe_AC_sector4_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_AC_sector4_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_AC_sector4_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_AC_sector4_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_AC_sector4_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_AC_sector4_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_AC_sector4_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_AC_sector4_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_AC_sector4_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector4_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons[0]->getSector() == 5) {
-                    h_Vx_e_AC_sector5_1e_cut->Fill(Vx_e, weight);
-                    h_Vy_e_AC_sector5_1e_cut->Fill(Vy_e, weight);
-                    h_Vz_e_AC_sector5_1e_cut->Fill(Vz_e, weight);
-                    h_Vz_e_AC_zoomin_sector5_1e_cut->Fill(Vz_e, weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector4_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons[0]->getSector() == 5) {
+                h_Vx_e_AC_sector5_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector5_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector5_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector5_1e_cut->Fill(Vz_e, weight);
 
-                    h_corrected_Vz_e_AC_sector5_1e_cut->Fill(corrected_Vz_e, weight);
-                    h_corrected_Vz_e_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_sector5_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_e, weight);
 
-                    h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    // h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                // h_Vz_VS_phi_e_AC_zoomin_sector5_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                    h_Vz_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                    h_Vz_e_AC_sector5_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                    h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+                h_Vz_e_AC_sector5_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector5_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                    raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector5_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector5_1e_cut, weight);
 
-                    h_nphe_AC_sector5_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_AC_sector5_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_SF_VS_Edep_PCAL_AC_sector5_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_Edep_PCAL_VS_EC_AC_sector5_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_SF_VS_Edep_PCAL_AC_sector5_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_Edep_PCAL_VS_EC_AC_sector5_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_P_e_AC_sector5_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_P_e_AC_sector5_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_AC_sector5_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_AC_sector5_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_AC_sector5_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_AC_sector5_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_AC_sector5_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_AC_sector5_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector5_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                } else if (electrons[0]->getSector() == 6) {
-                    h_Vx_e_AC_sector6_1e_cut->Fill(Vx_e, weight);
-                    h_Vy_e_AC_sector6_1e_cut->Fill(Vy_e, weight);
-                    h_Vz_e_AC_sector6_1e_cut->Fill(Vz_e, weight);
-                    h_Vz_e_AC_zoomin_sector6_1e_cut->Fill(Vz_e, weight);
+                h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector5_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            } else if (electrons[0]->getSector() == 6) {
+                h_Vx_e_AC_sector6_1e_cut->Fill(Vx_e, weight);
+                h_Vy_e_AC_sector6_1e_cut->Fill(Vy_e, weight);
+                h_Vz_e_AC_sector6_1e_cut->Fill(Vz_e, weight);
+                h_Vz_e_AC_zoomin_sector6_1e_cut->Fill(Vz_e, weight);
 
-                    h_corrected_Vz_e_AC_sector6_1e_cut->Fill(corrected_Vz_e, weight);
-                    h_corrected_Vz_e_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_sector6_1e_cut->Fill(corrected_Vz_e, weight);
+                h_corrected_Vz_e_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_e, weight);
 
-                    h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    // h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                // h_Vz_VS_phi_e_AC_zoomin_sector6_1e_cut->Fill(electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
 
-                    h_Vz_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
-                    h_Vz_e_AC_sector6_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
-                    h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
-                    h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, Vz_e, weight);
+                h_Vz_e_AC_sector6_zoomin_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, corrected_Vz_e, weight);
+                h_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, Vz_e, weight);
+                h_corrected_Vz_VS_phi_e_AC_sector6_1e_cut_BySliceOfTheta.Fill(electrons[0]->getTheta() * 180 / am::pi, electrons[0]->getPhi() * 180 / am::pi, corrected_Vz_e, weight);
 
-                    raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector6_1e_cut, weight);
+                raf::fillDCdebug(electrons[0], h_dc_e_hit_map_AC_sector6_1e_cut, weight);
 
-                    h_nphe_AC_sector6_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
+                h_nphe_AC_sector6_1e_cut->Fill(electrons[0]->che(clas12::HTCC)->getNphe(), weight);
 
-                    h_Edep_PCAL_VS_EC_AC_sector6_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
+                h_Edep_PCAL_VS_EC_AC_sector6_1e_cut->Fill(Edep_PCAL, Edep_EC, weight);
 
-                    h_SF_VS_Edep_PCAL_AC_sector6_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
-                    h_SF_VS_P_e_AC_sector6_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
+                h_SF_VS_Edep_PCAL_AC_sector6_1e_cut->Fill(Edep_PCAL, EoP_e, weight);
+                h_SF_VS_P_e_AC_sector6_1e_cut->Fill(reco_P_e.Mag(), EoP_e, weight);
 
-                    h_SF_VS_Lv_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
-                    h_SF_VS_Lw_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
-                    h_SF_VS_Lu_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
+                h_SF_VS_Lv_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLv(), EoP_e, weight);
+                h_SF_VS_Lw_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLw(), EoP_e, weight);
+                h_SF_VS_Lu_AC_sector6_1e_cut->Fill(electrons[0]->cal(clas12::PCAL)->getLu(), EoP_e, weight);
 
-                    h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector6_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
-                }
+                h_E_PCALoP_e_VS_E_PCALoP_e_AC_sector6_1e_cut->Fill(E_PCALoP_e, E_ECINoP_e, weight);
+            }
 #pragma endregion
 
-                //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
+            //  - Piplus cuts -------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region piplus BPID
 
-                for (int i = 0; i < piplus_det.size(); i++) {
-                    if (piplus_det[i]->getRegion() == FD) {
-                        h_Vx_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                        h_Vy_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                        h_Vz_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                        h_Vz_pipFD_BC_zoomin_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+            for (int i = 0; i < piplus_det.size(); i++) {
+                if (piplus_det[i]->getRegion() == FD) {
+                    h_Vx_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                    h_Vy_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                    h_Vz_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipFD_BC_zoomin_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                        h_dVz_pipFD_BC_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pipFD_BC_zoomin_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pipFD_BC_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pipFD_BC_zoomin_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_1e_cut, weight);
+                    raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_1e_cut, weight);
 
-                        h_Chi2_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
+                    h_Chi2_pipFD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
 
-                        if (piplus_det[i]->getSector() == 1) {
-                            h_Vx_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                            h_Vy_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                            h_Vz_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                            h_Vz_pipFD_BC_zoomin_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    if (piplus_det[i]->getSector() == 1) {
+                        h_Vx_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                        h_Vy_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                        h_Vz_pipFD_BC_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        h_Vz_pipFD_BC_zoomin_sector1_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pipFD_BC_sector1_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_BC_zoomin_sector1_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_sector1_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_zoomin_sector1_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector1_1e_cut, weight);
-                        } else if (piplus_det[i]->getSector() == 2) {
-                            h_Vx_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                            h_Vy_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                            h_Vz_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                            h_Vz_pipFD_BC_zoomin_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector1_1e_cut, weight);
+                    } else if (piplus_det[i]->getSector() == 2) {
+                        h_Vx_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                        h_Vy_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                        h_Vz_pipFD_BC_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        h_Vz_pipFD_BC_zoomin_sector2_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pipFD_BC_sector2_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_BC_zoomin_sector2_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_sector2_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_zoomin_sector2_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector2_1e_cut, weight);
-                        } else if (piplus_det[i]->getSector() == 3) {
-                            h_Vx_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                            h_Vy_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                            h_Vz_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                            h_Vz_pipFD_BC_zoomin_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector2_1e_cut, weight);
+                    } else if (piplus_det[i]->getSector() == 3) {
+                        h_Vx_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                        h_Vy_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                        h_Vz_pipFD_BC_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        h_Vz_pipFD_BC_zoomin_sector3_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pipFD_BC_sector3_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_BC_zoomin_sector3_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_sector3_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_zoomin_sector3_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector3_1e_cut, weight);
-                        } else if (piplus_det[i]->getSector() == 4) {
-                            h_Vx_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                            h_Vy_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                            h_Vz_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                            h_Vz_pipFD_BC_zoomin_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector3_1e_cut, weight);
+                    } else if (piplus_det[i]->getSector() == 4) {
+                        h_Vx_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                        h_Vy_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                        h_Vz_pipFD_BC_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        h_Vz_pipFD_BC_zoomin_sector4_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pipFD_BC_sector4_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_BC_zoomin_sector4_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_sector4_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_zoomin_sector4_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector4_1e_cut, weight);
-                        } else if (piplus_det[i]->getSector() == 5) {
-                            h_Vx_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                            h_Vy_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                            h_Vz_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                            h_Vz_pipFD_BC_zoomin_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector4_1e_cut, weight);
+                    } else if (piplus_det[i]->getSector() == 5) {
+                        h_Vx_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                        h_Vy_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                        h_Vz_pipFD_BC_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        h_Vz_pipFD_BC_zoomin_sector5_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pipFD_BC_sector5_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_BC_zoomin_sector5_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_sector5_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_zoomin_sector5_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector5_1e_cut, weight);
-                        } else if (piplus_det[i]->getSector() == 6) {
-                            h_Vx_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                            h_Vy_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                            h_Vz_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                            h_Vz_pipFD_BC_zoomin_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector5_1e_cut, weight);
+                    } else if (piplus_det[i]->getSector() == 6) {
+                        h_Vx_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                        h_Vy_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                        h_Vz_pipFD_BC_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                        h_Vz_pipFD_BC_zoomin_sector6_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pipFD_BC_sector6_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_BC_zoomin_sector6_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_sector6_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_BC_zoomin_sector6_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector6_1e_cut, weight);
-                        }
-                    } else if (piplus_det[i]->getRegion() == CD) {
-                        h_Chi2_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
-
-                        h_Vx_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
-                        h_Vy_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
-                        h_Vz_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-                        h_Vz_pipCD_BC_zoomin_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
-
-                        h_dVz_pipCD_BC_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pipCD_BC_zoomin_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        raf::fillDCdebug(piplus_det[i], h_dc_pipFD_hit_map_BC_sector6_1e_cut, weight);
                     }
+                } else if (piplus_det[i]->getRegion() == CD) {
+                    h_Chi2_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getChi2Pid(), weight);
+
+                    h_Vx_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVx(), weight);
+                    h_Vy_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVy(), weight);
+                    h_Vz_pipCD_BC_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+                    h_Vz_pipCD_BC_zoomin_1e_cut->Fill(piplus_det[i]->par()->getVz(), weight);
+
+                    h_dVz_pipCD_BC_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pipCD_BC_zoomin_1e_cut->Fill(-(piplus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                 }
+            }
 #pragma endregion
 
 #pragma region piplus APID
 
-                for (int i = 0; i < piplus.size(); i++) {
-                    double Vx_pip = piplus[i]->par()->getVx();
-                    double Vy_pip = piplus[i]->par()->getVy();
-                    double Vz_pip = piplus[i]->par()->getVz();
+            for (int i = 0; i < piplus.size(); i++) {
+                double Vx_pip = piplus[i]->par()->getVx();
+                double Vy_pip = piplus[i]->par()->getVy();
+                double Vz_pip = piplus[i]->par()->getVz();
 
-                    if (piplus[i]->getRegion() == FD) {
-                        auto r_pip = compute_r(Beam_Coordinates, "pipFD");
-                        auto phi_beam_pip_rad = compute_phi_beam_rad(Beam_Coordinates, "pipFD");
-                        auto corrected_Vz_pip = correct_Vz(Vz_pip, r_pip, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_pip_rad, "pipFD");
-                        // auto corrected_Vz_pip = correct_Vz(Vz_pip, r_pip, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_pip_rad);
+                if (piplus[i]->getRegion() == FD) {
+                    auto r_pip = compute_r(Beam_Coordinates, "pipFD");
+                    auto phi_beam_pip_rad = compute_phi_beam_rad(Beam_Coordinates, "pipFD");
+                    auto corrected_Vz_pip = correct_Vz(Vz_pip, r_pip, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_pip_rad, "pipFD");
+                    // auto corrected_Vz_pip = correct_Vz(Vz_pip, r_pip, piplus[i]->getTheta(), piplus[i]->getPhi(), phi_beam_pip_rad);
 
-                        // std::cout << "Vz_pip: " << Vz_pip << ", corrected_Vz_pip: " << corrected_Vz_pip << std::endl;
-                        // std::cout << "r: " << r << ", phi_beam_rad: " << phi_beam_rad << std::endl;
-                        // std::cout << std::endl;
+                    // std::cout << "Vz_pip: " << Vz_pip << ", corrected_Vz_pip: " << corrected_Vz_pip << std::endl;
+                    // std::cout << "r: " << r << ", phi_beam_rad: " << phi_beam_rad << std::endl;
+                    // std::cout << std::endl;
 
-                        h_Vx_pipFD_AC_1e_cut->Fill(Vx_pip, weight);
-                        h_Vy_pipFD_AC_1e_cut->Fill(Vy_pip, weight);
-                        h_Vz_pipFD_AC_1e_cut->Fill(Vz_pip, weight);
-                        h_Vz_pipFD_AC_zoomin_1e_cut->Fill(Vz_pip, weight);
+                    h_Vx_pipFD_AC_1e_cut->Fill(Vx_pip, weight);
+                    h_Vy_pipFD_AC_1e_cut->Fill(Vy_pip, weight);
+                    h_Vz_pipFD_AC_1e_cut->Fill(Vz_pip, weight);
+                    h_Vz_pipFD_AC_zoomin_1e_cut->Fill(Vz_pip, weight);
 
-                        h_corrected_Vz_pipFD_AC_1e_cut->Fill(corrected_Vz_pip, weight);
-                        h_corrected_Vz_pipFD_AC_zoomin_1e_cut->Fill(corrected_Vz_pip, weight);
+                    h_corrected_Vz_pipFD_AC_1e_cut->Fill(corrected_Vz_pip, weight);
+                    h_corrected_Vz_pipFD_AC_zoomin_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                        h_dVz_pipFD_AC_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pipFD_AC_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pipFD_AC_zoomin_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                        h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                    h_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                    h_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
 
-                        h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
-                        h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
+                    h_corrected_Vz_VS_theta_pipFD_AC_1e_cut->Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                        h_Vz_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                        h_Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                        h_Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                        h_corrected_Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
+                    h_Vz_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                    h_Vz_pipFD_AC_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                    h_Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                    h_corrected_Vz_VS_phi_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
+                    raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_1e_cut, weight);
 
-                        h_Chi2_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
+                    h_Chi2_pipFD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
 
-                        if (piplus[i]->getSector() == 1) {
-                            h_Vx_pipFD_AC_sector1_1e_cut->Fill(Vx_pip, weight);
-                            h_Vy_pipFD_AC_sector1_1e_cut->Fill(Vy_pip, weight);
-                            h_Vz_pipFD_AC_sector1_1e_cut->Fill(Vz_pip, weight);
-                            h_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pip, weight);
+                    if (piplus[i]->getSector() == 1) {
+                        h_Vx_pipFD_AC_sector1_1e_cut->Fill(Vx_pip, weight);
+                        h_Vy_pipFD_AC_sector1_1e_cut->Fill(Vy_pip, weight);
+                        h_Vz_pipFD_AC_sector1_1e_cut->Fill(Vz_pip, weight);
+                        h_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pip, weight);
 
-                            h_corrected_Vz_pipFD_AC_sector1_1e_cut->Fill(corrected_Vz_pip, weight);
-                            h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_sector1_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                            h_dVz_pipFD_AC_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pipFD_AC_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector1_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                            h_Vz_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_pipFD_AC_sector1_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_corrected_Vz_VS_phi_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_pipFD_AC_sector1_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_corrected_Vz_VS_phi_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                            raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector1_1e_cut, weight);
-                        } else if (piplus[i]->getSector() == 2) {
-                            h_Vx_pipFD_AC_sector2_1e_cut->Fill(Vx_pip, weight);
-                            h_Vy_pipFD_AC_sector2_1e_cut->Fill(Vy_pip, weight);
-                            h_Vz_pipFD_AC_sector2_1e_cut->Fill(Vz_pip, weight);
-                            h_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pip, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector1_1e_cut, weight);
+                    } else if (piplus[i]->getSector() == 2) {
+                        h_Vx_pipFD_AC_sector2_1e_cut->Fill(Vx_pip, weight);
+                        h_Vy_pipFD_AC_sector2_1e_cut->Fill(Vy_pip, weight);
+                        h_Vz_pipFD_AC_sector2_1e_cut->Fill(Vz_pip, weight);
+                        h_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pip, weight);
 
-                            h_corrected_Vz_pipFD_AC_sector2_1e_cut->Fill(corrected_Vz_pip, weight);
-                            h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_sector2_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                            h_dVz_pipFD_AC_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pipFD_AC_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector2_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                            h_Vz_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_pipFD_AC_sector2_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_corrected_Vz_VS_phi_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_pipFD_AC_sector2_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_corrected_Vz_VS_phi_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                            raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector2_1e_cut, weight);
-                        } else if (piplus[i]->getSector() == 3) {
-                            h_Vx_pipFD_AC_sector3_1e_cut->Fill(Vx_pip, weight);
-                            h_Vy_pipFD_AC_sector3_1e_cut->Fill(Vy_pip, weight);
-                            h_Vz_pipFD_AC_sector3_1e_cut->Fill(Vz_pip, weight);
-                            h_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pip, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector2_1e_cut, weight);
+                    } else if (piplus[i]->getSector() == 3) {
+                        h_Vx_pipFD_AC_sector3_1e_cut->Fill(Vx_pip, weight);
+                        h_Vy_pipFD_AC_sector3_1e_cut->Fill(Vy_pip, weight);
+                        h_Vz_pipFD_AC_sector3_1e_cut->Fill(Vz_pip, weight);
+                        h_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pip, weight);
 
-                            h_corrected_Vz_pipFD_AC_sector3_1e_cut->Fill(corrected_Vz_pip, weight);
-                            h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_sector3_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                            h_dVz_pipFD_AC_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pipFD_AC_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector3_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                            h_Vz_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_pipFD_AC_sector3_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_corrected_Vz_VS_phi_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_pipFD_AC_sector3_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_corrected_Vz_VS_phi_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                            raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector3_1e_cut, weight);
-                        } else if (piplus[i]->getSector() == 4) {
-                            h_Vx_pipFD_AC_sector4_1e_cut->Fill(Vx_pip, weight);
-                            h_Vy_pipFD_AC_sector4_1e_cut->Fill(Vy_pip, weight);
-                            h_Vz_pipFD_AC_sector4_1e_cut->Fill(Vz_pip, weight);
-                            h_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pip, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector3_1e_cut, weight);
+                    } else if (piplus[i]->getSector() == 4) {
+                        h_Vx_pipFD_AC_sector4_1e_cut->Fill(Vx_pip, weight);
+                        h_Vy_pipFD_AC_sector4_1e_cut->Fill(Vy_pip, weight);
+                        h_Vz_pipFD_AC_sector4_1e_cut->Fill(Vz_pip, weight);
+                        h_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pip, weight);
 
-                            h_corrected_Vz_pipFD_AC_sector4_1e_cut->Fill(corrected_Vz_pip, weight);
-                            h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_sector4_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                            h_dVz_pipFD_AC_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pipFD_AC_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector4_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                            h_Vz_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_pipFD_AC_sector4_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_corrected_Vz_VS_phi_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_pipFD_AC_sector4_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_corrected_Vz_VS_phi_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                            raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector4_1e_cut, weight);
-                        } else if (piplus[i]->getSector() == 5) {
-                            h_Vx_pipFD_AC_sector5_1e_cut->Fill(Vx_pip, weight);
-                            h_Vy_pipFD_AC_sector5_1e_cut->Fill(Vy_pip, weight);
-                            h_Vz_pipFD_AC_sector5_1e_cut->Fill(Vz_pip, weight);
-                            h_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pip, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector4_1e_cut, weight);
+                    } else if (piplus[i]->getSector() == 5) {
+                        h_Vx_pipFD_AC_sector5_1e_cut->Fill(Vx_pip, weight);
+                        h_Vy_pipFD_AC_sector5_1e_cut->Fill(Vy_pip, weight);
+                        h_Vz_pipFD_AC_sector5_1e_cut->Fill(Vz_pip, weight);
+                        h_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pip, weight);
 
-                            h_corrected_Vz_pipFD_AC_sector5_1e_cut->Fill(corrected_Vz_pip, weight);
-                            h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_sector5_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                            h_dVz_pipFD_AC_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pipFD_AC_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector5_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                            h_Vz_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_pipFD_AC_sector5_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_corrected_Vz_VS_phi_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_pipFD_AC_sector5_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_corrected_Vz_VS_phi_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                            raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector5_1e_cut, weight);
-                        } else if (piplus[i]->getSector() == 6) {
-                            h_Vx_pipFD_AC_sector6_1e_cut->Fill(Vx_pip, weight);
-                            h_Vy_pipFD_AC_sector6_1e_cut->Fill(Vy_pip, weight);
-                            h_Vz_pipFD_AC_sector6_1e_cut->Fill(Vz_pip, weight);
-                            h_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pip, weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector5_1e_cut, weight);
+                    } else if (piplus[i]->getSector() == 6) {
+                        h_Vx_pipFD_AC_sector6_1e_cut->Fill(Vx_pip, weight);
+                        h_Vy_pipFD_AC_sector6_1e_cut->Fill(Vy_pip, weight);
+                        h_Vz_pipFD_AC_sector6_1e_cut->Fill(Vz_pip, weight);
+                        h_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pip, weight);
 
-                            h_corrected_Vz_pipFD_AC_sector6_1e_cut->Fill(corrected_Vz_pip, weight);
-                            h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_sector6_1e_cut->Fill(corrected_Vz_pip, weight);
+                        h_corrected_Vz_pipFD_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_pip, weight);
 
-                            h_dVz_pipFD_AC_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pipFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pipFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pipFD_AC_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_zoomin_sector6_1e_cut->Fill(piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
 
-                            h_Vz_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
-                            h_Vz_pipFD_AC_sector6_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
-                            h_Vz_VS_phi_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
-                            h_corrected_Vz_VS_phi_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, Vz_pip, weight);
+                        h_Vz_pipFD_AC_sector6_zoomin_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, corrected_Vz_pip, weight);
+                        h_Vz_VS_phi_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, Vz_pip, weight);
+                        h_corrected_Vz_VS_phi_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piplus[i]->getTheta() * 180 / am::pi, piplus[i]->getPhi() * 180 / am::pi, corrected_Vz_pip, weight);
 
-                            raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector6_1e_cut, weight);
-                        }
-                    } else if (piplus[i]->getRegion() == CD) {
-                        h_Chi2_pipCD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
-
-                        h_Vx_pipCD_AC_1e_cut->Fill(Vx_pip, weight);
-                        h_Vy_pipCD_AC_1e_cut->Fill(Vy_pip, weight);
-                        h_Vz_pipCD_AC_1e_cut->Fill(Vz_pip, weight);
-                        h_Vz_pipCD_AC_zoomin_1e_cut->Fill(Vz_pip, weight);
-
-                        h_dVz_pipCD_AC_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pipCD_AC_zoomin_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                        raf::fillDCdebug(piplus[i], h_dc_pipFD_hit_map_AC_sector6_1e_cut, weight);
                     }
+                } else if (piplus[i]->getRegion() == CD) {
+                    h_Chi2_pipCD_AC_1e_cut->Fill(piplus[i]->par()->getChi2Pid(), weight);
+
+                    h_Vx_pipCD_AC_1e_cut->Fill(Vx_pip, weight);
+                    h_Vy_pipCD_AC_1e_cut->Fill(Vy_pip, weight);
+                    h_Vz_pipCD_AC_1e_cut->Fill(Vz_pip, weight);
+                    h_Vz_pipCD_AC_zoomin_1e_cut->Fill(Vz_pip, weight);
+
+                    h_dVz_pipCD_AC_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pipCD_AC_zoomin_1e_cut->Fill(-(Vz_pip - electrons[0]->par()->getVz()), weight);
                 }
+            }
 #pragma endregion
 
-                //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
+            //  - Piminus cuts ------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region piminus BPID
 
-                for (int i = 0; i < piminus_det.size(); i++) {
-                    if (piminus_det[i]->getRegion() == FD) {
-                        h_Vx_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                        h_Vy_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                        h_Vz_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                        h_Vz_pimFD_BC_zoomin_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+            for (int i = 0; i < piminus_det.size(); i++) {
+                if (piminus_det[i]->getRegion() == FD) {
+                    h_Vx_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                    h_Vy_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                    h_Vz_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                    h_Vz_pimFD_BC_zoomin_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                        h_dVz_pimFD_BC_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pimFD_BC_zoomin_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pimFD_BC_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pimFD_BC_zoomin_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_1e_cut, weight);
+                    raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_1e_cut, weight);
 
-                        h_Chi2_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
+                    h_Chi2_pimFD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
 
-                        if (piminus_det[i]->getSector() == 1) {
-                            h_Vx_pimFD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                            h_Vy_pimFD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                            h_Vz_pimFD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                            h_Vz_pimFD_BC_zoomin_sector1_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                    if (piminus_det[i]->getSector() == 1) {
+                        h_Vx_pimFD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                        h_Vy_pimFD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                        h_Vz_pimFD_BC_sector1_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        h_Vz_pimFD_BC_zoomin_sector1_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pimFD_BC_sector1_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_BC_zoomin_sector1_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_sector1_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_zoomin_sector1_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector1_1e_cut, weight);
-                        } else if (piminus_det[i]->getSector() == 2) {
-                            h_Vx_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                            h_Vy_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                            h_Vz_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                            h_Vz_pimFD_BC_zoomin_sector2_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector1_1e_cut, weight);
+                    } else if (piminus_det[i]->getSector() == 2) {
+                        h_Vx_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                        h_Vy_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                        h_Vz_pimFD_BC_sector2_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        h_Vz_pimFD_BC_zoomin_sector2_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pimFD_BC_sector2_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_BC_zoomin_sector2_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_sector2_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_zoomin_sector2_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector2_1e_cut, weight);
-                        } else if (piminus_det[i]->getSector() == 3) {
-                            h_Vx_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                            h_Vy_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                            h_Vz_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                            h_Vz_pimFD_BC_zoomin_sector3_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector2_1e_cut, weight);
+                    } else if (piminus_det[i]->getSector() == 3) {
+                        h_Vx_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                        h_Vy_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                        h_Vz_pimFD_BC_sector3_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        h_Vz_pimFD_BC_zoomin_sector3_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pimFD_BC_sector3_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_BC_zoomin_sector3_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_sector3_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_zoomin_sector3_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector3_1e_cut, weight);
-                        } else if (piminus_det[i]->getSector() == 4) {
-                            h_Vx_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                            h_Vy_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                            h_Vz_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                            h_Vz_pimFD_BC_zoomin_sector4_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector3_1e_cut, weight);
+                    } else if (piminus_det[i]->getSector() == 4) {
+                        h_Vx_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                        h_Vy_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                        h_Vz_pimFD_BC_sector4_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        h_Vz_pimFD_BC_zoomin_sector4_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pimFD_BC_sector4_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_BC_zoomin_sector4_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_sector4_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_zoomin_sector4_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector4_1e_cut, weight);
-                        } else if (piminus_det[i]->getSector() == 5) {
-                            h_Vx_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                            h_Vy_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                            h_Vz_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                            h_Vz_pimFD_BC_zoomin_sector5_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector4_1e_cut, weight);
+                    } else if (piminus_det[i]->getSector() == 5) {
+                        h_Vx_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                        h_Vy_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                        h_Vz_pimFD_BC_sector5_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        h_Vz_pimFD_BC_zoomin_sector5_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pimFD_BC_sector5_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_BC_zoomin_sector5_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_sector5_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_zoomin_sector5_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector5_1e_cut, weight);
-                        } else if (piminus_det[i]->getSector() == 6) {
-                            h_Vx_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                            h_Vy_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                            h_Vz_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                            h_Vz_pimFD_BC_zoomin_sector6_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector5_1e_cut, weight);
+                    } else if (piminus_det[i]->getSector() == 6) {
+                        h_Vx_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                        h_Vy_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                        h_Vz_pimFD_BC_sector6_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                        h_Vz_pimFD_BC_zoomin_sector6_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
 
-                            h_dVz_pimFD_BC_sector6_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_BC_zoomin_sector6_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_sector6_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_BC_zoomin_sector6_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
 
-                            raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector6_1e_cut, weight);
-                        }
-                    } else if (piminus_det[i]->getRegion() == CD) {
-                        h_Chi2_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
-
-                        h_Vx_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
-                        h_Vy_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
-                        h_Vz_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-                        h_Vz_pimCD_BC_zoomin_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
-
-                        h_dVz_pimCD_BC_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pimCD_BC_zoomin_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                        raf::fillDCdebug(piminus_det[i], h_dc_pimFD_hit_map_BC_sector6_1e_cut, weight);
                     }
+                } else if (piminus_det[i]->getRegion() == CD) {
+                    h_Chi2_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getChi2Pid(), weight);
+
+                    h_Vx_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVx(), weight);
+                    h_Vy_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVy(), weight);
+                    h_Vz_pimCD_BC_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+                    h_Vz_pimCD_BC_zoomin_1e_cut->Fill(piminus_det[i]->par()->getVz(), weight);
+
+                    h_dVz_pimCD_BC_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pimCD_BC_zoomin_1e_cut->Fill(-(piminus_det[i]->par()->getVz() - electrons[0]->par()->getVz()), weight);
                 }
+            }
 #pragma endregion
 
 #pragma region piminus APID
 
-                for (int i = 0; i < piminus.size(); i++) {
-                    double Vx_pim = piminus[i]->par()->getVx();
-                    double Vy_pim = piminus[i]->par()->getVy();
-                    double Vz_pim = piminus[i]->par()->getVz();
+            for (int i = 0; i < piminus.size(); i++) {
+                double Vx_pim = piminus[i]->par()->getVx();
+                double Vy_pim = piminus[i]->par()->getVy();
+                double Vz_pim = piminus[i]->par()->getVz();
 
-                    if (piminus[i]->getRegion() == FD) {
-                        auto r_pim = compute_r(Beam_Coordinates, "pimFD");
-                        auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
-                        auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad, "pimFD");
-                        // auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
+                if (piminus[i]->getRegion() == FD) {
+                    auto r_pim = compute_r(Beam_Coordinates, "pimFD");
+                    auto phi_beam_pim_rad = compute_phi_beam_rad(Beam_Coordinates, "pimFD");
+                    auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad, "pimFD");
+                    // auto corrected_Vz_pim = correct_Vz(Vz_pim, r_pim, piminus[i]->getTheta(), piminus[i]->getPhi(), phi_beam_pim_rad);
 
-                        h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
-                        h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
-                        h_Vz_pimFD_AC_1e_cut->Fill(Vz_pim, weight);
-                        h_Vz_pimFD_AC_zoomin_1e_cut->Fill(Vz_pim, weight);
+                    h_Vx_pimFD_AC_1e_cut->Fill(Vx_pim, weight);
+                    h_Vy_pimFD_AC_1e_cut->Fill(Vy_pim, weight);
+                    h_Vz_pimFD_AC_1e_cut->Fill(Vz_pim, weight);
+                    h_Vz_pimFD_AC_zoomin_1e_cut->Fill(Vz_pim, weight);
 
-                        h_corrected_Vz_pimFD_AC_1e_cut->Fill(corrected_Vz_pim, weight);
-                        h_corrected_Vz_pimFD_AC_zoomin_1e_cut->Fill(corrected_Vz_pim, weight);
+                    h_corrected_Vz_pimFD_AC_1e_cut->Fill(corrected_Vz_pim, weight);
+                    h_corrected_Vz_pimFD_AC_zoomin_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                        h_dVz_pimFD_AC_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pimFD_AC_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pimFD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                        h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                        h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                    h_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                    h_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
 
-                        h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim, weight);
-                        h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim, weight);
+                    h_corrected_Vz_VS_theta_pimFD_AC_1e_cut->Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
 
-                        h_Vz_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                        h_Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                        h_Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                        h_corrected_Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim, weight);
+                    h_Vz_pipFD_AC_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                    h_Vz_pimFD_AC_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                    h_Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                    h_corrected_Vz_VS_phi_pimFD_AC_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim, weight);
 
-                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
+                    raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_1e_cut, weight);
 
-                        h_Chi2_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
+                    h_Chi2_pimFD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
 
-                        if (piminus[i]->getSector() == 1) {
-                            h_Vx_pimFD_AC_sector1_1e_cut->Fill(Vx_pim, weight);
-                            h_Vy_pimFD_AC_sector1_1e_cut->Fill(Vy_pim, weight);
-                            h_Vz_pimFD_AC_sector1_1e_cut->Fill(Vz_pim, weight);
-                            h_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pim, weight);
+                    if (piminus[i]->getSector() == 1) {
+                        h_Vx_pimFD_AC_sector1_1e_cut->Fill(Vx_pim, weight);
+                        h_Vy_pimFD_AC_sector1_1e_cut->Fill(Vy_pim, weight);
+                        h_Vz_pimFD_AC_sector1_1e_cut->Fill(Vz_pim, weight);
+                        h_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(Vz_pim, weight);
 
-                            h_corrected_Vz_pimFD_AC_sector1_1e_cut->Fill(corrected_Vz_pim, weight);
-                            h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_sector1_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector1_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                            h_dVz_pimFD_AC_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_zoomin_sector1_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pimFD_AC_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector1_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                            h_Vz_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_pimFD_AC_sector1_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_corrected_Vz_VS_phi_pimFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_pimFD_AC_sector1_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_corrected_Vz_VS_phi_pimFD_AC_sector1_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
+                                                                                          weight);
 
-                            raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector1_1e_cut, weight);
-                        } else if (piminus[i]->getSector() == 2) {
-                            h_Vx_pimFD_AC_sector2_1e_cut->Fill(Vx_pim, weight);
-                            h_Vy_pimFD_AC_sector2_1e_cut->Fill(Vy_pim, weight);
-                            h_Vz_pimFD_AC_sector2_1e_cut->Fill(Vz_pim, weight);
-                            h_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pim, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector1_1e_cut, weight);
+                    } else if (piminus[i]->getSector() == 2) {
+                        h_Vx_pimFD_AC_sector2_1e_cut->Fill(Vx_pim, weight);
+                        h_Vy_pimFD_AC_sector2_1e_cut->Fill(Vy_pim, weight);
+                        h_Vz_pimFD_AC_sector2_1e_cut->Fill(Vz_pim, weight);
+                        h_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(Vz_pim, weight);
 
-                            h_corrected_Vz_pimFD_AC_sector2_1e_cut->Fill(corrected_Vz_pim, weight);
-                            h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_sector2_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector2_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                            h_dVz_pimFD_AC_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_zoomin_sector2_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pimFD_AC_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector2_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                            h_Vz_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_pimFD_AC_sector2_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_corrected_Vz_VS_phi_pimFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_pimFD_AC_sector2_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_corrected_Vz_VS_phi_pimFD_AC_sector2_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
+                                                                                          weight);
 
-                            raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector2_1e_cut, weight);
-                        } else if (piminus[i]->getSector() == 3) {
-                            h_Vx_pimFD_AC_sector3_1e_cut->Fill(Vx_pim, weight);
-                            h_Vy_pimFD_AC_sector3_1e_cut->Fill(Vy_pim, weight);
-                            h_Vz_pimFD_AC_sector3_1e_cut->Fill(Vz_pim, weight);
-                            h_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pim, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector2_1e_cut, weight);
+                    } else if (piminus[i]->getSector() == 3) {
+                        h_Vx_pimFD_AC_sector3_1e_cut->Fill(Vx_pim, weight);
+                        h_Vy_pimFD_AC_sector3_1e_cut->Fill(Vy_pim, weight);
+                        h_Vz_pimFD_AC_sector3_1e_cut->Fill(Vz_pim, weight);
+                        h_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(Vz_pim, weight);
 
-                            h_corrected_Vz_pimFD_AC_sector3_1e_cut->Fill(corrected_Vz_pim, weight);
-                            h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_sector3_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector3_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                            h_dVz_pimFD_AC_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_zoomin_sector3_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pimFD_AC_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector3_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                            h_Vz_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_pimFD_AC_sector3_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_corrected_Vz_VS_phi_pimFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_pimFD_AC_sector3_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_corrected_Vz_VS_phi_pimFD_AC_sector3_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
+                                                                                          weight);
 
-                            raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector3_1e_cut, weight);
-                        } else if (piminus[i]->getSector() == 4) {
-                            h_Vx_pimFD_AC_sector4_1e_cut->Fill(Vx_pim, weight);
-                            h_Vy_pimFD_AC_sector4_1e_cut->Fill(Vy_pim, weight);
-                            h_Vz_pimFD_AC_sector4_1e_cut->Fill(Vz_pim, weight);
-                            h_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pim, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector3_1e_cut, weight);
+                    } else if (piminus[i]->getSector() == 4) {
+                        h_Vx_pimFD_AC_sector4_1e_cut->Fill(Vx_pim, weight);
+                        h_Vy_pimFD_AC_sector4_1e_cut->Fill(Vy_pim, weight);
+                        h_Vz_pimFD_AC_sector4_1e_cut->Fill(Vz_pim, weight);
+                        h_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(Vz_pim, weight);
 
-                            h_corrected_Vz_pimFD_AC_sector4_1e_cut->Fill(corrected_Vz_pim, weight);
-                            h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_sector4_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector4_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                            h_dVz_pimFD_AC_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_zoomin_sector4_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pimFD_AC_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector4_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                            h_Vz_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_pimFD_AC_sector4_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_corrected_Vz_VS_phi_pimFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_pimFD_AC_sector4_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_corrected_Vz_VS_phi_pimFD_AC_sector4_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
+                                                                                          weight);
 
-                            raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector4_1e_cut, weight);
-                        } else if (piminus[i]->getSector() == 5) {
-                            h_Vx_pimFD_AC_sector5_1e_cut->Fill(Vx_pim, weight);
-                            h_Vy_pimFD_AC_sector5_1e_cut->Fill(Vy_pim, weight);
-                            h_Vz_pimFD_AC_sector5_1e_cut->Fill(Vz_pim, weight);
-                            h_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pim, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector4_1e_cut, weight);
+                    } else if (piminus[i]->getSector() == 5) {
+                        h_Vx_pimFD_AC_sector5_1e_cut->Fill(Vx_pim, weight);
+                        h_Vy_pimFD_AC_sector5_1e_cut->Fill(Vy_pim, weight);
+                        h_Vz_pimFD_AC_sector5_1e_cut->Fill(Vz_pim, weight);
+                        h_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(Vz_pim, weight);
 
-                            h_corrected_Vz_pimFD_AC_sector5_1e_cut->Fill(corrected_Vz_pim, weight);
-                            h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_sector5_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector5_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                            h_dVz_pimFD_AC_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_zoomin_sector5_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pimFD_AC_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector5_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                            h_Vz_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_pimFD_AC_sector5_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_corrected_Vz_VS_phi_pimFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_pimFD_AC_sector5_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_corrected_Vz_VS_phi_pimFD_AC_sector5_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
+                                                                                          weight);
 
-                            raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector5_1e_cut, weight);
-                        } else if (piminus[i]->getSector() == 6) {
-                            h_Vx_pimFD_AC_sector6_1e_cut->Fill(Vx_pim, weight);
-                            h_Vy_pimFD_AC_sector6_1e_cut->Fill(Vy_pim, weight);
-                            h_Vz_pimFD_AC_sector6_1e_cut->Fill(Vz_pim, weight);
-                            h_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pim, weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector5_1e_cut, weight);
+                    } else if (piminus[i]->getSector() == 6) {
+                        h_Vx_pimFD_AC_sector6_1e_cut->Fill(Vx_pim, weight);
+                        h_Vy_pimFD_AC_sector6_1e_cut->Fill(Vy_pim, weight);
+                        h_Vz_pimFD_AC_sector6_1e_cut->Fill(Vz_pim, weight);
+                        h_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(Vz_pim, weight);
 
-                            h_corrected_Vz_pimFD_AC_sector6_1e_cut->Fill(corrected_Vz_pim, weight);
-                            h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_sector6_1e_cut->Fill(corrected_Vz_pim, weight);
+                        h_corrected_Vz_pimFD_AC_zoomin_sector6_1e_cut->Fill(corrected_Vz_pim, weight);
 
-                            h_dVz_pimFD_AC_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                            h_dVz_pimFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        h_dVz_pimFD_AC_zoomin_sector6_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
 
-                            h_Vz_VS_phi_pimFD_AC_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_zoomin_sector6_1e_cut->Fill(piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
 
-                            h_Vz_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
-                            h_Vz_pimFD_AC_sector6_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
-                            h_Vz_VS_phi_pimFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
-                            h_corrected_Vz_VS_phi_pimFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
-                                                                                              weight);
+                        h_Vz_pipFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, Vz_pim, weight);
+                        h_Vz_pimFD_AC_sector6_zoomin_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, corrected_Vz_pim, weight);
+                        h_Vz_VS_phi_pimFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, Vz_pim, weight);
+                        h_corrected_Vz_VS_phi_pimFD_AC_sector6_1e_cut_BySliceOfTheta.Fill(piminus[i]->getTheta() * 180 / am::pi, piminus[i]->getPhi() * 180 / am::pi, corrected_Vz_pim,
+                                                                                          weight);
 
-                            raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector6_1e_cut, weight);
-                        }
-                    } else if (piminus[i]->getRegion() == CD) {
-                        h_Chi2_pimCD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
-
-                        h_Vx_pimCD_AC_1e_cut->Fill(Vx_pim, weight);
-                        h_Vy_pimCD_AC_1e_cut->Fill(Vy_pim, weight);
-                        h_Vz_pimCD_AC_1e_cut->Fill(Vz_pim, weight);
-                        h_Vz_pimCD_AC_zoomin_1e_cut->Fill(Vz_pim, weight);
-
-                        h_dVz_pimCD_AC_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
-                        h_dVz_pimCD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                        raf::fillDCdebug(piminus[i], h_dc_pimFD_hit_map_AC_sector6_1e_cut, weight);
                     }
+                } else if (piminus[i]->getRegion() == CD) {
+                    h_Chi2_pimCD_AC_1e_cut->Fill(piminus[i]->par()->getChi2Pid(), weight);
+
+                    h_Vx_pimCD_AC_1e_cut->Fill(Vx_pim, weight);
+                    h_Vy_pimCD_AC_1e_cut->Fill(Vy_pim, weight);
+                    h_Vz_pimCD_AC_1e_cut->Fill(Vz_pim, weight);
+                    h_Vz_pimCD_AC_zoomin_1e_cut->Fill(Vz_pim, weight);
+
+                    h_dVz_pimCD_AC_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
+                    h_dVz_pimCD_AC_zoomin_1e_cut->Fill(-(Vz_pim - electrons[0]->par()->getVz()), weight);
                 }
+            }
 
 #pragma endregion
 
