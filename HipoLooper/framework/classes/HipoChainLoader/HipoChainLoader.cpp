@@ -23,7 +23,9 @@ HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, con
         throw std::runtime_error(oss.str());
     }
 
-    if (opt_.print_progress) { std::cout << "\nHipoChainLoader: probing " << res.n_globbed << " file(s)\n"; }
+    if (opt_.print_progress) {
+        std::cout << env::SYSTEM_COLOR << "\nHipoChainLoader:" << env::INFO_COLOR << " probing " << res.n_globbed << " file(s)" << env::RESET_COLOR << "\n" << std::flush;
+    }
 
     res.added_files.reserve(files.size());
     res.skipped_files.reserve(files.size());
@@ -42,7 +44,9 @@ HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, con
         }
 
         if (opt_.print_progress && (idx % 200 == 0 || idx == res.n_globbed)) {
-            std::cout << "  checked " << idx << "/" << res.n_globbed << " | added " << res.added_files.size() << " | skipped " << res.skipped_files.size() << "\n";
+            std::cout << env::SYSTEM_COLOR << "\tchecked " << env::RESET_COLOR << idx << env::SYSTEM_COLOR << "/" << env::RESET_COLOR << res.n_globbed << env::SYSTEM_COLOR << " | added "
+                      << env::RESET_COLOR << res.added_files.size() << env::SYSTEM_COLOR << " | skipped " << env::RESET_COLOR << res.skipped_files.size() << "\n"
+                      << std::flush;
         }
     }
 
@@ -55,9 +59,11 @@ HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, con
     if (opt_.log_skipped && !res.skipped_files.empty()) { WriteSkippedLog_(res.skipped_files, sample_name_for_log); }
 
     if (opt_.print_skipped && !res.skipped_files.empty()) {
-        std::cout << "\nHipoChainLoader: skipped " << res.n_skipped << " bad file(s)\n";
-        for (const auto& f : res.skipped_files) { std::cout << "  skipped: " << f << "\n"; }
+        std::cout << env::SYSTEM_COLOR << "\nHipoChainLoader: skipped " << env::RESET_COLOR << res.n_skipped << env::SYSTEM_COLOR << " bad file(s)\n";
+        for (const auto& f : res.skipped_files) { std::cout << env::SYSTEM_COLOR << "  skipped: " << env::RESET_COLOR << f << "\n" << std::flush; }
     }
+
+    std::cout << std::endl;
 
     if (res.n_added == 0) {
         std::ostringstream oss;
@@ -142,7 +148,7 @@ void HipoChainLoader::WriteSkippedLog_(const std::vector<std::string>& skipped, 
 
     std::ofstream out(opt_.log_path, mode);
     if (!out) {
-        std::cerr << "\nHipoChainLoader: could not open log file: " << opt_.log_path << "\n";
+        std::cerr << "\nHipoChainLoader: could not open log file: " << opt_.log_path << "\n" << std::flush;
         return;
     }
 
@@ -175,10 +181,10 @@ void HipoChainLoader::AddToHipoChain(const ExperimentParameters& Experiment, Hip
                     std::string TempInputHipoFiles = "/" + RecoSamplePath + "/" + Runs.at(i) + "/*.hipo";
                     chain.Add(TempInputHipoFiles.c_str());
 
-                    if (PrintOut) { std::cout << TempInputHipoFiles << " directory added to HipoChain!\n"; }
+                    if (PrintOut) { std::cout << env::SYSTEM_COLOR << TempInputHipoFiles << " directory added to HipoChain!" << env::RESET_COLOR << "\n" << std::flush; }
                 }
 
-                if (PrintOut) { std::cout << "\n"; }
+                if (PrintOut) { std::cout << endl; }
             }
         } else if (sn == "C12x4_data_5986MeV") {
             if (ReconHipoDir == "") {
@@ -196,10 +202,10 @@ void HipoChainLoader::AddToHipoChain(const ExperimentParameters& Experiment, Hip
                     std::string TempInputHipoFiles = "/" + RecoSamplePath + "/" + Runs.at(i) + "/*.hipo";
                     chain.Add(TempInputHipoFiles.c_str());
 
-                    if (PrintOut) { std::cout << TempInputHipoFiles << " directory added to HipoChain!\n"; }
+                    if (PrintOut) { std::cout << env::SYSTEM_COLOR << TempInputHipoFiles << " directory added to HipoChain!" << env::RESET_COLOR << "\n" << std::flush; }
                 }
 
-                if (PrintOut) { std::cout << "\n"; }
+                if (PrintOut) { std::cout << endl; }
             }
         } else {
             chain.Add(InputHipoFiles.c_str());
@@ -207,7 +213,7 @@ void HipoChainLoader::AddToHipoChain(const ExperimentParameters& Experiment, Hip
     } else if (Experiment.GetSampleType() == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE) {
         chain.Add(InputHipoFiles.c_str());
 
-        if (PrintOut) { std::cout << InputHipoFiles << " directory added to HipoChain!\n\n"; }
+        if (PrintOut) { std::cout << env::SYSTEM_COLOR << InputHipoFiles << " directory added to HipoChain!" << env::RESET_COLOR << "\n\n" << std::flush; }
     }
 }
 #pragma endregion
@@ -259,15 +265,15 @@ void HipoChainLoader::AddToHipoChainFromList(const ExperimentParameters& Experim
         for (size_t i = 0; i < runs.size(); ++i) {
             const std::string TempInputHipoFiles = make_abs_run_glob(RecoSamplePath, runs.at(i));
             chain.Add(TempInputHipoFiles.c_str());
-            if (PrintOut) { std::cout << env::SYSTEM_COLOR << TempInputHipoFiles << " directory added to HipoChain!\n" << env::RESET_COLOR; }
+            if (PrintOut) { std::cout << env::SYSTEM_COLOR << TempInputHipoFiles << " directory added to HipoChain!" << env::RESET_COLOR << "\n" << std::flush; }
         }
-        if (PrintOut) { std::cout << env::SYSTEM_COLOR << "\n" << env::RESET_COLOR; }
+        if (PrintOut) { std::cout << endl; }
     };
 
     // Simulation-like samples: the caller should provide an explicit glob.
     if (effectiveType == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE || effectiveType == ExperimentParameters::SampleType::UNIFORM_TYPE) {
         chain.Add(InputHipoFiles.c_str());
-        if (PrintOut) { std::cout << env::SYSTEM_COLOR << InputHipoFiles << " directory added to HipoChain!\n\n" << env::RESET_COLOR; }
+        if (PrintOut) { std::cout << env::SYSTEM_COLOR << InputHipoFiles << " directory added to HipoChain!" << env::RESET_COLOR << "\n\n" << std::flush; }
         return;
     }
 
