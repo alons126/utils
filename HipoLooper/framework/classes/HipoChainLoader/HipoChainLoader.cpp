@@ -158,7 +158,7 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
 }
 
 // BuildFromList function -----------------------------------------------------------------------------------------------------------------------------------------------
-
+ 
 HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment, const std::string& RecoSamplePath,
                                                        const std::string& ReconHipoDir) const {
     // Get the glob patterns
