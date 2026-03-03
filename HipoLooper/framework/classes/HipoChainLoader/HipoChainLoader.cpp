@@ -162,7 +162,7 @@ void HipoChainLoader::AddToHipoChain(const ExperimentParameters& Experiment, Hip
                                      const std::string& InputHipoFiles) {
     bool PrintOut = true;
 
-    if (sampleType == DATA_TYPE) {
+    if (Experiment.GetSampleType() == ExperimentParameters::DATA_TYPE) {
         if (sn == "D2_data_2070MeV") {
             if (ReconHipoDir == "") {
                 /* Data in cache/clas12/rg-m/production/pass1/2gev/D/dst/recon */
@@ -204,7 +204,7 @@ void HipoChainLoader::AddToHipoChain(const ExperimentParameters& Experiment, Hip
         } else {
             chain.Add(InputHipoFiles.c_str());
         }
-    } else if (sampleType == GENIE_SIMULATION_TYPE) {
+    } else if (Experiment.GetSampleType() == ExperimentParameters::GENIE_SIMULATION_TYPE) {
         chain.Add(InputHipoFiles.c_str());
 
         if (PrintOut) { std::cout << InputHipoFiles << " directory added to HipoChain!\n\n"; }
