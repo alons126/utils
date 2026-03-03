@@ -180,7 +180,7 @@ void HipoLooper() {
         if (target_status == "_Unknown") { std::cerr << "\n\n\033[31mError!\033[0m Target not found in InputFiles string! Aborting...\n\n", exit(1); }
 
         std::string sample_type_status = IsData ? "_data" : "_sim";
-        std::string genie_tune_status = !IsData ? "_G18_" : "_";
+        std::string genie_tune_status = (bt::FindSubstring(InputFiles.at(sample), "G18")) ? "_G18_" : (bt::FindSubstring(InputFiles.at(sample), "GEM21")) ? "_SuSa_" : "_";
         std::string Ebeam_status_1 = Is2GeV ? "2GeV" : Is4GeV ? "4GeV" : Is6GeV ? "6GeV" : "_Unknown";
         std::string Ebeam_status_2 = Is2GeV ? "_2GeV" : Is4GeV ? "_4GeV" : Is6GeV ? "_6GeV" : "_Unknown";
 
