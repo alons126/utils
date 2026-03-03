@@ -50,27 +50,39 @@ namespace env = environment;
 class HipoChainLoader {
    public:
     struct Options {
-        bool print_progress = true;
-        bool print_skipped = true;
+        bool print_progress;
+        bool print_skipped;
 
-        bool log_skipped = true;
-        std::string log_path = "skipped_hipo_files.txt";
-        bool append_log = true;
+        bool log_skipped;
+        std::string log_path;
+        bool append_log;
 
-        std::vector<int> reader_tags = {0};
-        bool turn_off_qadb = true;
+        std::vector<int> reader_tags;
+        bool turn_off_qadb;
 
         // If true, treat files with nRecords <= 0 as bad.
-        bool require_positive_records = true;
+        bool require_positive_records;
+
+        Options()
+            : print_progress(true),
+              print_skipped(true),
+              log_skipped(true),
+              log_path("skipped_hipo_files.txt"),
+              append_log(true),
+              reader_tags({0}),
+              turn_off_qadb(true),
+              require_positive_records(true) {}
     };
 
     struct Result {
-        int n_globbed = 0;
-        int n_added = 0;
-        int n_skipped = 0;
+        int n_globbed;
+        int n_added;
+        int n_skipped;
 
         std::vector<std::string> added_files;
         std::vector<std::string> skipped_files;
+
+        Result() : n_globbed(0), n_added(0), n_skipped(0) {}
     };
 
     const Options& GetOptions() const;
