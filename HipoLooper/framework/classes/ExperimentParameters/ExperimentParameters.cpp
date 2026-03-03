@@ -111,11 +111,11 @@ ExperimentParameters::ExperimentParameters(const std::string& RecoSamplePath, co
     this->ConfiguredVz_cuts();
     if (PrintOut) {
         std::cout << env::SYSTEM_COLOR << "8) Configure vertex-z cuts (Vz) and delta-vertex cuts (dVz) based on the canonical sample name:\n" << env::RESET_COLOR << std::flush;
-        std::cout << env::SYSTEM_COLOR << "\tConfigured Vz_cuts: " << env::RESET_COLOR << this->Vz_cuts.GetName() << env::SYSTEM_COLOR << " [" << env::RESET_COLOR << this->Vz_cuts.GetMin()
-                  << env::SYSTEM_COLOR << ", " << env::RESET_COLOR << this->Vz_cuts.GetMax() << env::SYSTEM_COLOR << "]\n"
+        std::cout << env::SYSTEM_COLOR << "\tConfigured Vz_cuts: " << env::RESET_COLOR << this->Vz_cuts.GetCutVariable() << env::SYSTEM_COLOR << " [" << env::RESET_COLOR
+                  << this->Vz_cuts.GetLowerCut() << env::SYSTEM_COLOR << ", " << env::RESET_COLOR << this->Vz_cuts.GetUpperCut() << env::SYSTEM_COLOR << "]\n"
                   << env::RESET_COLOR << std::flush;
-        std::cout << env::SYSTEM_COLOR << "\tConfigured dVz_cuts: " << env::RESET_COLOR << this->dVz_cuts_def.GetName() << env::SYSTEM_COLOR << " [" << env::RESET_COLOR
-                  << this->dVz_cuts_def.GetMin() << env::SYSTEM_COLOR << ", " << env::RESET_COLOR << this->dVz_cuts_def.GetMax() << env::SYSTEM_COLOR << "]\n"
+        std::cout << env::SYSTEM_COLOR << "\tConfigured dVz_cuts: " << env::RESET_COLOR << this->dVz_cuts_def.GetCutVariable() << env::SYSTEM_COLOR << " [" << env::RESET_COLOR
+                  << this->dVz_cuts_def.GetLowerCut() << env::SYSTEM_COLOR << ", " << env::RESET_COLOR << this->dVz_cuts_def.GetUpperCut() << env::SYSTEM_COLOR << "]\n"
                   << env::RESET_COLOR << std::flush;
     }
 
