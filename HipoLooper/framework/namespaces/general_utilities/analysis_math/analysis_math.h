@@ -15,7 +15,7 @@
 // Include libraries:
 #include "../basic_tools.h"
 #include "../constants.h"
-#include "../variable_correctors.h"
+#include "../variable_correctors/variable_correctors.h"
 
 // Include CLAS12 libraries:
 #include "../../../includes/clas12_include.h"
