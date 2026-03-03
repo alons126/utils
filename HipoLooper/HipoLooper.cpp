@@ -70,7 +70,7 @@ void HipoLooper() {
     // int Limiter = 100000;  // 10 files or 100K events (fo the data)
     // int Limiter = 10000;  // 1 file
 
-    std::string BaseDir = "/lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
+    std::string BaseDir = "lustre24/expphy/volatile/clas12/asportes/2N_Analysis_Reco_Samples/GENIE_Reco_Samples";
 
     std::vector<std::string> InputFiles;
 
@@ -109,10 +109,10 @@ void HipoLooper() {
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_C_L");
     // InputFiles.push_back(BaseDir + "/C12/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_C_L");
 
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
     // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
-    InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
+    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
 
     std::vector<std::vector<double>> theta_slices;
     double theta_start = 10.0;  // Degrees
