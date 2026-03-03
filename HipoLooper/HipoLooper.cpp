@@ -40,6 +40,7 @@
 using namespace clas12;
 using namespace constants;
 
+namespace pd = path_definitions;
 namespace bt = basic_tools;
 namespace am = analysis_math;
 namespace raf = reco_analysis_functions;
@@ -210,7 +211,8 @@ void HipoLooper() {
 
         HipoChainLoader::Options opt;
         opt.log_skipped = true;
-        opt.log_path = OutputDir + "/skipped_hipo_files.txt";
+        opt.log_path = OutputDir + pd::skipped_files_list_prefix;
+        // opt.log_path = OutputDir + "/skipped_hipo_files.txt";
         opt.append_log = true;
         opt.reader_tags = {0};
         opt.turn_off_qadb = true;
@@ -219,7 +221,8 @@ void HipoLooper() {
 
         HipoChainLoader loader(opt);
 
-        auto [chain, loadRes] = loader.Build(InputFiles.at(sample), SampleName);
+        auto [chainPtr, loadRes] = loader.BuildPtr(InputFiles.at(sample), SampleName);
+        auto& chain = *chainPtr;
 
         // Then continue exactly as usual
         auto config_c12 = chain.GetC12Reader();
