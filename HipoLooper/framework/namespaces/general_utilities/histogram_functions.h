@@ -60,8 +60,8 @@ namespace histogram_functions {
  * @param bin   Bin index (0-based).
  * @param weight  Optional weight for the bin content (default is 1.0).
  */
-void FillByInt1D(TH1D* H1D_All_Int, TH1D* H1D_QEL, TH1D* H1D_MEC, TH1D* H1D_RES, TH1D* H1D_DIS, const bool& qel, const bool& mec, const bool& res, const bool& dis, const double& Variable,
-                 const double& Weight) {
+void FillByInt1D(TH1D *H1D_All_Int, TH1D *H1D_QEL, TH1D *H1D_MEC, TH1D *H1D_RES, TH1D *H1D_DIS, const bool &qel, const bool &mec, const bool &res, const bool &dis, const double &Variable,
+                 const double &Weight) {
     H1D_All_Int->Fill(Variable, Weight);
 
     if (qel) {
@@ -85,8 +85,8 @@ void FillByInt1D(TH1D* H1D_All_Int, TH1D* H1D_QEL, TH1D* H1D_MEC, TH1D* H1D_RES,
  * @param ybin  Bin index along the Y-axis (0-based).
  * @param weight  Optional weight for the bin content (default is 1.0).
  */
-void FillByInt2D(TH2D* H1D_All_Int, TH2D* H1D_QEL, TH2D* H1D_MEC, TH2D* H1D_RES, TH2D* H1D_DIS, const bool& qel, const bool& mec, const bool& res, const bool& dis, const double& Variable_x,
-                 const double& Variable_y, const double& Weight) {
+void FillByInt2D(TH2D *H1D_All_Int, TH2D *H1D_QEL, TH2D *H1D_MEC, TH2D *H1D_RES, TH2D *H1D_DIS, const bool &qel, const bool &mec, const bool &res, const bool &dis, const double &Variable_x,
+                 const double &Variable_y, const double &Weight) {
     H1D_All_Int->Fill(Variable_x, Variable_y, Weight);
 
     if (qel) {
@@ -123,8 +123,8 @@ void FillByInt2D(TH2D* H1D_All_Int, TH2D* H1D_QEL, TH2D* H1D_MEC, TH2D* H1D_RES,
  * @param Variable_y        Y value to fill (for 2D histograms)
  * @param Weight            Optional event weight (default 1.0)
  */
-void FillByInthsPlots(hsPlots& hsPlots_All_Int, hsPlots& hsPlots_QEL, hsPlots& hsPlots_MEC, hsPlots& hsPlots_RES, hsPlots& hsPlots_DIS, hsPlots::HistoType type, const bool& qel,
-                      const bool& mec, const bool& res, const bool& dis, const double& Slice_variable, const double& Variable_x, const double& Variable_y, const double& Weight = 1.0) {
+void FillByInthsPlots(hsPlots &hsPlots_All_Int, hsPlots &hsPlots_QEL, hsPlots &hsPlots_MEC, hsPlots &hsPlots_RES, hsPlots &hsPlots_DIS, hsPlots::HistoType type, const bool &qel,
+                      const bool &mec, const bool &res, const bool &dis, const double &Slice_variable, const double &Variable_x, const double &Variable_y, const double &Weight = 1.0) {
     bool PrintOut = false;
 
     if (PrintOut) { std::cout << "\n\nFill all int start\n\n"; }
@@ -283,7 +283,7 @@ void FillByInthsPlots(hsPlots& hsPlots_All_Int, hsPlots& hsPlots_QEL, hsPlots& h
  * @param s The original string to sanitize
  * @return A sanitized version of the string suitable for bookmarks
  */
-std::string SanitizeForBookmark(const std::string& s) {
+std::string SanitizeForBookmark(const std::string &s) {
     std::string out;
     for (char c : s) {
         if (c == '>' || (c >= 32 && c != '/' && c != '\\'))  // keep '>' and printable characters except '/' and '\'
@@ -331,7 +331,7 @@ std::string SanitizeForBookmark(const std::string& s) {
  *
  * @note This function calls external tools (`java`, `gs`) via `system()` and assumes they are available in the environment.
  */
-void ReassignPDFBookmarks(const std::string WorkingDir, const std::string& inputPDF, const std::string& outputPDF, bool hierarchical = false) {
+void ReassignPDFBookmarks(const std::string WorkingDir, const std::string &inputPDF, const std::string &outputPDF, bool hierarchical = false) {
     std::string toolDir = WorkingDir + "framework/java/ReassignBookmarksTool/";
     std::string libDir = toolDir + "lib/*";
     std::string classpath = toolDir + ":" + libDir;  // include toolDir explicitly
@@ -382,16 +382,16 @@ void ReassignPDFBookmarks(const std::string WorkingDir, const std::string& input
  * @param replacement Replacement string.
  */
 template <typename T>
-void TitleAligner(T* obj, std::string& title, std::string& xLabel, const std::string& originToReplace, const std::string& replacement) {
-    auto updateTitle = [&](std::string& str, auto setTitleFunc) {
+void TitleAligner(T *obj, std::string &title, std::string &xLabel, const std::string &originToReplace, const std::string &replacement) {
+    auto updateTitle = [&](std::string &str, auto setTitleFunc) {
         if (bt::FindSubstring(str, originToReplace)) {
             str = bt::ReplaceSubstring(str, originToReplace, replacement);
             setTitleFunc(str.c_str());
         }
     };
 
-    updateTitle(title, [&](const char* newTitle) { obj->SetTitle(newTitle); });
-    updateTitle(xLabel, [&](const char* newTitle) { obj->GetXaxis()->SetTitle(newTitle); });
+    updateTitle(title, [&](const char *newTitle) { obj->SetTitle(newTitle); });
+    updateTitle(xLabel, [&](const char *newTitle) { obj->GetXaxis()->SetTitle(newTitle); });
 }
 
 /**
@@ -409,17 +409,17 @@ void TitleAligner(T* obj, std::string& title, std::string& xLabel, const std::st
  * @param replacement Replacement string.
  */
 template <typename T>
-void TitleAligner(T* obj, std::string& title, std::string& xLabel, std::string& yLabel, const std::string& originToReplace, const std::string& replacement) {
-    auto updateTitle = [&](std::string& str, auto setTitleFunc) {
+void TitleAligner(T *obj, std::string &title, std::string &xLabel, std::string &yLabel, const std::string &originToReplace, const std::string &replacement) {
+    auto updateTitle = [&](std::string &str, auto setTitleFunc) {
         if (bt::FindSubstring(str, originToReplace)) {
             str = bt::ReplaceSubstring(str, originToReplace, replacement);
             setTitleFunc(str.c_str());
         }
     };
 
-    updateTitle(title, [&](const char* newTitle) { obj->SetTitle(newTitle); });
-    updateTitle(xLabel, [&](const char* newTitle) { obj->GetXaxis()->SetTitle(newTitle); });
-    updateTitle(yLabel, [&](const char* newTitle) { obj->GetYaxis()->SetTitle(newTitle); });
+    updateTitle(title, [&](const char *newTitle) { obj->SetTitle(newTitle); });
+    updateTitle(xLabel, [&](const char *newTitle) { obj->GetXaxis()->SetTitle(newTitle); });
+    updateTitle(yLabel, [&](const char *newTitle) { obj->GetYaxis()->SetTitle(newTitle); });
 }
 
 /**
@@ -442,11 +442,11 @@ void TitleAligner(T* obj, std::string& title, std::string& xLabel, std::string& 
  * @param originToReplace Substring to search for in the title and axis labels.
  * @param replacement Replacement string to substitute for the found substring.
  */
-void TitleAligner(TObject* obj, const std::string& originToReplace, const std::string& replacement) {
+void TitleAligner(TObject *obj, const std::string &originToReplace, const std::string &replacement) {
     if (!obj) return;
 
     std::string title = obj->GetTitle();
-    auto updateTitle = [&](std::string& str, auto setTitleFunc) {
+    auto updateTitle = [&](std::string &str, auto setTitleFunc) {
         if (bt::FindSubstring(str, originToReplace)) {
             str = bt::ReplaceSubstring(str, originToReplace, replacement);
             setTitleFunc(str.c_str());
@@ -454,24 +454,24 @@ void TitleAligner(TObject* obj, const std::string& originToReplace, const std::s
     };
 
     // Safely set the main title only if obj inherits from TNamed
-    if (auto namedObj = dynamic_cast<TNamed*>(obj)) {
-        updateTitle(title, [&](const char* newTitle) { namedObj->SetTitle(newTitle); });
+    if (auto namedObj = dynamic_cast<TNamed *>(obj)) {
+        updateTitle(title, [&](const char *newTitle) { namedObj->SetTitle(newTitle); });
     }
 
     if (obj->InheritsFrom(TH1::Class())) {
-        TH1* h = static_cast<TH1*>(obj);
+        TH1 *h = static_cast<TH1 *>(obj);
         std::string xLabel = h->GetXaxis()->GetTitle();
         std::string yLabel = h->GetYaxis()->GetTitle();
-        updateTitle(xLabel, [&](const char* newTitle) { h->GetXaxis()->SetTitle(newTitle); });
-        updateTitle(yLabel, [&](const char* newTitle) { h->GetYaxis()->SetTitle(newTitle); });
+        updateTitle(xLabel, [&](const char *newTitle) { h->GetXaxis()->SetTitle(newTitle); });
+        updateTitle(yLabel, [&](const char *newTitle) { h->GetYaxis()->SetTitle(newTitle); });
     } else if (obj->InheritsFrom(THStack::Class())) {
-        THStack* stack = static_cast<THStack*>(obj);
-        TH1* frameHist = stack->GetHistogram();
+        THStack *stack = static_cast<THStack *>(obj);
+        TH1 *frameHist = stack->GetHistogram();
         if (!frameHist) return;
         std::string xLabel = frameHist->GetXaxis()->GetTitle();
         std::string yLabel = frameHist->GetYaxis()->GetTitle();
-        updateTitle(xLabel, [&](const char* newTitle) { frameHist->GetXaxis()->SetTitle(newTitle); });
-        updateTitle(yLabel, [&](const char* newTitle) { frameHist->GetYaxis()->SetTitle(newTitle); });
+        updateTitle(xLabel, [&](const char *newTitle) { frameHist->GetXaxis()->SetTitle(newTitle); });
+        updateTitle(yLabel, [&](const char *newTitle) { frameHist->GetYaxis()->SetTitle(newTitle); });
     }
 }
 
@@ -485,8 +485,8 @@ void TitleAligner(TObject* obj, const std::string& originToReplace, const std::s
  * @param originToReplace Substring to search for and replace in titles and labels.
  * @param replacement Replacement string.
  */
-void TitleAligner(TH1D* simHistogram, TH1D* dataHistogram, const std::string& originToReplace, const std::string& replacement) {
-    auto updateTitle = [&](TH1D* hist) {
+void TitleAligner(TH1D *simHistogram, TH1D *dataHistogram, const std::string &originToReplace, const std::string &replacement) {
+    auto updateTitle = [&](TH1D *hist) {
         std::string title = hist->GetTitle();
         std::string xLabel = hist->GetXaxis()->GetTitle();
         std::string yLabel = hist->GetYaxis()->GetTitle();
@@ -523,11 +523,11 @@ void TitleAligner(TH1D* simHistogram, TH1D* dataHistogram, const std::string& or
  * @param outputPDF     Full path to the output multipage PDF file.
  * @param title         Optional title drawn at the top of each page.
  */
-void DrawAndSaveHistogramsToPDF(TCanvas* MainCanvas, const std::vector<TObject*>& HistoList, const std::string& Histogram_OutPDF_fileName_str, char* Histogram_OutPDF_fileName_char,
-                                const std::string& SampleName, const std::string& VaryingSampleName, const double& beamE) {
+void DrawAndSaveHistogramsToPDF(TCanvas *MainCanvas, const std::vector<TObject *> &HistoList, const std::string &Histogram_OutPDF_fileName_str, char *Histogram_OutPDF_fileName_char,
+                                const std::string &SampleName, const std::string &VaryingSampleName, const double &beamE) {
     int pixelx = 1980;
     int pixely = 1530;
-    TCanvas* TextCanvas = new TCanvas("TextCanvas", "TextCanvas", pixelx, pixely);
+    TCanvas *TextCanvas = new TCanvas("TextCanvas", "TextCanvas", pixelx, pixely);
     TLatex titles;
     TLatex text;
     titles.SetTextSize(0.1);
@@ -561,7 +561,7 @@ void DrawAndSaveHistogramsToPDF(TCanvas* MainCanvas, const std::vector<TObject*>
         gStyle->SetOptStat("ourmen");
 
         if (HistoList[i]->InheritsFrom("TH2")) {
-            TH2* h2 = dynamic_cast<TH2*>(HistoList[i]);
+            TH2 *h2 = dynamic_cast<TH2 *>(HistoList[i]);
             if (!h2) continue;
             h2->GetYaxis()->SetTitleOffset(1.5);
             h2->GetXaxis()->SetTitleOffset(1.1);
@@ -571,13 +571,13 @@ void DrawAndSaveHistogramsToPDF(TCanvas* MainCanvas, const std::vector<TObject*>
 
             if (h2->GetEntries() != 0) {
                 gPad->Update();
-                TPaletteAxis* palette = (TPaletteAxis*)h2->GetListOfFunctions()->FindObject("palette");
+                TPaletteAxis *palette = (TPaletteAxis *)h2->GetListOfFunctions()->FindObject("palette");
                 if (palette) palette->SetY2NDC(0.475);
                 gPad->Modified();
                 gPad->Update();
             }
         } else if (HistoList[i]->InheritsFrom("TH1")) {
-            TH1* h1 = dynamic_cast<TH1*>(HistoList[i]);
+            TH1 *h1 = dynamic_cast<TH1 *>(HistoList[i]);
             if (!h1) continue;
             h1->GetYaxis()->SetTitleOffset(1.5);
             h1->GetXaxis()->SetTitleOffset(1.1);
@@ -616,22 +616,22 @@ void DrawAndSaveHistogramsToPDF(TCanvas* MainCanvas, const std::vector<TObject*>
  * TH1D *hist = dynamic_cast<TH1D*>(FindHistogram(file, "myHist", "TH1D"));
  * if (hist) hist->Draw();
  */
-TObject* FindHistogram(TFile* file, const char* histNameSubstring, const std::string& desiredClass) {
+TObject *FindHistogram(TFile *file, const char *histNameSubstring, const std::string &desiredClass) {
     bool PrintOut = false;
     bool PrintOut1 = false;
 
-    TObject* foundHistogram = nullptr;
+    TObject *foundHistogram = nullptr;
     bool histogramFound = false;
     std::string foundHistName;
 
     // Step 1: Create an iterator over all keys in the ROOT file
     TIter next(file->GetListOfKeys());
-    TKey* key;
+    TKey *key;
 
     // Step 2: Loop through each key in the ROOT file
-    while ((key = (TKey*)next())) {
+    while ((key = (TKey *)next())) {
         // Step 2a: Read the object from the file
-        TObject* obj = key->ReadObj();
+        TObject *obj = key->ReadObj();
         if (!obj) continue;  // If object couldn't be read, skip
 
         std::string objName = obj->GetName();
@@ -647,7 +647,7 @@ TObject* FindHistogram(TFile* file, const char* histNameSubstring, const std::st
         // Step 2c: If matches, clone the object to detach from file and safely return to caller
         foundHistogram = obj->Clone();
         // Step 2d: Unlink from any ROOT directory (avoids automatic file cleanup)
-        if (foundHistogram->InheritsFrom(TH1::Class())) { ((TH1*)foundHistogram)->SetDirectory(nullptr); }
+        if (foundHistogram->InheritsFrom(TH1::Class())) { ((TH1 *)foundHistogram)->SetDirectory(nullptr); }
         histogramFound = true;
         foundHistName = obj->ClassName();
 
@@ -682,7 +682,7 @@ TObject* FindHistogram(TFile* file, const char* histNameSubstring, const std::st
  * @param label  The title or label of the missing/empty histogram to show in the notice.
  */
 void DrawEmptyHistogramNotice(double x_1, double y_1, double x_2, double y_2, double diplayTextSize = 0.1) {
-    TPaveText* displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
+    TPaveText *displayText = new TPaveText(x_1, y_1, x_2, y_2, "NDC");
     displayText->SetTextSize(diplayTextSize);
     displayText->SetFillColor(0);
     displayText->AddText("Empty histogram");
@@ -700,24 +700,24 @@ void DrawEmptyHistogramNotice(double x_1, double y_1, double x_2, double y_2, do
  * @param hist  Pointer to a TH1 histogram (TH1D, TH1F, TH2D, etc.).
  * @return      True if the histogram has no entries, false otherwise.
  */
-bool IsHistogramEmpty(TObject* obj) {
+bool IsHistogramEmpty(TObject *obj) {
     if (obj->InheritsFrom(TH1::Class())) {
-        TH1* h = (TH1*)obj;
+        TH1 *h = (TH1 *)obj;
         return (h->GetEntries() == 0 || h->Integral() == 0);
     } else if (obj->InheritsFrom(THStack::Class())) {
-        THStack* hs = (THStack*)obj;
-        TList* hists = hs->GetHists();
+        THStack *hs = (THStack *)obj;
+        TList *hists = hs->GetHists();
         if (!hists) return true;
         TIter next(hists);
-        while (TObject* subobj = next()) {
+        while (TObject *subobj = next()) {
             if (subobj->InheritsFrom(TH1::Class())) {
-                TH1* h = (TH1*)subobj;
+                TH1 *h = (TH1 *)subobj;
                 if (h->GetEntries() != 0 && h->Integral() != 0) return false;
             }
         }
         return true;
     } else if (obj->InheritsFrom(TH2::Class())) {
-        TH2* h2 = (TH2*)obj;
+        TH2 *h2 = (TH2 *)obj;
         return (h2->GetEntries() == 0 || h2->Integral() == 0);
     }
     return true;
@@ -737,30 +737,30 @@ bool IsHistogramEmpty(TObject* obj) {
  * @param ytitle    Y-axis title.
  * @param logY      Whether to set the Y-axis to log scale.
  */
-void DrawTHStack(THStack* stack, bool useLogScale) {
+void DrawTHStack(THStack *stack, bool useLogScale) {
     if (!stack) { return; }
 
     if (useLogScale) { gPad->SetLogy(1); }
 
-    TList* histList = stack->GetHists();
+    TList *histList = stack->GetHists();
     if (!histList) { return; }
 
     // Prepare histogram pointers
-    TH1* H1D_All_Int = nullptr;
-    TH1* H1D_QEL = nullptr;
-    TH1* H1D_MEC = nullptr;
-    TH1* H1D_RES = nullptr;
-    TH1* H1D_DIS = nullptr;
+    TH1 *H1D_All_Int = nullptr;
+    TH1 *H1D_QEL = nullptr;
+    TH1 *H1D_MEC = nullptr;
+    TH1 *H1D_RES = nullptr;
+    TH1 *H1D_DIS = nullptr;
 
     // Sort histograms by title
     TIter next(histList);
-    while (TObject* obj = next()) {
+    while (TObject *obj = next()) {
         if (obj->InheritsFrom(TH1::Class())) {
-            if (!((TH1*)obj)->GetSumw2N()) { ((TH1*)obj)->Sumw2(); }
+            if (!((TH1 *)obj)->GetSumw2N()) { ((TH1 *)obj)->Sumw2(); }
             // ((TH1 *)obj)->Sumw2(kTRUE);
-            ((TH1*)obj)->SetMarkerSize(0);
+            ((TH1 *)obj)->SetMarkerSize(0);
 
-            TH1* h = (TH1*)obj;
+            TH1 *h = (TH1 *)obj;
             TString title = h->GetTitle();
 
             if (title.Contains("All Int.")) {
@@ -866,7 +866,7 @@ void DrawTHStack(THStack* stack, bool useLogScale) {
  * Example usage:
  *   histogram_functions::FixPDFOrientation("/path/to/plot.pdf");
  */
-void FixPDFOrientation(const std::string& pdfFilePath) {
+void FixPDFOrientation(const std::string &pdfFilePath) {
     // Ensure the file ends with ".pdf"
     if (pdfFilePath.find(".pdf") != std::string::npos) {
         // Construct Ghostscript command:
@@ -892,16 +892,16 @@ void FixPDFOrientation(const std::string& pdfFilePath) {
 
 // CompareHistograms -------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void CompareHistograms(const std::vector<TObject*>& histograms, const std::string& saveDirectory, const std::string& saveDirectoryName = "", const std::string& ComparisonName = "") {
+void CompareHistograms(const std::vector<TObject *> &histograms, const std::string &saveDirectory, const std::string &saveDirectoryName = "", const std::string &ComparisonName = "") {
     size_t nHistos = histograms.size();
 
-    if (nHistos != 2 && nHistos != 3 && nHistos != 4 && nHistos != 5 && nHistos != 6) {
-        std::cerr << "\n\nhistogram_functions::CompareHistograms: ERROR! Only supports 2, 3, 4, 5, or 6 histograms!\n\n" << std::endl;
+    if (nHistos != 2 && nHistos != 4 && nHistos != 5 && nHistos != 6) {
+        std::cerr << "\n\nhistogram_functions::CompareHistograms: ERROR! Only supports 2, 4, 5, or 6 histograms!\n\n" << std::endl;
         return;
     }
 
-    int nCols = (nHistos == 2 || nHistos == 4) ? 2 : 3;  // 3 histos => 3 columns
-    int nRows = (nHistos == 2 || nHistos == 3) ? 1 : 2;  // 3 histos in a single row
+    int nCols = (nHistos == 2 || nHistos == 4) ? 2 : 3;
+    int nRows = (nHistos == 2) ? 1 : 2;
 
     int canvasWidth = 1000 * nCols;
     int canvasHeight = 750 * nRows;
@@ -909,8 +909,6 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
     std::vector<int> padMapping;
     if (nHistos == 2) {
         padMapping = {1, 2};
-    } else if (nHistos == 3) {
-        padMapping = {1, 2, 3};
     } else if (nHistos == 4) {
         padMapping = {1, 2, 3, 4};
     } else if (nHistos == 5) {
@@ -934,28 +932,27 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
         TempCanvas.cd(padMapping[i]);
         gPad->SetBottomMargin(0.14);
         gPad->SetLeftMargin(0.16);
-        // gPad->SetRightMargin(0.12);
-        gPad->SetRightMargin(0.23);
+        gPad->SetRightMargin(0.12);
 
         if (IsHistogramEmpty(histograms[i])) {
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
             if (nHistos != 5) { gPad->SetGrid(); }
 
-            ((TH1D*)histograms[i])->SetStats(1);
+            ((TH1D *)histograms[i])->SetStats(1);
             gStyle->SetOptStat("ourmen");
 
-            ((TH1D*)histograms[i])->GetYaxis()->SetTitleOffset(1.3);
-            ((TH1D*)histograms[i])->GetXaxis()->SetTitleOffset(1.0);
-            ((TH1D*)histograms[i])->SetLineColor(kRed);
-            ((TH1D*)histograms[i])->SetMarkerColor(kRed);
+            ((TH1D *)histograms[i])->GetYaxis()->SetTitleOffset(1.3);
+            ((TH1D *)histograms[i])->GetXaxis()->SetTitleOffset(1.0);
+            ((TH1D *)histograms[i])->SetLineColor(kRed);
+            ((TH1D *)histograms[i])->SetMarkerColor(kRed);
             // ((TH1D *)histograms[i])->SetLineColor(kBlue);
-            ((TH1D*)histograms[i])->SetLineWidth(1);
-            ((TH1D*)histograms[i])->SetLineStyle(1);
-            ((TH1D*)histograms[i])->Draw();
+            ((TH1D *)histograms[i])->SetLineWidth(1);
+            ((TH1D *)histograms[i])->SetLineStyle(1);
+            ((TH1D *)histograms[i])->Draw();
             gPad->Update();
 
-            TPaveStats* stats = (TPaveStats*)((TH1*)histograms[i])->FindObject("stats");
+            TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
             if (stats) {
                 double dx = stats->GetX2NDC() - stats->GetX1NDC();
                 double dy = stats->GetY2NDC() - stats->GetY1NDC();
@@ -967,7 +964,7 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
         } else if (histograms[i]->InheritsFrom(TH2D::Class())) {
             gPad->SetGrid();
 
-            TH2D* h2 = (TH2D*)histograms[i];
+            TH2D *h2 = (TH2D *)histograms[i];
 
             h2->SetStats(1);
             gStyle->SetOptStat("ourmen");
@@ -976,12 +973,12 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
 
             h2->Draw("COLZ");
             gPad->Update();
-            TPaletteAxis* palette = (TPaletteAxis*)h2->GetListOfFunctions()->FindObject("palette");
+            TPaletteAxis *palette = (TPaletteAxis *)h2->GetListOfFunctions()->FindObject("palette");
             if (palette) palette->SetY2NDC(0.475);
             gPad->Modified();
             gPad->Update();
 
-            TPaveStats* stats = (TPaveStats*)((TH1*)histograms[i])->FindObject("stats");
+            TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
             if (stats) {
                 double dx = stats->GetX2NDC() - stats->GetX1NDC();
                 double dy = stats->GetY2NDC() - stats->GetY1NDC();
@@ -993,7 +990,7 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
         } else if (histograms[i]->InheritsFrom(THStack::Class())) {
             if (nHistos != 5) { gPad->SetGrid(); }
 
-            DrawTHStack((THStack*)histograms[i], /* useLogScale = */ false);
+            DrawTHStack((THStack *)histograms[i], /* useLogScale = */ false);
         } else {
             std::cerr << "\n\nhistogram_functions::CompareHistograms: Warning: Object " << i << " is not a recognized histogram type!\n\n" << std::endl;
         }
@@ -1021,25 +1018,24 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
         gPad->SetGrid();
         gPad->SetBottomMargin(0.14);
         gPad->SetLeftMargin(0.16);
-        // gPad->SetRightMargin(0.12);
-        gPad->SetRightMargin(0.23);
+        gPad->SetRightMargin(0.12);
 
         if (IsHistogramEmpty(histograms[i])) {
             DrawEmptyHistogramNotice(0.2, 0.4, 0.8, 0.6);
         } else if (histograms[i]->InheritsFrom(TH1D::Class())) {
             gPad->SetLogy(0);  // reset log scale if needed
 
-            ((TH1D*)histograms[i])->SetMinimum(0.5);  // set positive Y-min to enable log scale
-            ((TH1D*)histograms[i])->SetLineColor(kRed);
-            ((TH1D*)histograms[i])->SetMarkerColor(kRed);
+            ((TH1D *)histograms[i])->SetMinimum(0.5);  // set positive Y-min to enable log scale
+            ((TH1D *)histograms[i])->SetLineColor(kRed);
+            ((TH1D *)histograms[i])->SetMarkerColor(kRed);
             // ((TH1D *)histograms[i])->SetLineColor(kBlue);
-            ((TH1D*)histograms[i])->SetLineWidth(1);
-            ((TH1D*)histograms[i])->SetLineStyle(1);
-            ((TH1D*)histograms[i])->Draw();
+            ((TH1D *)histograms[i])->SetLineWidth(1);
+            ((TH1D *)histograms[i])->SetLineStyle(1);
+            ((TH1D *)histograms[i])->Draw();
             gPad->SetLogy(1);
             gPad->Update();
 
-            TPaveStats* stats = (TPaveStats*)((TH1*)histograms[i])->FindObject("stats");
+            TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
             if (stats) {
                 double dx = stats->GetX2NDC() - stats->GetX1NDC();
                 double dy = stats->GetY2NDC() - stats->GetY1NDC();
@@ -1050,15 +1046,15 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
             }
         } else if (histograms[i]->InheritsFrom(TH2D::Class())) {
             gPad->SetLogz(1);
-            TH2D* h2 = (TH2D*)histograms[i];
+            TH2D *h2 = (TH2D *)histograms[i];
             h2->Draw("COLZ");
             gPad->Update();
-            TPaletteAxis* palette = (TPaletteAxis*)h2->GetListOfFunctions()->FindObject("palette");
+            TPaletteAxis *palette = (TPaletteAxis *)h2->GetListOfFunctions()->FindObject("palette");
             if (palette) palette->SetY2NDC(0.475);
             gPad->Modified();
             gPad->Update();
 
-            TPaveStats* stats = (TPaveStats*)((TH1*)histograms[i])->FindObject("stats");
+            TPaveStats *stats = (TPaveStats *)((TH1 *)histograms[i])->FindObject("stats");
             if (stats) {
                 double dx = stats->GetX2NDC() - stats->GetX1NDC();
                 double dy = stats->GetY2NDC() - stats->GetY1NDC();
@@ -1068,7 +1064,7 @@ void CompareHistograms(const std::vector<TObject*>& histograms, const std::strin
                 stats->SetY1NDC(0.875 - dy);
             }
         } else if (histograms[i]->InheritsFrom(THStack::Class())) {
-            DrawTHStack((THStack*)histograms[i], /* useLogScale = */ true);
+            DrawTHStack((THStack *)histograms[i], /* useLogScale = */ true);
         }
     }
 

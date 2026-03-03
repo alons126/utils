@@ -30,13 +30,11 @@
 #include "analysis_math/analysis_math.h"
 #include "analysis_physics/analysis_physics.h"
 #include "basic_tools.h"
-#include "environment.h"
 #include "constants.h"
 #include "data_processor.h"
 #include "histogram_functions.h"
 #include "lists.h"
 #include "reco_analysis_functions.h"
-#include "Yaml_loader/Yaml_loader.cpp"
 // #include "../truth_analysis_functions.h"
 
 namespace utilities {
@@ -48,7 +46,6 @@ using namespace lists;
 using namespace data_processor;
 using namespace reco_analysis_functions;
 using namespace histogram_functions;
-using namespace Yaml_loader;
 
 // ConfigRegion function ------------------------------------------------------------------------------------------------------------------------------------------------
 

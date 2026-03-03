@@ -17,7 +17,7 @@ echo "${COLOR_START}= Running update script                                     
 echo "${COLOR_START}=======================================================================${COLOR_END}"
 echo ""
 
-echo "${COLOR_START}- Cleaning excessive files --------------------------------------------${COLOR_END}"
+echo "${COLOR_START}- Cleaning excessive file ---------------------------------------------${COLOR_END}"
 echo ""
 
 # Clean the working tree by recursively removing files that are not under version control, starting from

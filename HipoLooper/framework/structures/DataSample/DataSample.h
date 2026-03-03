@@ -8,8 +8,8 @@
 #include <iostream>
 
 struct DataSample {
-    std::string SampleFilesTopDir = "";
-    std::string SampleFilesRecHipoDir = "";
+    std::string SampleFilePath = "";
+    std::string SampleFileName = "";
     std::string SampleFileDir = "";
     std::string SampleFile = "";
     std::string SampleName = "";

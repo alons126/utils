@@ -10,14 +10,14 @@
 // DataAnalyzer constructors ----------------------------------------------------------------------------------------------------------------------------------
 
 /* Default constructor */
-DataAnalyzer::DataAnalyzer(const std::string& FileType, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
+DataAnalyzer::DataAnalyzer(const std::string &FileType, const std::string &AnalyzeFilePath, const std::string &AnalyzeFileSample, const std::string &AnalyzeFile) {
     std::string AnalyzerMode = ConfigureAnalyzerMode(FileType);
-    this->RunEventAnalyzer(AnalyzerMode, RecoSamplePath, ReconHipoDir, InputHipoFiles);
+    RunEventAnalyzer(AnalyzerMode, AnalyzeFilePath, AnalyzeFileSample, AnalyzeFile);
 }
 
 // ConfigureAnalyzerMode function -----------------------------------------------------------------------------------------------------------------------------
 
-string DataAnalyzer::ConfigureAnalyzerMode(const std::string& FileType) {
+string DataAnalyzer::ConfigureAnalyzerMode(const std::string &FileType) {
     std::string AnalyzerMode;
 
     if (FileType == "root") {
@@ -33,12 +33,12 @@ string DataAnalyzer::ConfigureAnalyzerMode(const std::string& FileType) {
 
 // RunEventAnalyzer functions ---------------------------------------------------------------------------------------------------------------------------------
 
-void DataAnalyzer::RunEventAnalyzer(const std::string& AnalyzerMode, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
-    if (AnalyzerMode == "Detector Simulation") { RecoAnalyzer RecoEventAnalyzer = RecoAnalyzer(RecoSamplePath, ReconHipoDir, InputHipoFiles); }
+void DataAnalyzer::RunEventAnalyzer(const std::string &AnalyzerMode, const std::string &AnalyzeFilePath, const std::string &AnalyzeFileSample, const std::string &AnalyzeFile) {
+    if (AnalyzerMode == "Detector Simulation") { RecoAnalyzer RecoEventAnalyzer = RecoAnalyzer(AnalyzeFilePath, AnalyzeFileSample, AnalyzeFile); }
     // if (AnalyzerMode == "Truth level") {
     //     TruthAnalyzer TruthEventAnalyzer = TruthAnalyzer();
     // } else if (AnalyzerMode == "Detector Simulation") {
-    //     RecoAnalyzer RecoEventAnalyzer = RecoAnalyzer(RecoSamplePath, ReconHipoDir, InputHipoFiles);
+    //     RecoAnalyzer RecoEventAnalyzer = RecoAnalyzer(AnalyzeFilePath, AnalyzeFileSample, AnalyzeFile);
     // }
 };
 
