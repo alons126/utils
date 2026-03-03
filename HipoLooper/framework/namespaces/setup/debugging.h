@@ -5,16 +5,25 @@
 #ifndef DEBUGGING_H
 #define DEBUGGING_H
 
+#include <cstdlib>
 #include <iostream>
 
-#include "../../classes/Debugger/Debugger.cpp"
+// Include libraries:
+#include "../general_utilities/environment.h"
 #include "../settings/debugging_settings.h"
+
+// Include classes:
+#include "../../classes/Debugger/Debugger.cpp"
+
+namespace env = environment;
 
 namespace debugging {
 using namespace debugging_settings;
 
 // CodeDebugger declaration ---------------------------------------------------------------------------------------------------------------------------------------------
-Debugger CodeDebugger;
+
+inline Debugger CodeDebugger;
+
 }  // namespace debugging
 
 #endif  // DEBUGGING_H

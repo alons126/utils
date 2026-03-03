@@ -27,13 +27,13 @@ class Directories {
     #pragma region /* Number of Photo-electrons (Nphe) plots directories */
     bool create_Nphe_Dir = true;
     std::string Nphe_Parent_Directory = "01_Cuts_plots/01_Nphe_plots";
-    vector<std::string> Nphe_Daughter_Folders = {"", "01_1e_cut", "02_1p", "03_1n", "04_2p", "05_pFDpCD", "06_nFDpCD"};
+    std::vector<std::string> Nphe_Daughter_Folders = {"", "01_1e_cut", "02_1p", "03_1n", "04_2p", "05_pFDpCD", "06_nFDpCD"};
     #pragma endregion
 
     #pragma region /* Chi2 plots directories */
     bool create_chi2_Dir = true;
     std::string Chi2_Parent_Directory = "01_Cuts_plots/02_Chi2_plots";
-    vector<std::string> Chi2_Daughter_Folders = {"", "00_All_e", "01_1e_cut", "02_1p", "03_1n",
+    std::vector<std::string> Chi2_Daughter_Folders = {"", "00_All_e", "01_1e_cut", "02_1p", "03_1n",
                                                  //                                                 "04_1e2p_BC-AC_cut_tests",
                                                  "04_2p", "05_pFDpCD", "06_nFDpCD"};
     #pragma endregion
@@ -41,7 +41,7 @@ class Directories {
     #pragma region /* Vertex plots directories */
     bool create_Vertex_Dir = true;
     std::string Vertex_Parent_Directory = "01_Cuts_plots/03_Vertex_plots";
-    vector<std::string> Vertex_Daughter_Folders = {"",
+    std::vector<std::string> Vertex_Daughter_Folders = {"",
                                                    "01_1e_cut/01_cParticles_Vtx_comp_plots/01_Electrons",
                                                    "01_1e_cut/01_cParticles_Vtx_comp_plots/02_Protons",
                                                    "01_1e_cut/01_cParticles_Vtx_comp_plots/03_Kplus",
@@ -66,7 +66,7 @@ class Directories {
     #pragma region /* Sampling Fraction (SF) plots directories */
     bool create_SF_Dir = true;
     std::string SF_Parent_Directory = "01_Cuts_plots/04_SF_plots";
-    vector<std::string> SF_Daughter_Folders = {
+    std::vector<std::string> SF_Daughter_Folders = {
         "",
         "01_1e_cut/01_SF_plots",
         "01_1e_cut/02_SF_VS_P_e_plots",
@@ -91,7 +91,7 @@ class Directories {
     #pragma region /* Edge cuts histograms plots directories */
     bool create_fiducial_Dir = true;
     std::string ECAL_Fiducial_Parent_Directory = "01_Cuts_plots/05_ECAL_fiducial_cuts_plots";
-    vector<std::string> ECAL_Fiducial_Daughter_Folders = {"",
+    std::vector<std::string> ECAL_Fiducial_Daughter_Folders = {"",
 
                                                           "01_1e_cut/01_PCAL",
 
@@ -109,7 +109,7 @@ class Directories {
     #pragma region /* Momentum threshold plots directories */
     bool create_Momentum_Dir = true;
     std::string Momentum_Parent_Directory = "01_Cuts_plots/06_Momentum_plots";
-    vector<std::string> Momentum_Daughter_Folders = {
+    std::vector<std::string> Momentum_Daughter_Folders = {
         "",      "01_1e_cut", "01_1e_cut/01_Momentum_th_plots_1e_cut", "02_1p",     "02_1p/Analysis_plots_1p",        "03_1n", "03_1n/Analysis_plots_1n",
         "04_2p", "05_pFDpCD", "05_pFDpCD/Analysis_plots_pFDpCD",       "06_nFDpCD", "06_nFDpCD/Analysis_plots_nFDpCD"};
     #pragma endregion
@@ -119,7 +119,7 @@ class Directories {
     #pragma region /* Reaction monitoring plots directories */
     bool create_ReacMon_Dir = true;
     std::string ReacMon_Parent_Directory = "02_Rec_Mon_plots";
-    vector<std::string> ReacMon_Daughter_Folders = {"",  //
+    std::vector<std::string> ReacMon_Daughter_Folders = {"",  //
                                                     "02_1p",
                                                     "02_1p/01_P_miss_1N_plots_1p",
                                                     "02_1p/02_E_miss_1N_plots_1p",
@@ -170,13 +170,13 @@ class Directories {
     #pragma region /* W plots directories */
     bool create_W_Dir = true;
     std::string W_Parent_Directory = "03_W_plots";
-    vector<std::string> W_Daughter_Folders = {"", "01_1e_cut", "02_1p", "03_1n", "04_2p", "05_pFDpCD", "06_nFDpCD"};
+    std::vector<std::string> W_Daughter_Folders = {"", "01_1e_cut", "02_1p", "03_1n", "04_2p", "05_pFDpCD", "06_nFDpCD"};
     #pragma endregion
 
     #pragma region /* Beta plots directories */
     bool create_Beta_Dir = true;
     std::string Beta_Parent_Directory = "04_Beta_plots";
-    vector<std::string> Beta_Daughter_Folders = {"",
+    std::vector<std::string> Beta_Daughter_Folders = {"",
                                                  "01_Beta_fit_plots",
                                                  "01_Beta_fit_plots/03_1n",
                                                  "01_Beta_fit_plots/03_1n/01_Neutron_beta_from_fPhotons_plots_1n",
@@ -213,7 +213,7 @@ class Directories {
     #pragma region /* Angle plots directories */
     bool create_Angle_Dir = true;
     std::string Angle_Parent_Directory = "05_Angle_plots";
-    vector<std::string> Angle_Daughter_Folders = {"",
+    std::vector<std::string> Angle_Daughter_Folders = {"",
                                                   "00_All_e/01_Theta_e_All_e_plots",
                                                   "00_All_e/02_Phi_e_All_e_plots",
                                                   "00_All_e/03_Theta_e_VS_Phi_e_All_e_plots",
@@ -304,13 +304,13 @@ class Directories {
     #pragma region /* Momentum transfer plots directories */
     bool create_Momentum_transfer_Dir = true;
     std::string Momentum_transfer_Parent_Directory = "06_Momentum_transfer_plots";
-    vector<std::string> Momentum_transfer_Daughter_Folders = {"", "00_All_e", "01_1e_cut", "02_1p", "03_1n", "04_2p", "05_pFDpCD", "06_nFDpCD"};
+    std::vector<std::string> Momentum_transfer_Daughter_Folders = {"", "00_All_e", "01_1e_cut", "02_1p", "03_1n", "04_2p", "05_pFDpCD", "06_nFDpCD"};
     #pragma endregion
 
     #pragma region /* E_e plots directories */
     bool create_E_e_Dir = true;
     std::string E_e_Parent_Directory = "07_E_e_plots";
-    vector<std::string> E_e_Daughter_Folders = {"",
+    std::vector<std::string> E_e_Daughter_Folders = {"",
                                                 "01_1e_cut",
                                                 "01_1e_cut/E_e_plots_1e_cut",
                                                 "01_1e_cut/E_e_VS_Theta_e_1e_cut",
@@ -344,7 +344,7 @@ class Directories {
     #pragma region /* ETrans plots directories */
     bool create_ETrans_Dir = true;
     std::string Omega_Parent_Directory = "08_Omega_plots";
-    vector<std::string> Omega_Daughter_Folders = {"",
+    std::vector<std::string> Omega_Daughter_Folders = {"",
                                                   "02_1p",
                                                   "02_1p/02_Around_15_Deg_1p",
                                                   "02_1p/02_Around_15_Deg_1p/00_All_interactions",
@@ -419,7 +419,7 @@ class Directories {
     #pragma region /* Ecal plots directories */
     bool create_Ecal_Dir = true;
     std::string Ecal_Parent_Directory = "09_Ecal_rec_plots";
-    vector<std::string> Ecal_Daughter_Folders = {"",
+    std::vector<std::string> Ecal_Daughter_Folders = {"",
                                                  "02_1p",
                                                  "02_1p/01_Ecal_rec_by_reaction_1p/00_All_interactions",
                                                  "02_1p/01_Ecal_rec_by_reaction_1p/01_QEL_only",
@@ -477,7 +477,7 @@ class Directories {
     #pragma region /* TKI plots directories */
     bool create_TKI_Dir = true;
     std::string TKI_Parent_Directory = "10_TKI_plots";
-    vector<std::string> TKI_Daughter_Folders = {"",
+    std::vector<std::string> TKI_Daughter_Folders = {"",
                                                 "03_1n",
                                                 "03_1n/01_dP_T_1n",
                                                 "03_1n/02_dAlpha_T_1n",
@@ -508,13 +508,13 @@ class Directories {
     // todo: change this folder's name
     bool create_ToF_Dir = true;
     std::string ToF_Parent_Directory = "11_ToF_plots";
-    vector<std::string> ToF_Daughter_Folders = {"", "01_1e_cut", "01_1e_cut/01_Neutron_vs_cParticles_hits_FTOF_1e_cut", "06_nFDpCD", "06_nFDpCD/01_Neutron_vs_cParticles_hits_FTOF_nFDpCD"};
+    std::vector<std::string> ToF_Daughter_Folders = {"", "01_1e_cut", "01_1e_cut/01_Neutron_vs_cParticles_hits_FTOF_1e_cut", "06_nFDpCD", "06_nFDpCD/01_Neutron_vs_cParticles_hits_FTOF_nFDpCD"};
     #pragma endregion
 
     #pragma region /* Efficiency & Acceptance Correction plots directories */
     bool create_Eff_and_ACorr_Dir = true;
     std::string Eff_and_ACorr_Parent_Directory = "12_Eff_and_ACorr_plots";
-    vector<std::string> Eff_and_ACorr_Daughter_Folders = {
+    std::vector<std::string> Eff_and_ACorr_Daughter_Folders = {
         "",
         "01_1e_cut",
         "01_1e_cut/01_Momentum_Eff_and_ACorr_plots_1e_cut",
@@ -559,7 +559,7 @@ class Directories {
     #pragma region /* Acceptance maps plots directories */
     bool create_Acceptance_Maps_Dir = true;
     std::string AMaps_Parent_Directory = "13_Acceptance_maps_plots";
-    vector<std::string> Hit_Maps_Daughter_Folders = {
+    std::vector<std::string> Hit_Maps_Daughter_Folders = {
         "",
         "01_AMaps_1e_cut",
         "01_AMaps_1e_cut/00a_AMaps_BC_from_file",
@@ -572,7 +572,7 @@ class Directories {
     #pragma region /* Resolution plots directories */
     bool create_Resolution_Dir = true;
     std::string Resolution_Parent_Directory = "14_Resolution_plots";
-    vector<std::string> Resolution_Daughter_Folders = {
+    std::vector<std::string> Resolution_Daughter_Folders = {
         "",
         "02_1p",
         "02_1p/01_Proton_resolution_plots_1p",
@@ -597,7 +597,7 @@ class Directories {
     #pragma region /* Multiplicity plots directories */
     bool create_Multiplicity_Dir = true;
     std::string Multiplicity_Parent_Directory = "15_Multiplicity_plots";
-    vector<std::string> Multiplicity_Daughter_Folders = {
+    std::vector<std::string> Multiplicity_Daughter_Folders = {
         "", "01_1e_cut", "02_1p", "03_1n", "05_pFDpCD", "06_nFDpCD",
 
     };
@@ -607,7 +607,7 @@ class Directories {
 
     bool FindSubstring(string string1, std::string string2);
 
-    std::string Find(vector<std::string> vector, std::string string);
+    std::string Find(std::vector<std::string> vector, std::string string);
 
    public:
     map<std::string, std::string> Nphe_dir_map;

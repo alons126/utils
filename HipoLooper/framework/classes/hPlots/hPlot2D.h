@@ -54,8 +54,8 @@ class hPlot2D {
     /* Histogram xAxis limits and #bins */
     int HistogramNumberOfXBins;           // default #bins for 2D histogram is 250 (see constructor)
     int HistogramNumberOfYBins;           // default #bins for 2D histogram is 250 (see constructor)
-    vector<double> HistogramXAxisLimits;  // {LowerXlim, UpperXlim}
-    vector<double> HistogramYAxisLimits;  // {LowerYlim, UpperYlim}
+    std::vector<double> HistogramXAxisLimits;  // {LowerXlim, UpperXlim}
+    std::vector<double> HistogramYAxisLimits;  // {LowerYlim, UpperYlim}
 
     //    /* Histogram normalization setup */
     //    bool NormalizeHistogram;
@@ -65,7 +65,7 @@ class hPlot2D {
     /* Histogram appearance setup */
     int LineColor = 1;
     int LineWidth = 2;
-    vector<double> Histogram2DTitleSizes = {0.06, 0.0425, 0.0425, 0.0425};  // {TitleSize, LabelSizex, LabelSizey, LabelSizez}
+    std::vector<double> Histogram2DTitleSizes = {0.06, 0.0425, 0.0425, 0.0425};  // {TitleSize, LabelSizex, LabelSizey, LabelSizez}
     bool CenterTitle = true;
     bool ShowStats = true;
 
@@ -75,7 +75,7 @@ class hPlot2D {
 
     /* Histogram cuts setup */
     bool ShowPlotCuts = false;
-    // vector<double> - for cuts
+    // std::vector<double> - for cuts
     double PlotCuts = 0;
     double PlotXmax = 0;
     bool PlotHistogramMax = true;
@@ -109,42 +109,42 @@ class hPlot2D {
 
     #pragma region /* histPlotter2D function (regular) */
     /* histPlotter2D function (regular) */
-    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
+    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, std::vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
                        std::string Histogram2DSaveName, bool showStats = true);
 
     /* Corresponding hDrawAndSave function (regular) */
-    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, vector<TObject *> &HistoList, bool showStats = false);
+    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, std::vector<TObject *> &HistoList, bool showStats = false);
     #pragma endregion
 
     #pragma region /* histPlotter2D function (Beta vs. P plots, all particles) */
     /* histPlotter2D function (Beta vs. P plots, all particles) */
-    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
+    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, std::vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
                        std::string Histogram2DSaveName, TF1 *Beta_function1, TF1 *Beta_function2, TF1 *Beta_function3, TF1 *Beta_function4, TF1 *Beta_function5, TF1 *Beta_function6,
                        TF1 *Beta_function7, TF1 *Beta_function8, TF1 *Beta_function9, bool showStats = true);
 
     /* Corresponding hDrawAndSave function (Beta vs. P plots, all particles) */
-    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, vector<TObject *> &HistoList, TF1 *Beta_function1, TF1 *Beta_function2, TF1 *Beta_function3,
+    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, std::vector<TObject *> &HistoList, TF1 *Beta_function1, TF1 *Beta_function2, TF1 *Beta_function3,
                       TF1 *Beta_function4, TF1 *Beta_function5, TF1 *Beta_function6, TF1 *Beta_function7, TF1 *Beta_function8, TF1 *Beta_function, bool showStats = true);
     #pragma endregion
 
     #pragma region /* histPlotter2D function (Beta vs. P plots, single particle) */
     /* histPlotter2D function (Beta vs. P plots, single particle) */
-    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
+    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, std::vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
                        std::string Histogram2DSaveName, TF1 *Beta_function1, std::string particle1, bool showStats = true, bool plot_legend = true);
 
     /* Corresponding hDrawAndSave function (Beta vs. P plots, single particle) */
-    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, vector<TObject *> &HistoList, TF1 *Beta_function1, std::string particle1, bool showStats,
+    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, std::vector<TObject *> &HistoList, TF1 *Beta_function1, std::string particle1, bool showStats,
                       bool plot_legend = true);
     #pragma endregion
 
     #pragma region /* histPlotter2D function (Beta vs. P plots, 3 particles (by charge)) */
     /* histPlotter2D function (Beta vs. P plots, 3 particles (by charge)) */
-    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
+    void histPlotter2D(const std::string &SampleName, TCanvas *HistogramCanvas, TH2D *Histogram2D, TList *Histogram_list, std::vector<TObject *> &HistoList, std::string Histogram2DSaveNameDir,
                        std::string Histogram2DSaveName, TF1 *Beta_function1, std::string particle1, TF1 *Beta_function2, std::string particle2, TF1 *Beta_function3, std::string particle3,
                        bool showStats = true, bool plot_legend = true);
 
     /* Corresponding hDrawAndSave function (Beta vs. P plots, 3 particles (by charge)) */
-    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, vector<TObject *> &HistoList, TF1 *Beta_function1, std::string particle1, TF1 *Beta_function2,
+    void hDrawAndSave(const std::string &SampleName, TCanvas *h2DCanvas, TList *hList, std::vector<TObject *> &HistoList, TF1 *Beta_function1, std::string particle1, TF1 *Beta_function2,
                       std::string particle2, TF1 *Beta_function3, std::string particle3, bool showStats = true, bool plot_legend = true);
     #pragma endregion
 

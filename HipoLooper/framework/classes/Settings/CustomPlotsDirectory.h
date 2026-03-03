@@ -41,36 +41,36 @@ class CustomPlotsDirectory {
 
     // ConfigureStatuses function ------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigureStatuses(const bool &apply_cuts, const bool &clas12ana_particles, const bool &only_preselection_cuts, const bool &apply_chi2_cuts_1e_cut,
-                           const bool &only_electron_quality_cuts, const bool &apply_nucleon_cuts, const bool &Enable_FD_photons, const bool &apply_nucleon_SmearAndCorr,
-                           const bool &apply_kinematical_cuts, const bool &apply_kinematical_weights, const bool &apply_fiducial_cuts, const bool &Generate_AMaps,
-                           const bool &plot_and_fit_MomRes, const bool &VaryingDelta, const bool &Calculate_momResS2, const bool &Run_in_momResS2, const bool &nRes_test,
-                           const bool &Rec_wTL_ES, const bool &ZoomIn_On_mom_th_plots);
+    void ConfigureStatuses(const bool& apply_cuts, const bool& clas12ana_particles, const bool& only_preselection_cuts, const bool& apply_chi2_cuts_1e_cut,
+                           const bool& only_electron_quality_cuts, const bool& apply_nucleon_cuts, const bool& Enable_FD_photons, const bool& apply_nucleon_SmearAndCorr,
+                           const bool& apply_kinematical_cuts, const bool& apply_kinematical_weights, const bool& apply_fiducial_cuts, const bool& Generate_AMaps,
+                           const bool& plot_and_fit_MomRes, const bool& VaryingDelta, const bool& Calculate_momResS2, const bool& Run_in_momResS2, const bool& nRes_test,
+                           const bool& Rec_wTL_ES, const bool& ZoomIn_On_mom_th_plots);
 
     // SetPaths function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-    void SetPaths(const std::string &WorkingDirectory, const std::string &SampleName, const std::string &plots_path, const bool &apply_cuts, const bool &apply_chi2_cuts_1e_cut,
-                  const bool &apply_nucleon_cuts);
+    void SetPaths(const std::string& WorkingDirectory, const std::string& SampleName, const std::string& plots_path, const bool& apply_cuts, const bool& apply_chi2_cuts_1e_cut,
+                  const bool& apply_nucleon_cuts);
 
     // Set functions ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-    void SetCustomCutsNaming(const bool &custom_cuts_naming) { Custom_cuts_naming = custom_cuts_naming; }
+    void SetCustomCutsNaming(const bool& custom_cuts_naming) { Custom_cuts_naming = custom_cuts_naming; }
 
     // Get functions ---------------------------------------------------------------------------------------------------------------------------------------------------
 
     bool GetCustomCutsNaming() { return Custom_cuts_naming; }
 
-    void GetPlotsPath(string &plots_path) {
+    void GetPlotsPath(string& plots_path) {
         if (Custom_cuts_naming) { plots_path = Plots_path; }
     }
 
     std::string GetRun_dir_name() { return Run_dir_name; }
 
-    void GetPlotsLogSaveDirectory(string &plots_log_save_Directory) {
+    void GetPlotsLogSaveDirectory(string& plots_log_save_Directory) {
         if (Custom_cuts_naming) { plots_log_save_Directory = Plots_log_save_Directory; }
     }
 
-    void GetSkippedHipoFilesLogSaveDirectory(string &skipped_files_list_save_Directory) {
+    void GetSkippedHipoFilesLogSaveDirectory(string& skipped_files_list_save_Directory) {
         if (Custom_cuts_naming) { skipped_files_list_save_Directory = Skipped_files_list_save_Directory; }
     }
 

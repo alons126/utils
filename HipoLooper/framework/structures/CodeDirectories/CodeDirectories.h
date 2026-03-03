@@ -29,6 +29,7 @@ struct CodeDirectories {
     std::string MomentumResolutionDirectory;
     std::string NucleonCutsDirectory;
     std::string PIDCutsDirectory;
+    std::string ParameterCutFilesDirectory;
 
     CodeDirectories() {
         WorkingDirectory = basic_tools::GetCurrentDirectory() + "/";
@@ -47,6 +48,7 @@ struct CodeDirectories {
         MomentumResolutionDirectory = DataDirectory + "NeutronResolution/";
         NucleonCutsDirectory = DataDirectory + "NucleonCuts/";
         PIDCutsDirectory = DataDirectory + "PIDCuts/";
+        ParameterCutFilesDirectory = DataDirectory + "ParameterCutFiles/";
     }
 };  // struct CodeDirectories
 
