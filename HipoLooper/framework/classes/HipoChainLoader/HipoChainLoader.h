@@ -6,35 +6,41 @@
 // #define HIPOCHAINLOADER_H
 #ifdef HIPOCHAINLOADER_H
 
-    #include <glob.h>
-    #include <sys/types.h>
-    #include <sys/wait.h>
-    #include <unistd.h>
+/**
+ * @file HipoChainLoader.h
+ *
+ * @brief Safe builder for clas12root::HipoChain that filters corrupted HIPO files.
+ */
 
-    #include <algorithm>
-    #include <chrono>
-    #include <cstring>
-    #include <fstream>
-    #include <iomanip>
-    #include <iostream>
-    #include <memory>
-    #include <sstream>
-    #include <stdexcept>
-    #include <string>
-    #include <utility>
-    #include <vector>
+#include <glob.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
-    // Include libraries:
-    #include "../../namespaces/general_utilities/lists.h"
-    #include "../../namespaces/general_utilities/utilities.h"
-    #include "../../namespaces/setup/debugging.h"
-    #include "../../namespaces/setup/path_definitions.h"
+#include <algorithm>
+#include <chrono>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
-    // Include classes:
-    #include "../../classes/ExperimentParameters/ExperimentParameters.cpp"
+// Include libraries:
+#include "../../namespaces/general_utilities/lists.h"
+#include "../../namespaces/general_utilities/utilities.h"
+#include "../../namespaces/setup/debugging.h"
+#include "../../namespaces/setup/path_definitions.h"
 
-    // Include CLAS12 libraries:
-    #include "../../includes/clas12_include.h"
+// Include classes:
+#include "../../classes/ExperimentParameters/ExperimentParameters.cpp"
+
+// Include CLAS12 libraries:
+#include "../../includes/clas12_include.h"
 
 namespace env = environment;
 namespace pd = path_definitions;
@@ -51,19 +57,27 @@ namespace pd = path_definitions;
  */
 class HipoChainLoader {
    public:
+    /**
+     * @struct Options
+     *
+     * Runtime configuration for HipoChainLoader.
+     *
+     * Notes:
+     *   - `reader_tags` must be `std::vector<long>` because clas12root::HipoChain::SetReaderTags expects long.
+     *   - `require_positive_records` rejects empty files (nRecords <= 0).
+     */
     struct Options {
-        bool print_progress;
-        bool print_skipped;
+        bool print_progress;  ///< Print periodic progress while probing files.
+        bool print_skipped;   ///< Print the list of skipped files at the end.
 
-        bool log_skipped;
-        std::string log_path;
-        bool append_log;
+        bool log_skipped;      ///< If true, append skipped files to `log_path`.
+        std::string log_path;  ///< Path to the skipped-files log.
+        bool append_log;       ///< If true, append to `log_path`; otherwise overwrite.
 
-        std::vector<long> reader_tags;
-        bool turn_off_qadb;
+        std::vector<long> reader_tags;  ///< Reader tags passed to clas12root::HipoChain.
+        bool turn_off_qadb;             ///< If true, disables QADB for the chain.
 
-        // If true, treat files with nRecords <= 0 as bad.
-        bool require_positive_records;
+        bool require_positive_records;  ///< If true, require nRecords > 0 in the fork-guard probe.
 
         Options()
             : print_progress(true),
@@ -76,32 +90,56 @@ class HipoChainLoader {
               require_positive_records(true) {}
     };
 
+    /**
+     * @struct Result
+     *
+     * Summary of a build operation.
+     */
     struct Result {
-        int n_globbed;
-        int n_added;
-        int n_skipped;
+        int n_globbed;  ///< Number of files produced by glob expansion.
+        int n_added;    ///< Number of files added to the chain.
+        int n_skipped;  ///< Number of files rejected by fork-guard checks.
 
-        std::vector<std::string> added_files;
-        std::vector<std::string> skipped_files;
+        std::vector<std::string> added_files;    ///< Full paths of files accepted and added.
+        std::vector<std::string> skipped_files;  ///< Full paths of files rejected.
 
         Result() : n_globbed(0), n_added(0), n_skipped(0) {}
     };
 
+    /**
+     * @brief Get the loader configuration.
+     */
     const Options& GetOptions() const;
 
+    /**
+     * @brief Construct a loader with the given options.
+     */
     explicit HipoChainLoader(Options opt = Options());
 
-    // Build function ---------------------------------------------------------------------------------------------------------------------------------------------------
-
+    /**
+     * @brief Build a chain from a single glob pattern.
+     *
+     * @param chain Output chain to populate.
+     * @param glob_pattern Glob of input files.
+     * @param SampleName Optional label used in skipped-files log.
+     */
     Result Build(clas12root::HipoChain& chain, const std::string& glob_pattern, const std::string& SampleName = "") const;
 
-    // Convenience overload that constructs and returns a heap-allocated chain.
+    /**
+     * @brief Convenience wrapper that allocates the chain and returns it with the build result.
+     */
     std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtr(const std::string& glob_pattern, const std::string& SampleName = "") const;
 
-    // Build a chain using the legacy run-list expansion logic, but still applying the fork-guard file validation.
+    /**
+     * @brief Build a chain using ExperimentParameters, including run-list expansion for data.
+     *
+     * The function expands one or more glob patterns to file paths, then probes each file in a forked child process.
+     */
     Result BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment) const;
 
-    // Convenience overload that constructs and returns a heap-allocated chain.
+    /**
+     * @brief Convenience wrapper for BuildFromList that returns a heap-allocated chain.
+     */
     std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtrFromList(const ExperimentParameters& Experiment) const;
 
     // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
@@ -124,31 +162,55 @@ class HipoChainLoader {
    private:
     Options opt_;
 
-    mutable int Num_of_good_hipo_files = 0;
-    mutable int Num_of_bad_hipo_files = 0;
-    mutable int Total_num_of_hipo_files = 0;
+    // Per-build counters. Marked mutable so they can be updated from const BuildFromFiles().
+    mutable int Num_of_good_hipo_files = 0;   ///< Files that passed the fork-guard probe.
+    mutable int Num_of_bad_hipo_files = 0;    ///< Files that failed the probe.
+    mutable int Total_num_of_hipo_files = 0;  ///< Total files checked in the last build.
 
-    // ExpandGlobFiles function -----------------------------------------------------------------------------------------------------------------------------------------
-
+    /** @brief Expand a glob pattern into a sorted list of file paths. */
     static std::vector<std::string> ExpandGlobFiles(const std::string& pattern);
 
-    // IsGoodHipoFile_ForkGuard function --------------------------------------------------------------------------------------------------------------------------------
-
+    /**
+     * @brief Probe a HIPO file in a forked child process.
+     *
+     * This guards the parent process from aborts/asserts triggered by corrupted files.
+     */
     static bool IsGoodHipoFile_ForkGuard(const std::string& file, bool require_positive_records);
 
-    // NowString function -----------------------------------------------------------------------------------------------------------------------------------------------
-
+    /** @brief Get a local timestamp string for logs. */
     static std::string NowString();
 
-    // WriteSkippedLog function -----------------------------------------------------------------------------------------------------------------------------------------
-
+    /** @brief Append skipped files to the configured log file. */
     void WriteSkippedLog(const std::vector<std::string>& skipped, const std::string& SampleName) const;
 
-    // Internal: shared implementation that takes an already-expanded file list.
+    /**
+     * @brief Shared implementation used by all build entry points.
+     *
+     * Takes an already expanded list of file paths, validates them, and adds the good ones to the chain.
+     */
     Result BuildFromFiles(clas12root::HipoChain& chain, const std::vector<std::string>& files, const std::string& SampleName) const;
 
-    // Internal: reproduce AddToHipoChainFromList decision logic, but return input glob patterns instead of mutating the chain.
+    /**
+     * @brief Derive one or more glob patterns based on ExperimentParameters.
+     *
+     * For data samples, this may expand into per-run globs when no explicit recon subdir was requested.
+     */
     static std::vector<std::string> MakeInputGlobsFromList(const ExperimentParameters& Experiment);
 };
+
+/**
+ * @class HipoChainLoader
+ *
+ * Build a clas12root::HipoChain from a glob pattern, while safely excluding bad HIPO files.
+ *
+ * Rationale:
+ *   Some corrupted HIPO files can hard-abort (assert/abort/segfault) inside the reader stack.
+ *   C++ try/catch cannot catch abort/assert. This loader probes files in a forked child process
+ *   so bad files cannot crash the parent process.
+ *
+ * Typical usage:
+ *   - For a single glob: `BuildPtr("/path/*.hipo")`
+ *   - For data run lists: `BuildPtrFromList(ExperimentParameters)`
+ */
 
 #endif  // HIPOCHAINLOADER_H
