@@ -111,8 +111,8 @@ void HipoLooper() {
 
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
     // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
-    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
+    InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
 
     std::vector<std::vector<double>> theta_slices;
     double theta_start = 10.0;  // Degrees
