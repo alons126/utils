@@ -33,27 +33,27 @@ const double pi = M_PI;
 
 // RadToDeg function ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-double RadToDeg(const double& rad) { return rad * 180. / pi; }
+double RadToDeg(const double &rad) { return rad * 180. / pi; }
 
 // DegToRad function ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-double DegToRad(const double& deg) { return deg * pi / 180.; }
+double DegToRad(const double &deg) { return deg * pi / 180.; }
 
 // CalcTheta_rad function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcTheta_rad(const double& x, const double& y, const double& z) { return acos(z / sqrt(x * x + y * y + z * z)); }
+double CalcTheta_rad(const double &x, const double &y, const double &z) { return acos(z / sqrt(x * x + y * y + z * z)); }
 
 // CalcTheta_deg function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcTheta_deg(const double& x, const double& y, const double& z) { return RadToDeg(CalcTheta_rad(x, y, z)); }
+double CalcTheta_deg(const double &x, const double &y, const double &z) { return RadToDeg(CalcTheta_rad(x, y, z)); }
 
 // CalcPhi_rad function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcPhi_rad(const double& x, const double& y) { return atan2(y, x); }
+double CalcPhi_rad(const double &x, const double &y) { return atan2(y, x); }
 
 // CalcPhi_deg function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcPhi_deg(const double& x, const double& y, const double& z) { return RadToDeg(CalcPhi_rad(x, y)); }
+double CalcPhi_deg(const double &x, const double &y, const double &z) { return RadToDeg(CalcPhi_rad(x, y)); }
 
 // RadCalc function ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ inline double RadCalc(double x, double y, double z) { return sqrt(x * x + y * y 
 
 // GetPi0MomTh function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-double GetPi0MomTh(const double& ph_mom_th) {
+double GetPi0MomTh(const double &ph_mom_th) {
     if (std::abs(ph_mom_th) == 9999) { return -9999; }
     double pi0_mom_th = std::sqrt(4 * ph_mom_th * ph_mom_th - constants::m_pizero * constants::m_pizero);
     return pi0_mom_th;
@@ -125,7 +125,7 @@ double GetPhi_e(TString OutPutFolder, double phi_N) {
 
 // GetBinFromAng function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-int GetBinFromAng(double Angle, double AngleBins, double AngleMin, double AngleMax, bool printOut = false, const std::string& AngleType = "") {
+int GetBinFromAng(double Angle, double AngleBins, double AngleMin, double AngleMax, bool printOut = false, const std::string &AngleType = "") {
     int Bin = 0;
     //    int Bin = -1;
 
@@ -165,10 +165,10 @@ double CalcdPhi2(clas12::region_part_ptr proton1, clas12::region_part_ptr proton
 
     double Phi_pFD_deg = 0.0, Phi_pCD_deg = 0.0;
 
-    if (proton1->getRegion() == FD && proton2->getRegion() == CD) {
+    if (proton1->getRegion() == FD && proton2->getRegion() == clas12::CD) {
         Phi_pFD_deg = RadToDeg(proton1->getPhi());
         Phi_pCD_deg = RadToDeg(proton2->getPhi());
-    } else if (proton1->getRegion() == CD && proton2->getRegion() == FD) {
+    } else if (proton1->getRegion() == CD && proton2->getRegion() == clas12::FD) {
         Phi_pFD_deg = RadToDeg(proton2->getPhi());
         Phi_pCD_deg = RadToDeg(proton1->getPhi());
     }
@@ -179,8 +179,8 @@ double CalcdPhi2(clas12::region_part_ptr proton1, clas12::region_part_ptr proton
 // TLKinCutsCheck function (CLAS12 extention) ---------------------------------------------------------------------------------------------------------------------------
 
 /* TLKinCutsCheck for a general vector of particles */
-bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader>& c12, bool apply_kinematical_cuts, const vector<int>& FD_nucleon, const DSCuts& FD_nucleon_theta_cut,
-                    const DSCuts& FD_nucleon_momentum_cut) {
+bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply_kinematical_cuts, const std::vector<int> &FD_nucleon, const DSCuts &FD_nucleon_theta_cut,
+                    const DSCuts &FD_nucleon_momentum_cut) {
     auto mcpbank = c12->mcparts();
 
     if (!apply_kinematical_cuts) {
@@ -209,8 +209,8 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader>& c12, bool apply
 // TLKinCutsCheck function (CLAS12 extention) ---------------------------------------------------------------------------------------------------------------------------
 
 /* TLKinCutsCheck for leading FD neutrons */
-bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader>& c12, bool apply_kinematical_cuts, const int TL_IDed_neutrons_FD_mom_max, const DSCuts& FD_nucleon_theta_cut,
-                    const DSCuts& FD_nucleon_momentum_cut) {
+bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply_kinematical_cuts, const int TL_IDed_neutrons_FD_mom_max, const DSCuts &FD_nucleon_theta_cut,
+                    const DSCuts &FD_nucleon_momentum_cut) {
     auto mcpbank = c12->mcparts();
 
     if (!apply_kinematical_cuts) {

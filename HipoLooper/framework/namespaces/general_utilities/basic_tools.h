@@ -22,12 +22,17 @@
 #include <string>
 #include <utility>
 
+// include environment for colored output:
+#include "environment.h"
+
+namespace env = environment;
+
 namespace basic_tools {
 
 // CheckSSHConnection function ------------------------------------------------------------------------------------------------------------------------------------------
 
 void CheckSSHConnection() {
-    const char *ssh_connection = std::getenv("SSH_CONNECTION");
+    const char* ssh_connection = std::getenv("SSH_CONNECTION");
     if (ssh_connection) {
         std::cout << "Connected via SSH. SSH_CONNECTION: " << ssh_connection << std::endl;
     } else {
@@ -38,7 +43,7 @@ void CheckSSHConnection() {
 // CheckSSHConnectionAndHost function -----------------------------------------------------------------------------------------------------------------------------------
 
 void CheckSSHConnectionAndHost() {
-    const char *ssh_connection = std::getenv("SSH_CONNECTION");
+    const char* ssh_connection = std::getenv("SSH_CONNECTION");
     if (ssh_connection) {
         std::cout << "SSH_CONNECTION: " << ssh_connection << std::endl;
 
@@ -47,7 +52,7 @@ void CheckSSHConnectionAndHost() {
         strncpy(ssh_conn_copy, ssh_connection, sizeof(ssh_conn_copy) - 1);
         ssh_conn_copy[sizeof(ssh_conn_copy) - 1] = '\0';  // Ensure null termination
 
-        char *remote_ip = strtok(ssh_conn_copy, " ");
+        char* remote_ip = strtok(ssh_conn_copy, " ");
         if (remote_ip) {
             std::cout << "Remote IP Address: " << remote_ip << std::endl;
 
@@ -55,7 +60,7 @@ void CheckSSHConnectionAndHost() {
             sa.sin_family = AF_INET;
             inet_pton(AF_INET, remote_ip, &(sa.sin_addr));
 
-            struct hostent *host = gethostbyaddr(&(sa.sin_addr), sizeof(struct in_addr), AF_INET);
+            struct hostent* host = gethostbyaddr(&(sa.sin_addr), sizeof(struct in_addr), AF_INET);
             if (host) {
                 std::cout << "Remote Host Name: " << host->h_name << std::endl;
             } else {
@@ -70,19 +75,19 @@ void CheckSSHConnectionAndHost() {
 // GetSSHHostName function ----------------------------------------------------------------------------------------------------------------------------------------------
 
 std::string GetSSHHostName() {
-    const char *ssh_connection = std::getenv("SSH_CONNECTION");
+    const char* ssh_connection = std::getenv("SSH_CONNECTION");
     if (ssh_connection) {
         char ssh_conn_copy[256];
         strncpy(ssh_conn_copy, ssh_connection, sizeof(ssh_conn_copy) - 1);
         ssh_conn_copy[sizeof(ssh_conn_copy) - 1] = '\0';  // Ensure null termination
 
-        char *remote_ip = strtok(ssh_conn_copy, " ");
+        char* remote_ip = strtok(ssh_conn_copy, " ");
         if (remote_ip) {
             struct sockaddr_in sa;
             sa.sin_family = AF_INET;
             inet_pton(AF_INET, remote_ip, &(sa.sin_addr));
 
-            struct hostent *host = gethostbyaddr(&(sa.sin_addr), sizeof(struct in_addr), AF_INET);
+            struct hostent* host = gethostbyaddr(&(sa.sin_addr), sizeof(struct in_addr), AF_INET);
             if (host) {
                 return std::string(host->h_name);
             } else {
@@ -114,7 +119,7 @@ std::string GetCurrentDirectory() {
 
 // BoolToChar function --------------------------------------------------------------------------------------------------------------------------------------------------
 
-inline const char *const BoolToChar(bool b) { return b ? "true" : "false"; }
+inline const char* const BoolToChar(bool b) { return b ? "true" : "false"; }
 
 // BoolToString function ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -132,12 +137,12 @@ std::string ToStringWithPrecision(const A a_value, const int n = 2) {
 
 // FindSubstring function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-inline bool FindSubstring(const std::string &string1, const std::string &string2) { return string1.find(string2) != std::string::npos; }
+inline bool FindSubstring(const std::string& string1, const std::string& string2) { return string1.find(string2) != std::string::npos; }
 
 // ReplaceSubstring function --------------------------------------------------------------------------------------------------------------------------------------------
 
 // Function to replace one substring with another
-string ReplaceSubstring(const std::string &input, const std::string &toReplace, const std::string &replaceWith) {
+string ReplaceSubstring(const std::string& input, const std::string& toReplace, const std::string& replaceWith) {
     size_t pos = input.find(toReplace);
 
     if (pos == string::npos) {
@@ -151,7 +156,7 @@ string ReplaceSubstring(const std::string &input, const std::string &toReplace, 
 // trim function --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // A function that trims leading and trailing spaces from a string
-std::string trim(const std::string &str) {
+std::string trim(const std::string& str) {
     size_t first = str.find_first_not_of(" \t");
     if (first == std::string::npos) return "";
     size_t last = str.find_last_not_of(" \t");
@@ -175,7 +180,7 @@ std::pair<std::string, std::string> splitVarAndUnits(const std::string& input) {
 
 // GetBeamEnergyFromString function -------------------------------------------------------------------------------------------------------------------------------------
 
-double GetBeamEnergyFromString(const std::string &sn) {
+double GetBeamEnergyFromString(const std::string& sn) {
     double BeamE_double = 0.;
 
     if (FindSubstring(sn, "598636MeV") || FindSubstring(sn, "598636mev") || FindSubstring(sn, "598636") || FindSubstring(sn, "5986MeV") || FindSubstring(sn, "5986mev") ||
@@ -194,7 +199,7 @@ double GetBeamEnergyFromString(const std::string &sn) {
 
 // GetBeamEnergyFromDouble function -------------------------------------------------------------------------------------------------------------------------------------
 
-std::string GetBeamEnergyFromDouble(const double &BeamE) {
+std::string GetBeamEnergyFromDouble(const double& BeamE) {
     std::string BeamE_str;
 
     if (std::round(BeamE) == 6) {
@@ -210,7 +215,7 @@ std::string GetBeamEnergyFromDouble(const double &BeamE) {
 
 // GetBeamEnergyFromDouble function -------------------------------------------------------------------------------------------------------------------------------------
 
-bool fileExists(const char *filename) {
+bool fileExists(const char* filename) {
     std::ifstream file(filename);
     return file.good();
 }
@@ -218,7 +223,7 @@ bool fileExists(const char *filename) {
 // LogSkippedHipoFiles function -----------------------------------------------------------------------------------------------------------------------------------------
 
 // This function logs the skipped HIPO files to a text file.
-void LogSkippedHipoFiles(std::vector<TString> SkippedHipoChainFiles, const int &HipoChainLength, const char *filename) {
+void LogSkippedHipoFiles(std::vector<TString> SkippedHipoChainFiles, const int& HipoChainLength, const char* filename) {
     std::ofstream outFile(filename);
 
     if (outFile.is_open()) {
@@ -231,7 +236,7 @@ void LogSkippedHipoFiles(std::vector<TString> SkippedHipoChainFiles, const int &
 
         outFile << "-- Skipped files list -----------------------------------------------------\n\n";
 
-        for (const auto &fname : SkippedHipoChainFiles) { outFile << fname << std::endl; }
+        for (const auto& fname : SkippedHipoChainFiles) { outFile << fname << std::endl; }
 
         outFile << "\n";
 
@@ -241,6 +246,19 @@ void LogSkippedHipoFiles(std::vector<TString> SkippedHipoChainFiles, const int &
     } else {
         std::cerr << "\033[31mbasic_tools::LogSkippedHipoFiles: ERROR! Failed to open file:\033[0m\n" << filename << "\n\033[31mfor writing!\033[0m\n";
     }
+}
+
+// ExitWithError function -----------------------------------------------------------------------------------------------------------------------------------------------
+
+[[noreturn]] inline void ExitWithError(const std::string& functionName, const std::string& fileName, int lineNumber, const std::string& errorMessage) {
+    std::cerr << "\n" << std::endl;
+    std::cerr << env::SYSTEM_COLOR << functionName << ": " << env::ERROR_COLOR << "Error!" << env::RESET_COLOR << std::endl;
+    std::cerr << env::SYSTEM_COLOR << "In file: " << env::RESET_COLOR << fileName << std::endl;
+    std::cerr << env::SYSTEM_COLOR << "In line: " << env::RESET_COLOR << lineNumber << std::endl;
+    std::cerr << env::SYSTEM_COLOR << "--> " << env::RESET_COLOR << errorMessage << std::endl;
+    std::cerr << env::SYSTEM_COLOR << "\nAborting...\n" << env::RESET_COLOR << std::endl;
+
+    std::exit(1);
 }
 
 };  // namespace basic_tools
