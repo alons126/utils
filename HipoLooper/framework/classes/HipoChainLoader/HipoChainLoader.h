@@ -33,8 +33,7 @@
     #include "../../namespaces/setup/debugging.h"
 
     // Include CLAS12 libraries:
-    #include "HipoChain.h"
-    #include "clas12reader.h"
+    #include "../../includes/clas12_include.h"
 
 namespace env = environment;
 
