@@ -217,35 +217,19 @@ void HipoLooper() {
 
         HipoChainLoader::Options opt{};
         opt.log_skipped = true;
-
-        // Prefer this if pd::skipped_files_list_prefix already begins with '/'
         opt.log_path = OutputDir + pd::skipped_files_list_prefix;
-
-        // If pd::skipped_files_list_prefix does NOT begin with '/', use instead:
-        // opt.log_path = OutputDir + "/" + pd::skipped_files_list_prefix;
-
         opt.append_log = true;
-
-        // IMPORTANT: tags are vector<long>
         opt.reader_tags = {0L};
-
         opt.turn_off_qadb = true;
         opt.print_progress = true;
         opt.print_skipped = true;
 
         HipoChainLoader loader(opt);
 
-        // Build using the run-list aware path-builder (RecoSamplePath + ReconHipoDir => "*.hipo")
-        auto [chainPtr, loadRes] = loader.BuildPtrFromList(Experiment,
-                                                           InputFiles.at(sample),      // RecoSamplePath
-                                                           "reconhipo",                // ReconHipoDir
-                                                           Experiment.GetSampleName()  // name used in skipped-file log header
-        );
+        // Build directly from ExperimentParameters (it already contains InputHipoFiles etc.)
+        auto [chainPtr, loadRes] = loader.BuildPtrFromList(Experiment);
 
-        if (!chainPtr) {
-            std::cerr << "\n\n\033[31mError!\033[0m HipoChainLoader returned a null chain pointer. Aborting...\n\n";
-            exit(1);
-        }
+        if (!chainPtr) { ExitWithError("HipoLooper", __FILE__, __LINE__, "HipoChainLoader returned a null chain pointer!"); }
 
         auto& chain = *chainPtr;
 
