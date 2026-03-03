@@ -191,8 +191,8 @@ class ExperimentParameters : public TargetParameters {
 
     // Get sample name functions ----------------------------------------------------------------------------------------------------------------------------------------
 
-    std::string GetSampleName() { return SampleName; }
-    std::string GetVaryingSampleName() { return VaryingSampleName; };
+    std::string GetSampleName() const { return SampleName; }
+    std::string GetVaryingSampleName() const { return VaryingSampleName; };
 
     // Get vertex cuts functions ----------------------------------------------------------------------------------------------------------------------------------------
 

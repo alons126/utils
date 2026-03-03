@@ -91,7 +91,7 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
     // Use the new ExperimentParameters-owned strings
     const std::string& RecoSamplePath = Experiment.GetRecoSamplePath();
     const std::string& ReconHipoDir = Experiment.GetReconHipoDir();
-    const std::string& InputHipoFiles = Experiment.GetInputHipoFiles();
+    const std::string InputHipoFiles = Experiment.GetInputFiles();
 
     // Determine the effective sample type as robustly as possible (copy logic from AddToHipoChainFromList)
     auto infer_sample_type = [&]() -> int {
