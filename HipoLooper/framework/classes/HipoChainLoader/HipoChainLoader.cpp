@@ -50,8 +50,12 @@ HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& c
         if (good) {
             chain.Add(f);
             res.added_files.push_back(f);
+            ++Num_of_good_hipo_files;
+            ++Total_num_of_hipo_files;
         } else {
             res.skipped_files.push_back(f);
+            ++Num_of_bad_hipo_files;
+            ++Total_num_of_hipo_files;
         }
 
         if (opt_.print_progress && (idx % 200 == 0 || idx == res.n_globbed)) {

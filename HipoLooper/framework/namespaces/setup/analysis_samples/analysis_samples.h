@@ -110,8 +110,8 @@ void ConfigSampleChain() {
     // Simulation samples -----------------------------------------------------------------------------------------------------------------------------------------------
 
     // /* C12 G18 2GeV - corrected geometry */
-    // Config_C12_G18_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
-    //                                            false);  // no FC
+    Config_C12_G18_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
+                                               false);  // no FC
     // Config_C12_SuSa_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
     //                                             false);  // no FC
 
@@ -124,8 +124,8 @@ void ConfigSampleChain() {
     // // /* Ar40 G18 2GeV - corrected geometry */
     // Config_Ar40_G18_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
     //                                             false);  // no FC
-    Config_Ar40_SuSa_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
-                                                 false);  // no FC
+    // Config_Ar40_SuSa_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
+    //                                              false);  // no FC
 
     // // /* Ar40 SuSa 2GeV - corrected geometry */
     // Config_Ar40_G18_4GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
