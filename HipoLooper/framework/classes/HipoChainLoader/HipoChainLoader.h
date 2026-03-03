@@ -1,0 +1,114 @@
+//
+// Created by Alon Sportes on 03/03/2026.
+//
+
+// #ifndef HIPOCHAINLOADER_H
+// #define HIPOCHAINLOADER_H
+#ifdef HIPOCHAINLOADER_H
+
+    #include <glob.h>
+    #include <sys/types.h>
+    #include <sys/wait.h>
+    #include <unistd.h>
+
+    #include <algorithm>
+    #include <chrono>
+    #include <cstring>
+    #include <fstream>
+    #include <iomanip>
+    #include <iostream>
+    #include <sstream>
+    #include <stdexcept>
+    #include <string>
+    #include <utility>
+    #include <vector>
+
+    // Include libraries:
+    #include "../../namespaces/general_utilities/lists.h"
+    #include "../../namespaces/general_utilities/utilities.h"
+    #include "../../namespaces/setup/debugging.h"
+
+    // Include libraries:
+    #include "../../namespaces/general_utilities/utilities.h"
+    #include "../../namespaces/setup/debugging.h"
+
+    // Include CLAS12 libraries:
+    #include "HipoChain.h"
+    #include "clas12reader.h"
+
+namespace env = environment;
+
+/**
+ * @class HipoChainLoader
+ *
+ * Build a clas12root::HipoChain from a glob pattern, while safely excluding bad HIPO files.
+ *
+ * Rationale:
+ *   Some corrupted HIPO files can hard-abort (assert/abort/segfault) inside the reader stack.
+ *   C++ try/catch cannot catch abort/assert. This loader probes files in a forked child process
+ *   so bad files cannot crash the parent process.
+ */
+class HipoChainLoader {
+   public:
+    struct Options {
+        bool print_progress = true;
+        bool print_skipped = true;
+
+        bool log_skipped = true;
+        std::string log_path = "skipped_hipo_files.txt";
+        bool append_log = true;
+
+        std::vector<int> reader_tags = {0};
+        bool turn_off_qadb = true;
+
+        // If true, treat files with nRecords <= 0 as bad.
+        bool require_positive_records = true;
+    };
+
+    struct Result {
+        int n_globbed = 0;
+        int n_added = 0;
+        int n_skipped = 0;
+
+        std::vector<std::string> added_files;
+        std::vector<std::string> skipped_files;
+    };
+
+    const Options& GetOptions() const;
+
+    explicit HipoChainLoader(Options opt = Options());
+
+    // Build function ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+    std::pair<clas12root::HipoChain, Result> Build(const std::string& glob_pattern, const std::string& sample_name_for_log = "") const;
+
+    // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
+
+    // This is the old function used to add runs to the HipoChain
+    void AddToHipoChain(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles);
+
+    // AddToHipoChainFromList function ----------------------------------------------------------------------------------------------------------------------------------
+
+    void AddToHipoChainFromList(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles);
+
+   private:
+    Options opt_;
+
+    // constructor ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    static std::vector<std::string> ExpandGlobFiles_(const std::string& pattern);
+
+    // IsGoodHipoFile_ForkGuard_ function -------------------------------------------------------------------------------------------------------------------------------
+
+    static bool IsGoodHipoFile_ForkGuard_(const std::string& file, bool require_positive_records);
+
+    // NowString_ function ----------------------------------------------------------------------------------------------------------------------------------------------
+
+    static std::string NowString_();
+
+    // WriteSkippedLog_ function ----------------------------------------------------------------------------------------------------------------------------------------
+
+    void WriteSkippedLog_(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const;
+};
+
+#endif  // HIPOCHAINLOADER_H

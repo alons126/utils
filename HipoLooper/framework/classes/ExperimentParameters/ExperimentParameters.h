@@ -201,15 +201,6 @@ class ExperimentParameters : public TargetParameters {
 
     double ConfigureBeamEnergy(const std::string& sn);
 
-    // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
-
-    // This is the old function used to add runs to the HipoChain
-    void AddToHipoChain(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles);
-
-    // AddToHipoChainFromList function ----------------------------------------------------------------------------------------------------------------------------------
-
-    void AddToHipoChainFromList(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles);
-
     // ==================================================================================================================================================================
     // Getter = functions
     // ==================================================================================================================================================================

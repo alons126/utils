@@ -4,6 +4,18 @@
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
 #define PBWIDTH 60
 
+#include <glob.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#include <cerrno>
+#include <cstring>
+#include <fstream>
+#include <unordered_set>
+
+//
+
 #include <TCanvas.h>
 #include <TChain.h>
 #include <TFile.h>
@@ -30,8 +42,8 @@
 #include "framework/namespaces/setup/path_definitions.h"
 
 // Include classes:
-#include "framework/classes/HipoChainLoader/HipoChainLoader.cpp"
 #include "framework/classes/clas12ana/clas12ana.cpp"
+// #include "framework/classes/clas12ana/clas12ana.h"
 #include "framework/classes/hPlots/hsPlots.cpp"
 
 // Include CLAS12 libraries:
@@ -40,11 +52,68 @@
 using namespace clas12;
 using namespace constants;
 
+namespace env = environment;
 namespace bt = basic_tools;
 namespace am = analysis_math;
 namespace raf = reco_analysis_functions;
 namespace hf = histogram_functions;
 namespace vc = variable_correctors;
+
+// Expand a filesystem glob (e.g. "/path/*.hipo") into a concrete list of files.
+// Returns an empty vector if no files match.
+static std::vector<std::string> ExpandGlobFiles(const std::string& pattern) {
+    std::vector<std::string> files;
+
+    glob_t glob_result;
+    std::memset(&glob_result, 0, sizeof(glob_result));
+
+    const int ret = ::glob(pattern.c_str(), GLOB_TILDE, nullptr, &glob_result);
+    if (ret == 0) {
+        files.reserve(glob_result.gl_pathc);
+        for (size_t i = 0; i < glob_result.gl_pathc; ++i) {
+            if (glob_result.gl_pathv[i]) { files.emplace_back(glob_result.gl_pathv[i]); }
+        }
+    }
+
+    ::globfree(&glob_result);
+
+    std::sort(files.begin(), files.end());
+    return files;
+}
+
+// Check whether a HIPO file can be opened and has a positive record count.
+// This is done in a forked child process so that hard failures (assert/abort)
+// do not kill the parent process.
+static bool IsGoodHipoFile_ForkGuard(const std::string& file) {
+    const pid_t pid = ::fork();
+    if (pid < 0) {
+        // If fork failed, be conservative and treat as bad.
+        return false;
+    }
+
+    if (pid == 0) {
+        // Child process: probe the file.
+        // Any abort/assert will only kill the child.
+        int code = 1;
+        try {
+            hipo::reader r;
+            r.open(file.c_str());
+            const long nrec = r.getNRecords();
+            code = (nrec > 0) ? 0 : 1;
+        } catch (...) { code = 1; }
+        _exit(code);
+    }
+
+    // Parent process: wait for child and interpret result.
+    int status = 0;
+    const pid_t w = ::waitpid(pid, &status, 0);
+    if (w < 0) { return false; }
+
+    if (WIFEXITED(status)) { return WEXITSTATUS(status) == 0; }
+
+    // Child died due to a signal (e.g. abort/assert/segfault) => bad file.
+    return false;
+}
 
 void HipoLooper() {
     auto start = std::chrono::system_clock::now();  // Start counting running time
@@ -103,8 +172,8 @@ void HipoLooper() {
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_v2_S_test/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_C_v2_L_test/reconhipo/*.hipo");
 
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
 
@@ -208,30 +277,58 @@ void HipoLooper() {
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
         TString Beam_energy_TString = Ebeam_status_1;
 
-        HipoChainLoader::Options opt;
-        opt.log_skipped = true;
-        opt.log_path = OutputDir + "/skipped_hipo_files.txt";
-        opt.append_log = true;
-        opt.reader_tags = {0};
-        opt.turn_off_qadb = true;
-        opt.print_progress = true;
-        opt.print_skipped = true;
+        // ---------------------------------------------------------------------
+        // Build the chain from a glob, but probe each file first.
+        // We intentionally do NOT call HipoChain::GetNRecords() here, because it
+        // opens all files in-process and can hit hard abort/assert failures.
+        // Instead, we probe each file in a forked child process so a bad file
+        // cannot crash this job.
+        // ---------------------------------------------------------------------
+        const std::vector<std::string> expanded_files = ExpandGlobFiles(InputFiles.at(sample));
+        if (expanded_files.empty()) {
+            std::cerr << "\n\n\033[31mError!\033[0m No files matched glob: " << InputFiles.at(sample) << "\n\n";
+            exit(1);
+        }
 
-        HipoChainLoader loader(opt);
+        std::vector<std::string> skipped;
+        skipped.reserve(expanded_files.size());
 
-        auto [chain, loadRes] = loader.Build(InputFiles.at(sample), SampleName);
+        clas12root::HipoChain chain;
+        for (const auto& f : expanded_files) {
+            if (IsGoodHipoFile_ForkGuard(f)) {
+                chain.Add(f);
+            } else {
+                skipped.push_back(f);
+            }
+        }
 
-        // Then continue exactly as usual
-        auto config_c12 = chain.GetC12Reader();
-        const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
-
-/*         clas12root::HipoChain chain;
-        chain.Add(InputFiles.at(sample));
         chain.SetReaderTags({0});
         chain.db()->turnOffQADB();
         auto config_c12 = chain.GetC12Reader();
         const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
- */
+
+        if (!skipped.empty()) {
+            const std::string logPath = OutputDir + "/skipped_hipo_files.txt";
+            std::ofstream out(logPath, std::ios::app);
+            if (!out) {
+                std::cerr << "\n\n\033[31mError!\033[0m Could not open skipped-file log: " << logPath << "\n\n";
+            } else {
+                out << "Sample: " << SampleName << "\n";
+                out << "Skipped bad HIPO files (fork-guard probe failed):\n";
+                for (const auto& f : skipped) out << "  " << f << "\n";
+                out << "\n";
+            }
+
+            std::cout << "\033[33m\nSkipped " << skipped.size() << " bad HIPO file(s). Logged to:\033[0m " << logPath << "\n";
+            for (const auto& f : skipped) { std::cout << "\033[33m  skipped:\033[0m " << f << "\n"; }
+            std::cout << std::endl;
+        }
+
+        if (chain.GetNFiles() == 0) {
+            std::cerr << "\n\n\033[31mError!\033[0m After filtering bad files, chain has 0 files. Aborting.\n\n";
+            exit(1);
+        }
+
 #pragma endregion
 
         std::cout << "\033[33m" << "\n\nRunning on \033[0m" << SampleName << "\033[33m with \033[0m" << Ebeam << "\033[33m GeV beam energy" << "\033[0m\n";
@@ -4184,21 +4281,23 @@ void HipoLooper() {
         int NumOfEvents_wAny_e_det = 0, NumOfEvents_wOne_e_det = 0;
         int NumOfEvents_wAny_e = 0, NumOfEvents_wOne_e = 0;
 
-        while (chain.Next() == true) {
-            /*
- // while (true) {
-//     try {
-//         if (!chain.Next()) { break; };  // This might throw, so it must be in try
+        // int num_of_files = 0;
 
-//         // if (SkipFile) {
-//         //     if (chain.ReallyNextFile()) {
-//         //         SkipFile = false;  // reset flag after skipping
-//         //         continue;
-//         //     } else {
-//         //         break;
-//         //     }
-//         // }
-*/
+        // bool SkipFile = false;
+
+        while (chain.Next() == true) {
+            // while (true) {
+            //     try {
+            //         // if (SkipFile) {
+            //         //     if (chain.ReallyNextFile()) {
+            //         //         SkipFile = false;  // reset flag after skipping
+            //         //         continue;
+            //         //     } else {
+            //         //         break;
+            //         //     }
+            //         // }
+
+#pragma region loop content
 
 #pragma region Loop setup
             // Display completed:
@@ -5204,27 +5303,30 @@ void HipoLooper() {
             }
 
 #pragma endregion
-            /*
-                 // } catch (const std::exception &e) {
-                //     ++num_of_files;
 
-                //     TString FileToSkip = chain.CurrentFileName();
-                //     SkippedHipoChainFiles.push_back(FileToSkip);
+#pragma endregion
 
-                //     std::cerr << "\033[35m\n\nRecoAnalyzer::RecoAnalyzer:\033[36m Warning!\033[0m Could not loop over hipo file:\n"
-                //               << FileToSkip << "\nAdded to list of Skipped files. Moving to next file in chain.\n\n";
+            //     if (!chain.Next()) { break; };  // Break loop if no more files/events
 
-                //     SkipFile = chain.ReallyNextFile();
+            // } catch (const std::exception& e) {
+            //     ++num_of_files;
 
-                //     if (chain.Next())
+            //     TString FileToSkip = chain.CurrentFileName();
+            //     SkippedHipoChainFiles.push_back(FileToSkip);
 
-                //     // continue;  // Continue to next file or event
+            //     std::cerr << "\033[35m\n\nRecoAnalyzer::RecoAnalyzer:\033[36m Warning!\033[0m Could not loop over hipo file:\n"
+            //               << FileToSkip << "\nAdded to list of Skipped files. Moving to next file in chain.\n\n";
 
-                //     // if (chain.ReallyNextFile()) {
-                //     //     continue;  // Continue to next file
-                //     // }
-                // }
-            */
+            //     SkipFile = chain.ReallyNextFile();
+
+            //     if (chain.Next())
+
+            //     // continue;  // Continue to next file or event
+
+            //     // if (chain.ReallyNextFile()) {
+            //     //     continue;  // Continue to next file
+            //     // }
+            // }
         }
 
         std::cout << "\033[33m" << "\n\nEvent loop finished..." << "\n\n" << "\033[0m";
@@ -6107,6 +6209,17 @@ void HipoLooper() {
         HistoList_ByThetaSlices.clear();
 
 #pragma endregion
+
+        // // Log skipped hipo files ------------------------------------------------------------------------------------------------------------------------------------------
+
+        // if (SkippedHipoChainFiles.size() > 0) {
+        //     std::cout << env::SYSTEM_COLOR << "\n\nSaving skipped hipo files...\n\n" << env::RESET_COLOR << std::flush;
+
+        //     // Saving skipped hipo files list
+        //     bt::LogSkippedHipoFiles(SkippedHipoChainFiles, HipoChainLength, run_skipped_files_list_save_Directory.c_str());
+        // } else {
+        //     std::cout << env::SYSTEM_COLOR << "\n\nNo skipped hipo files...\n\n" << env::RESET_COLOR << std::flush;
+        // }
 
         // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
         if (InputFiles.size() > 1) { gDirectory->Clear(); }
