@@ -87,7 +87,12 @@ HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& c
 
 // MakeInputGlobsFromList function --------------------------------------------------------------------------------------------------------------------------------------
 
-std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const ExperimentParameters& Experiment, const std::string& RecoSamplePath, const std::string& ReconHipoDir) {
+std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const ExperimentParameters& Experiment) {
+    // Use the new ExperimentParameters-owned strings
+    const std::string& RecoSamplePath = Experiment.GetRecoSamplePath();
+    const std::string& ReconHipoDir = Experiment.GetReconHipoDir();
+    const std::string& InputHipoFiles = Experiment.GetInputHipoFiles();
+
     // Determine the effective sample type as robustly as possible (copy logic from AddToHipoChainFromList)
     auto infer_sample_type = [&]() -> int {
         if (Experiment.GetSampleType() == ExperimentParameters::SampleType::DATA_TYPE || Experiment.GetSampleType() == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE ||
@@ -95,18 +100,17 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
             return Experiment.GetSampleType();
         }
         // Fallback: infer from `Experiment.GetSampleName()`
-        if (bt::FindSubstring(Experiment.GetSampleName(), "_data_") || bt::FindSubstring(Experiment.GetSampleName(), "_data")) { return ExperimentParameters::SampleType::DATA_TYPE; }
+        if (bt::FindSubstring(Experiment.GetSampleName(), "_data_") || bt::FindSubstring(Experiment.GetSampleName(), "_data")) return ExperimentParameters::SampleType::DATA_TYPE;
         if (bt::FindSubstring(Experiment.GetSampleName(), "_simulation_") || bt::FindSubstring(Experiment.GetSampleName(), "GENIE") || bt::FindSubstring(Experiment.GetSampleName(), "G18") ||
             bt::FindSubstring(Experiment.GetSampleName(), "GEM21") || bt::FindSubstring(Experiment.GetSampleName(), "SuSa") || bt::FindSubstring(Experiment.GetSampleName(), "Uniform")) {
             // Note: "Uniform" here is used as a proxy for uniform samples.
             return (bt::FindSubstring(Experiment.GetSampleName(), "Uniform")) ? ExperimentParameters::SampleType::UNIFORM_TYPE : ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE;
         }
         // Fallback: infer from `RecoSamplePath`
-        if (bt::FindSubstring(RecoSamplePath, "clas12/rg-m/production") || (bt::FindSubstring(RecoSamplePath, "rg-m") && bt::FindSubstring(RecoSamplePath, "dst"))) {
+        if (bt::FindSubstring(RecoSamplePath, "clas12/rg-m/production") || (bt::FindSubstring(RecoSamplePath, "rg-m") && bt::FindSubstring(RecoSamplePath, "dst")))
             return ExperimentParameters::SampleType::DATA_TYPE;
-        }
-        if (bt::FindSubstring(RecoSamplePath, "GENIE_Reco_Samples")) { return ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE; }
-        if (bt::FindSubstring(RecoSamplePath, "Uniform")) { return ExperimentParameters::SampleType::UNIFORM_TYPE; }
+        if (bt::FindSubstring(RecoSamplePath, "GENIE_Reco_Samples")) return ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE;
+        if (bt::FindSubstring(RecoSamplePath, "Uniform")) return ExperimentParameters::SampleType::UNIFORM_TYPE;
         return ExperimentParameters::SampleType::UNKNOWN_TYPE;
     };
     const int effectiveType = infer_sample_type();
@@ -118,7 +122,7 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
     };
 
     // Simulation-like samples: return the input glob as a single-element vector
-    if (effectiveType == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE || effectiveType == ExperimentParameters::SampleType::UNIFORM_TYPE) { return {RecoSamplePath}; }
+    if (effectiveType == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE || effectiveType == ExperimentParameters::SampleType::UNIFORM_TYPE) { return {InputHipoFiles}; }
 
     // Data samples
     if (effectiveType == ExperimentParameters::SampleType::DATA_TYPE) {
@@ -150,18 +154,18 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
             return globs;
         }
         // Otherwise, fall back to the explicit file/glob passed by the caller.
-        return {RecoSamplePath};
+        return {InputHipoFiles};
     }
 
     // Unknown/unsupported sample type: fall back to whatever the caller provided.
-    return {RecoSamplePath};
+    return {InputHipoFiles};
 }
 
 // BuildFromList function -----------------------------------------------------------------------------------------------------------------------------------------------
 
 HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment) const {
     // Get the glob patterns
-    std::vector<std::string> globs = MakeInputGlobsFromList(Experiment, Experiment.GetRecoSamplePath(), Experiment.GetReconHipoDir());
+    std::vector<std::string> globs = MakeInputGlobsFromList(Experiment);
     // Expand all globs and concatenate
     std::vector<std::string> files;
     for (const auto& pat : globs) {
@@ -171,7 +175,8 @@ HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& ch
     // Sort and de-duplicate
     std::sort(files.begin(), files.end());
     files.erase(std::unique(files.begin(), files.end()), files.end());
-    return BuildFromFiles(chain, files, Experiment.GetSampleName());
+    const std::string logName = Experiment.GetSampleName();
+    return BuildFromFiles(chain, files, logName);
 }
 
 // BuildPtrFromList function --------------------------------------------------------------------------------------------------------------------------------------------

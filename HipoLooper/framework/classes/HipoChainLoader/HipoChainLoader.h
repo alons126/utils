@@ -138,7 +138,7 @@ class HipoChainLoader {
     Result BuildFromFiles(clas12root::HipoChain& chain, const std::vector<std::string>& files, const std::string& SampleName) const;
 
     // Internal: reproduce AddToHipoChainFromList decision logic, but return input glob patterns instead of mutating the chain.
-    static std::vector<std::string> MakeInputGlobsFromList(const ExperimentParameters& Experiment, const std::string& RecoSamplePath, const std::string& ReconHipoDir);
+    static std::vector<std::string> MakeInputGlobsFromList(const ExperimentParameters& Experiment);
 };
 
 #endif  // HIPOCHAINLOADER_H
