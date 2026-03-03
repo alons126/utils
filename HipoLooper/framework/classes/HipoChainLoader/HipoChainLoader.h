@@ -69,7 +69,7 @@ class HipoChainLoader {
               log_skipped(true),
               log_path("skipped_hipo_files.txt"),
               append_log(true),
-              reader_tags({0}),
+              reader_tags({0L}),
               turn_off_qadb(true),
               require_positive_records(true) {}
     };
@@ -91,7 +91,10 @@ class HipoChainLoader {
 
     // Build function ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-    std::pair<clas12root::HipoChain, Result> Build(const std::string& glob_pattern, const std::string& sample_name_for_log = "") const;
+    Result Build(clas12root::HipoChain& chain, const std::string& glob_pattern, const std::string& sample_name_for_log = "") const;
+
+    // Convenience overload that constructs and returns a heap-allocated chain.
+    std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtr(const std::string& glob_pattern, const std::string& sample_name_for_log = "") const;
 
     // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@ HipoChainLoader::HipoChainLoader(Options opt) : opt_(std::move(opt)) {}
 
 const HipoChainLoader::Options& HipoChainLoader::GetOptions() const { return opt_; }
 
-std::pair<clas12root::HipoChain, HipoChainLoader::Result> HipoChainLoader::Build(const std::string& glob_pattern, const std::string& sample_name_for_log) const {
+HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, const std::string& glob_pattern, const std::string& sample_name_for_log) const {
     Result res;
 
     const std::vector<std::string> files = ExpandGlobFiles_(glob_pattern);
@@ -22,8 +22,6 @@ std::pair<clas12root::HipoChain, HipoChainLoader::Result> HipoChainLoader::Build
         oss << "HipoChainLoader: no files matched glob: " << glob_pattern;
         throw std::runtime_error(oss.str());
     }
-
-    clas12root::HipoChain chain;
 
     if (opt_.print_progress) { std::cout << "\nHipoChainLoader: probing " << res.n_globbed << " file(s)\n"; }
 
@@ -67,7 +65,13 @@ std::pair<clas12root::HipoChain, HipoChainLoader::Result> HipoChainLoader::Build
         throw std::runtime_error(oss.str());
     }
 
-    return std::pair<clas12root::HipoChain, HipoChainLoader::Result>(chain, res);
+    return res;
+}
+
+std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtr(const std::string& glob_pattern, const std::string& sample_name_for_log) const {
+    auto chain = std::make_unique<clas12root::HipoChain>();
+    Result res = Build(*chain, glob_pattern, sample_name_for_log);
+    return {std::move(chain), std::move(res)};
 }
 
 std::vector<std::string> HipoChainLoader::ExpandGlobFiles_(const std::string& pattern) {
@@ -154,7 +158,7 @@ void HipoChainLoader::WriteSkippedLog_(const std::vector<std::string>& skipped, 
 
 #pragma region /* AddToHipoChain function */
 // This is the old function used to add runs to the HipoChain
-void ExperimentParameters::AddToHipoChain(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
+void HipoChainLoader::AddToHipoChain(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
     bool PrintOut = true;
 
     if (sampleType == DATA_TYPE) {
@@ -210,8 +214,7 @@ void ExperimentParameters::AddToHipoChain(HipoChain& chain, const std::string& s
 // AddToHipoChainFromList function --------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* AddToHipoChainFromList function */
-void ExperimentParameters::AddToHipoChainFromList(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir,
-                                                  const std::string& InputHipoFiles) {
+void HipoChainLoader::AddToHipoChainFromList(HipoChain& chain, const std::string& sn, const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
     const bool PrintOut = true;
 
     // Determine the effective sample type as robustly as possible.
