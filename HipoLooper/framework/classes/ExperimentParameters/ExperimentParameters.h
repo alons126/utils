@@ -42,16 +42,7 @@ namespace db = debugging;
  *   Because of that, they must be called in the constructor body, not in an initializer list.
  */
 class ExperimentParameters : public TargetParameters {
-   protected:
-    // ==================================================================================================================================================================
-    // Sample parameters
-    // ==================================================================================================================================================================
-
-    // Sample target (element) ------------------------------------------------------------------------------------------------------------------------------------------
-
-    // Sample target (element). Example values: "H1", "D2", "C12", "Ar40", "Uniform"
-    std::string SampleTargetStr = "";
-
+   public:
     // Sample type ------------------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -59,15 +50,6 @@ class ExperimentParameters : public TargetParameters {
      * Defines the sample type inferred from the sample path.
      */
     enum SampleType { GENIE_SIMULATION_TYPE, DATA_TYPE, UNIFORM_TYPE, UNKNOWN_TYPE, UNSET_TYPE };
-
-    // Configured by ConfigSampleType()
-    SampleType sampleType = UNSET_TYPE;
-
-    // A short string label used when constructing SampleName (e.g. "sim" or "data")
-    std::string SampleTypeStr = "";
-
-    // bool SimulationSample = false;
-    // bool DataSample = false;
 
     // GENIE tune -------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -82,12 +64,6 @@ class ExperimentParameters : public TargetParameters {
         UNSET_TUNE
     };
 
-    // Configured by ConfigGENIETune()
-    GENIETune genieTune = UNSET_TUNE;
-
-    // Short label used in SampleName (e.g. "G18" or "SuSa")
-    std::string SampleGENIETuneStr = "";
-
     // Beam energy ------------------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -95,17 +71,6 @@ class ExperimentParameters : public TargetParameters {
      * Beam energy bucket inferred from the path.
      */
     enum BeamEnergy { BEAM_AT_2GEV, BEAM_AT_4GEV, BEAM_AT_6GEV, UNKNOWN_ENERGY, UNSET_ENERGY };
-
-    // Configured by ConfigBeamEnergy()
-    BeamEnergy beamEnergy = UNSET_ENERGY;
-
-    // Numeric beam energy value used in analysis (GeV), configured after SampleName is set by ConfigureBeamEnergy()
-    double BeamEnergyValue = 0.0;
-
-    // Short label used in SampleName (e.g. "2070MeV", "4029MeV", "5986MeV")
-    std::string SampleBeamEnergyStr = "";
-
-    // bool BeamAt2GeV = false, BeamAt4GeV = false, BeamAt6GeV = false;
 
     // Q^2 cut ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -121,35 +86,6 @@ class ExperimentParameters : public TargetParameters {
         UNSET_CUT
     };
 
-    // Configured by ConfigQ2Cut()
-    Q2Cut Q2cut = UNSET_CUT;
-
-    // Short label used in SampleName (e.g. "Q2_0_02")
-    std::string SampleQ2CutStr = "";
-
-    // Sample names -----------------------------------------------------------------------------------------------------------------------------------------------------
-
-    // Canonical sample name used across the analysis
-    std::string SampleName = "";
-
-    // Name used for acceptance maps / weight maps / neutron resolution inputs that vary with sample. Currently set to the same as SampleName, but can be changed in
-    // ConfigureVaryingSampleName() if needed.
-    std::string VaryingSampleName = "";
-
-    // Vertex cuts ------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    // Default vertex-z cuts and configured cuts for the sample. Configured by ConfigureVz_cuts() and ConfiguredVz_cuts().
-    DSCuts Vz_cuts_def = DSCuts("Vertex z component", "", "", "1e cut", 0, -15, 5);
-    DSCuts Vz_cuts, Vz_cuts_FD, Vz_cuts_CD, Vz_cuts_FD_def = Vz_cuts_def, Vz_cuts_CD_def = Vz_cuts_def;
-    DSCuts dVz_cuts_def = DSCuts("dVz", "", "", "1e cut", 0, -8, 4);
-    DSCuts dVz_cuts, dVz_cuts_FD, dVz_cuts_CD, dVz_cuts_FD_def = dVz_cuts_def, dVz_cuts_CD_def = dVz_cuts_def;
-
-    // Other ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    // Whether the sample is considered local (heuristic). Used to decide how to add files to the HipoChain (e.g. from a local directory or from the ifarm).
-    bool LocalSample = false;
-
-   public:
     // ==================================================================================================================================================================
     // Constructor
     // ==================================================================================================================================================================
@@ -213,6 +149,10 @@ class ExperimentParameters : public TargetParameters {
 
     ExperimentParameters::GENIETune GetGENIETune() const { return genieTune; }
 
+    // GetGENIETune function --------------------------------------------------------------------------------------------------------------------------------------------
+
+    ExperimentParameters::BeamEnergy GetBeamEnergy() const { return beamEnergy; }
+
     // GetQ2Cut function ------------------------------------------------------------------------------------------------------------------------------------------------
 
     ExperimentParameters::Q2Cut GetQ2Cut() const { return Q2cut; }
@@ -252,6 +192,78 @@ class ExperimentParameters : public TargetParameters {
     // IsLocalSample function -------------------------------------------------------------------------------------------------------------------------------------------
 
     bool IsLocalSample() const { return LocalSample; };
+
+   protected:
+    // ==================================================================================================================================================================
+    // Sample parameters
+    // ==================================================================================================================================================================
+
+    // Sample target (element) ------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Sample target (element). Example values: "H1", "D2", "C12", "Ar40", "Uniform"
+    std::string SampleTargetStr = "";
+
+    // Sample type ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Configured by ConfigSampleType()
+    SampleType sampleType = UNSET_TYPE;
+
+    // A short string label used when constructing SampleName (e.g. "sim" or "data")
+    std::string SampleTypeStr = "";
+
+    // bool SimulationSample = false;
+    // bool DataSample = false;
+
+    // GENIE tune -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Configured by ConfigGENIETune()
+    GENIETune genieTune = UNSET_TUNE;
+
+    // Short label used in SampleName (e.g. "G18" or "SuSa")
+    std::string SampleGENIETuneStr = "";
+
+    // Beam energy ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Configured by ConfigBeamEnergy()
+    BeamEnergy beamEnergy = UNSET_ENERGY;
+
+    // Numeric beam energy value used in analysis (GeV), configured after SampleName is set by ConfigureBeamEnergy()
+    double BeamEnergyValue = 0.0;
+
+    // Short label used in SampleName (e.g. "2070MeV", "4029MeV", "5986MeV")
+    std::string SampleBeamEnergyStr = "";
+
+    // bool BeamAt2GeV = false, BeamAt4GeV = false, BeamAt6GeV = false;
+
+    // Q^2 cut ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Configured by ConfigQ2Cut()
+    Q2Cut Q2cut = UNSET_CUT;
+
+    // Short label used in SampleName (e.g. "Q2_0_02")
+    std::string SampleQ2CutStr = "";
+
+    // Sample names -----------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Canonical sample name used across the analysis
+    std::string SampleName = "";
+
+    // Name used for acceptance maps / weight maps / neutron resolution inputs that vary with sample. Currently set to the same as SampleName, but can be changed in
+    // ConfigureVaryingSampleName() if needed.
+    std::string VaryingSampleName = "";
+
+    // Vertex cuts ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Default vertex-z cuts and configured cuts for the sample. Configured by ConfigureVz_cuts() and ConfiguredVz_cuts().
+    DSCuts Vz_cuts_def = DSCuts("Vertex z component", "", "", "1e cut", 0, -15, 5);
+    DSCuts Vz_cuts, Vz_cuts_FD, Vz_cuts_CD, Vz_cuts_FD_def = Vz_cuts_def, Vz_cuts_CD_def = Vz_cuts_def;
+    DSCuts dVz_cuts_def = DSCuts("dVz", "", "", "1e cut", 0, -8, 4);
+    DSCuts dVz_cuts, dVz_cuts_FD, dVz_cuts_CD, dVz_cuts_FD_def = dVz_cuts_def, dVz_cuts_CD_def = dVz_cuts_def;
+
+    // Other ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Whether the sample is considered local (heuristic). Used to decide how to add files to the HipoChain (e.g. from a local directory or from the ifarm).
+    bool LocalSample = false;
 };
 
 #endif  // EXPERIMENTPARAMETERS_H
