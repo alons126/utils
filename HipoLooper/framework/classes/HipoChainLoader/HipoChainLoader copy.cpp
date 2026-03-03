@@ -7,24 +7,16 @@
 
 #include "HipoChainLoader.h"
 
-// Constructor ----------------------------------------------------------------------------------------------------------------------------------------------------------
-
 HipoChainLoader::HipoChainLoader(Options opt) : opt_(std::move(opt)) {}
-
-// GetOptions function --------------------------------------------------------------------------------------------------------------------------------------------------
 
 const HipoChainLoader::Options& HipoChainLoader::GetOptions() const { return opt_; }
 
-// Build function -------------------------------------------------------------------------------------------------------------------------------------------------------
-
-HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, const std::string& glob_pattern, const std::string& SampleName) const {
+HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, const std::string& glob_pattern, const std::string& sample_name_for_log) const {
     const std::vector<std::string> files = ExpandGlobFiles(glob_pattern);
-    return BuildFromFiles(chain, files, SampleName);
+    return BuildFromFiles(chain, files, sample_name_for_log);
 }
 
-// BuildFromFiles function ----------------------------------------------------------------------------------------------------------------------------------------------
-
-HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& chain, const std::vector<std::string>& files, const std::string& SampleName) const {
+HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& chain, const std::vector<std::string>& files, const std::string& sample_name_for_log) const {
     Result res;
     res.n_globbed = static_cast<int>(files.size());
 
@@ -67,7 +59,7 @@ HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& c
     chain.SetReaderTags(opt_.reader_tags);
     if (opt_.turn_off_qadb) { chain.db()->turnOffQADB(); }
 
-    if (opt_.log_skipped && !res.skipped_files.empty()) { WriteSkippedLog(res.skipped_files, SampleName); }
+    if (opt_.log_skipped && !res.skipped_files.empty()) { WriteSkippedLog(res.skipped_files, sample_name_for_log); }
 
     if (opt_.print_skipped && !res.skipped_files.empty()) {
         std::cout << env::SYSTEM_COLOR << "\nHipoChainLoader: skipped " << env::RESET_COLOR << res.n_skipped << env::SYSTEM_COLOR << " bad file(s)\n";
@@ -84,22 +76,20 @@ HipoChainLoader::Result HipoChainLoader::BuildFromFiles(clas12root::HipoChain& c
 
     return res;
 }
-
-// MakeInputGlobsFromList function --------------------------------------------------------------------------------------------------------------------------------------
-
-std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const ExperimentParameters& Experiment, const std::string& RecoSamplePath, const std::string& ReconHipoDir) {
+std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const ExperimentParameters& Experiment, const std::string& sn, const std::string& RecoSamplePath,
+                                                                  const std::string& ReconHipoDir, const std::string& InputHipoFiles) {
     // Determine the effective sample type as robustly as possible (copy logic from AddToHipoChainFromList)
     auto infer_sample_type = [&]() -> int {
         if (Experiment.GetSampleType() == ExperimentParameters::SampleType::DATA_TYPE || Experiment.GetSampleType() == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE ||
             Experiment.GetSampleType() == ExperimentParameters::SampleType::UNIFORM_TYPE) {
             return Experiment.GetSampleType();
         }
-        // Fallback: infer from `Experiment.GetSampleName()`
-        if (bt::FindSubstring(Experiment.GetSampleName(), "_data_") || bt::FindSubstring(Experiment.GetSampleName(), "_data")) { return ExperimentParameters::SampleType::DATA_TYPE; }
-        if (bt::FindSubstring(Experiment.GetSampleName(), "_simulation_") || bt::FindSubstring(Experiment.GetSampleName(), "GENIE") || bt::FindSubstring(Experiment.GetSampleName(), "G18") ||
-            bt::FindSubstring(Experiment.GetSampleName(), "GEM21") || bt::FindSubstring(Experiment.GetSampleName(), "SuSa") || bt::FindSubstring(Experiment.GetSampleName(), "Uniform")) {
+        // Fallback: infer from `sn`
+        if (bt::FindSubstring(sn, "_data_") || bt::FindSubstring(sn, "_data")) { return ExperimentParameters::SampleType::DATA_TYPE; }
+        if (bt::FindSubstring(sn, "_simulation_") || bt::FindSubstring(sn, "GENIE") || bt::FindSubstring(sn, "G18") || bt::FindSubstring(sn, "GEM21") || bt::FindSubstring(sn, "SuSa") ||
+            bt::FindSubstring(sn, "Uniform")) {
             // Note: "Uniform" here is used as a proxy for uniform samples.
-            return (bt::FindSubstring(Experiment.GetSampleName(), "Uniform")) ? ExperimentParameters::SampleType::UNIFORM_TYPE : ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE;
+            return (bt::FindSubstring(sn, "Uniform")) ? ExperimentParameters::SampleType::UNIFORM_TYPE : ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE;
         }
         // Fallback: infer from `RecoSamplePath`
         if (bt::FindSubstring(RecoSamplePath, "clas12/rg-m/production") || (bt::FindSubstring(RecoSamplePath, "rg-m") && bt::FindSubstring(RecoSamplePath, "dst"))) {
@@ -118,30 +108,30 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
     };
 
     // Simulation-like samples: return the input glob as a single-element vector
-    if (effectiveType == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE || effectiveType == ExperimentParameters::SampleType::UNIFORM_TYPE) { return {RecoSamplePath}; }
+    if (effectiveType == ExperimentParameters::SampleType::GENIE_SIMULATION_TYPE || effectiveType == ExperimentParameters::SampleType::UNIFORM_TYPE) { return {InputHipoFiles}; }
 
     // Data samples
     if (effectiveType == ExperimentParameters::SampleType::DATA_TYPE) {
         const std::vector<std::string>* runs = nullptr;
-        if (bt::FindSubstring(Experiment.GetSampleName(), "H1_data_2GeV") || bt::FindSubstring(Experiment.GetSampleName(), "H1_data_2070MeV")) {
+        if (bt::FindSubstring(sn, "H1_data_2GeV") || bt::FindSubstring(sn, "H1_data_2070MeV")) {
             runs = &lists::H1_data_2GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "D2_data_2GeV") || bt::FindSubstring(Experiment.GetSampleName(), "D2_data_2070MeV")) {
+        } else if (bt::FindSubstring(sn, "D2_data_2GeV") || bt::FindSubstring(sn, "D2_data_2070MeV")) {
             runs = &lists::D2_data_2GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "C12_data_2GeV") || bt::FindSubstring(Experiment.GetSampleName(), "C12_data_2070MeV")) {
+        } else if (bt::FindSubstring(sn, "C12_data_2GeV") || bt::FindSubstring(sn, "C12_data_2070MeV")) {
             runs = &lists::C12_data_2GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "Ar40_data_2GeV") || bt::FindSubstring(Experiment.GetSampleName(), "Ar40_data_2070MeV")) {
+        } else if (bt::FindSubstring(sn, "Ar40_data_2GeV") || bt::FindSubstring(sn, "Ar40_data_2070MeV")) {
             runs = &lists::Ar40_data_2GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "C12_data_4GeV") || bt::FindSubstring(Experiment.GetSampleName(), "C12_data_4029MeV")) {
+        } else if (bt::FindSubstring(sn, "C12_data_4GeV") || bt::FindSubstring(sn, "C12_data_4029MeV")) {
             runs = &lists::C12_data_4GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "Ar40_data_4GeV") || bt::FindSubstring(Experiment.GetSampleName(), "Ar40_data_4029MeV")) {
+        } else if (bt::FindSubstring(sn, "Ar40_data_4GeV") || bt::FindSubstring(sn, "Ar40_data_4029MeV")) {
             runs = &lists::Ar40_data_4GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "H1_data_6GeV") || bt::FindSubstring(Experiment.GetSampleName(), "H1_data_5986MeV")) {
+        } else if (bt::FindSubstring(sn, "H1_data_6GeV") || bt::FindSubstring(sn, "H1_data_5986MeV")) {
             runs = &lists::H1_data_6GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "D2_data_6GeV") || bt::FindSubstring(Experiment.GetSampleName(), "D2_data_5986MeV")) {
+        } else if (bt::FindSubstring(sn, "D2_data_6GeV") || bt::FindSubstring(sn, "D2_data_5986MeV")) {
             runs = &lists::D2_data_6GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "C12x4_data_6GeV") || bt::FindSubstring(Experiment.GetSampleName(), "C12x4_data_5986MeV")) {
+        } else if (bt::FindSubstring(sn, "C12x4_data_6GeV") || bt::FindSubstring(sn, "C12x4_data_5986MeV")) {
             runs = &lists::C12x4_data_6GeV_runs;
-        } else if (bt::FindSubstring(Experiment.GetSampleName(), "Ar40_data_6GeV") || bt::FindSubstring(Experiment.GetSampleName(), "Ar40_data_5986MeV")) {
+        } else if (bt::FindSubstring(sn, "Ar40_data_6GeV") || bt::FindSubstring(sn, "Ar40_data_5986MeV")) {
             runs = &lists::Ar40_data_6GeV_runs;
         }
         if (runs != nullptr && ReconHipoDir == "") {
@@ -150,19 +140,17 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
             return globs;
         }
         // Otherwise, fall back to the explicit file/glob passed by the caller.
-        return {RecoSamplePath};
+        return {InputHipoFiles};
     }
 
     // Unknown/unsupported sample type: fall back to whatever the caller provided.
-    return {RecoSamplePath};
+    return {InputHipoFiles};
 }
 
-// BuildFromList function -----------------------------------------------------------------------------------------------------------------------------------------------
-
-HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment, const std::string& RecoSamplePath,
-                                                       const std::string& ReconHipoDir) const {
+HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment, const std::string& sn, const std::string& RecoSamplePath,
+                                                       const std::string& ReconHipoDir, const std::string& InputHipoFiles, const std::string& sample_name_for_log) const {
     // Get the glob patterns
-    std::vector<std::string> globs = MakeInputGlobsFromList(Experiment, RecoSamplePath, ReconHipoDir);
+    std::vector<std::string> globs = MakeInputGlobsFromList(Experiment, sn, RecoSamplePath, ReconHipoDir, InputHipoFiles);
     // Expand all globs and concatenate
     std::vector<std::string> files;
     for (const auto& pat : globs) {
@@ -172,27 +160,23 @@ HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& ch
     // Sort and de-duplicate
     std::sort(files.begin(), files.end());
     files.erase(std::unique(files.begin(), files.end()), files.end());
-    return BuildFromFiles(chain, files, Experiment.GetSampleName());
+    return BuildFromFiles(chain, files, sample_name_for_log);
 }
 
-// BuildPtrFromList function --------------------------------------------------------------------------------------------------------------------------------------------
-
-std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtrFromList(const ExperimentParameters& Experiment, const std::string& RecoSamplePath,
-                                                                                                             const std::string& ReconHipoDir) const {
+std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtrFromList(const ExperimentParameters& Experiment, const std::string& sn,
+                                                                                                             const std::string& RecoSamplePath, const std::string& ReconHipoDir,
+                                                                                                             const std::string& InputHipoFiles,
+                                                                                                             const std::string& sample_name_for_log) const {
     auto chain = std::make_unique<clas12root::HipoChain>();
-    Result res = BuildFromList(*chain, Experiment, RecoSamplePath, ReconHipoDir);
+    Result res = BuildFromList(*chain, Experiment, sn, RecoSamplePath, ReconHipoDir, InputHipoFiles, sample_name_for_log);
     return {std::move(chain), std::move(res)};
 }
 
-// BuildPtr function ----------------------------------------------------------------------------------------------------------------------------------------------------
-
-std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtr(const std::string& glob_pattern, const std::string& SampleName) const {
+std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtr(const std::string& glob_pattern, const std::string& sample_name_for_log) const {
     auto chain = std::make_unique<clas12root::HipoChain>();
-    Result res = Build(*chain, glob_pattern, SampleName);
+    Result res = Build(*chain, glob_pattern, sample_name_for_log);
     return {std::move(chain), std::move(res)};
 }
-
-// ExpandGlobFiles function ---------------------------------------------------------------------------------------------------------------------------------------------
 
 std::vector<std::string> HipoChainLoader::ExpandGlobFiles(const std::string& pattern) {
     std::vector<std::string> files;
@@ -213,8 +197,6 @@ std::vector<std::string> HipoChainLoader::ExpandGlobFiles(const std::string& pat
     std::sort(files.begin(), files.end());
     return files;
 }
-
-// IsGoodHipoFile_ForkGuard function ------------------------------------------------------------------------------------------------------------------------------------
 
 bool HipoChainLoader::IsGoodHipoFile_ForkGuard(const std::string& file, bool require_positive_records) {
     const pid_t pid = ::fork();
@@ -245,8 +227,6 @@ bool HipoChainLoader::IsGoodHipoFile_ForkGuard(const std::string& file, bool req
     return false;
 }
 
-// NowString function ---------------------------------------------------------------------------------------------------------------------------------------------------
-
 std::string HipoChainLoader::NowString() {
     using clock = std::chrono::system_clock;
     const auto now = clock::now();
@@ -260,9 +240,7 @@ std::string HipoChainLoader::NowString() {
     return oss.str();
 }
 
-// WriteSkippedLog function ---------------------------------------------------------------------------------------------------------------------------------------------
-
-void HipoChainLoader::WriteSkippedLog(const std::vector<std::string>& skipped, const std::string& SampleName) const {
+void HipoChainLoader::WriteSkippedLog(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const {
     std::ios_base::openmode mode = std::ios::out;
     mode |= (opt_.append_log ? std::ios::app : std::ios::trunc);
 
@@ -274,7 +252,7 @@ void HipoChainLoader::WriteSkippedLog(const std::vector<std::string>& skipped, c
 
     out << "============================================================\n";
     out << "Timestamp: " << NowString() << "\n";
-    if (!SampleName.empty()) { out << "Sample: " << SampleName << "\n"; }
+    if (!sample_name_for_log.empty()) { out << "Sample: " << sample_name_for_log << "\n"; }
     out << "Skipped bad HIPO files:\n";
     for (const auto& f : skipped) { out << "  " << f << "\n"; }
     out << "\n";

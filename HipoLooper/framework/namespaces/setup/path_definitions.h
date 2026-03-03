@@ -17,7 +17,7 @@ const std::string plots_TList_FileType = "_plots.root";
 const std::string plots_TFile_FileType = "_plots.pdf";
 const std::string log_file_name = "Run_log.txt";
 const std::string plots_log_save_Directory = PathDefinitions.plots_path + "/" + log_file_name;
-const std::string skipped_files_list_prefix = "/skipped_files_list.txt";
+const std::string skipped_files_list_prefix = "skipped_files_list.txt";
 
 const std::string custom_plots_path_prefix = "_redo";
 // const std::string custom_plots_path_prefix = "V27_100x100Bins_20Slices_2GeV_AMapsGen4_nFD";

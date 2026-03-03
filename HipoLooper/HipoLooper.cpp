@@ -209,7 +209,27 @@ void HipoLooper() {
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
         TString Beam_energy_TString = Ebeam_status_1;
 
+        ExperimentParameters Experiment(InputFiles.at(sample), "reconhipo");
+
         HipoChainLoader::Options opt;
+        opt.log_skipped = true;
+        opt.log_path = OutputDir + "/" + pd::skipped_files_list_prefix;
+        // opt.log_path = OutputDir + "/skipped_hipo_files.txt";
+        opt.append_log = true;
+        opt.reader_tags = {0};
+        opt.turn_off_qadb = true;
+        opt.print_progress = true;
+        opt.print_skipped = true;
+
+        HipoChainLoader loader(opt);
+
+        auto [chainPtr, loadRes] = loader.BuildPtr(Experiment, SampleName, InputFiles.at(sample), "reconhipo", SampleName);
+        auto& chain = *chainPtr;
+
+        auto config_c12 = chain.GetC12Reader();
+        const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
+
+        /*         HipoChainLoader::Options opt;
         opt.log_skipped = true;
         opt.log_path = OutputDir + pd::skipped_files_list_prefix;
         // opt.log_path = OutputDir + "/skipped_hipo_files.txt";
@@ -224,10 +244,9 @@ void HipoLooper() {
         auto [chainPtr, loadRes] = loader.BuildPtr(InputFiles.at(sample), SampleName);
         auto& chain = *chainPtr;
 
-        // Then continue exactly as usual
         auto config_c12 = chain.GetC12Reader();
         const std::unique_ptr<clas12::clas12reader>& c12 = chain.C12ref();
-
+ */
 /*         clas12root::HipoChain chain;
         chain.Add(InputFiles.at(sample));
         chain.SetReaderTags({0});
