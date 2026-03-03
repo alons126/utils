@@ -14,7 +14,7 @@ const HipoChainLoader::Options& HipoChainLoader::GetOptions() const { return opt
 HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, const std::string& glob_pattern, const std::string& sample_name_for_log) const {
     Result res;
 
-    const std::vector<std::string> files = ExpandGlobFiles_(glob_pattern);
+    const std::vector<std::string> files = ExpandGlobFiles(glob_pattern);
     res.n_globbed = static_cast<int>(files.size());
 
     if (files.empty()) {
@@ -34,7 +34,7 @@ HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, con
     for (const auto& f : files) {
         ++idx;
 
-        const bool good = IsGoodHipoFile_ForkGuard_(f, opt_.require_positive_records);
+        const bool good = IsGoodHipoFile_ForkGuard(f, opt_.require_positive_records);
 
         if (good) {
             chain.Add(f);
@@ -56,7 +56,7 @@ HipoChainLoader::Result HipoChainLoader::Build(clas12root::HipoChain& chain, con
     chain.SetReaderTags(opt_.reader_tags);
     if (opt_.turn_off_qadb) { chain.db()->turnOffQADB(); }
 
-    if (opt_.log_skipped && !res.skipped_files.empty()) { WriteSkippedLog_(res.skipped_files, sample_name_for_log); }
+    if (opt_.log_skipped && !res.skipped_files.empty()) { WriteSkippedLog(res.skipped_files, sample_name_for_log); }
 
     if (opt_.print_skipped && !res.skipped_files.empty()) {
         std::cout << env::SYSTEM_COLOR << "\nHipoChainLoader: skipped " << env::RESET_COLOR << res.n_skipped << env::SYSTEM_COLOR << " bad file(s)\n";
@@ -80,7 +80,7 @@ std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoC
     return {std::move(chain), std::move(res)};
 }
 
-std::vector<std::string> HipoChainLoader::ExpandGlobFiles_(const std::string& pattern) {
+std::vector<std::string> HipoChainLoader::ExpandGlobFiles(const std::string& pattern) {
     std::vector<std::string> files;
 
     glob_t glob_result;
@@ -100,7 +100,7 @@ std::vector<std::string> HipoChainLoader::ExpandGlobFiles_(const std::string& pa
     return files;
 }
 
-bool HipoChainLoader::IsGoodHipoFile_ForkGuard_(const std::string& file, bool require_positive_records) {
+bool HipoChainLoader::IsGoodHipoFile_ForkGuard(const std::string& file, bool require_positive_records) {
     const pid_t pid = ::fork();
     if (pid < 0) { return false; }
 
@@ -129,7 +129,7 @@ bool HipoChainLoader::IsGoodHipoFile_ForkGuard_(const std::string& file, bool re
     return false;
 }
 
-std::string HipoChainLoader::NowString_() {
+std::string HipoChainLoader::NowString() {
     using clock = std::chrono::system_clock;
     const auto now = clock::now();
     const std::time_t t = clock::to_time_t(now);
@@ -142,7 +142,7 @@ std::string HipoChainLoader::NowString_() {
     return oss.str();
 }
 
-void HipoChainLoader::WriteSkippedLog_(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const {
+void HipoChainLoader::WriteSkippedLog(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const {
     std::ios_base::openmode mode = std::ios::out;
     mode |= (opt_.append_log ? std::ios::app : std::ios::trunc);
 
@@ -153,7 +153,7 @@ void HipoChainLoader::WriteSkippedLog_(const std::vector<std::string>& skipped, 
     }
 
     out << "============================================================\n";
-    out << "Timestamp: " << NowString_() << "\n";
+    out << "Timestamp: " << NowString() << "\n";
     if (!sample_name_for_log.empty()) { out << "Sample: " << sample_name_for_log << "\n"; }
     out << "Skipped bad HIPO files:\n";
     for (const auto& f : skipped) { out << "  " << f << "\n"; }

@@ -109,21 +109,21 @@ class HipoChainLoader {
    private:
     Options opt_;
 
-    // constructor ------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ExpandGlobFiles function -----------------------------------------------------------------------------------------------------------------------------------------
 
-    static std::vector<std::string> ExpandGlobFiles_(const std::string& pattern);
+    static std::vector<std::string> ExpandGlobFiles(const std::string& pattern);
 
-    // IsGoodHipoFile_ForkGuard_ function -------------------------------------------------------------------------------------------------------------------------------
+    // IsGoodHipoFile_ForkGuard function --------------------------------------------------------------------------------------------------------------------------------
 
-    static bool IsGoodHipoFile_ForkGuard_(const std::string& file, bool require_positive_records);
+    static bool IsGoodHipoFile_ForkGuard(const std::string& file, bool require_positive_records);
 
-    // NowString_ function ----------------------------------------------------------------------------------------------------------------------------------------------
+    // NowString function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-    static std::string NowString_();
+    static std::string NowString();
 
-    // WriteSkippedLog_ function ----------------------------------------------------------------------------------------------------------------------------------------
+    // WriteSkippedLog function -----------------------------------------------------------------------------------------------------------------------------------------
 
-    void WriteSkippedLog_(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const;
+    void WriteSkippedLog(const std::vector<std::string>& skipped, const std::string& sample_name_for_log) const;
 };
 
 #endif  // HIPOCHAINLOADER_H
