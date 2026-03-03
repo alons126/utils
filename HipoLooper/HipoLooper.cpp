@@ -56,7 +56,7 @@ void HipoLooper() {
     std::string OutFolderName_prefix = bt::ToStringWithPrecision(version, 0) + "_HipoLooper";
     std::string OutFolderName_ver_status = "_v" + bt::ToStringWithPrecision(version, 0) + "_";
 
-    std::string General_status = "gen_validation_tests";  // General status of the analysis
+    std::string General_status = "";  // General status of the analysis
     // std::string General_status = "Ar40_target_zpos_test";  // General status of the analysis
     // std::string General_status = "";  // General status of the analysis
 
