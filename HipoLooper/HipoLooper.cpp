@@ -37,7 +37,7 @@
 // Include CLAS12 libraries:
 #include "framework/includes/clas12_include.h"
 
-using namespace clas12;
+// using namespace clas12;
 using namespace constants;
 
 namespace bt = basic_tools;
