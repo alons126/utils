@@ -6139,16 +6139,16 @@ void HipoLooper() {
 
 #pragma endregion
 
-        // Log skipped hipo files ------------------------------------------------------------------------------------------------------------------------------------------
+        // // Log skipped hipo files ------------------------------------------------------------------------------------------------------------------------------------------
 
-        if (SkippedHipoChainFiles.size() > 0) {
-            std::cout << env::SYSTEM_COLOR << "\n\nSaving skipped hipo files...\n\n" << env::RESET_COLOR << std::flush;
+        // if (SkippedHipoChainFiles.size() > 0) {
+        //     std::cout << env::SYSTEM_COLOR << "\n\nSaving skipped hipo files...\n\n" << env::RESET_COLOR << std::flush;
 
-            // Saving skipped hipo files list
-            bt::LogSkippedHipoFiles(SkippedHipoChainFiles, HipoChainLength, run_skipped_files_list_save_Directory.c_str());
-        } else {
-            std::cout << env::SYSTEM_COLOR << "\n\nNo skipped hipo files...\n\n" << env::RESET_COLOR << std::flush;
-        }
+        //     // Saving skipped hipo files list
+        //     bt::LogSkippedHipoFiles(SkippedHipoChainFiles, HipoChainLength, run_skipped_files_list_save_Directory.c_str());
+        // } else {
+        //     std::cout << env::SYSTEM_COLOR << "\n\nNo skipped hipo files...\n\n" << env::RESET_COLOR << std::flush;
+        // }
 
         // Delete all ROOT objects whose class names start with TH (to prevent a memory leak):
         if (InputFiles.size() > 1) { gDirectory->Clear(); }
