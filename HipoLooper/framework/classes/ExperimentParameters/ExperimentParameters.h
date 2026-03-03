@@ -9,6 +9,7 @@
     #include "../../namespaces/general_utilities/lists.h"
     #include "../../namespaces/general_utilities/utilities.h"
     #include "../../namespaces/setup/debugging.h"
+    #include "../../namespaces/setup/path_definitions.h"
 
     // Include classes:
     #include "../DSCuts/DSCuts.h"
@@ -21,6 +22,7 @@
 
 namespace bt = basic_tools;
 namespace db = debugging;
+namespace pd = path_definitions;
 
 /**
  * @class ExperimentParameters
@@ -43,6 +45,11 @@ namespace db = debugging;
  */
 class ExperimentParameters : public TargetParameters {
    public:
+    // Input paths and glob patterns ------------------------------------------------------------------------------------------------------------------------------------
+
+    // InputFilesGlobal = Full glob pattern for input files, e.g. "/path/to/samples/*hipo"
+    const std::string RecoSamplePath, ReconHipoDir, HipoFilesPrefix, InputFilesGlobal;
+
     // Sample type ------------------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -91,7 +98,7 @@ class ExperimentParameters : public TargetParameters {
     // ==================================================================================================================================================================
 
     // Constructor: configures everything based on the sample path and optional run directory label.
-    ExperimentParameters(const std::string& RecoSamplePath, const std::string& ReconHipoDir);
+    ExperimentParameters(const std::string& RecoSamplePath, const std::string& ReconHipoDir, const std::string& HipoFilesPrefix = pd::HipoFilesPrefix);
 
     // ==================================================================================================================================================================
     // Configure functions
@@ -99,39 +106,39 @@ class ExperimentParameters : public TargetParameters {
 
     // ConfigSampleTarget function --------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigSampleTarget(const std::string& RecoSamplePath);
+    void ConfigSampleTarget();
 
     // ConfigSampleType function ----------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigSampleType(const std::string& RecoSamplePath);
+    void ConfigSampleType();
 
     // ConfigGENIETune function -----------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigGENIETune(const std::string& RecoSamplePath);
+    void ConfigGENIETune();
 
     // ConfigQ2Cut function ---------------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigQ2Cut(const std::string& RecoSamplePath);
+    void ConfigQ2Cut();
 
     // ConfigBeamEnergy function ----------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigBeamEnergy(const std::string& RecoSamplePath);
+    void ConfigBeamEnergy();
 
     // ConfigSampleName function ----------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigSampleName(const std::string& RecoSamplePath, const std::string& ReconHipoDir);
+    void ConfigSampleName();
 
     // ConfigureVaryingSampleName function ------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigureVaryingSampleName(const std::string& sn);
+    void ConfigureVaryingSampleName();
 
     // ConfigureVz_cuts function ----------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfigureVz_cuts(const std::string& sn);
+    void ConfigureVz_cuts();
 
     // ConfiguredVz_cuts function ---------------------------------------------------------------------------------------------------------------------------------------
 
-    void ConfiguredVz_cuts(const std::string& sn);
+    void ConfiguredVz_cuts();
 
     // ConfigureBeamEnergy function -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -140,6 +147,13 @@ class ExperimentParameters : public TargetParameters {
     // ==================================================================================================================================================================
     // Getter = functions
     // ==================================================================================================================================================================
+
+    // Get input paths and glob patterns --------------------------------------------------------------------------------------------------------------------------------
+
+    std::string GetRecoSamplePath() const { return RecoSamplePath; }
+    std::string GetReconHipoDir() const { return ReconHipoDir; }
+    std::string GetHipoFilesPrefix() const { return HipoFilesPrefix; }
+    std::string GetInputFiles() const { return InputFilesGlobal; }
 
     // GetSampleType function -------------------------------------------------------------------------------------------------------------------------------------------
 

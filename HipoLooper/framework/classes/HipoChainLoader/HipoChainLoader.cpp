@@ -158,11 +158,10 @@ std::vector<std::string> HipoChainLoader::MakeInputGlobsFromList(const Experimen
 }
 
 // BuildFromList function -----------------------------------------------------------------------------------------------------------------------------------------------
- 
-HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment, const std::string& RecoSamplePath,
-                                                       const std::string& ReconHipoDir) const {
+
+HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment) const {
     // Get the glob patterns
-    std::vector<std::string> globs = MakeInputGlobsFromList(Experiment, RecoSamplePath, ReconHipoDir);
+    std::vector<std::string> globs = MakeInputGlobsFromList(Experiment, Experiment.GetRecoSamplePath(), Experiment.GetReconHipoDir());
     // Expand all globs and concatenate
     std::vector<std::string> files;
     for (const auto& pat : globs) {
@@ -177,10 +176,9 @@ HipoChainLoader::Result HipoChainLoader::BuildFromList(clas12root::HipoChain& ch
 
 // BuildPtrFromList function --------------------------------------------------------------------------------------------------------------------------------------------
 
-std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtrFromList(const ExperimentParameters& Experiment, const std::string& RecoSamplePath,
-                                                                                                             const std::string& ReconHipoDir) const {
+std::pair<std::unique_ptr<clas12root::HipoChain>, HipoChainLoader::Result> HipoChainLoader::BuildPtrFromList(const ExperimentParameters& Experiment) const {
     auto chain = std::make_unique<clas12root::HipoChain>();
-    Result res = BuildFromList(*chain, Experiment, RecoSamplePath, ReconHipoDir);
+    Result res = BuildFromList(*chain, Experiment);
     return {std::move(chain), std::move(res)};
 }
 

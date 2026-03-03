@@ -13,6 +13,8 @@
 namespace path_definitions {
 const CodeDirectories PathDefinitions = CodeDirectories();
 
+const std::string HipoFilesPrefix = "*hipo";
+
 const std::string plots_TList_FileType = "_plots.root";
 const std::string plots_TFile_FileType = "_plots.pdf";
 const std::string log_file_name = "Run_log.txt";

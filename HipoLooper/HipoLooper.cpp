@@ -104,10 +104,10 @@ void HipoLooper() {
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/2070MeV_Q2_0_02_rgm_fall2021_C_v2_S_test/reconhipo/*.hipo");
     // InputFiles.push_back(BaseDir + "/C12/G18_10a_00_000/4029MeV_Q2_0_25_rgm_fall2021_C_v2_L_test/reconhipo/*.hipo");
 
-    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
-    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar/reconhipo/*.hipo");
+    InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
+    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/2070MeV_Q2_0_02_devGEMC_rgm_fall2021_Ar");
+    // InputFiles.push_back(BaseDir + "/Ar40/G18_10a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
+    // InputFiles.push_back(BaseDir + "/Ar40/GEM21_11a_00_000/4029MeV_Q2_0_25_devGEMC_rgm_fall2021_Ar");
 
     std::vector<std::vector<double>> theta_slices;
     double theta_start = 10.0;  // Degrees
@@ -120,6 +120,10 @@ void HipoLooper() {
 
     for (int sample = 0; sample < InputFiles.size(); sample++) {
 #pragma region Setup and configuration
+
+        const std::string RecoSamplePath = InputFiles.at(sample);
+        const std::string ReconHipoDir = "reconhipo";
+        const std::string inputFiles = RecoSamplePath + "/" + ReconHipoDir + "/" + pd::HipoFilesPrefix;
 
         bool IsData = bt::FindSubstring(InputFiles.at(sample), "cache");
 
@@ -209,21 +213,40 @@ void HipoLooper() {
         std::string SampleName = target_status + sample_type_status + Ebeam_status_2 + Run_status;
         TString Beam_energy_TString = Ebeam_status_1;
 
-        ExperimentParameters Experiment(InputFiles.at(sample), "reconhipo");
+        ExperimentParameters Experiment(RecoSamplePath, ReconHipoDir);
 
-        HipoChainLoader::Options opt;
+        HipoChainLoader::Options opt{};
         opt.log_skipped = true;
-        opt.log_path = OutputDir + "/" + pd::skipped_files_list_prefix;
-        // opt.log_path = OutputDir + "/skipped_hipo_files.txt";
+
+        // Prefer this if pd::skipped_files_list_prefix already begins with '/'
+        opt.log_path = OutputDir + pd::skipped_files_list_prefix;
+
+        // If pd::skipped_files_list_prefix does NOT begin with '/', use instead:
+        // opt.log_path = OutputDir + "/" + pd::skipped_files_list_prefix;
+
         opt.append_log = true;
-        opt.reader_tags = {0};
+
+        // IMPORTANT: tags are vector<long>
+        opt.reader_tags = {0L};
+
         opt.turn_off_qadb = true;
         opt.print_progress = true;
         opt.print_skipped = true;
 
         HipoChainLoader loader(opt);
 
-        auto [chainPtr, loadRes] = loader.BuildPtr(Experiment, SampleName, InputFiles.at(sample), "reconhipo", SampleName);
+        // Build using the run-list aware path-builder (RecoSamplePath + ReconHipoDir => "*.hipo")
+        auto [chainPtr, loadRes] = loader.BuildPtrFromList(Experiment,
+                                                           InputFiles.at(sample),      // RecoSamplePath
+                                                           "reconhipo",                // ReconHipoDir
+                                                           Experiment.GetSampleName()  // name used in skipped-file log header
+        );
+
+        if (!chainPtr) {
+            std::cerr << "\n\n\033[31mError!\033[0m HipoChainLoader returned a null chain pointer. Aborting...\n\n";
+            exit(1);
+        }
+
         auto& chain = *chainPtr;
 
         auto config_c12 = chain.GetC12Reader();

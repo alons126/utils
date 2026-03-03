@@ -99,11 +99,10 @@ class HipoChainLoader {
     std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtr(const std::string& glob_pattern, const std::string& SampleName = "") const;
 
     // Build a chain using the legacy run-list expansion logic, but still applying the fork-guard file validation.
-    Result BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment, const std::string& RecoSamplePath, const std::string& ReconHipoDir) const;
+    Result BuildFromList(clas12root::HipoChain& chain, const ExperimentParameters& Experiment) const;
 
     // Convenience overload that constructs and returns a heap-allocated chain.
-    std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtrFromList(const ExperimentParameters& Experiment, const std::string& RecoSamplePath,
-                                                                               const std::string& ReconHipoDir) const;
+    std::pair<std::unique_ptr<clas12root::HipoChain>, Result> BuildPtrFromList(const ExperimentParameters& Experiment) const;
 
     // AddToHipoChain function ------------------------------------------------------------------------------------------------------------------------------------------
 

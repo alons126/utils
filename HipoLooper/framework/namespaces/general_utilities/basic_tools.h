@@ -27,6 +27,13 @@
 
 namespace env = environment;
 
+/**
+ * @namespace basic_tools
+ *
+ * A namespace with the most basic utility functions.
+ * This is intended to be a "lowest-level" namespace with no dependencies on other namespaces or classes in the framework, so it can be used anywhere without risk of circular dependencies.
+ * Only dependency here is on the C++ standard library and the environment namespace for colored output.
+ */
 namespace basic_tools {
 
 // CheckSSHConnection function ------------------------------------------------------------------------------------------------------------------------------------------
