@@ -5,20 +5,23 @@
 #ifndef ANALYSIS_MATH_H
 #define ANALYSIS_MATH_H
 
-#include <TF1.h>
-#include <TGraph.h>
-#include <TMath.h>
+#include <TVector3.h>
 
 #include <cmath>
 #include <iostream>
 #include <string>
-#include <utility>  // for std::tuple
 #include <vector>
 
+// Include libraries:
 #include "../basic_tools.h"
 #include "../constants.h"
+#include "../variable_correctors.h"
+
+// Include CLAS12 libraries:
+#include "../../../includes/clas12_include.h"
+
+// Other includes:
 #include "poly_solver.cpp"
-#include "variable_correctors.h"
 
 namespace analysis_math {
 using namespace poly_solver;
@@ -30,27 +33,27 @@ const double pi = M_PI;
 
 // RadToDeg function ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-double RadToDeg(const double &rad) { return rad * 180. / pi; }
+double RadToDeg(const double& rad) { return rad * 180. / pi; }
 
 // DegToRad function ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-double DegToRad(const double &deg) { return deg * pi / 180.; }
+double DegToRad(const double& deg) { return deg * pi / 180.; }
 
 // CalcTheta_rad function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcTheta_rad(const double &x, const double &y, const double &z) { return acos(z / sqrt(x * x + y * y + z * z)); }
+double CalcTheta_rad(const double& x, const double& y, const double& z) { return acos(z / sqrt(x * x + y * y + z * z)); }
 
 // CalcTheta_deg function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcTheta_deg(const double &x, const double &y, const double &z) { return RadToDeg(CalcTheta_rad(x, y, z)); }
+double CalcTheta_deg(const double& x, const double& y, const double& z) { return RadToDeg(CalcTheta_rad(x, y, z)); }
 
 // CalcPhi_rad function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcPhi_rad(const double &x, const double &y) { return atan2(y, x); }
+double CalcPhi_rad(const double& x, const double& y) { return atan2(y, x); }
 
 // CalcPhi_deg function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-double CalcPhi_deg(const double &x, const double &y, const double &z) { return RadToDeg(CalcPhi_rad(x, y)); }
+double CalcPhi_deg(const double& x, const double& y, const double& z) { return RadToDeg(CalcPhi_rad(x, y)); }
 
 // RadCalc function ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -58,7 +61,7 @@ inline double RadCalc(double x, double y, double z) { return sqrt(x * x + y * y 
 
 // GetPi0MomTh function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-double GetPi0MomTh(const double &ph_mom_th) {
+double GetPi0MomTh(const double& ph_mom_th) {
     if (std::abs(ph_mom_th) == 9999) { return -9999; }
     double pi0_mom_th = std::sqrt(4 * ph_mom_th * ph_mom_th - constants::m_pizero * constants::m_pizero);
     return pi0_mom_th;
@@ -122,7 +125,7 @@ double GetPhi_e(TString OutPutFolder, double phi_N) {
 
 // GetBinFromAng function -----------------------------------------------------------------------------------------------------------------------------------------------
 
-int GetBinFromAng(double Angle, double AngleBins, double AngleMin, double AngleMax, bool printOut = false, const std::string &AngleType = "") {
+int GetBinFromAng(double Angle, double AngleBins, double AngleMin, double AngleMax, bool printOut = false, const std::string& AngleType = "") {
     int Bin = 0;
     //    int Bin = -1;
 
@@ -154,7 +157,7 @@ int GetBinFromAng(double Angle, double AngleBins, double AngleMin, double AngleM
 
 // CalcdPhi function (CLAS12 extention) ---------------------------------------------------------------------------------------------------------------------------------
 
-double CalcdPhi2(region_part_ptr proton1, region_part_ptr proton2) {
+double CalcdPhi2(clas12::region_part_ptr proton1, clas12::region_part_ptr proton2) {
     if (proton1->getRegion() == proton2->getRegion()) {
         std::cerr << "\n\nCalcdPhi2: protons are in the same region (" << proton1->getRegion() << " & " << proton2->getRegion() << ")! Aborting...\n";
         exit(1);
@@ -176,8 +179,8 @@ double CalcdPhi2(region_part_ptr proton1, region_part_ptr proton2) {
 // TLKinCutsCheck function (CLAS12 extention) ---------------------------------------------------------------------------------------------------------------------------
 
 /* TLKinCutsCheck for a general vector of particles */
-bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply_kinematical_cuts, const vector<int> &FD_nucleon, const DSCuts &FD_nucleon_theta_cut,
-                    const DSCuts &FD_nucleon_momentum_cut) {
+bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader>& c12, bool apply_kinematical_cuts, const vector<int>& FD_nucleon, const DSCuts& FD_nucleon_theta_cut,
+                    const DSCuts& FD_nucleon_momentum_cut) {
     auto mcpbank = c12->mcparts();
 
     if (!apply_kinematical_cuts) {
@@ -206,8 +209,8 @@ bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply
 // TLKinCutsCheck function (CLAS12 extention) ---------------------------------------------------------------------------------------------------------------------------
 
 /* TLKinCutsCheck for leading FD neutrons */
-bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader> &c12, bool apply_kinematical_cuts, const int TL_IDed_neutrons_FD_mom_max, const DSCuts &FD_nucleon_theta_cut,
-                    const DSCuts &FD_nucleon_momentum_cut) {
+bool TLKinCutsCheck(const std::unique_ptr<clas12::clas12reader>& c12, bool apply_kinematical_cuts, const int TL_IDed_neutrons_FD_mom_max, const DSCuts& FD_nucleon_theta_cut,
+                    const DSCuts& FD_nucleon_momentum_cut) {
     auto mcpbank = c12->mcparts();
 
     if (!apply_kinematical_cuts) {
