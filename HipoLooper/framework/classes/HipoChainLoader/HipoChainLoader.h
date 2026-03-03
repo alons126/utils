@@ -29,7 +29,7 @@
     #include "../../namespaces/setup/debugging.h"
 
     // Include classes:
-    #include "../../classes/ExperimentParameters.cpp"
+    #include "../../classes/ExperimentParameters/ExperimentParameters.cpp"
 
     // Include CLAS12 libraries:
     #include "../../includes/clas12_include.h"
