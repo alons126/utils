@@ -17,6 +17,18 @@
 
 namespace yl = Yaml_loader;
 
+/**
+ * @namespace analysis_samples
+ * @brief A namespace for defining the analysis samples, including data samples, simulation samples, and uniform samples.
+ * @details This namespace contains definitions for the analysis samples being analyzed in the code, including data samples, simulation samples, and uniform samples. The samples are defined
+ * in separate header files (data_samples.h, simulation_samples.h, and uniform_samples.h) and are included in this namespace. The ConfigSampleChain function is used to configure the sample
+ * chain based on the specific sample being analyzed, which allows for flexibility in controlling the analysis based on the characteristics of the sample. The analysis samples defined in
+ * this namespace are used in the main code to control various aspects of the analysis based on the characteristics of the samples being analyzed.
+ * @note It is important to define the analysis samples appropriately based on the goals of the analysis and the characteristics of the data being analyzed. The ConfigSampleChain function
+ * should be used to configure the sample chain based on the specific sample being analyzed, which allows for flexibility in controlling the analysis based on the characteristics of the
+ * sample. Additionally, it is important to ensure that the paths and configurations for each sample are set correctly to avoid issues with reading input files or saving output files during
+ * the analysis.
+ */
 namespace analysis_samples {
 using namespace data_samples;
 using namespace simulation_samples;
@@ -110,8 +122,8 @@ void ConfigSampleChain() {
     // Simulation samples -----------------------------------------------------------------------------------------------------------------------------------------------
 
     // /* C12 G18 2GeV - corrected geometry */
-    Config_C12_G18_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
-                                               false);  // no FC
+    // Config_C12_G18_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
+    //                                            false);  // no FC
     // Config_C12_SuSa_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
     //                                             false);  // no FC
 
@@ -124,14 +136,15 @@ void ConfigSampleChain() {
     // // /* Ar40 G18 2GeV - corrected geometry */
     // Config_Ar40_G18_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
     //                                             false);  // no FC
-    // Config_Ar40_SuSa_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
+    // Config_Ar40_SuSa_2GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir,
+    // InputHipoFiles,
     //                                              false);  // no FC
 
     // // /* Ar40 SuSa 2GeV - corrected geometry */
     // Config_Ar40_G18_4GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
     //                                             false);  // no FC
-    // Config_Ar40_SuSa_4GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
-    //                                              false);  // no FC
+    Config_Ar40_SuSa_4GeV_Corrected1Foil_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles,
+                                                 false);  // no FC
 
     // /* C12 G18 2GeV */
     // Config_C12_G18_2GeV_samples(RecoSamplePath_v, ReconHipoDir_v, PathToHipoFilesDir_v, InputHipoFiles_v, RecoSamplePath, ReconHipoDir, PathToHipoFilesDir, InputHipoFiles, false);  // no

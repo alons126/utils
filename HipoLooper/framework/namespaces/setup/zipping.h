@@ -9,6 +9,19 @@
 
 #include "../settings/zipping_settings.h"
 
+/**
+ * @namespace zipping
+ * @brief A namespace for zipping the output of the code runs, including functions for saving the Plots folder as a zip file and collecting all zip files from multiple samples into one
+ * directory.
+ * @details This namespace contains functions for zipping the output of the code runs, such as SavePlotsToZipFile, which saves the Plots folder of a single sample as a zip file, and
+ * CollectZipFiles, which collects all zip files from multiple samples into one directory. The zipping process is done using the system's zip command, and the zip files are saved in the same
+ * directory as the Plots folder, with the same name as the Plots folder (with .zip extension). The settings related to zipping are defined in the zipping_settings namespace, which can be
+ * used to control whether to save the Plots folder as a zip file and whether to print out the zipping process in the terminal.
+ * @note The zipping process can take some time, especially if the Plots folder is large, so it is recommended to set Save_Plots_folder_to_zip_files to true only if you want to save the
+ * Plots folder as a zip file. Additionally, the zipping_print_out setting can be set to true to print out the zipping process in the terminal, which can be useful for debugging or
+ * monitoring the progress of the zipping process. The CollectZipFiles function can be used to collect all zip files from multiple samples into one directory, which can be useful for
+ * organizing the output of multiple runs or analyses.
+ */
 namespace zipping {
 using namespace zipping_settings;
 

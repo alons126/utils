@@ -24,6 +24,20 @@
 
 namespace bt = basic_tools;
 
+/**
+ * @namespace variable_correctors
+ * @brief A namespace for functions that perform variable corrections, such as fitting peaks to Gaussians and extracting peak positions from histograms.
+ * @details This namespace contains functions that are used to perform variable corrections in the analysis, such as fitting peaks to Gaussian functions and extracting peak positions from
+ * histograms. The functions include GetPeakFromHighestBin, which returns the peak position of a histogram by locating the bin with the maximum number of entries, and FitPeakToGaussian,
+ * which fits a Gaussian function to the peak of a histogram and returns the mean and its error. These functions are designed to be used in the main code for performing variable corrections
+ * based on the characteristics of the histograms being analyzed. The functions can be used to extract peak positions and uncertainties, which can then be used for further analysis or for
+ * applying corrections to variables based on the extracted peak positions.
+ * @note The functions in this namespace are designed to be used in the main code for performing variable corrections based on the characteristics of the histograms being analyzed. It is
+ * important to ensure that the functions are used correctly and that the input histograms are appropriate for the corrections being performed. For example, the FitPeakToGaussian function
+ * assumes that the histogram has a well-defined peak that can be fitted with a Gaussian function, and that the fit limits are chosen appropriately based on the characteristics of the
+ * histogram. Additionally, the GetPeakFromHighestBin function assumes that the histogram has a well-defined peak that can be identified by locating the bin with the maximum number of
+ * entries, and that the binning of the histogram is appropriate for the resolution needed for the analysis.
+ */
 namespace variable_correctors {
 
 // GetPeakFromHighestBin function ----------------------------------------------------------------------------------------------------------------------
@@ -48,7 +62,7 @@ namespace variable_correctors {
  *   auto [peak, err] = GetPeakFromHighestBin(h1);
  *   std::cout << "Peak bin center: " << peak << " ± " << err << std::endl;
  */
-std::pair<double, double> GetPeakFromHighestBin(TH1D *hist) {
+std::pair<double, double> GetPeakFromHighestBin(TH1D* hist) {
     int peakBin = hist->GetMaximumBin();
     return {hist->GetBinCenter(peakBin), 0.5 * hist->GetBinWidth(peakBin)};
 }
@@ -68,7 +82,7 @@ std::pair<double, double> GetPeakFromHighestBin(TH1D *hist) {
  *   auto [mean, error] = fit_peak_gaussian(h1);
  *   std::cout << "Peak at: " << mean << " ± " << error << std::endl;
  */
-std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitLimits = {}) {
+std::pair<double, double> FitPeakToGaussian(TH1D* hist, std::vector<double> fitLimits = {}) {
     double fitMin, fitMax;
 
     // Return NaNs if histogram is empty
@@ -114,7 +128,7 @@ std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitL
     }
 
     // Construct and fit a Gaussian
-    TF1 *fit = new TF1("fit", "gaus", fitMin, fitMax);
+    TF1* fit = new TF1("fit", "gaus", fitMin, fitMax);
     hist->Fit(fit, "RQ");  // R = use range, Q = quiet
 
     // Set visual color and attach to histogram
@@ -145,9 +159,9 @@ std::pair<double, double> FitPeakToGaussian(TH1D *hist, std::vector<double> fitL
  * @param theta_slice              Optional pair of theta limits in degrees (first < second). Used to fit with A = r / tan(theta).
  * @return std::tuple<double, double, double, TGraphErrors*> with (A or r, φ_beam, Vz_true, graph with fit and legend).
  */
-std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Particle, std::string SampleName, TObject *h_Vz_VS_phi_AllSectors,
-                                                                  const std::vector<TH1D *> &Zrec_BySector_HistList, const std::vector<TH1D *> &Phi_BySector_HistList = {},
-                                                                  const std::pair<double, double> &theta_slice = {-1, -1}) {
+std::tuple<double, double, double, TGraphErrors*> FitVertexVsPhi(std::string Particle, std::string SampleName, TObject* h_Vz_VS_phi_AllSectors,
+                                                                 const std::vector<TH1D*>& Zrec_BySector_HistList, const std::vector<TH1D*>& Phi_BySector_HistList = {},
+                                                                 const std::pair<double, double>& theta_slice = {-1, -1}) {
     if (Zrec_BySector_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Zrec_BySector_HistList.size() != 6)"); }
     if (Phi_BySector_HistList.size() != 6) { throw std::runtime_error("FitVertexVsPhi: expected 6 sector histograms (Phi_BySector_HistList.size() != 6)"); }
 
@@ -180,7 +194,7 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     //     mean_theta_rad = mean_theta * TMath::DegToRad();
     // }
 
-    TGraphErrors *g = new TGraphErrors(6, phi_deg, z_vals, phi_err, z_err);
+    TGraphErrors* g = new TGraphErrors(6, phi_deg, z_vals, phi_err, z_err);
 
     if (useThetaSlice) {
         g->SetTitle(("V_{z,rec}^{" + Particle + "} peaks vs. #phi_{" + Particle + "} peaks for " + bt::ToStringWithPrecision(theta_slice.first) + "#circ #leq #theta_{" + Particle +
@@ -202,14 +216,14 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + 10 * margin);
     // g->GetYaxis()->SetRangeUser(minZ - margin, maxZ + margin);
 
-    TF1 *fitFunc = nullptr;  // Fit function: argument in degrees, convert to radians in the formula
+    TF1* fitFunc = nullptr;  // Fit function: argument in degrees, convert to radians in the formula
 
     if (!useThetaSlice) {
         fitFunc = new TF1("fitFunc", "(-[0]) * cos((x - [1]) * TMath::DegToRad()) + [2]", -180, 180);
         fitFunc->SetParNames("Amplitude", "Phi_beam", "Vz_true");
     } else {
         // mean_theta is provided in degrees; convert to radians for trigonometric use
-        fitFunc = new TF1("fitFunc", ([=](double *x, double *par) { return (-par[0] / tan(mean_theta_rad)) * cos((x[0] - par[1]) * TMath::DegToRad()) + par[2]; }), -180, 180, 3);
+        fitFunc = new TF1("fitFunc", ([=](double* x, double* par) { return (-par[0] / tan(mean_theta_rad)) * cos((x[0] - par[1]) * TMath::DegToRad()) + par[2]; }), -180, 180, 3);
         fitFunc->SetParNames("r", "Phi_beam", "Vz_true");
     }
 
@@ -262,16 +276,16 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
         legendText << "V_{z,rec}^{" << Particle << "}(#phi_{" << Particle << "}) = V_{z,true}^{" << Particle << "} - A*cos(#phi_{" << Particle << "} - #phi_{beam})";
     }
 
-    TLegend *legend = new TLegend(0.18, 0.77, 0.74, 0.88);
+    TLegend* legend = new TLegend(0.18, 0.77, 0.74, 0.88);
     legend->AddEntry(fitFunc, legendText.str().c_str(), "l");
     legend->SetTextAlign(12);
     legend->SetTextSize(0.025);
     g->GetListOfFunctions()->Add(legend);
 
-    TPaveText *FitParam1 = new TPaveText(0.18, 0.65, 0.35, 0.75, "NDC");
-    TPaveText *FitParam2 = new TPaveText(0.35, 0.65, 0.75, 0.75, "NDC");
+    TPaveText* FitParam1 = new TPaveText(0.18, 0.65, 0.35, 0.75, "NDC");
+    TPaveText* FitParam2 = new TPaveText(0.35, 0.65, 0.75, 0.75, "NDC");
 
-    for (auto *box : {FitParam1, FitParam2}) {
+    for (auto* box : {FitParam1, FitParam2}) {
         box->SetBorderSize(1);
         box->SetFillColor(0);
         box->SetTextAlign(12);
@@ -304,7 +318,7 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
         std::ostringstream label;
         label << "#splitline{#font[62]{" << sector_label[i] << "}}{(" << bt::ToStringWithPrecision(x) << "#circ, " << bt::ToStringWithPrecision(y) << " cm)}";
         std::cout << label.str() << std::endl;
-        TLatex *latex = new TLatex(x + 3, y + 0.075, label.str().c_str());  // offset to avoid overlap
+        TLatex* latex = new TLatex(x + 3, y + 0.075, label.str().c_str());  // offset to avoid overlap
         latex->SetTextFont(42);
         latex->SetTextSize(0.025);
         latex->SetTextAlign(12);
@@ -314,7 +328,7 @@ std::tuple<double, double, double, TGraphErrors *> FitVertexVsPhi(std::string Pa
     std::cout << std::endl;
 
     if (h_Vz_VS_phi_AllSectors->InheritsFrom("TH2D")) {
-        auto *Temo_h2 = (TH2D *)h_Vz_VS_phi_AllSectors;
+        auto* Temo_h2 = (TH2D*)h_Vz_VS_phi_AllSectors;
 
         Temo_h2->GetListOfFunctions()->Add(g);
         Temo_h2->GetListOfFunctions()->Add(fitFunc);

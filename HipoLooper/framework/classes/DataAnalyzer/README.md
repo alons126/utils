@@ -1,5 +1,4 @@
 
-
 # The `DataAnalyzer` class
 
 **Author:** Alon Sportes  

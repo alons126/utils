@@ -19,6 +19,20 @@
 #include "../../classes/clas12ana/clas12ana.h"
 #include "../../classes/hPlots/hPlot1D.cpp"
 
+/**
+ * @struct CutValueManager
+ * @brief A struct to manage the cut values for the analysis cuts, including chi2 cuts, vertex cuts, sampling fraction cuts, and momentum thresholds.
+ * @details This struct is used to store the cut values for the analysis cuts, and to update them based on the run parameters and event selection settings. The cut values are stored in
+ * DSCuts objects, which contain the mean and sigma values for the cuts, as well as the cut variable, region, particle, and applied cuts. The CutValueManager struct contains DSCuts objects
+ * for each type of cut used in the analysis, such as chi2 cuts, vertex cuts, sampling fraction cuts, and momentum thresholds. The constructor initializes the cut values with default values,
+ * which can be updated later based on the run parameters and event selection settings. The CutValueManager struct is used in the main code to apply the cuts to the data and simulation
+ * samples. Note that the cut values are updated based on the run parameters and event selection settings, which allows for flexibility in applying different cuts for different runs or
+ * analyses. The CutValueManager struct is designed to be easily extendable, allowing for the addition of new cuts or modification of existing cuts as needed for future analyses.
+ * @note The cut values are stored in DSCuts objects, which contain the mean and sigma values for the cuts, as well as the cut variable, region, particle, and applied cuts. The cut values
+ * can be updated based on the run parameters and event selection settings, which allows for flexibility in applying different cuts for different runs or analyses. It is important to set the
+ * cut values appropriately based on the goals of the analysis and the characteristics of the data being analyzed, as well as to ensure that the cut values are consistent with the cuts being
+ * applied in the main code.
+ */
 struct CutValueManager {
     // clas12ana cuts ---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +147,7 @@ struct CutValueManager {
     /* Neutron veto cut (1n & nFDpCD, FD) */
     DSCuts Neutron_veto_cut = DSCuts("Neutron veto", "FD", "", "1n", 0, 100, 9999);
     DSCuts ChargedECALveto_veto_cut = DSCuts("Charged ECAL veto", "FD", "", "1n", 0, Neutron_veto_cut.GetUpperCut(), 9999);
-    DSCuts NeutralECALveto_veto_cut = DSCuts("Neutral ECAL veto", "FD", "", "1n", 0, 125, 9999); // TODO: check if this cut should be updated
+    DSCuts NeutralECALveto_veto_cut = DSCuts("Neutral ECAL veto", "FD", "", "1n", 0, 125, 9999);  // TODO: check if this cut should be updated
 
     /* Ghost tracks handling (2p & pFDpCD, CD & FD) */
     DSCuts Theta_p1_cuts_2p = DSCuts("Theta_p1", "", "Proton", "2p", 40., -9999, 5.);
@@ -183,7 +197,7 @@ struct CutValueManager {
     // DSCuts Theta_q_pCD_cut = DSCuts("xB QE range", "", "", "Protons and neutrons", 0, 0., 90.);  // Gives lower FSI
     DSCuts Theta_q_pCD_cut = DSCuts("xB QE range", "", "", "Protons and neutrons", 0, 0., 40.);  // Gives lower FSI
 
-    CutValueManager(ExperimentParameters &Experiment, const EventSelectionSettings &ESSettings) {
+    CutValueManager(ExperimentParameters& Experiment, const EventSelectionSettings& ESSettings) {
         Vz_cut = Experiment.GetVz_cuts();
         Vz_cut_FD = Experiment.GetVz_cuts_FD();
         Vz_cut_CD = Experiment.GetVz_cuts_CD();
@@ -214,7 +228,7 @@ struct CutValueManager {
         TL_n_mom_cuts = DSCuts("Momentum", "FD", "Neutrons", "", 0, n_mom_th.GetLowerCut(), n_mom_th.GetUpperCut());
     }
 
-    void UpdateChargedParticleChi2Cuts(clas12ana &clasAna) {
+    void UpdateChargedParticleChi2Cuts(clas12ana& clasAna) {
         Chi2_Proton_cuts_CD.SetCutPram(clasAna.GetPidCutMean(2212, "CD"), -clasAna.GetPidCutSigma(2212, "CD"), clasAna.GetPidCutSigma(2212, "CD"));
         Chi2_Proton_cuts_FD.SetCutPram(clasAna.GetPidCutMean(2212, "FD"), -clasAna.GetPidCutSigma(2212, "FD"), clasAna.GetPidCutSigma(2212, "FD"));
         Chi2_piplus_cuts_CD.SetCutPram(clasAna.GetPidCutMean(211, "CD"), -clasAna.GetPidCutSigma(211, "CD"), clasAna.GetPidCutSigma(211, "CD"));

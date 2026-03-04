@@ -7,6 +7,16 @@
 
 #include <iostream>
 
+/**
+ * @struct EventSelectionSettings
+ * @brief Settings related to event selection, including which final states to analyze, whether to calculate truth level plots, and settings related to FD neutrals.
+ * @details These settings are used in the main code to control the event selection process, including which final states to analyze (1p, 1n, 2p, pFDpCD, nFDpCD), whether to calculate truth
+ * level plots, and settings related to FD neutrals (whether to enable FD photons and neutrons, and whether to count FD neutron and photon hits). The RefreshSettings function is used to
+ * update the settings based on other settings, such as whether to enable FD neutrons based on the ES_by_leading_FDneutron setting.
+ * @note The settings related to calculating truth level plots and FD neutrals can have a significant impact on the analysis, so it is important to set these settings appropriately based on
+ * the goals of the analysis and the characteristics of the data being analyzed. For example, enabling FD neutrons can increase the efficiency of the analysis, but may also increase the
+ * background from RES and DIS events, so it is important to consider these trade-offs when setting these options.
+ */
 struct EventSelectionSettings {
     // Settings to enable/disable specific FS plot calculations (Rec only):
 

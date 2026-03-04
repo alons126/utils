@@ -7,6 +7,8 @@
 
 #include "AMaps.h"
 
+#include <algorithm>
+
 // AMaps constructors ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* AMaps generation constructor (G1) */
@@ -25,104 +27,112 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
     NumberNucOfMomSlices = nOfNucMomBins;
     NumberElecOfMomSlices = nOfElecMomBins;
 
+    const bool hasElectronSample = bt::FindSubstring(SName, "Uniform_1e_sample_");
+    const bool hasProtonSample = bt::FindSubstring(SName, "Uniform_ep_sample_");
+    const bool hasNeutronSample = bt::FindSubstring(SName, "Uniform_en_sample_");
+
 #pragma region /* Setting saving directories */
+    auto EnsureDirectory = [](const std::string& path) { system(("mkdir -p " + path).c_str()); };
+
     std::string SavePathAMapsBC = AMapSavePath + "00b_AMaps_BC_from_class/";
-    system(("mkdir -p " + SavePathAMapsBC).c_str());
+    EnsureDirectory(SavePathAMapsBC);
 
     std::string AMapSavePathTLElectron, AMapSavePathRecoElectron, AMapSavePathRecoToTLElectron, AMapSavePathSepAMapsElectron;
 
-    if (bt::FindSubstring(SName, "Uniform_1e_sample_")) {
+    if (hasElectronSample) {
         AMapSavePathTLElectron = SavePath + "01a_Electron_TL_Hit_Maps/";
-        system(("mkdir -p " + AMapSavePathTLElectron).c_str());
+        EnsureDirectory(AMapSavePathTLElectron);
         AMapSavePathRecoElectron = SavePath + "01b_Electron_Reco_Hit_Maps/";
-        system(("mkdir -p " + AMapSavePathRecoElectron).c_str());
+        EnsureDirectory(AMapSavePathRecoElectron);
         AMapSavePathRecoToTLElectron = SavePath + "01c_Electron_RecoToTL_Ratio/";
-        system(("mkdir -p " + AMapSavePathRecoToTLElectron).c_str());
+        EnsureDirectory(AMapSavePathRecoToTLElectron);
         AMapSavePathSepAMapsElectron = AMapSavePath + "01d_Electron_Separate_AMaps/";
-        system(("mkdir -p " + AMapSavePathSepAMapsElectron).c_str());
+        EnsureDirectory(AMapSavePathSepAMapsElectron);
     }
 
     std::string AMapSavePathTLProton, AMapSavePathRecoProton, AMapSavePathRecoToTLProton, AMapSavePathSepAMapsProton;
 
-    if (bt::FindSubstring(SName, "Uniform_ep_sample_")) {
+    if (hasProtonSample) {
         AMapSavePathTLProton = SavePath + "02a_Proton_TL_Hit_Maps/";
-        system(("mkdir -p " + AMapSavePathTLProton).c_str());
+        EnsureDirectory(AMapSavePathTLProton);
         AMapSavePathRecoProton = SavePath + "02b_Proton_Reco_Hit_Maps/";
-        system(("mkdir -p " + AMapSavePathRecoProton).c_str());
+        EnsureDirectory(AMapSavePathRecoProton);
         AMapSavePathRecoToTLProton = SavePath + "02c_Proton_RecoToTL_Ratio/";
-        system(("mkdir -p " + AMapSavePathRecoToTLProton).c_str());
+        EnsureDirectory(AMapSavePathRecoToTLProton);
         AMapSavePathSepAMapsProton = AMapSavePath + "02d_Proton_Separate_AMaps/";
-        system(("mkdir -p " + AMapSavePathSepAMapsProton).c_str());
+        EnsureDirectory(AMapSavePathSepAMapsProton);
     }
 
     std::string AMapSavePathTLNeutron, AMapSavePathRecoNeutron, AMapSavePathRecoToTLNeutron, AMapSavePathSepAMapsNeutron;
     std::string AMapConstSavePathTLNeutron, AMapConstSavePathRecoNeutron, AMapConstSavePathRecoToTLNeutron, AMapConstSavePathSepAMapsNeutron;
 
-    if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
+    if (hasNeutronSample) {
         AMapSavePathTLNeutron = SavePath + "03aa_Neutron_TL_Hit_Maps/";
-        system(("mkdir -p " + AMapSavePathTLNeutron).c_str());
+        EnsureDirectory(AMapSavePathTLNeutron);
         AMapSavePathRecoNeutron = SavePath + "03ab_Neutron_Reco_Hit_Maps/";
-        system(("mkdir -p " + AMapSavePathRecoNeutron).c_str());
+        EnsureDirectory(AMapSavePathRecoNeutron);
         AMapSavePathRecoToTLNeutron = SavePath + "03ac_Neutron_RecoToTL_Ratio/";
-        system(("mkdir -p " + AMapSavePathRecoToTLNeutron).c_str());
+        EnsureDirectory(AMapSavePathRecoToTLNeutron);
         AMapSavePathSepAMapsNeutron = AMapSavePath + "03ad_Neutron_Separate_AMaps/";
-        system(("mkdir -p " + AMapSavePathSepAMapsNeutron).c_str());
+        EnsureDirectory(AMapSavePathSepAMapsNeutron);
 
         AMapConstSavePathTLNeutron = SavePath + "03ba_Neutron_TL_Hit_Maps_Const/";
-        system(("mkdir -p " + AMapConstSavePathTLNeutron).c_str());
+        EnsureDirectory(AMapConstSavePathTLNeutron);
         AMapConstSavePathRecoNeutron = SavePath + "03bb_Neutron_Reco_Hit_Maps_Const/";
-        system(("mkdir -p " + AMapConstSavePathRecoNeutron).c_str());
+        EnsureDirectory(AMapConstSavePathRecoNeutron);
         AMapConstSavePathRecoToTLNeutron = SavePath + "03bc_Neutron_RecoToTL_Ratio_Const/";
-        system(("mkdir -p " + AMapConstSavePathRecoToTLNeutron).c_str());
+        EnsureDirectory(AMapConstSavePathRecoToTLNeutron);
         AMapConstSavePathSepAMapsNeutron = AMapSavePath + "03bd_Neutron_Separate_AMaps_Const/";
-        system(("mkdir -p " + AMapConstSavePathSepAMapsNeutron).c_str());
+        EnsureDirectory(AMapConstSavePathSepAMapsNeutron);
     }
 
     std::string AMapSavePathAMap = AMapSavePath + "04_Finalized_AMaps/";
-    system(("mkdir -p " + AMapSavePathAMap).c_str());
+    EnsureDirectory(AMapSavePathAMap);
 
     std::string AMapSavePathGeneratedAMapCopy = AMapSavePath + "05_Generated_maps/";
-    system(("mkdir -p " + AMapSavePathGeneratedAMapCopy).c_str());
+    EnsureDirectory(AMapSavePathGeneratedAMapCopy);
     AMapCopySavePath = AMapSavePathGeneratedAMapCopy;
 #pragma endregion
 
 #pragma region /* Setting AMapsMode_TitleAddition */
-    std::string AMapsMode_TitleAddition;
+    std::string AMapsMode_TitleAddition = Maps_Mode.empty() ? "" : Maps_Mode;
 
-    if (Maps_Mode != "") {
-        AMapsMode_TitleAddition = Maps_Mode;
-    } else {
-        AMapsMode_TitleAddition = "";
-    }
-
-    if (!(Maps_Mode == "AMaps" || Maps_Mode == "WMaps")) { std::cout << "\n\nAMaps::SaveHitMaps: Maps_Mode = " << Maps_Mode << " is not defined! Aborting...\n", exit(1); }
+    if (!(Maps_Mode == "AMaps" || Maps_Mode == "WMaps")) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Maps_Mode = " + Maps_Mode + " is not defined!"); }
 
 #pragma endregion
 
     SetBins(P_nuc_bin_profile, beamE);
     SetElectronBins(P_e_bin_profile, beamE);
 
+    auto CreateMap = [&](const std::string& statsTitle, const std::string& title, const std::string& particleLabel, const std::string& savePath, const std::string& saveName, int xBins,
+                         int yBins) {
+        return hPlot2D(AMapsMode_TitleAddition, "", statsTitle, title, "#phi_{" + particleLabel + "} [#circ]", "#theta_{" + particleLabel + "} [#circ]", savePath, saveName, hBinLowerXLim,
+                       hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, xBins, yBins);
+    };
+
+    auto CreateAndStoreMap = [&](const std::string& statsTitle, const std::string& title, const std::string& particleLabel, const std::string& savePath, const std::string& saveName,
+                                 int xBins, int yBins, std::vector<hPlot2D>& destination, std::vector<TObject*>& rootHistograms) {
+        hPlot2D generatedMap = CreateMap(statsTitle, title, particleLabel, savePath, saveName, xBins, yBins);
+        destination.push_back(generatedMap);
+        rootHistograms.push_back(generatedMap.GetHistogram2D());
+    };
+
 #pragma region /* Reco theta VS phi BC */
 
-    if (bt::FindSubstring(SName, "Uniform_1e_sample_")) {
+    if (hasElectronSample) {
         std::string hStatsTitleAMapBCElectron = "Electron_AMap_BC", hTitleAMapBCElectron = "Electron AMap BC", hSaveNameAMapBCElectron = "01_e_AMap_BC";
         reco_theta_e_VS_phi_e_BC =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleAMapBCElectron, hTitleAMapBCElectron, "#phi_{" + eLabel + "} [#circ]", "#theta_{" + eLabel + "} [#circ]", SavePathAMapsBC,
-                    hSaveNameAMapBCElectron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
+            CreateMap(hStatsTitleAMapBCElectron, hTitleAMapBCElectron, eLabel, SavePathAMapsBC, hSaveNameAMapBCElectron, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
     }
 
-    if (bt::FindSubstring(SName, "Uniform_ep_sample_")) {
+    if (hasProtonSample) {
         std::string hStatsTitleAMapBCProton = "Proton_AMap_BC", hTitleAMapBCProton = "Proton AMap BC", hSaveNameAMapBCProton = "02_p_AMap_BC";
-        reco_theta_p_VS_phi_p_BC =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleAMapBCProton, hTitleAMapBCProton, "#phi_{" + pLabel + "} [#circ]", "#theta_{" + pLabel + "} [#circ]", SavePathAMapsBC,
-                    hSaveNameAMapBCProton, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+        reco_theta_p_VS_phi_p_BC = CreateMap(hStatsTitleAMapBCProton, hTitleAMapBCProton, pLabel, SavePathAMapsBC, hSaveNameAMapBCProton, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
     }
 
-    if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
+    if (hasNeutronSample) {
         std::string hStatsTitleAMapBCNeutron = "Neutron_AMap_BC", hTitleAMapBCNeutron = "Neutron AMap BC", hSaveNameAMapBCNeutron = "03_n_AMap_BC";
-        reco_theta_n_VS_phi_n_BC =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleAMapBCNeutron, hTitleAMapBCNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]", SavePathAMapsBC,
-                    hSaveNameAMapBCNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+        reco_theta_n_VS_phi_n_BC = CreateMap(hStatsTitleAMapBCNeutron, hTitleAMapBCNeutron, nLabel, SavePathAMapsBC, hSaveNameAMapBCNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
     }
 
     // std::string hStatsTitleAMapBCNucleon = "Nucleon_AMap_BC", hTitleAMapBCNucleon = "Nucleon AMap BC", hSaveNameAMapBCNucleon = "04_nuc_AMap_BC";
@@ -131,7 +141,7 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
 #pragma endregion
 
 #pragma region /* Setting electron histograms */
-    if (bt::FindSubstring(SName, "Uniform_1e_sample_")) {
+    if (hasElectronSample) {
         for (int i = 0; i < ElectronMomSliceLimits.size(); i++) {
             double BinLowerLim = ElectronMomSliceLimits.at(i).at(0), BinUpperLim = ElectronMomSliceLimits.at(i).at(1);
 
@@ -153,11 +163,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                            bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
             std::string hSaveNameTLElectron =
                 to_string(i + 1) + "_TL_P_bin_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-            hPlot2D hPBinTLElectron =
-                hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleTLElectron, hTitleTLElectron, "#phi_{" + eLabel + "} [#circ]", "#theta_{" + eLabel + "} [#circ]", AMapSavePathTLElectron,
-                        hSaveNameTLElectron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
-            truth_theta_e_VS_phi_e_BySlice.push_back(hPBinTLElectron);
-            truth_e_BySlice.push_back(hPBinTLElectron.GetHistogram2D());
+            CreateAndStoreMap(hStatsTitleTLElectron, hTitleTLElectron, eLabel, AMapSavePathTLElectron, hSaveNameTLElectron, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins,
+                              truth_theta_e_VS_phi_e_BySlice, truth_e_BySlice);
 #pragma endregion
 
 #pragma region /* Electron Reco. Acceptance maps */
@@ -167,11 +174,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                              bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
             std::string hSaveNameRecoElectron =
                 to_string(i + 1) + "_Reco_P_bin_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-            hPlot2D hPBinRecoElectron = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoElectron, hTitleRecoElectron, "#phi_{" + eLabel + "} [#circ]", "#theta_{" + eLabel + "} [#circ]",
-                                                AMapSavePathRecoElectron, hSaveNameRecoElectron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistElectronSliceNumOfXBins,
-                                                HistElectronSliceNumOfYBins);
-            reco_theta_e_VS_phi_e_BySlice.push_back(hPBinRecoElectron);
-            reco_e_BySlice.push_back(hPBinRecoElectron.GetHistogram2D());
+            CreateAndStoreMap(hStatsTitleRecoElectron, hTitleRecoElectron, eLabel, AMapSavePathRecoElectron, hSaveNameRecoElectron, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins,
+                              reco_theta_e_VS_phi_e_BySlice, reco_e_BySlice);
 #pragma endregion
 
 #pragma region /* Electron Reco./TL Ratio */
@@ -181,11 +185,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                       bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
             std::string hSaveNameRecoToTLRatioElectron =
                 to_string(i + 1) + "_e_Ratio_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-            hPlot2D hPBinRecoToTLRatioElectron = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoToTLRatioElectron, hTitleRecoToTLRatioElectron, "#phi_{" + eLabel + "} [#circ]",
-                                                         "#theta_{" + eLabel + "} [#circ]", AMapSavePathRecoToTLElectron, hSaveNameRecoToTLRatioElectron, hBinLowerXLim, hBinUpperXLim,
-                                                         hBinLowerYLim, hBinUpperYLim, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
-            acceptance_eff_e_BySlice.push_back(hPBinRecoToTLRatioElectron);
-            acc_eff_e_BySlice.push_back(hPBinRecoToTLRatioElectron.GetHistogram2D());
+            CreateAndStoreMap(hStatsTitleRecoToTLRatioElectron, hTitleRecoToTLRatioElectron, eLabel, AMapSavePathRecoToTLElectron, hSaveNameRecoToTLRatioElectron,
+                              HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins, acceptance_eff_e_BySlice, acc_eff_e_BySlice);
 #pragma endregion
 
 #pragma region /* Electron separate AMaps */
@@ -197,11 +198,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                  bt::ToStringWithPrecision(Charged_particle_min_Ratio, 2);
             std::string hSaveNameSepAMapsElectron =
                 to_string(i + 1) + "_e_SepAMap_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-            hPlot2D hPBinSepAMapsElectron = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleSepAMapsElectron, hTitleSepAMapsElectron, "#phi_{" + eLabel + "} [#circ]",
-                                                    "#theta_{" + eLabel + "} [#circ]", AMapSavePathSepAMapsElectron, hSaveNameSepAMapsElectron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim,
-                                                    hBinUpperYLim, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
-            filtered_reco_theta_e_VS_phi_e_BySlice.push_back(hPBinSepAMapsElectron);
-            filtered_reco_e_BySlice.push_back(hPBinSepAMapsElectron.GetHistogram2D());
+            CreateAndStoreMap(hStatsTitleSepAMapsElectron, hTitleSepAMapsElectron, eLabel, AMapSavePathSepAMapsElectron, hSaveNameSepAMapsElectron, HistElectronSliceNumOfXBins,
+                              HistElectronSliceNumOfYBins, filtered_reco_theta_e_VS_phi_e_BySlice, filtered_reco_e_BySlice);
 #pragma endregion
 
 #pragma endregion
@@ -212,7 +210,7 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
 #pragma region /* Setting nucleon histograms */
 
 #pragma region /* Setting nucleon slice histograms */
-    if (bt::FindSubstring(SName, "Uniform_ep_sample_") || bt::FindSubstring(SName, "Uniform_en_sample_")) {
+    if (hasProtonSample || hasNeutronSample) {
         for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
             double BinLowerLim = NucleonMomSliceLimits.at(i).at(0), BinUpperLim = NucleonMomSliceLimits.at(i).at(1);
 
@@ -226,7 +224,7 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
             std::string BinDensity = " (" + to_string(HistNucSliceNumOfXBins) + "x" + to_string(HistNucSliceNumOfYBins) + ")";
 
 #pragma region /* Setting proton Acceptance maps */
-            if (bt::FindSubstring(SName, "Uniform_ep_sample_")) {
+            if (hasProtonSample) {
 #pragma region /* Proton TL Acceptance maps */
                 std::string hStatsTitleTLProton = "TL P_{" + pLabel + "} bin for " + bt::ToStringWithPrecision(BinLowerLim, 2) + "#leqP^{truth}_{" + pLabel + "}#leq" +
                                                   bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]";
@@ -234,11 +232,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                              bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
                 std::string hSaveNameTLProton =
                     to_string(i + 1) + "_TL_P_bin_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinTLProton =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleTLProton, hTitleTLProton, "#phi_{" + pLabel + "} [#circ]", "#theta_{" + pLabel + "} [#circ]", AMapSavePathTLProton,
-                            hSaveNameTLProton, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                truth_theta_p_VS_phi_p_BySlice.push_back(hPBinTLProton);
-                truth_p_BySlice.push_back(hPBinTLProton.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleTLProton, hTitleTLProton, pLabel, AMapSavePathTLProton, hSaveNameTLProton, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins,
+                                  truth_theta_p_VS_phi_p_BySlice, truth_p_BySlice);
 #pragma endregion
 
 #pragma region /* Proton Reco. Acceptance maps */
@@ -248,11 +243,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
                 std::string hSaveNameRecoProton =
                     to_string(i + 1) + "_Reco_P_bin_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinRecoProton =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoProton, hTitleRecoProton, "#phi_{" + pLabel + "} [#circ]", "#theta_{" + pLabel + "} [#circ]", AMapSavePathRecoProton,
-                            hSaveNameRecoProton, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                reco_theta_p_VS_phi_p_BySlice.push_back(hPBinRecoProton);
-                reco_p_BySlice.push_back(hPBinRecoProton.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleRecoProton, hTitleRecoProton, pLabel, AMapSavePathRecoProton, hSaveNameRecoProton, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins,
+                                  reco_theta_p_VS_phi_p_BySlice, reco_p_BySlice);
 #pragma endregion
 
 #pragma region /* Proton Reco./TL Ratio */
@@ -262,11 +254,8 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                         bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
                 std::string hSaveNameRecoToTLRatioProton =
                     to_string(i + 1) + "_p_Ratio_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinRecoToTLRatioProton = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoToTLRatioProton, hTitleRecoToTLRatioProton, "#phi_{" + pLabel + "} [#circ]",
-                                                           "#theta_{" + pLabel + "} [#circ]", AMapSavePathRecoToTLProton, hSaveNameRecoToTLRatioProton, hBinLowerXLim, hBinUpperXLim,
-                                                           hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                acceptance_eff_p_BySlice.push_back(hPBinRecoToTLRatioProton);
-                acc_eff_p_BySlice.push_back(hPBinRecoToTLRatioProton.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleRecoToTLRatioProton, hTitleRecoToTLRatioProton, pLabel, AMapSavePathRecoToTLProton, hSaveNameRecoToTLRatioProton, HistNucSliceNumOfXBins,
+                                  HistNucSliceNumOfYBins, acceptance_eff_p_BySlice, acc_eff_p_BySlice);
 #pragma endregion
 
 #pragma region /* Proton separate AMaps */
@@ -278,17 +267,14 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                    bt::ToStringWithPrecision(Charged_particle_min_Ratio, 2);
                 std::string hSaveNameSepAMapsProton =
                     to_string(i + 1) + "_p_SepAMap_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinSepAMapsProton =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleSepAMapsProton, hTitleSepAMapsProton, "#phi_{" + pLabel + "} [#circ]", "#theta_{" + pLabel + "} [#circ]",
-                            AMapSavePathSepAMapsProton, hSaveNameSepAMapsProton, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                filtered_reco_theta_p_VS_phi_p_BySlice.push_back(hPBinSepAMapsProton);
-                filtered_reco_p_BySlice.push_back(hPBinSepAMapsProton.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleSepAMapsProton, hTitleSepAMapsProton, pLabel, AMapSavePathSepAMapsProton, hSaveNameSepAMapsProton, HistNucSliceNumOfXBins,
+                                  HistNucSliceNumOfYBins, filtered_reco_theta_p_VS_phi_p_BySlice, filtered_reco_p_BySlice);
 #pragma endregion
             }
 #pragma endregion
 
 #pragma region /* Setting neutron Acceptance maps */
-            if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
+            if (hasNeutronSample) {
 #pragma region /* Neutron TL Acceptance maps */
                 std::string hStatsTitleTLNeutron = "TL P_{" + nLabel + "} bin for " + bt::ToStringWithPrecision(BinLowerLim, 2) + "#leqP^{truth}_{" + nLabel + "}#leq" +
                                                    bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]";
@@ -296,19 +282,13 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                               bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
                 std::string hSaveNameTLNeutron =
                     to_string(i + 1) + "_TL_P_bin_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinTLNeutron =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleTLNeutron, hTitleTLNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]", AMapSavePathTLNeutron,
-                            hSaveNameTLNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                truth_theta_n_VS_phi_n_BySlice.push_back(hPBinTLNeutron);
-                truth_n_BySlice.push_back(hPBinTLNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleTLNeutron, hTitleTLNeutron, nLabel, AMapSavePathTLNeutron, hSaveNameTLNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins,
+                                  truth_theta_n_VS_phi_n_BySlice, truth_n_BySlice);
 #pragma endregion
 
 #pragma region /* Neutron TL Acceptance maps - const */
-                hPlot2D hPBinConstTLNeutron =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleTLNeutron + " const", hTitleTLNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]",
-                            AMapConstSavePathTLNeutron, hSaveNameTLNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                truth_theta_n_VS_phi_n_ByConstSlice.push_back(hPBinConstTLNeutron);
-                truth_n_ByConstSlice.push_back(hPBinConstTLNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleTLNeutron + " const", hTitleTLNeutron, nLabel, AMapConstSavePathTLNeutron, hSaveNameTLNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins,
+                                  truth_theta_n_VS_phi_n_ByConstSlice, truth_n_ByConstSlice);
 #pragma endregion
 
 #pragma region /* Neutron Reco. Acceptance maps */
@@ -318,19 +298,13 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                 bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
                 std::string hSaveNameRecoNeutron =
                     to_string(i + 1) + "_Reco_P_bin_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinRecoNeutron =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoNeutron, hTitleRecoNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]",
-                            AMapSavePathRecoNeutron, hSaveNameRecoNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                reco_theta_n_VS_phi_n_BySlice.push_back(hPBinRecoNeutron);
-                reco_n_BySlice.push_back(hPBinRecoNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleRecoNeutron, hTitleRecoNeutron, nLabel, AMapSavePathRecoNeutron, hSaveNameRecoNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins,
+                                  reco_theta_n_VS_phi_n_BySlice, reco_n_BySlice);
 #pragma endregion
 
 #pragma region /* Neutron Reco. Acceptance maps - const */
-                hPlot2D hPBinConstRecoNeutron =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoNeutron + " const", hTitleRecoNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]",
-                            AMapConstSavePathRecoNeutron, hSaveNameRecoNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                reco_theta_n_VS_phi_n_ByConstSlice.push_back(hPBinConstRecoNeutron);
-                reco_n_ByConstSlice.push_back(hPBinConstRecoNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleRecoNeutron + " const", hTitleRecoNeutron, nLabel, AMapConstSavePathRecoNeutron, hSaveNameRecoNeutron, HistNucSliceNumOfXBins,
+                                  HistNucSliceNumOfYBins, reco_theta_n_VS_phi_n_ByConstSlice, reco_n_ByConstSlice);
 #pragma endregion
 
 #pragma region /* Neutron Reco./TL Ratio */
@@ -340,20 +314,13 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                          bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision) + " [GeV/c]" + BinDensity;
                 std::string hSaveNameRecoToTLRatioNeutron =
                     to_string(i + 1) + "_p_Ratio_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinRecoToTLRatioNeutron = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoToTLRatioNeutron, hTitleRecoToTLRatioNeutron, "#phi_{" + nLabel + "} [#circ]",
-                                                            "#theta_{" + nLabel + "} [#circ]", AMapSavePathRecoToTLNeutron, hSaveNameRecoToTLRatioNeutron, hBinLowerXLim, hBinUpperXLim,
-                                                            hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                acceptance_eff_n_BySlice.push_back(hPBinRecoToTLRatioNeutron);
-                acc_eff_n_BySlice.push_back(hPBinRecoToTLRatioNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleRecoToTLRatioNeutron, hTitleRecoToTLRatioNeutron, nLabel, AMapSavePathRecoToTLNeutron, hSaveNameRecoToTLRatioNeutron, HistNucSliceNumOfXBins,
+                                  HistNucSliceNumOfYBins, acceptance_eff_n_BySlice, acc_eff_n_BySlice);
 #pragma endregion
 
 #pragma region /* Neutron Reco./TL Ratio - const */
-                hPlot2D hPBinConstRecoToTLRatioNeutron =
-                    hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoToTLRatioNeutron + " const", hTitleRecoToTLRatioNeutron, "#phi_{" + nLabel + "} [#circ]",
-                            "#theta_{" + nLabel + "} [#circ]", AMapConstSavePathRecoToTLNeutron, hSaveNameRecoToTLRatioNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim,
-                            HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                acceptance_eff_n_ByConstSlice.push_back(hPBinConstRecoToTLRatioNeutron);
-                acc_eff_n_ByConstSlice.push_back(hPBinConstRecoToTLRatioNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleRecoToTLRatioNeutron + " const", hTitleRecoToTLRatioNeutron, nLabel, AMapConstSavePathRecoToTLNeutron, hSaveNameRecoToTLRatioNeutron,
+                                  HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, acceptance_eff_n_ByConstSlice, acc_eff_n_ByConstSlice);
 #pragma endregion
 
 #pragma region /* Neutron separate AMaps */
@@ -365,19 +332,13 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
                                                     bt::ToStringWithPrecision(Neutral_particle_min_Ratio, 2);
                 std::string hSaveNameSepAMapsNeutron =
                     to_string(i + 1) + "_n_SepAMap_for_P_from_" + bt::ToStringWithPrecision(BinLowerLim, 2) + "_to_" + bt::ToStringWithPrecision(BinUpperLim, BinUpperLimPrecision);
-                hPlot2D hPBinSepAMapsNeutron = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleSepAMapsNeutron, hTitleSepAMapsNeutron, "#phi_{" + nLabel + "} [#circ]",
-                                                       "#theta_{" + nLabel + "} [#circ]", AMapSavePathSepAMapsNeutron, hSaveNameSepAMapsNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim,
-                                                       hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                filtered_reco_theta_n_VS_phi_n_BySlice.push_back(hPBinSepAMapsNeutron);
-                filtered_reco_n_BySlice.push_back(hPBinSepAMapsNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleSepAMapsNeutron, hTitleSepAMapsNeutron, nLabel, AMapSavePathSepAMapsNeutron, hSaveNameSepAMapsNeutron, HistNucSliceNumOfXBins,
+                                  HistNucSliceNumOfYBins, filtered_reco_theta_n_VS_phi_n_BySlice, filtered_reco_n_BySlice);
 #pragma endregion
 
 #pragma region /* Neutron separate AMaps - const */
-                hPlot2D hPBinConstSepAMapsNeutron = hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleSepAMapsNeutron + " const", hTitleSepAMapsNeutron, "#phi_{" + nLabel + "} [#circ]",
-                                                            "#theta_{" + nLabel + "} [#circ]", AMapConstSavePathSepAMapsNeutron, hSaveNameSepAMapsNeutron, hBinLowerXLim, hBinUpperXLim,
-                                                            hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
-                filtered_reco_theta_n_VS_phi_n_ByConstSlice.push_back(hPBinConstSepAMapsNeutron);
-                filtered_reco_n_ByConstSlice.push_back(hPBinConstSepAMapsNeutron.GetHistogram2D());
+                CreateAndStoreMap(hStatsTitleSepAMapsNeutron + " const", hTitleSepAMapsNeutron, nLabel, AMapConstSavePathSepAMapsNeutron, hSaveNameSepAMapsNeutron, HistNucSliceNumOfXBins,
+                                  HistNucSliceNumOfYBins, filtered_reco_theta_n_VS_phi_n_ByConstSlice, filtered_reco_n_ByConstSlice);
 #pragma endregion
             }
 #pragma endregion
@@ -386,26 +347,21 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
 #pragma endregion
 
 #pragma region /* Setting neutron Acceptance maps */
-    if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
+    if (hasNeutronSample) {
 #pragma region /* Neutron TL Acceptance maps */
         std::string hStatsTitleTLNeutron = "TL Neutron Hit Map", hTitleTLNeutron = "TL Neutron Hit Map", hSaveNameTLNeutron = "TL_n_AMap";
-        truth_theta_n_VS_phi_n =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleTLNeutron, hTitleTLNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]", AMapSavePathTLNeutron,
-                    hSaveNameTLNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+        truth_theta_n_VS_phi_n = CreateMap(hStatsTitleTLNeutron, hTitleTLNeutron, nLabel, AMapSavePathTLNeutron, hSaveNameTLNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
 #pragma endregion
 
 #pragma region /* Neutron Reco. Acceptance maps */
         std::string hStatsTitleRecoNeutron = "Reco Neutron Hit Map", hTitleRecoNeutron = "Reco Neutron Hit Map", hSaveNameRecoNeutron = "Reco_n_AMap";
-        reco_theta_n_VS_phi_n =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoNeutron, hTitleRecoNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]", AMapSavePathRecoNeutron,
-                    hSaveNameRecoNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+        reco_theta_n_VS_phi_n = CreateMap(hStatsTitleRecoNeutron, hTitleRecoNeutron, nLabel, AMapSavePathRecoNeutron, hSaveNameRecoNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
 #pragma endregion
 
 #pragma region /* Neutron Reco./TL Ratio */
         std::string hStatsTitleRecoToTLNeutron = "Neutron Reco/TL ratio", hTitleRecoToTLNeutron = "Neutron Reco/TL ratio", hSaveNameRecoToTLNeutron = "Neutron_Ratio";
         acceptance_eff_n =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleRecoToTLNeutron, hTitleRecoToTLNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]",
-                    AMapSavePathRecoToTLNeutron, hSaveNameRecoToTLNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+            CreateMap(hStatsTitleRecoToTLNeutron, hTitleRecoToTLNeutron, nLabel, AMapSavePathRecoToTLNeutron, hSaveNameRecoToTLNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
 #pragma endregion
     }
 #pragma endregion
@@ -413,31 +369,26 @@ AMaps::AMaps(const std::string& SampleName, const std::string& P_e_bin_profile, 
 #pragma endregion
 
 #pragma region /* Finalized acceptance maps */
-    if (bt::FindSubstring(SName, "Uniform_1e_sample_")) {
+    if (hasElectronSample) {
         std::string hStatsTitleAMapElectron = "Electron_AMap";
         std::string hTitleAMapElectron = "Electron AMap for (Reco./TL)#geq" + bt::ToStringWithPrecision(Charged_particle_min_Ratio, 2);
         std::string hSaveNameAMapElectron = "01_e_AMap";
         filtered_reco_theta_e_VS_phi_e =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleAMapElectron, hTitleAMapElectron, "#phi_{" + eLabel + "} [#circ]", "#theta_{" + eLabel + "} [#circ]", AMapSavePathAMap,
-                    hSaveNameAMapElectron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
+            CreateMap(hStatsTitleAMapElectron, hTitleAMapElectron, eLabel, AMapSavePathAMap, hSaveNameAMapElectron, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins);
     }
 
-    if (bt::FindSubstring(SName, "Uniform_ep_sample_")) {
+    if (hasProtonSample) {
         std::string hStatsTitleAMapProton = "Proton_AMap";
         std::string hTitleAMapProton = "Proton AMap for (Reco./TL)#geq" + bt::ToStringWithPrecision(Charged_particle_min_Ratio, 2);
         std::string hSaveNameAMapProton = "02_p_AMap";
-        filtered_reco_theta_p_VS_phi_p =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleAMapProton, hTitleAMapProton, "#phi_{" + pLabel + "} [#circ]", "#theta_{" + pLabel + "} [#circ]", AMapSavePathAMap,
-                    hSaveNameAMapProton, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+        filtered_reco_theta_p_VS_phi_p = CreateMap(hStatsTitleAMapProton, hTitleAMapProton, pLabel, AMapSavePathAMap, hSaveNameAMapProton, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
     }
 
-    if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
+    if (hasNeutronSample) {
         std::string hStatsTitleAMapNeutron = "Neutron_AMap";
         std::string hTitleAMapNeutron = "Neutron AMap for (Reco./TL)#geq" + bt::ToStringWithPrecision(Neutral_particle_min_Ratio, 2);
         std::string hSaveNameAMapNeutron = "03_n_AMap";
-        filtered_reco_theta_n_VS_phi_n =
-            hPlot2D(AMapsMode_TitleAddition, "", hStatsTitleAMapNeutron, hTitleAMapNeutron, "#phi_{" + nLabel + "} [#circ]", "#theta_{" + nLabel + "} [#circ]", AMapSavePathAMap,
-                    hSaveNameAMapNeutron, hBinLowerXLim, hBinUpperXLim, hBinLowerYLim, hBinUpperYLim, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
+        filtered_reco_theta_n_VS_phi_n = CreateMap(hStatsTitleAMapNeutron, hTitleAMapNeutron, nLabel, AMapSavePathAMap, hSaveNameAMapNeutron, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins);
     }
 
     // std::string hStatsTitleAMapNucleon = "Nucleon_AMap";
@@ -487,35 +438,41 @@ AMaps::AMaps(const std::string& AcceptanceMapsDirectory, const double& beamE, co
     /* Load separate maps */
     if (Maps_Mode == "AMaps") {
         if (particleType == ELECTRON_TYPE) {
-            ReadAMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, Loaded_e_AMap_Slices);
-            ReadAMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, Loaded_e_AMap_Slices_extended, true);
+            ReadMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, &Loaded_e_AMap_Slices);
+            ReadMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, &Loaded_e_AMap_Slices_extended, nullptr, true);
         } else if (particleType == PROTON_TYPE) {
-            ReadAMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, Loaded_p_AMap_Slices);
+            ReadMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, &Loaded_p_AMap_Slices);
         } else if (particleType == NEUTRON_TYPE) {
-            ReadAMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, Loaded_n_AMap_Slices);
-            ReadAMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, Loaded_n_AMap_ConstSlices, true);
+            ReadMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, &Loaded_n_AMap_Slices);
+            ReadMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, &Loaded_n_AMap_ConstSlices, nullptr, true);
         } else {
             // Load everything if particleType is UNDEFINED_TYPE
             // TODO: rethink this case!
-            ReadAMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, Loaded_e_AMap_Slices);
-            ReadAMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, Loaded_e_AMap_Slices_extended, true);
-            ReadAMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, Loaded_p_AMap_Slices);
-            ReadAMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, Loaded_n_AMap_Slices);
-            ReadAMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, Loaded_n_AMap_ConstSlices, true);
+            ReadMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, &Loaded_e_AMap_Slices);
+            ReadMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, &Loaded_e_AMap_Slices_extended, nullptr, true);
+            ReadMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, &Loaded_p_AMap_Slices);
+            ReadMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, &Loaded_n_AMap_Slices);
+            ReadMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, &Loaded_n_AMap_ConstSlices, nullptr, true);
         }
     } else {
         if (particleType == ELECTRON_TYPE) {
-            ReadWMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, Loaded_e_WMap_Slices);  // TODO: figure out what to do with these
+            ReadMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, nullptr,
+                          &Loaded_e_WMap_Slices);  // TODO: figure out what to do with these
         } else if (particleType == PROTON_TYPE) {
-            ReadWMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, Loaded_p_WMap_Slices);  // TODO: figure out what to do with these
+            ReadMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, nullptr,
+                          &Loaded_p_WMap_Slices);  // TODO: figure out what to do with these
         } else if (particleType == NEUTRON_TYPE) {
-            ReadWMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, Loaded_n_WMap_Slices);  // TODO: figure out what to do with these
+            ReadMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, nullptr,
+                          &Loaded_n_WMap_Slices);  // TODO: figure out what to do with these
         } else {
             // Load everything if particleType is UNDEFINED_TYPE
             // TODO: rethink this case!
-            ReadWMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, Loaded_e_WMap_Slices);  // TODO: figure out what to do with these
-            ReadWMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, Loaded_p_WMap_Slices);       // TODO: figure out what to do with these
-            ReadWMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, Loaded_n_WMap_Slices);     // TODO: figure out what to do with these
+            ReadMapSlices(Electron_source_folder, AcceptanceMapsDirectory, "Electron", Loaded_ElectronMomSliceLimits, nullptr,
+                          &Loaded_e_WMap_Slices);  // TODO: figure out what to do with these
+            ReadMapSlices(Proton_source_folder, AcceptanceMapsDirectory, "Proton", Loaded_NucleonMomSliceLimits, nullptr,
+                          &Loaded_p_WMap_Slices);  // TODO: figure out what to do with these
+            ReadMapSlices(Neutron_source_folder, AcceptanceMapsDirectory, "Neutron", Loaded_NucleonMomSliceLimits, nullptr,
+                          &Loaded_n_WMap_Slices);  // TODO: figure out what to do with these
         }
     }
 
@@ -645,9 +602,9 @@ void AMaps::SetBins(const std::string& P_nuc_bin_profile, double beamE) {
 
         if (RegPrintOut) { exit(1); }
     } else {
-        std::cout << "AMaps::SetBins: no valid P_nuc_bin_profile selected! Choose between:\n";
-        std::cout << "equi_inverted_P_nuc , varying_P_nuc_bins , uniform_P_nuc_bins\n";
-        std::cout << "Aborting...", exit(1);
+        bt::ExitWithError(__func__, __FILE__, __LINE__,
+                          "No valid P_nuc_bin_profile selected! Choose between:\n"
+                          "equi_inverted_P_nuc , varying_P_nuc_bins , uniform_P_nuc_bins");
     }
 }
 #pragma endregion
@@ -819,9 +776,9 @@ void AMaps::SetElectronBins(const std::string& P_e_bin_profile, double beamE) {
 
         if (RegPrintOut) { exit(1); }
     } else {
-        std::cout << "AMaps::SetElectronBins: no valid P_e_bin_profile selected! Choose between:\n";
-        std::cout << "reformat_e_bins , varying_P_e_bins , uniform_P_e_bins, equi_inverted_P_e\n";
-        std::cout << "Aborting...", exit(1);
+        bt::ExitWithError(__func__, __FILE__, __LINE__,
+                          "No valid P_e_bin_profile selected! Choose between:\n"
+                          "reformat_e_bins , varying_P_e_bins , uniform_P_e_bins, equi_inverted_P_e");
     }
 }
 #pragma endregion
@@ -857,62 +814,36 @@ void AMaps::SetBins(double beamE, double nOfMomBins) {
 
 // isElectron function --------------------------------------------------------------------------------------------------------------------------------------------------
 
-#pragma region /* isElectron function */
-bool AMaps::isElectron(const std::string& SampleType) {
-    if (SampleType == "Electron" || SampleType == "electron") {
-        return true;
-    } else {
-        return false;
-    }
+bool AMaps::IsOneOf(const std::string& value, std::initializer_list<const char*> allowedValues) {
+    return std::any_of(allowedValues.begin(), allowedValues.end(), [&value](const char* allowedValue) { return value == allowedValue; });
 }
+
+#pragma region /* isElectron function */
+bool AMaps::isElectron(const std::string& SampleType) { return IsOneOf(SampleType, {"Electron", "electron"}); }
 #pragma endregion
 
 // isProton function ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* isProton function */
-bool AMaps::isProton(const std::string& SampleType) {
-    if (SampleType == "Proton" || SampleType == "proton") {
-        return true;
-    } else {
-        return false;
-    }
-}
+bool AMaps::isProton(const std::string& SampleType) { return IsOneOf(SampleType, {"Proton", "proton"}); }
 #pragma endregion
 
 // isNeutron function ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* isNeutron function */
-bool AMaps::isNeutron(const std::string& SampleType) {
-    if (SampleType == "Neutron" || SampleType == "neutron") {
-        return true;
-    } else {
-        return false;
-    }
-}
+bool AMaps::isNeutron(const std::string& SampleType) { return IsOneOf(SampleType, {"Neutron", "neutron"}); }
 #pragma endregion
 
 // isTL function --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* isTL function */
-bool AMaps::isTL(const std::string& SampleType) {
-    if (SampleType == "Truth" || SampleType == "truth" || SampleType == "TL" || SampleType == "truth level" || SampleType == "truth-level" || SampleType == "Truth-Level") {
-        return true;
-    } else {
-        return false;
-    }
-}
+bool AMaps::isTL(const std::string& SampleType) { return IsOneOf(SampleType, {"Truth", "truth", "TL", "truth level", "truth-level", "Truth-Level"}); }
 #pragma endregion
 
 // isReco function --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #pragma region /* isReco function */
-bool AMaps::isReco(const std::string& SampleType) {
-    if (SampleType == "reco" || SampleType == "Reco" || SampleType == "Reconstruction") {
-        return true;
-    } else {
-        return false;
-    }
-}
+bool AMaps::isReco(const std::string& SampleType) { return IsOneOf(SampleType, {"reco", "Reco", "Reconstruction"}); }
 #pragma endregion
 
 // hFillMaps function ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -921,107 +852,72 @@ bool AMaps::isReco(const std::string& SampleType) {
 void AMaps::hFillMaps(const std::string& SampleType, const std::string& particle, double Momentum, double Theta, double Phi, double Weight) {
     bool is_e = isElectron(particle), is_p = isProton(particle), is_n = isNeutron(particle);
     bool is_TL = isTL(SampleType), is_Reco = isReco(SampleType);
+    const bool hasElectronSample = bt::FindSubstring(SName, "Uniform_1e_sample_");
+    const bool hasProtonSample = bt::FindSubstring(SName, "Uniform_ep_sample_");
+    const bool hasNeutronSample = bt::FindSubstring(SName, "Uniform_en_sample_");
 
     bool TL_e_PrintOut = false, TL_p_PrintOut = false, TL_n_PrintOut = false;
     bool Reco_e_PrintOut = false, Reco_p_PrintOut = false, Reco_n_PrintOut = false;
 
 #pragma region /* Safety checks (AMaps::hFillMaps) */
-    if (is_e && is_p && is_n) { std::cout << "\n\nAMaps::hFillMaps: particle can't all particles! Aborting...\n", exit(1); }
-    if (!is_e && !is_p && !is_n) { std::cout << "\n\nAMaps::hFillMaps: particle must be an electron, proton or neutron! Aborting...\n", exit(1); }
-    if (is_e && is_p) { std::cout << "\n\nAMaps::hFillMaps: particle can't be both electrons and protons! Aborting...\n", exit(1); }
-    if (is_e && is_n) { std::cout << "\n\nAMaps::hFillMaps: particle can't be both electrons and neutrons! Aborting...\n", exit(1); }
-    if (is_p && is_n) { std::cout << "\n\nAMaps::hFillMaps: particle can't be both protons and neutrons! Aborting...\n", exit(1); }
+    if (is_e && is_p && is_n) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle can't be all particles!"); }
+    if (!is_e && !is_p && !is_n) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle must be an electron, proton or neutron!"); }
+    if (is_e && is_p) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle can't be both electrons and protons!"); }
+    if (is_e && is_n) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle can't be both electrons and neutrons!"); }
+    if (is_p && is_n) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle can't be both protons and neutrons!"); }
 
-    if (is_TL && is_Reco) { std::cout << "\n\nAMaps::hFillMaps: particle can't be both TL and Reco! Aborting...\n", exit(1); }
-    if (!is_TL && !is_Reco) { std::cout << "\n\nAMaps::hFillMaps: particle must be either TL and Reco! Aborting...\n", exit(1); }
+    if (is_TL && is_Reco) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle can't be both TL and Reco!"); }
+    if (!is_TL && !is_Reco) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Particle must be either TL or Reco!"); }
 #pragma endregion
+
+    auto PrintSliceDebug = [&](bool enabled, const char* limitsName, int sliceIndex, double lower, double upper, const char* particleFlagName, bool particleFlagValue) {
+        if (Maps_Mode == "AMaps" && enabled) {
+            std::cout << "\n";
+            std::cout << limitsName << ".at(" << sliceIndex << ").at(0) = " << lower << "\n";
+            std::cout << limitsName << ".at(" << sliceIndex << ").at(1) = " << upper << "\n";
+            std::cout << "particle = " << particle << "\n";
+            std::cout << particleFlagName << " = " << particleFlagValue << "\n";
+            std::cout << "is_TL = " << is_TL << "\n";
+            std::cout << "is_Reco = " << is_Reco << "\n";
+            std::cout << "Momentum = " << Momentum << "\n";
+            std::cout << "Theta = " << Theta << "\n";
+            std::cout << "Phi = " << Phi << "\n";
+        }
+    };
+
+    auto FillFirstMatchingSlice = [&](const std::vector<std::vector<double>>& limits, const char* invalidLimitsErrorMessage, auto&& fillOnMatch, auto&& debugOnMatch) {
+        for (int i = 0; i < limits.size(); ++i) {
+            const double lower = limits.at(i).at(0);
+            const double upper = limits.at(i).at(1);
+
+            if ((Momentum >= lower) && (Momentum < upper)) {
+                fillOnMatch(i);
+                debugOnMatch(i, lower, upper);
+
+                if (lower > upper) { bt::ExitWithError(__func__, __FILE__, __LINE__, invalidLimitsErrorMessage); }
+
+                break;  // no need to keep the loop going after filling histogram
+            }
+        }
+    };
 
     if (is_TL) {
-        if (is_e && bt::FindSubstring(SName, "Uniform_1e_sample_")) {  // electrons are charged -> look for correct momentum slice!
-            for (int i = 0; i < ElectronMomSliceLimits.size(); i++) {
-                if ((Momentum >= ElectronMomSliceLimits.at(i).at(0)) && (Momentum < ElectronMomSliceLimits.at(i).at(1))) {
-                    truth_theta_e_VS_phi_e_BySlice.at(i).hFill(Phi, Theta, Weight);
-
-                    if (Maps_Mode == "AMaps" && TL_e_PrintOut) {
-                        std::cout << "\n";
-                        std::cout << "ElectronMomSliceLimits.at(" << i << ").at(0) = " << ElectronMomSliceLimits.at(i).at(0) << "\n";
-                        std::cout << "ElectronMomSliceLimits.at(" << i << ").at(1) = " << ElectronMomSliceLimits.at(i).at(1) << "\n";
-                        std::cout << "particle = " << particle << "\n";
-                        std::cout << "is_e = " << is_e << "\n";
-                        std::cout << "is_TL = " << is_TL << "\n";
-                        std::cout << "is_Reco = " << is_Reco << "\n";
-                        std::cout << "Momentum = " << Momentum << "\n";
-                        std::cout << "Theta = " << Theta << "\n";
-                        std::cout << "Phi = " << Phi << "\n";
-                    }
-
-#pragma region /* Safety checks (AMaps::hFillMaps) */
-                    if (ElectronMomSliceLimits.at(i).at(0) > ElectronMomSliceLimits.at(i).at(1)) {
-                        std::cout << "\n\nAMaps::hFillMaps: electron momentum slice limits were set incorrectly! Aborting...\n", exit(1);
-                    }
-#pragma endregion
-
-                    break;  // no need to keep the loop going after filling histogram
-                }
-            }
-        } else if (is_p && bt::FindSubstring(SName, "Uniform_ep_sample_")) {  // protons are charged -> look for correct momentum slice!
-            for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
-                if ((Momentum >= NucleonMomSliceLimits.at(i).at(0)) && (Momentum < NucleonMomSliceLimits.at(i).at(1))) {
-                    truth_theta_p_VS_phi_p_BySlice.at(i).hFill(Phi, Theta, Weight);
-
-                    if (Maps_Mode == "AMaps" && TL_p_PrintOut) {
-                        std::cout << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(0) = " << NucleonMomSliceLimits.at(i).at(0) << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(1) = " << NucleonMomSliceLimits.at(i).at(1) << "\n";
-                        std::cout << "particle = " << particle << "\n";
-                        std::cout << "is_p = " << is_p << "\n";
-                        std::cout << "is_TL = " << is_TL << "\n";
-                        std::cout << "is_Reco = " << is_Reco << "\n";
-                        std::cout << "Momentum = " << Momentum << "\n";
-                        std::cout << "Theta = " << Theta << "\n";
-                        std::cout << "Phi = " << Phi << "\n";
-                    }
-
-#pragma region /* Safety checks (AMaps::hFillMaps) */
-                    if (NucleonMomSliceLimits.at(i).at(0) > NucleonMomSliceLimits.at(i).at(1)) {
-                        std::cout << "\n\nAMaps::hFillMaps: nucleon momentum slice limits were set incorrectly! Aborting...\n", exit(1);
-                    }
-#pragma endregion
-
-                    break;  // no need to keep the loop going after filling histogram
-                }
-            }
-        } else if (is_n && bt::FindSubstring(SName, "Uniform_en_sample_")) {  // neutrons are neutral -> same fill all slices!
+        if (is_e && hasElectronSample) {  // electrons are charged -> look for correct momentum slice!
+            FillFirstMatchingSlice(
+                ElectronMomSliceLimits, "Electron momentum slice limits were set incorrectly!", [&](int i) { truth_theta_e_VS_phi_e_BySlice.at(i).hFill(Phi, Theta, Weight); },
+                [&](int i, double lower, double upper) { PrintSliceDebug(TL_e_PrintOut, "ElectronMomSliceLimits", i, lower, upper, "is_e", is_e); });
+        } else if (is_p && hasProtonSample) {  // protons are charged -> look for correct momentum slice!
+            FillFirstMatchingSlice(
+                NucleonMomSliceLimits, "Nucleon momentum slice limits were set incorrectly!", [&](int i) { truth_theta_p_VS_phi_p_BySlice.at(i).hFill(Phi, Theta, Weight); },
+                [&](int i, double lower, double upper) { PrintSliceDebug(TL_p_PrintOut, "NucleonMomSliceLimits", i, lower, upper, "is_p", is_p); });
+        } else if (is_n && hasNeutronSample) {  // neutrons are neutral -> same fill all slices!
             truth_theta_n_VS_phi_n.hFill(Phi, Theta, Weight);
 
             for (int Bin = 0; Bin < NucleonMomSliceLimits.size(); Bin++) { truth_theta_n_VS_phi_n_ByConstSlice.at(Bin).hFill(Phi, Theta, Weight); }
 
-            for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
-                if ((Momentum >= NucleonMomSliceLimits.at(i).at(0)) && (Momentum < NucleonMomSliceLimits.at(i).at(1))) {
-                    truth_theta_n_VS_phi_n_BySlice.at(i).hFill(Phi, Theta, Weight);
-
-                    if (Maps_Mode == "AMaps" && TL_n_PrintOut) {
-                        std::cout << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(0) = " << NucleonMomSliceLimits.at(i).at(0) << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(1) = " << NucleonMomSliceLimits.at(i).at(1) << "\n";
-                        std::cout << "particle = " << particle << "\n";
-                        std::cout << "is_n = " << is_n << "\n";
-                        std::cout << "is_TL = " << is_TL << "\n";
-                        std::cout << "is_Reco = " << is_Reco << "\n";
-                        std::cout << "Momentum = " << Momentum << "\n";
-                        std::cout << "Theta = " << Theta << "\n";
-                        std::cout << "Phi = " << Phi << "\n";
-                    }
-
-#pragma region /* Safety checks (AMaps::hFillMaps) */
-                    if (NucleonMomSliceLimits.at(i).at(0) > NucleonMomSliceLimits.at(i).at(1)) {
-                        std::cout << "\n\nAMaps::hFillMaps: nucleon momentum slice limits were set incorrectly! Aborting...\n", exit(1);
-                    }
-#pragma endregion
-
-                    break;  // no need to keep the loop going after filling histogram
-                }
-            }
+            FillFirstMatchingSlice(
+                NucleonMomSliceLimits, "Nucleon momentum slice limits were set incorrectly!", [&](int i) { truth_theta_n_VS_phi_n_BySlice.at(i).hFill(Phi, Theta, Weight); },
+                [&](int i, double lower, double upper) { PrintSliceDebug(TL_n_PrintOut, "NucleonMomSliceLimits", i, lower, upper, "is_n", is_n); });
 
             /*
             // truth_theta_n_VS_phi_n.hFill(Phi, Theta, Weight);
@@ -1030,69 +926,32 @@ void AMaps::hFillMaps(const std::string& SampleType, const std::string& particle
             */
         }
     } else if (is_Reco) {
-        if (is_e && bt::FindSubstring(SName, "Uniform_1e_sample_")) {  // electrons are charged -> look for correct momentum slice!
+        if (is_e && hasElectronSample) {  // electrons are charged -> look for correct momentum slice!
             reco_theta_e_VS_phi_e_BC.hFill(Phi, Theta, Weight);
 
-            for (int i = 0; i < ElectronMomSliceLimits.size(); i++) {
-                if ((Momentum >= ElectronMomSliceLimits.at(i).at(0)) && (Momentum < ElectronMomSliceLimits.at(i).at(1))) {
+            FillFirstMatchingSlice(
+                ElectronMomSliceLimits, "Electron momentum slice limits were set incorrectly!",
+                [&](int i) {
                     reco_theta_e_VS_phi_e_BySlice.at(i).hFill(Phi, Theta, Weight);
                     acceptance_eff_e_BySlice.at(i).hFill(Phi, Theta, Weight);
                     filtered_reco_theta_e_VS_phi_e_BySlice.at(i).hFill(Phi, Theta, Weight);
-
-                    if (Maps_Mode == "AMaps" && Reco_e_PrintOut) {
-                        std::cout << "\n";
-                        std::cout << "ElectronMomSliceLimits.at(" << i << ").at(0) = " << ElectronMomSliceLimits.at(i).at(0) << "\n";
-                        std::cout << "ElectronMomSliceLimits.at(" << i << ").at(1) = " << ElectronMomSliceLimits.at(i).at(1) << "\n";
-                        std::cout << "particle = " << particle << "\n";
-                        std::cout << "is_p = " << is_p << "\n";
-                        std::cout << "is_TL = " << is_TL << "\n";
-                        std::cout << "is_Reco = " << is_Reco << "\n";
-                        std::cout << "Momentum = " << Momentum << "\n";
-                        std::cout << "Theta = " << Theta << "\n";
-                        std::cout << "Phi = " << Phi << "\n";
-                    }
-
-#pragma region /* Safety checks (AMaps::hFillMaps) */
-                    if (ElectronMomSliceLimits.at(i).at(0) > ElectronMomSliceLimits.at(i).at(1)) {
-                        std::cout << "\n\nAMaps::hFillMaps: electron momentum slice limits were set incorrectly! Aborting...\n", exit(1);
-                    }
-#pragma endregion
-
-                    break;  // no need to keep the loop going after filling histogram
-                }
-            }
-        } else if (is_p && bt::FindSubstring(SName, "Uniform_ep_sample_")) {  // protons are charged -> look for correct momentum slice!
+                },
+                [&](int i, double lower, double upper) {
+                    // Keep historic debug output as-is ("is_p" in the electron reco block).
+                    PrintSliceDebug(Reco_e_PrintOut, "ElectronMomSliceLimits", i, lower, upper, "is_p", is_p);
+                });
+        } else if (is_p && hasProtonSample) {  // protons are charged -> look for correct momentum slice!
             reco_theta_p_VS_phi_p_BC.hFill(Phi, Theta, Weight);
 
-            for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
-                if ((Momentum >= NucleonMomSliceLimits.at(i).at(0)) && (Momentum < NucleonMomSliceLimits.at(i).at(1))) {
+            FillFirstMatchingSlice(
+                NucleonMomSliceLimits, "Nucleon momentum slice limits were set incorrectly!",
+                [&](int i) {
                     reco_theta_p_VS_phi_p_BySlice.at(i).hFill(Phi, Theta, Weight);
                     acceptance_eff_p_BySlice.at(i).hFill(Phi, Theta, Weight);
                     filtered_reco_theta_p_VS_phi_p_BySlice.at(i).hFill(Phi, Theta, Weight);
-
-                    if (Maps_Mode == "AMaps" && Reco_p_PrintOut) {
-                        std::cout << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(0) = " << NucleonMomSliceLimits.at(i).at(0) << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(1) = " << NucleonMomSliceLimits.at(i).at(1) << "\n";
-                        std::cout << "particle = " << particle << "\n";
-                        std::cout << "is_p = " << is_p << "\n";
-                        std::cout << "is_TL = " << is_TL << "\n";
-                        std::cout << "is_Reco = " << is_Reco << "\n";
-                        std::cout << "Momentum = " << Momentum << "\n";
-                        std::cout << "Theta = " << Theta << "\n";
-                        std::cout << "Phi = " << Phi << "\n";
-                    }
-
-#pragma region /* Safety checks (AMaps::hFillMaps) */
-                    if (NucleonMomSliceLimits.at(i).at(0) > NucleonMomSliceLimits.at(i).at(1)) {
-                        std::cout << "\n\nAMaps::hFillMaps: nucleon momentum slice limits were set incorrectly! Aborting...\n", exit(1);
-                    }
-#pragma endregion
-
-                    break;  // no need to keep the loop going after filling histogram
-                }
-            }
-        } else if (is_n && bt::FindSubstring(SName, "Uniform_en_sample_")) {  // neutrons are neutral -> same fill all slices!
+                },
+                [&](int i, double lower, double upper) { PrintSliceDebug(Reco_p_PrintOut, "NucleonMomSliceLimits", i, lower, upper, "is_p", is_p); });
+        } else if (is_n && hasNeutronSample) {  // neutrons are neutral -> same fill all slices!
             reco_theta_n_VS_phi_n_BC.hFill(Phi, Theta, Weight);
 
             reco_theta_n_VS_phi_n.hFill(Phi, Theta, Weight);
@@ -1105,34 +964,14 @@ void AMaps::hFillMaps(const std::string& SampleType, const std::string& particle
                 filtered_reco_theta_n_VS_phi_n_ByConstSlice.at(Bin).hFill(Phi, Theta, Weight);
             }
 
-            for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
-                if ((Momentum >= NucleonMomSliceLimits.at(i).at(0)) && (Momentum < NucleonMomSliceLimits.at(i).at(1))) {
+            FillFirstMatchingSlice(
+                NucleonMomSliceLimits, "Nucleon momentum slice limits were set incorrectly!",
+                [&](int i) {
                     reco_theta_n_VS_phi_n_BySlice.at(i).hFill(Phi, Theta, Weight);
                     acceptance_eff_n_BySlice.at(i).hFill(Phi, Theta, Weight);
                     filtered_reco_theta_n_VS_phi_n_BySlice.at(i).hFill(Phi, Theta, Weight);
-
-                    if (Maps_Mode == "AMaps" && Reco_n_PrintOut) {
-                        std::cout << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(0) = " << NucleonMomSliceLimits.at(i).at(0) << "\n";
-                        std::cout << "NucleonMomSliceLimits.at(" << i << ").at(1) = " << NucleonMomSliceLimits.at(i).at(1) << "\n";
-                        std::cout << "particle = " << particle << "\n";
-                        std::cout << "is_n = " << is_n << "\n";
-                        std::cout << "is_TL = " << is_TL << "\n";
-                        std::cout << "is_Reco = " << is_Reco << "\n";
-                        std::cout << "Momentum = " << Momentum << "\n";
-                        std::cout << "Theta = " << Theta << "\n";
-                        std::cout << "Phi = " << Phi << "\n";
-                    }
-
-#pragma region /* Safety checks (AMaps::hFillMaps) */
-                    if (NucleonMomSliceLimits.at(i).at(0) > NucleonMomSliceLimits.at(i).at(1)) {
-                        std::cout << "\n\nAMaps::hFillMaps: nucleon momentum slice limits were set incorrectly! Aborting...\n", exit(1);
-                    }
-#pragma endregion
-
-                    break;  // no need to keep the loop going after filling histogram
-                }
-            }
+                },
+                [&](int i, double lower, double upper) { PrintSliceDebug(Reco_n_PrintOut, "NucleonMomSliceLimits", i, lower, upper, "is_n", is_n); });
 
             /*
             for (int Bin = 0; Bin < NucleonMomSliceLimits.size(); Bin++) {
@@ -1773,429 +1612,166 @@ void AMaps::GenerateNucleonAMap() {
 
 #pragma region /* SaveMaps function (G3e) */
 
-// TODO: separate into AMaps and WMaps
-
 void AMaps::SaveMaps(const std::string& SampleName, const std::string& AcceptanceMapsDirectory) {
     bool PrintOut = false;
 
     int testNumber = 0;
+    const bool saveAMaps = (Maps_Mode == "AMaps");
+    const bool saveWMaps = (Maps_Mode == "WMaps");
+    const std::string modeLabel = Maps_Mode;
+
+    if (!saveAMaps && !saveWMaps) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Unsupported Maps_Mode: " + Maps_Mode); }
+
+    auto ensureDir = [](const std::string& path) { system(("mkdir -p " + path).c_str()); };
+    auto copyToDir = [](const std::string& sourceFile, const std::string& targetDir) { system(("cp " + sourceFile + " " + targetDir).c_str()); };
+
+    auto sliceFileName = [&](const std::string& particleTag, const std::vector<std::vector<double>>& limits, int slice) {
+        return particleTag + "_" + modeLabel + "_file_from_" + bt::ToStringWithPrecision(limits.at(slice).at(0), 2) + "_to_" + bt::ToStringWithPrecision(limits.at(slice).at(1), 2) + ".par";
+    };
+
+    auto writeSliceMatrixFile = [&](const std::string& filePath, const std::vector<std::vector<double>>& limits, int slice, int xBins, int yBins, const char* xBinsLabel,
+                                    const char* yBinsLabel, const char* rowPrefix, const auto& slicesContainer) {
+        std::ofstream tempFile(filePath);
+        tempFile << "Lower_P_lim:\t" << limits.at(slice).at(0) << "\n";
+        tempFile << "Upper_P_lim:\t" << limits.at(slice).at(1) << "\n";
+        tempFile << "\n";
+        tempFile << xBinsLabel << ":\t" << xBins << "\n";
+        tempFile << yBinsLabel << ":\t" << yBins << "\n";
+        tempFile << "\n";
+
+        for (int i = 0; i < yBins; i++) {
+            tempFile << rowPrefix << "\t";
+            for (int j = 0; j < xBins; j++) {
+                tempFile << slicesContainer.at(slice).at(i).at(j);
+                if (j != xBins - 1) { tempFile << ":"; }
+            }
+            tempFile << "\n";
+        }
+    };
+
+    auto writeElectronExtendedSlice = [&](const std::string& filePath, const std::vector<std::vector<double>>& limits, int slice) {
+        std::ofstream tempFile(filePath);
+        tempFile << "Lower_P_lim:\t" << limits.at(slice).at(0) << "\n";
+        tempFile << "Upper_P_lim:\t" << limits.at(slice).at(1) << "\n";
+        tempFile << "\n";
+
+        for (int i = 0; i < HistElectronSliceNumOfYBins; i++) {
+            tempFile << "Line\t";
+            for (int j = 0; j < HistElectronSliceNumOfXBins; j++) {
+                tempFile << e_AMap_Slices_extended.at(slice).at(i).at(j);
+                if (j != HistElectronSliceNumOfXBins - 1) { tempFile << ":"; }
+            }
+            tempFile << "\n";
+        }
+    };
+
+    auto writeSliceLimits = [&](const std::string& particleTag, const std::vector<std::vector<double>>& limits, const std::string& savePath, const std::string& savePathCopy) {
+        const std::string limitsFileName = particleTag + "_slice_limits.par";
+        const std::string fullPath = savePath + limitsFileName;
+        std::ofstream limitsFile(fullPath);
+
+        for (int slice = 0; slice < limits.size(); slice++) {
+            limitsFile << particleTag << "_slice_" << (slice + 1) << "\t" << limits.at(slice).at(0) << ":" << limits.at(slice).at(1) << "\n";
+        }
+        limitsFile << "\n";
+        limitsFile.close();
+        copyToDir(fullPath, savePathCopy);
+    };
+
+    auto makeModePaths = [&](const std::string& particleTag, const std::string& suffix) {
+        const std::string savePath = AcceptanceMapsDirectory + SampleName + "/" + particleTag + "_" + modeLabel + suffix;
+        const std::string copyPath = AMapCopySavePath + "/" + particleTag + "_" + modeLabel + suffix;
+        ensureDir(savePath);
+        ensureDir(copyPath);
+        return std::pair<std::string, std::string>{savePath, copyPath};
+    };
 
     if (bt::FindSubstring(SName, "Uniform_1e_sample_")) {
-#pragma region /* Regular electron maps */
-        std::string AMapSliceElectronSavePath = AcceptanceMapsDirectory + SampleName + "/e_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceElectronSavePath).c_str());
-        std::string WMapSliceElectronSavePath = AcceptanceMapsDirectory + SampleName + "/e_WMap_by_slice/";
-        system(("mkdir -p " + WMapSliceElectronSavePath).c_str());
-        std::string AMapSliceElectronSavePathCopy = AMapCopySavePath + "/e_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceElectronSavePathCopy).c_str());
-        std::string WMapSliceElectronSavePathCopy = AMapCopySavePath + "/e_WMap_by_slice/";
-        system(("mkdir -p " + WMapSliceElectronSavePathCopy).c_str());
+        auto [electronSavePath, electronCopyPath] = makeModePaths("e", "_by_slice/");
 
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
+        for (int slice = 0; slice < ElectronMomSliceLimits.size(); slice++) {
+            const std::string fileName = sliceFileName("e", ElectronMomSliceLimits, slice);
+            const std::string fullPath = electronSavePath + fileName;
 
-        /* Save electron slices */
-        for (int Slice = 0; Slice < ElectronMomSliceLimits.size(); Slice++) {
-            std::ofstream e_AMap_TempFile, e_WMap_TempFile;
-
-            std::string AMapTempFileName = "e_" + Maps_Mode + "_file_from_" + bt::ToStringWithPrecision(ElectronMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                           bt::ToStringWithPrecision(ElectronMomSliceLimits.at(Slice).at(1), 2) + ".par";
-            std::string WMapTempFileName = "e_WMap_file_from_" + bt::ToStringWithPrecision(ElectronMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                           bt::ToStringWithPrecision(ElectronMomSliceLimits.at(Slice).at(1), 2) + ".par";
-
-            e_AMap_TempFile = std::ofstream(AMapSliceElectronSavePath + AMapTempFileName);  // Opens in overwrite mode
-            e_WMap_TempFile = std::ofstream(WMapSliceElectronSavePath + WMapTempFileName);
-
-            e_AMap_TempFile << "Lower_P_lim:\t" << ElectronMomSliceLimits.at(Slice).at(0) << "\n";
-            e_AMap_TempFile << "Upper_P_lim:\t" << ElectronMomSliceLimits.at(Slice).at(1) << "\n";
-            e_AMap_TempFile << "\n";
-
-            e_AMap_TempFile << "HistElectronSliceNumOfXBins:\t" << HistElectronSliceNumOfXBins << "\n";
-            e_AMap_TempFile << "HistElectronSliceNumOfYBins:\t" << HistElectronSliceNumOfYBins << "\n";
-            e_AMap_TempFile << "\n";
-
-            e_WMap_TempFile << "Lower_P_lim:\t" << ElectronMomSliceLimits.at(Slice).at(0) << "\n";
-            e_WMap_TempFile << "Upper_P_lim:\t" << ElectronMomSliceLimits.at(Slice).at(1) << "\n";
-            e_WMap_TempFile << "\n";
-
-            e_WMap_TempFile << "HistElectronSliceNumOfXBins:\t" << HistElectronSliceNumOfXBins << "\n";
-            e_WMap_TempFile << "HistElectronSliceNumOfYBins:\t" << HistElectronSliceNumOfYBins << "\n";
-            e_WMap_TempFile << "\n";
-
-            for (int i = 0; i < HistElectronSliceNumOfYBins; i++) {
-                e_AMap_TempFile << "Line\t";
-                e_WMap_TempFile << "Weight\t";
-
-                for (int j = 0; j < HistElectronSliceNumOfXBins; j++) {
-                    if (j != HistElectronSliceNumOfXBins - 1) {
-                        e_AMap_TempFile << e_AMap_Slices.at(Slice).at(i).at(j) << ":";
-                        e_WMap_TempFile << e_WMap_Slices.at(Slice).at(i).at(j) << ":";
-                    } else {
-                        e_AMap_TempFile << e_AMap_Slices.at(Slice).at(i).at(j);
-                        e_WMap_TempFile << e_WMap_Slices.at(Slice).at(i).at(j);
-                    }
-                }
-
-                e_AMap_TempFile << "\n";
-                e_WMap_TempFile << "\n";
+            if (saveAMaps) {
+                writeSliceMatrixFile(fullPath, ElectronMomSliceLimits, slice, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins, "HistElectronSliceNumOfXBins",
+                                     "HistElectronSliceNumOfYBins", "Line", e_AMap_Slices);
+            } else {
+                writeSliceMatrixFile(fullPath, ElectronMomSliceLimits, slice, HistElectronSliceNumOfXBins, HistElectronSliceNumOfYBins, "HistElectronSliceNumOfXBins",
+                                     "HistElectronSliceNumOfYBins", "Weight", e_WMap_Slices);
             }
 
-            e_AMap_TempFile.close();
-            e_WMap_TempFile.close();
-
-            system(("cp " + AMapSliceElectronSavePath + AMapTempFileName + " " + AMapSliceElectronSavePathCopy + AMapTempFileName).c_str());
-            system(("cp " + WMapSliceElectronSavePath + WMapTempFileName + " " + WMapSliceElectronSavePathCopy + WMapTempFileName).c_str());
+            copyToDir(fullPath, electronCopyPath);
         }
 
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
+        writeSliceLimits("e", ElectronMomSliceLimits, electronSavePath, electronCopyPath);
 
-#pragma region /* Slice limits */
-        std::ofstream e_slice_limits;
+        if (saveAMaps) {
+            const std::string extendedSavePath = AcceptanceMapsDirectory + SampleName + "/e_extended_" + Maps_Mode + "_by_slice/";
+            const std::string extendedCopyPath = AMapCopySavePath + "/e_extended_" + Maps_Mode + "_by_slice/";
+            ensureDir(extendedSavePath);
+            ensureDir(extendedCopyPath);
 
-        e_slice_limits = std::ofstream(AMapSliceElectronSavePath + "e_slice_limits.par");  // Opens in overwrite mode
-
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-        for (int Slice = 0; Slice < ElectronMomSliceLimits.size(); Slice++) {
-            e_slice_limits << "e_slice_" << (Slice + 1) << "\t" << ElectronMomSliceLimits.at(Slice).at(0) << ":" << ElectronMomSliceLimits.at(Slice).at(1) << "\n";
-        }
-
-        e_slice_limits << "\n";
-
-        e_slice_limits.close();
-
-        system(("cp " + AMapSliceElectronSavePath + "e_slice_limits.par " + AMapSliceElectronSavePathCopy).c_str());
-
-        system(("cp " + WMapSliceElectronSavePath + "e_slice_limits.par " + WMapSliceElectronSavePathCopy).c_str());
-#pragma endregion
-
-#pragma endregion
-
-#pragma region /* Extended electron maps */
-        std::string AMapSliceExtendedElectronSavePath = AcceptanceMapsDirectory + SampleName + "/e_extended_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceExtendedElectronSavePath).c_str());
-        std::string AMapSliceExtendedElectronSavePathCopy = AMapCopySavePath + "/e_extended_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceExtendedElectronSavePathCopy).c_str());
-
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-        /* Save extended electron slices */
-        for (int Slice = 0; Slice < ElectronMomSliceLimits.size(); Slice++) {
-            std::ofstream e_AMap_TempFile, e_WMap_TempFile;
-
-            std::string AMapTempFileName = "e_" + Maps_Mode + "_file_from_" + bt::ToStringWithPrecision(ElectronMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                           bt::ToStringWithPrecision(ElectronMomSliceLimits.at(Slice).at(1), 2) + ".par";
-
-            e_AMap_TempFile = std::ofstream(AMapSliceExtendedElectronSavePath + AMapTempFileName);  // Opens in overwrite mode
-
-            e_AMap_TempFile << "Lower_P_lim:\t" << ElectronMomSliceLimits.at(Slice).at(0) << "\n";
-            e_AMap_TempFile << "Upper_P_lim:\t" << ElectronMomSliceLimits.at(Slice).at(1) << "\n";
-            e_AMap_TempFile << "\n";
-
-            for (int i = 0; i < HistElectronSliceNumOfYBins; i++) {
-                e_AMap_TempFile << "Line\t";
-
-                for (int j = 0; j < HistElectronSliceNumOfXBins; j++) {
-                    if (j != HistElectronSliceNumOfXBins - 1) {
-                        e_AMap_TempFile << e_AMap_Slices_extended.at(Slice).at(i).at(j) << ":";
-                    } else {
-                        e_AMap_TempFile << e_AMap_Slices_extended.at(Slice).at(i).at(j);
-                    }
-                }
-
-                e_AMap_TempFile << "\n";
+            for (int slice = 0; slice < ElectronMomSliceLimits.size(); slice++) {
+                const std::string fileName = "e_" + Maps_Mode + "_file_from_" + bt::ToStringWithPrecision(ElectronMomSliceLimits.at(slice).at(0), 2) + "_to_" +
+                                             bt::ToStringWithPrecision(ElectronMomSliceLimits.at(slice).at(1), 2) + ".par";
+                const std::string fullPath = extendedSavePath + fileName;
+                writeElectronExtendedSlice(fullPath, ElectronMomSliceLimits, slice);
+                copyToDir(fullPath, extendedCopyPath);
             }
-
-            e_AMap_TempFile.close();
-
-            system(("cp " + AMapSliceExtendedElectronSavePath + AMapTempFileName + " " + AMapSliceExtendedElectronSavePathCopy + AMapTempFileName).c_str());
         }
-
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-        // #pragma region /* Slice limits */
-        //         std::ofstream e_slice_limits;
-
-        //         e_slice_limits = std::ofstream(AMapSliceExtendedElectronSavePath + "e_slice_limits.par");  // Opens in overwrite mode
-
-        //         if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-        //         for (int Slice = 0; Slice < ElectronMomSliceLimits.size(); Slice++) {
-        //             e_slice_limits << "e_slice_" << (Slice + 1) << "\t" << ElectronMomSliceLimits.at(Slice).at(0) << ":" << ElectronMomSliceLimits.at(Slice).at(1) << "\n";
-        //         }
-
-        //         e_slice_limits << "\n";
-
-        //         e_slice_limits.close();
-
-        //         system(("cp " + AMapSliceExtendedElectronSavePath + "e_slice_limits.par " + AMapSliceExtendedElectronSavePathCopy).c_str());
-
-#pragma endregion
     }
 
     if (bt::FindSubstring(SName, "Uniform_ep_sample_")) {
-        std::string AMapSliceProtonSavePath = AcceptanceMapsDirectory + SampleName + "/p_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceProtonSavePath).c_str());
-        std::string WMapSliceProtonSavePath = AcceptanceMapsDirectory + SampleName + "/p_WMap_by_slice/";
-        system(("mkdir -p " + WMapSliceProtonSavePath).c_str());
-        std::string AMapSliceProtonSavePathCopy = AMapCopySavePath + "/p_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceProtonSavePathCopy).c_str());
-        std::string WMapSliceProtonSavePathCopy = AMapCopySavePath + "/p_WMap_by_slice/";
-        system(("mkdir -p " + WMapSliceProtonSavePathCopy).c_str());
+        auto [protonSavePath, protonCopyPath] = makeModePaths("p", "_by_slice/");
 
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
+        for (int slice = 0; slice < NucleonMomSliceLimits.size(); slice++) {
+            const std::string fileName = sliceFileName("p", NucleonMomSliceLimits, slice);
+            const std::string fullPath = protonSavePath + fileName;
 
-        /* Save proton slices */
-        for (int Slice = 0; Slice < NucleonMomSliceLimits.size(); Slice++) {
-            std::ofstream p_AMap_TempFile, p_WMap_TempFile;
-
-            std::string ProtonAMapTempFileName = "p_" + Maps_Mode + "_file_from_" + bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                                 bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(1), 2) + ".par";
-            std::string ProtonWMapTempFileName = "p_WMap_file_from_" + bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                                 bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(1), 2) + ".par";
-
-            p_AMap_TempFile = std::ofstream(AMapSliceProtonSavePath + ProtonAMapTempFileName);  // Opens in overwrite mode
-            p_WMap_TempFile = std::ofstream(WMapSliceProtonSavePath + ProtonWMapTempFileName);
-
-            p_AMap_TempFile << "Lower_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(0) << "\n";
-            p_AMap_TempFile << "Upper_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-            p_AMap_TempFile << "\n";
-
-            p_AMap_TempFile << "HistNucSliceNumOfXBins:\t" << HistNucSliceNumOfXBins << "\n";
-            p_AMap_TempFile << "HistNucSliceNumOfYBins:\t" << HistNucSliceNumOfYBins << "\n";
-            p_AMap_TempFile << "\n";
-
-            p_WMap_TempFile << "Lower_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(0) << "\n";
-            p_WMap_TempFile << "Upper_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-            p_WMap_TempFile << "\n";
-
-            p_WMap_TempFile << "HistNucSliceNumOfXBins:\t" << HistNucSliceNumOfXBins << "\n";
-            p_WMap_TempFile << "HistNucSliceNumOfYBins:\t" << HistNucSliceNumOfYBins << "\n";
-            p_WMap_TempFile << "\n";
-
-            for (int i = 0; i < HistNucSliceNumOfYBins; i++) {
-                p_AMap_TempFile << "Line\t";
-                p_WMap_TempFile << "Weight\t";
-
-                for (int j = 0; j < HistNucSliceNumOfXBins; j++) {
-                    if (j != HistNucSliceNumOfXBins - 1) {
-                        p_AMap_TempFile << p_AMap_Slices.at(Slice).at(i).at(j) << ":";
-                        p_WMap_TempFile << p_WMap_Slices.at(Slice).at(i).at(j) << ":";
-                    } else {
-                        p_AMap_TempFile << p_AMap_Slices.at(Slice).at(i).at(j);
-                        p_WMap_TempFile << p_WMap_Slices.at(Slice).at(i).at(j);
-                    }
-                }
-
-                p_AMap_TempFile << "\n";
-                p_WMap_TempFile << "\n";
+            if (saveAMaps) {
+                writeSliceMatrixFile(fullPath, NucleonMomSliceLimits, slice, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, "HistNucSliceNumOfXBins", "HistNucSliceNumOfYBins", "Line",
+                                     p_AMap_Slices);
+            } else {
+                writeSliceMatrixFile(fullPath, NucleonMomSliceLimits, slice, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, "HistNucSliceNumOfXBins", "HistNucSliceNumOfYBins", "Weight",
+                                     p_WMap_Slices);
             }
 
-            p_AMap_TempFile.close();
-            p_WMap_TempFile.close();
-
-            system(("cp " + AMapSliceProtonSavePath + ProtonAMapTempFileName + " " + AMapSliceProtonSavePathCopy + ProtonAMapTempFileName).c_str());
-            system(("cp " + WMapSliceProtonSavePath + ProtonWMapTempFileName + " " + WMapSliceProtonSavePathCopy + ProtonWMapTempFileName).c_str());
+            copyToDir(fullPath, protonCopyPath);
         }
 
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-#pragma region /* Slice limits */
-        std::ofstream p_slice_limits;
-
-        p_slice_limits = std::ofstream(AMapSliceProtonSavePath + "p_slice_limits.par");
-
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-        for (int Slice = 0; Slice < NucleonMomSliceLimits.size(); Slice++) {
-            p_slice_limits << "p_slice_" << (Slice + 1) << "\t" << NucleonMomSliceLimits.at(Slice).at(0) << ":" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-        }
-
-        p_slice_limits << "\n";
-
-        p_slice_limits.close();
-
-        system(("cp " + AMapSliceProtonSavePath + "p_slice_limits.par " + AMapSliceProtonSavePathCopy).c_str());
-
-        system(("cp " + WMapSliceProtonSavePath + "p_slice_limits.par " + WMapSliceProtonSavePathCopy).c_str());
-#pragma endregion
+        writeSliceLimits("p", NucleonMomSliceLimits, protonSavePath, protonCopyPath);
     }
 
     if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
-        std::string AMapSliceNeutronSavePath = AcceptanceMapsDirectory + SampleName + "/n_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceNeutronSavePath).c_str());
-        std::string WMapSliceNeutronSavePath = AcceptanceMapsDirectory + SampleName + "/n_WMap_by_slice/";
-        system(("mkdir -p " + WMapSliceNeutronSavePath).c_str());
-        std::string AMapSliceNeutronSavePathCopy = AMapCopySavePath + "/n_" + Maps_Mode + "_by_slice/";
-        system(("mkdir -p " + AMapSliceNeutronSavePathCopy).c_str());
-        std::string WMapSliceNeutronSavePathCopy = AMapCopySavePath + "/n_WMap_by_slice/";
-        system(("mkdir -p " + WMapSliceNeutronSavePathCopy).c_str());
+        auto [neutronSavePath, neutronCopyPath] = makeModePaths("n", "_by_slice/");
+        auto [neutronConstSavePath, neutronConstCopyPath] = makeModePaths("n", "_by_ConstSlice/");
 
-        std::string AMapConstSliceNeutronSavePath = AcceptanceMapsDirectory + SampleName + "/n_" + Maps_Mode + "_by_ConstSlice/";
-        system(("mkdir -p " + AMapConstSliceNeutronSavePath).c_str());
-        std::string WMapConstSliceNeutronSavePath = AcceptanceMapsDirectory + SampleName + "/n_WMap_by_ConstSlice/";
-        system(("mkdir -p " + WMapConstSliceNeutronSavePath).c_str());
-        std::string AMapConstSliceNeutronSavePathCopy = AMapCopySavePath + "/n_" + Maps_Mode + "_by_ConstSlice/";
-        system(("mkdir -p " + AMapConstSliceNeutronSavePathCopy).c_str());
-        std::string WMapConstSliceNeutronSavePathCopy = AMapCopySavePath + "/n_WMap_by_ConstSlice/";
-        system(("mkdir -p " + WMapConstSliceNeutronSavePathCopy).c_str());
+        for (int slice = 0; slice < NucleonMomSliceLimits.size(); slice++) {
+            if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
 
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
+            const std::string fileName = sliceFileName("n", NucleonMomSliceLimits, slice);
+            const std::string fullPath = neutronSavePath + fileName;
+            const std::string fullPathConst = neutronConstSavePath + fileName;
 
-        /* Save neutron slices */
-        for (int Slice = 0; Slice < NucleonMomSliceLimits.size(); Slice++) {
-            std::ofstream n_AMap_TempFile, n_WMap_TempFile;
-            std::ofstream n_AMap_TempFile_const, n_WMap_TempFile_const;
-
-            std::string NeutronAMapTempFileName = "n_" + Maps_Mode + "_file_from_" + bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                                  bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(1), 2) + ".par";
-            std::string NeutronWMapTempFileName = "n_WMap_file_from_" + bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(0), 2) + "_to_" +
-                                                  bt::ToStringWithPrecision(NucleonMomSliceLimits.at(Slice).at(1), 2) + ".par";
-
-            if (PrintOut) {
-                ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n";
-                std::cout << "Generating AMap file: " << NeutronAMapTempFileName << "\n";
-                std::cout << "Generating WMap file: " << NeutronWMapTempFileName << "\n";
+            if (saveAMaps) {
+                writeSliceMatrixFile(fullPath, NucleonMomSliceLimits, slice, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, "HistNucSliceNumOfXBins", "HistNucSliceNumOfYBins", "Line",
+                                     n_AMap_Slices);
+                writeSliceMatrixFile(fullPathConst, NucleonMomSliceLimits, slice, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, "HistNucSliceNumOfXBins", "HistNucSliceNumOfYBins", "Line",
+                                     n_AMap_ConstSlices);
+            } else {
+                writeSliceMatrixFile(fullPath, NucleonMomSliceLimits, slice, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, "HistNucSliceNumOfXBins", "HistNucSliceNumOfYBins", "Weight",
+                                     n_WMap_Slices);
+                writeSliceMatrixFile(fullPathConst, NucleonMomSliceLimits, slice, HistNucSliceNumOfXBins, HistNucSliceNumOfYBins, "HistNucSliceNumOfXBins", "HistNucSliceNumOfYBins",
+                                     "Weight", n_WMap_ConstSlices);
             }
 
-            n_AMap_TempFile = std::ofstream(AMapSliceNeutronSavePath + NeutronAMapTempFileName);  // Opens in overwrite mode
-            n_WMap_TempFile = std::ofstream(WMapSliceNeutronSavePath + NeutronWMapTempFileName);
-            n_AMap_TempFile_const = std::ofstream(AMapConstSliceNeutronSavePath + NeutronAMapTempFileName);
-            n_WMap_TempFile_const = std::ofstream(WMapConstSliceNeutronSavePathCopy + NeutronWMapTempFileName);
-
-            n_AMap_TempFile << "Lower_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(0) << "\n";
-            n_AMap_TempFile << "Upper_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-            n_AMap_TempFile << "\n";
-
-            n_AMap_TempFile << "HistNucSliceNumOfXBins:\t" << HistNucSliceNumOfXBins << "\n";
-            n_AMap_TempFile << "HistNucSliceNumOfYBins:\t" << HistNucSliceNumOfYBins << "\n";
-            n_AMap_TempFile << "\n";
-
-            n_WMap_TempFile << "Lower_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(0) << "\n";
-            n_WMap_TempFile << "Upper_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-            n_WMap_TempFile << "\n";
-
-            n_WMap_TempFile << "HistNucSliceNumOfXBins:\t" << HistNucSliceNumOfXBins << "\n";
-            n_WMap_TempFile << "HistNucSliceNumOfYBins:\t" << HistNucSliceNumOfYBins << "\n";
-            n_WMap_TempFile << "\n";
-
-            n_AMap_TempFile_const << "Lower_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(0) << "\n";
-            n_AMap_TempFile_const << "Upper_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-            n_AMap_TempFile_const << "\n";
-
-            n_AMap_TempFile_const << "HistNucSliceNumOfXBins:\t" << HistNucSliceNumOfXBins << "\n";
-            n_AMap_TempFile_const << "HistNucSliceNumOfYBins:\t" << HistNucSliceNumOfYBins << "\n";
-            n_AMap_TempFile_const << "\n";
-
-            n_WMap_TempFile_const << "Lower_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(0) << "\n";
-            n_WMap_TempFile_const << "Upper_P_lim:\t" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-            n_WMap_TempFile_const << "\n";
-
-            n_WMap_TempFile_const << "HistNucSliceNumOfXBins:\t" << HistNucSliceNumOfXBins << "\n";
-            n_WMap_TempFile_const << "HistNucSliceNumOfYBins:\t" << HistNucSliceNumOfYBins << "\n";
-            n_WMap_TempFile_const << "\n";
-
-            for (int i = 0; i < HistNucSliceNumOfYBins; i++) {
-                if (PrintOut) {
-                    ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n";
-                    std::cout << "Writing line for file: " << NeutronAMapTempFileName << "\n";
-                    std::cout << "Writing line for file: " << NeutronWMapTempFileName << "\n";
-                }
-
-                n_AMap_TempFile << "Line\t";
-                n_WMap_TempFile << "Weight\t";
-
-                n_AMap_TempFile_const << "Line\t";
-                n_WMap_TempFile_const << "Weight\t";
-
-                for (int j = 0; j < HistNucSliceNumOfXBins; j++) {
-                    if (PrintOut) {
-                        ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n";
-                        std::cout << "Slice = " << Slice << " out of " << NucleonMomSliceLimits.size() << "\n";
-                        std::cout << "i = " << i << " out of " << HistNucSliceNumOfYBins << "\n";
-                        std::cout << "j = " << j << " out of " << HistNucSliceNumOfXBins << "\n\n";
-
-                        std::cout << "n_AMap_Slices.size() = " << n_AMap_Slices.size() << "\n";
-                        std::cout << "n_AMap_Slices.at(" << Slice << ").size() = " << n_AMap_Slices.at(Slice).size() << "\n";
-                        std::cout << "n_AMap_Slices.at(" << Slice << ").at(" << i << ").size() = " << n_AMap_Slices.at(Slice).at(i).size() << "\n";
-                        // std::cout << "n_AMap_Slices.at(" << Slice << ").at(" << i << ").at(" << j << ").size() = " << n_AMap_Slices.at(Slice).at(i).at(j).size() << "\n\n";
-
-                        std::cout << "n_AMap_ConstSlices.size() = " << n_AMap_ConstSlices.size() << "\n";
-                        std::cout << "n_AMap_ConstSlices.at(" << Slice << ").size() = " << n_AMap_ConstSlices.at(Slice).size() << "\n";
-                        std::cout << "n_AMap_ConstSlices.at(" << Slice << ").at(" << i << ").size() = " << n_AMap_ConstSlices.at(Slice).at(i).size() << "\n";
-                        // std::cout << "n_AMap_ConstSlices.at(" << Slice << ").at(" << i << ").at(" << j << ").size() = " << n_AMap_ConstSlices.at(Slice).at(i).at(j).size() << "\n\n";
-
-                        // std::cout << "n_AMap_Slices.at(" << Slice << ").at(" << i << ").at(" << j << ") = " << n_AMap_Slices.at(Slice).at(i).at(j) << "\n";
-                        // std::cout << "n_WMap_Slices.at(" << Slice << ").at(" << i << ").at(" << j << ") = " << n_WMap_Slices.at(Slice).at(i).at(j) << "\n";
-                        // std::cout << "n_AMap_ConstSlices.at(" << Slice << ").at(" << i << ").at(" << j << ") = " << n_AMap_ConstSlices.at(Slice).at(i).at(j) << "\n";
-                        // std::cout << "n_WMap_ConstSlices.at(" << Slice << ").at(" << i << ").at(" << j << ") = " << n_WMap_ConstSlices.at(Slice).at(i).at(j) << "\n";
-                    }
-
-                    if (j != HistNucSliceNumOfXBins - 1) {
-                        n_AMap_TempFile << n_AMap_Slices.at(Slice).at(i).at(j) << ":";
-                        n_WMap_TempFile << n_WMap_Slices.at(Slice).at(i).at(j) << ":";
-
-                        n_AMap_TempFile_const << n_AMap_ConstSlices.at(Slice).at(i).at(j) << ":";
-                        n_WMap_TempFile_const << n_WMap_ConstSlices.at(Slice).at(i).at(j) << ":";
-                    } else {
-                        n_AMap_TempFile << n_AMap_Slices.at(Slice).at(i).at(j);
-                        n_WMap_TempFile << n_WMap_Slices.at(Slice).at(i).at(j);
-
-                        n_AMap_TempFile_const << n_AMap_ConstSlices.at(Slice).at(i).at(j);
-                        n_WMap_TempFile_const << n_WMap_ConstSlices.at(Slice).at(i).at(j);
-                    }
-                }
-
-                n_AMap_TempFile << "\n";
-                n_WMap_TempFile << "\n";
-
-                n_AMap_TempFile_const << "\n";
-                n_WMap_TempFile_const << "\n";
-
-                if (PrintOut) {
-                    ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n";
-                    std::cout << "Finished writing line for file: " << NeutronAMapTempFileName << "\n";
-                    std::cout << "Finished writing line for file: " << NeutronWMapTempFileName << "\n";
-                }
-            }
-
-            n_AMap_TempFile.close();
-            n_WMap_TempFile.close();
-
-            n_AMap_TempFile_const.close();
-            n_WMap_TempFile_const.close();
-
-            system(("cp " + AMapSliceNeutronSavePath + NeutronAMapTempFileName + " " + AMapSliceNeutronSavePathCopy + NeutronAMapTempFileName).c_str());
-            system(("cp " + WMapSliceNeutronSavePath + NeutronWMapTempFileName + " " + WMapSliceNeutronSavePathCopy + NeutronWMapTempFileName).c_str());
-
-            system(("cp " + AMapConstSliceNeutronSavePath + NeutronAMapTempFileName + " " + AMapConstSliceNeutronSavePathCopy + NeutronAMapTempFileName).c_str());
-            system(("cp " + WMapConstSliceNeutronSavePath + NeutronWMapTempFileName + " " + WMapConstSliceNeutronSavePathCopy + NeutronWMapTempFileName).c_str());
+            copyToDir(fullPath, neutronCopyPath);
+            copyToDir(fullPathConst, neutronConstCopyPath);
         }
 
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-#pragma region /* Slice limits */
-        std::ofstream n_slice_limits;
-
-        n_slice_limits = std::ofstream(AMapSliceNeutronSavePath + "n_slice_limits.par");
-
-        if (PrintOut) { ++testNumber, std::cout << "\n\n\nTEST " << testNumber << "\n"; }
-
-        for (int Slice = 0; Slice < NucleonMomSliceLimits.size(); Slice++) {
-            n_slice_limits << "n_slice_" << (Slice + 1) << "\t" << NucleonMomSliceLimits.at(Slice).at(0) << ":" << NucleonMomSliceLimits.at(Slice).at(1) << "\n";
-        }
-
-        n_slice_limits << "\n";
-
-        n_slice_limits.close();
-
-        system(("cp " + AMapSliceNeutronSavePath + "n_slice_limits.par " + AMapSliceNeutronSavePathCopy).c_str());
-
-        system(("cp " + WMapSliceNeutronSavePath + "n_slice_limits.par " + WMapSliceNeutronSavePathCopy).c_str());
-
-        system(("cp " + AMapSliceNeutronSavePath + "n_slice_limits.par " + AMapConstSliceNeutronSavePathCopy).c_str());
-
-        system(("cp " + WMapSliceNeutronSavePath + "n_slice_limits.par " + WMapConstSliceNeutronSavePathCopy).c_str());
-#pragma endregion
+        writeSliceLimits("n", NucleonMomSliceLimits, neutronSavePath, neutronCopyPath);
+        writeSliceLimits("n", NucleonMomSliceLimits, neutronConstSavePath, neutronConstCopyPath);
     }
 }
 #pragma endregion
@@ -2649,6 +2225,9 @@ void AMaps::DrawAndSaveMapsBySliceToPDFs(std::vector<TObject*> HistoList, const 
 #pragma region /* DrawAndSaveMaps function (G3) */
 void AMaps::DrawAndSaveMaps(const std::string& SampleName, TCanvas* h1DCanvas, const std::string& AcceptanceMapsDirectory) {
     bool PrintOut = false;
+    const bool hasElectronSample = bt::FindSubstring(SName, "Uniform_1e_sample_");
+    const bool hasProtonSample = bt::FindSubstring(SName, "Uniform_ep_sample_");
+    const bool hasNeutronSample = bt::FindSubstring(SName, "Uniform_en_sample_");
 
     if (PrintOut) { std::cout << "\n\nProcessing maps...\n"; }
 
@@ -2669,72 +2248,73 @@ void AMaps::DrawAndSaveMaps(const std::string& SampleName, TCanvas* h1DCanvas, c
     if (PrintOut) { std::cout << "\n\nSaving maps...\n"; }
     SaveMaps(SampleName, AcceptanceMapsDirectory);
 
-    if (bt::FindSubstring(SName, "Uniform_1e_sample_")) {
+    auto DrawSlices = [&](int numSlices, auto& truthBySlice, auto& recoBySlice, auto& ratioBySlice, auto& filteredBySlice) {
+        for (int i = 0; i < numSlices; i++) {
+            truthBySlice.at(i).hDrawAndSave(SName, h1DCanvas, TLAMaps, AMap_TL_HistoList, true);
+            recoBySlice.at(i).hDrawAndSave(SName, h1DCanvas, RecoAMaps, AMap_Reco_HistoList, true);
+            ratioBySlice.at(i).hDrawAndSave(SName, h1DCanvas, AMapsRatio, AMap_Ratio_HistoList, true);
+            filteredBySlice.at(i).hDrawAndSave(SName, h1DCanvas, Charged_particle_Sep_AMaps, cPart_Sep_AMaps_HistoList, true);
+        }
+    };
+
+    auto DrawConstNeutronSlices = [&](int numSlices) {
+        for (int i = 0; i < numSlices; i++) {
+            truth_theta_n_VS_phi_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, ConstTLAMaps, AMap_ConstTL_HistoList, true);
+            reco_theta_n_VS_phi_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, ConstRecoAMaps, AMap_ConstReco_HistoList, true);
+            acceptance_eff_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, ConstAMapsRatio, AMap_ConstRatio_HistoList, true);
+            filtered_reco_theta_n_VS_phi_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, Const_neutral_particle_Sep_AMaps, nPart_Sep_AMaps_HistoList_Const, true);
+        }
+    };
+
+    auto SaveSlicePDFs = [&](const std::vector<TObject*>& objects, const std::string& basePath, const std::string& fileName) { DrawAndSaveMapsBySliceToPDFs(objects, basePath + fileName); };
+
+    if (hasElectronSample) {
         if (PrintOut) { std::cout << "\n\nPlotting electron maps...\n"; }
 
         /* Acceptance maps BC */
         reco_theta_e_VS_phi_e_BC.hDrawAndSave(SName, h1DCanvas, AcceptanceMapsBC, AMapsBC_HistoList, true);
 
         /* Electron maps */
-        for (int i = 0; i < ElectronMomSliceLimits.size(); i++) {
-            truth_theta_e_VS_phi_e_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, TLAMaps, AMap_TL_HistoList, true);
-            reco_theta_e_VS_phi_e_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, RecoAMaps, AMap_Reco_HistoList, true);
-            acceptance_eff_e_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, AMapsRatio, AMap_Ratio_HistoList, true);
-            filtered_reco_theta_e_VS_phi_e_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, Charged_particle_Sep_AMaps, cPart_Sep_AMaps_HistoList, true);
-        }
+        DrawSlices(ElectronMomSliceLimits.size(), truth_theta_e_VS_phi_e_BySlice, reco_theta_e_VS_phi_e_BySlice, acceptance_eff_e_BySlice, filtered_reco_theta_e_VS_phi_e_BySlice);
 
         /* Finalized acceptance maps */
         filtered_reco_theta_e_VS_phi_e.hDrawAndSave(SName, h1DCanvas, AcceptanceMaps, AMaps_HistoList, true);
 
         /* Saving maps in PDFs */
-        DrawAndSaveMapsBySliceToPDFs(truth_e_BySlice, truth_theta_e_VS_phi_e_BySlice[0].GetHistogram2DSaveNamePath() + "truth_theta_e_VS_phi_e_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(reco_e_BySlice, reco_theta_e_VS_phi_e_BySlice[0].GetHistogram2DSaveNamePath() + "reco_theta_e_VS_phi_e_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(acc_eff_e_BySlice, acceptance_eff_e_BySlice[0].GetHistogram2DSaveNamePath() + "acceptance_eff_e_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(filtered_reco_e_BySlice, filtered_reco_theta_e_VS_phi_e_BySlice[0].GetHistogram2DSaveNamePath() + "filtered_reco_theta_e_VS_phi_e_BySlice.pdf");
+        SaveSlicePDFs(truth_e_BySlice, truth_theta_e_VS_phi_e_BySlice[0].GetHistogram2DSaveNamePath(), "truth_theta_e_VS_phi_e_BySlice.pdf");
+        SaveSlicePDFs(reco_e_BySlice, reco_theta_e_VS_phi_e_BySlice[0].GetHistogram2DSaveNamePath(), "reco_theta_e_VS_phi_e_BySlice.pdf");
+        SaveSlicePDFs(acc_eff_e_BySlice, acceptance_eff_e_BySlice[0].GetHistogram2DSaveNamePath(), "acceptance_eff_e_BySlice.pdf");
+        SaveSlicePDFs(filtered_reco_e_BySlice, filtered_reco_theta_e_VS_phi_e_BySlice[0].GetHistogram2DSaveNamePath(), "filtered_reco_theta_e_VS_phi_e_BySlice.pdf");
     }
 
-    if (bt::FindSubstring(SName, "Uniform_ep_sample_")) {
+    if (hasProtonSample) {
         if (PrintOut) { std::cout << "\n\nPlotting proton maps...\n"; }
 
         /* Acceptance maps BC */
         reco_theta_p_VS_phi_p_BC.hDrawAndSave(SName, h1DCanvas, AcceptanceMapsBC, AMapsBC_HistoList, true);
 
         /* Proton maps */
-        for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
-            truth_theta_p_VS_phi_p_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, TLAMaps, AMap_TL_HistoList, true);
-            reco_theta_p_VS_phi_p_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, RecoAMaps, AMap_Reco_HistoList, true);
-            acceptance_eff_p_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, AMapsRatio, AMap_Ratio_HistoList, true);
-            filtered_reco_theta_p_VS_phi_p_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, Charged_particle_Sep_AMaps, cPart_Sep_AMaps_HistoList, true);
-        }
+        DrawSlices(NucleonMomSliceLimits.size(), truth_theta_p_VS_phi_p_BySlice, reco_theta_p_VS_phi_p_BySlice, acceptance_eff_p_BySlice, filtered_reco_theta_p_VS_phi_p_BySlice);
 
         /* Finalized acceptance maps */
         filtered_reco_theta_p_VS_phi_p.hDrawAndSave(SName, h1DCanvas, AcceptanceMaps, AMaps_HistoList, true);
 
         /* Saving maps in PDFs */
-        DrawAndSaveMapsBySliceToPDFs(truth_p_BySlice, truth_theta_p_VS_phi_p_BySlice[0].GetHistogram2DSaveNamePath() + "truth_theta_p_VS_phi_p_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(reco_p_BySlice, reco_theta_p_VS_phi_p_BySlice[0].GetHistogram2DSaveNamePath() + "reco_theta_p_VS_phi_p_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(acc_eff_p_BySlice, acceptance_eff_p_BySlice[0].GetHistogram2DSaveNamePath() + "acceptance_eff_p_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(filtered_reco_p_BySlice, filtered_reco_theta_p_VS_phi_p_BySlice[0].GetHistogram2DSaveNamePath() + "filtered_reco_theta_p_VS_phi_p_BySlice.pdf");
+        SaveSlicePDFs(truth_p_BySlice, truth_theta_p_VS_phi_p_BySlice[0].GetHistogram2DSaveNamePath(), "truth_theta_p_VS_phi_p_BySlice.pdf");
+        SaveSlicePDFs(reco_p_BySlice, reco_theta_p_VS_phi_p_BySlice[0].GetHistogram2DSaveNamePath(), "reco_theta_p_VS_phi_p_BySlice.pdf");
+        SaveSlicePDFs(acc_eff_p_BySlice, acceptance_eff_p_BySlice[0].GetHistogram2DSaveNamePath(), "acceptance_eff_p_BySlice.pdf");
+        SaveSlicePDFs(filtered_reco_p_BySlice, filtered_reco_theta_p_VS_phi_p_BySlice[0].GetHistogram2DSaveNamePath(), "filtered_reco_theta_p_VS_phi_p_BySlice.pdf");
     }
 
-    if (bt::FindSubstring(SName, "Uniform_en_sample_")) {
+    if (hasNeutronSample) {
         if (PrintOut) { std::cout << "\n\nPlotting proton maps...\n"; }
 
         /* Acceptance maps BC */
         reco_theta_n_VS_phi_n_BC.hDrawAndSave(SName, h1DCanvas, AcceptanceMapsBC, AMapsBC_HistoList, true);
 
         /* Neutron maps (by momentum slice) */
-        for (int i = 0; i < NucleonMomSliceLimits.size(); i++) {
-            truth_theta_n_VS_phi_n_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, TLAMaps, AMap_TL_HistoList, true);
-            reco_theta_n_VS_phi_n_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, RecoAMaps, AMap_Reco_HistoList, true);
-            acceptance_eff_n_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, AMapsRatio, AMap_Ratio_HistoList, true);
-            filtered_reco_theta_n_VS_phi_n_BySlice.at(i).hDrawAndSave(SName, h1DCanvas, Charged_particle_Sep_AMaps, cPart_Sep_AMaps_HistoList, true);
-
-            truth_theta_n_VS_phi_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, ConstTLAMaps, AMap_ConstTL_HistoList, true);
-            reco_theta_n_VS_phi_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, ConstRecoAMaps, AMap_ConstReco_HistoList, true);
-            acceptance_eff_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, ConstAMapsRatio, AMap_ConstRatio_HistoList, true);
-            filtered_reco_theta_n_VS_phi_n_ByConstSlice.at(i).hDrawAndSave(SName, h1DCanvas, Const_neutral_particle_Sep_AMaps, nPart_Sep_AMaps_HistoList_Const, true);
-        }
+        DrawSlices(NucleonMomSliceLimits.size(), truth_theta_n_VS_phi_n_BySlice, reco_theta_n_VS_phi_n_BySlice, acceptance_eff_n_BySlice, filtered_reco_theta_n_VS_phi_n_BySlice);
+        DrawConstNeutronSlices(NucleonMomSliceLimits.size());
 
         /* Neutron maps */
         truth_theta_n_VS_phi_n.hDrawAndSave(SName, h1DCanvas, TLAMaps, AMap_TL_HistoList, true);
@@ -2745,17 +2325,16 @@ void AMaps::DrawAndSaveMaps(const std::string& SampleName, TCanvas* h1DCanvas, c
         filtered_reco_theta_n_VS_phi_n.hDrawAndSave(SName, h1DCanvas, AcceptanceMaps, AMaps_HistoList, true);
 
         /* Saving maps in PDFs */
-        DrawAndSaveMapsBySliceToPDFs(truth_n_BySlice, truth_theta_n_VS_phi_n_BySlice[0].GetHistogram2DSaveNamePath() + "truth_theta_n_VS_phi_n_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(reco_n_BySlice, reco_theta_n_VS_phi_n_BySlice[0].GetHistogram2DSaveNamePath() + "reco_theta_n_VS_phi_n_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(acc_eff_n_BySlice, acceptance_eff_n_BySlice[0].GetHistogram2DSaveNamePath() + "acceptance_eff_n_BySlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(filtered_reco_n_BySlice, filtered_reco_theta_n_VS_phi_n_BySlice[0].GetHistogram2DSaveNamePath() + "filtered_reco_theta_n_VS_phi_n_BySlice.pdf");
+        SaveSlicePDFs(truth_n_BySlice, truth_theta_n_VS_phi_n_BySlice[0].GetHistogram2DSaveNamePath(), "truth_theta_n_VS_phi_n_BySlice.pdf");
+        SaveSlicePDFs(reco_n_BySlice, reco_theta_n_VS_phi_n_BySlice[0].GetHistogram2DSaveNamePath(), "reco_theta_n_VS_phi_n_BySlice.pdf");
+        SaveSlicePDFs(acc_eff_n_BySlice, acceptance_eff_n_BySlice[0].GetHistogram2DSaveNamePath(), "acceptance_eff_n_BySlice.pdf");
+        SaveSlicePDFs(filtered_reco_n_BySlice, filtered_reco_theta_n_VS_phi_n_BySlice[0].GetHistogram2DSaveNamePath(), "filtered_reco_theta_n_VS_phi_n_BySlice.pdf");
 
         /* Saving maps in PDFs (const) */
-        DrawAndSaveMapsBySliceToPDFs(truth_n_ByConstSlice, truth_theta_n_VS_phi_n_ByConstSlice[0].GetHistogram2DSaveNamePath() + "truth_theta_n_VS_phi_n_ByConstSlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(reco_n_ByConstSlice, reco_theta_n_VS_phi_n_ByConstSlice[0].GetHistogram2DSaveNamePath() + "reco_theta_n_VS_phi_n_ByConstSlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(acc_eff_n_ByConstSlice, acceptance_eff_n_ByConstSlice[0].GetHistogram2DSaveNamePath() + "acceptance_eff_n_ByConstSlice.pdf");
-        DrawAndSaveMapsBySliceToPDFs(filtered_reco_n_ByConstSlice,
-                                     filtered_reco_theta_n_VS_phi_n_ByConstSlice[0].GetHistogram2DSaveNamePath() + "filtered_reco_theta_n_VS_phi_n_ByConstSlice.pdf");
+        SaveSlicePDFs(truth_n_ByConstSlice, truth_theta_n_VS_phi_n_ByConstSlice[0].GetHistogram2DSaveNamePath(), "truth_theta_n_VS_phi_n_ByConstSlice.pdf");
+        SaveSlicePDFs(reco_n_ByConstSlice, reco_theta_n_VS_phi_n_ByConstSlice[0].GetHistogram2DSaveNamePath(), "reco_theta_n_VS_phi_n_ByConstSlice.pdf");
+        SaveSlicePDFs(acc_eff_n_ByConstSlice, acceptance_eff_n_ByConstSlice[0].GetHistogram2DSaveNamePath(), "acceptance_eff_n_ByConstSlice.pdf");
+        SaveSlicePDFs(filtered_reco_n_ByConstSlice, filtered_reco_theta_n_VS_phi_n_ByConstSlice[0].GetHistogram2DSaveNamePath(), "filtered_reco_theta_n_VS_phi_n_ByConstSlice.pdf");
     }
 
     // A helper lambda that saves acceptance maps into TFiles
@@ -2777,7 +2356,7 @@ void AMaps::DrawAndSaveMaps(const std::string& SampleName, TCanvas* h1DCanvas, c
 
         TFile* AMapsROOTFile = new TFile(ROOTFile.c_str(), "recreate");
         if (!AMapsROOTFile || AMapsROOTFile->IsZombie()) {
-            std::cerr << "AMaps::DrawAndSaveMaps: ERROR opening '" << ROOTFile << "'\n" << "Aborting...\n\n", exit(1);
+            bt::ExitWithError(__func__, __FILE__, __LINE__, "ERROR opening '" + ROOTFile + "'");
             // return nullptr;  // or throw
         }
 
@@ -2933,7 +2512,7 @@ void AMaps::ReadHitMaps(const std::string& AcceptanceMapsDirectory, const std::s
 #pragma region /* Load AMapsBC */
     std::string AMapsBC_RootFile_FileName = AcceptanceMapsDirectory + "/" + SampleName + "/" + AMapsBC_prefix + SampleName + ".root";
     TFile* AMapsBC_RootFile = new TFile(AMapsBC_RootFile_FileName.c_str());
-    if (!AMapsBC_RootFile) { std::cout << "\n\nAMaps::ReadHitMaps: could not load AMapsBC root file! Aborting...\n", exit(1); }
+    if (!AMapsBC_RootFile) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load AMapsBC root file!"); }
 
     for (TObject* keyAsObj : *AMapsBC_RootFile->GetListOfKeys()) {
         auto key = dynamic_cast<TKey*>(keyAsObj);
@@ -2957,7 +2536,7 @@ void AMaps::ReadHitMaps(const std::string& AcceptanceMapsDirectory, const std::s
 #pragma region /* Load Hit_Maps_TL */
     std::string Hit_Maps_TL_RootFile_FileName = AcceptanceMapsDirectory + "/" + SampleName + "/" + AMap_TL_prefix + SampleName + ".root";
     TFile* Hit_Maps_TL_RootFile = new TFile(Hit_Maps_TL_RootFile_FileName.c_str());
-    if (!Hit_Maps_TL_RootFile) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Hit_Maps_TL root file! Aborting...\n", exit(1); }
+    if (!Hit_Maps_TL_RootFile) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Hit_Maps_TL root file!"); }
 
     int counter = 0;
 
@@ -2988,7 +2567,7 @@ void AMaps::ReadHitMaps(const std::string& AcceptanceMapsDirectory, const std::s
 #pragma region /* Load Hit_Maps_Reco */
     std::string Hit_Maps_Reco_RootFile_FileName = AcceptanceMapsDirectory + "/" + SampleName + "/" + AMap_Reco_prefix + SampleName + ".root";
     TFile* Hit_Maps_Reco_RootFile = new TFile(Hit_Maps_Reco_RootFile_FileName.c_str());
-    if (!Hit_Maps_Reco_RootFile) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Hit_Maps_Reco root file! Aborting...\n", exit(1); }
+    if (!Hit_Maps_Reco_RootFile) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Hit_Maps_Reco root file!"); }
 
     for (TObject* keyAsObj : *Hit_Maps_Reco_RootFile->GetListOfKeys()) {
         auto key = dynamic_cast<TKey*>(keyAsObj);
@@ -3012,7 +2591,7 @@ void AMaps::ReadHitMaps(const std::string& AcceptanceMapsDirectory, const std::s
 #pragma region /* Load Hit_Maps_Ratio */
     std::string Hit_Maps_Ratio_RootFile_FileName = AcceptanceMapsDirectory + "/" + SampleName + "/" + AMap_Ratio_prefix + SampleName + ".root";
     TFile* Hit_Maps_Ratio_RootFile = new TFile(Hit_Maps_Ratio_RootFile_FileName.c_str());
-    if (!Hit_Maps_Ratio_RootFile) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Hit_Maps_Ratio root file! Aborting...\n", exit(1); }
+    if (!Hit_Maps_Ratio_RootFile) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Hit_Maps_Ratio root file!"); }
 
     for (TObject* keyAsObj : *Hit_Maps_Ratio_RootFile->GetListOfKeys()) {
         auto key = dynamic_cast<TKey*>(keyAsObj);
@@ -3036,7 +2615,7 @@ void AMaps::ReadHitMaps(const std::string& AcceptanceMapsDirectory, const std::s
 #pragma region /* Load cPart_Sep_AMaps */
     std::string cPart_Sep_AMaps_RootFile_FileName = AcceptanceMapsDirectory + "/" + SampleName + "/" + cPart_Sep_AMaps_prefix + SampleName + ".root";
     TFile* cPart_Sep_AMaps_RootFile = new TFile(cPart_Sep_AMaps_RootFile_FileName.c_str());
-    if (!cPart_Sep_AMaps_RootFile) { std::cout << "\n\nAMaps::ReadHitMaps: could not load cPart_Sep_AMaps root file! Aborting...\n", exit(1); }
+    if (!cPart_Sep_AMaps_RootFile) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load cPart_Sep_AMaps root file!"); }
 
     for (TObject* keyAsObj : *cPart_Sep_AMaps_RootFile->GetListOfKeys()) {
         auto key = dynamic_cast<TKey*>(keyAsObj);
@@ -3058,19 +2637,19 @@ void AMaps::ReadHitMaps(const std::string& AcceptanceMapsDirectory, const std::s
 #pragma region /* Load AMaps */
     std::string AMaps_RootFile_FileName = AcceptanceMapsDirectory + "/" + SampleName + "/" + AMaps_prefix + SampleName + ".root";
     TFile* AMaps_RootFile = new TFile(AMaps_RootFile_FileName.c_str());
-    if (!AMaps_RootFile) { std::cout << "\n\nAMaps::ReadHitMaps: could not load AMaps root file! Aborting...\n", exit(1); }
+    if (!AMaps_RootFile) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load AMaps root file!"); }
 
     LoadedElectronAMaps0 = (TH2D*)AMaps_RootFile->Get("Electron_AMap");
-    if (!LoadedElectronAMaps0) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Electron_AMap from root file! Aborting...\n", exit(1); }
+    if (!LoadedElectronAMaps0) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Electron_AMap from root file!"); }
 
     LoadedProtonAMap = (TH2D*)AMaps_RootFile->Get("Proton_AMap");
-    if (!LoadedProtonAMap) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Proton_AMap from root file! Aborting...\n", exit(1); }
+    if (!LoadedProtonAMap) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Proton_AMap from root file!"); }
 
     LoadedNeutronAMap = (TH2D*)AMaps_RootFile->Get("Neutron_AMap");
-    if (!LoadedNeutronAMap) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Neutron_AMap from root file! Aborting...\n", exit(1); }
+    if (!LoadedNeutronAMap) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Neutron_AMap from root file!"); }
 
     LoadedNucleonAMap = (TH2D*)AMaps_RootFile->Get("Nucleon_AMap");
-    if (!LoadedNucleonAMap) { std::cout << "\n\nAMaps::ReadHitMaps: could not load Nucleon_AMap from root file! Aborting...\n", exit(1); }
+    if (!LoadedNucleonAMap) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Could not load Nucleon_AMap from root file!"); }
 #pragma endregion
 
     std::cout << "\n\nAcceptance maps loaded!\n\n";
@@ -3107,199 +2686,152 @@ void AMaps::ReadAMapLimits(const char* filename, std::vector<std::vector<double>
             }
         }
     } else {
-        std::cout << "\n\nAMaps::ReadAMap: file not found! Target file was set to:\n" << filename << "\nAborting...\n\n", exit(1);
+        bt::ExitWithError(__func__, __FILE__, __LINE__, std::string("File not found! Target file was set to:\n") + filename);
     }
 }
 #pragma endregion
 
-// ReadAMapSlices function (AMaps) --------------------------------------------------------------------------------------------------------------------------------------
+// ReadMapSlices function (AMaps/WMaps) ---------------------------------------------------------------------------------------------------------------------------------
 
-#pragma region /* ReadAMapSlices function (AMaps) */
-void AMaps::ReadAMapSlices(const std::string& SampleName, const std::string& AcceptanceMapsDirectory, const std::string& Particle, const std::vector<std::vector<double>>& Loaded_particle_limits,
-                           std::vector<std::vector<std::vector<int>>>& Loaded_Particle_AMap_Slices, const bool Special_maps) {
-    std::string ParticleShort = (isElectron(Particle)) ? "e" : (isProton(Particle)) ? "p" : (isNeutron(Particle)) ? "n" : "nuc";
-    std::string ExtendedMaps = (isElectron(Particle) && Special_maps) ? "_extended" : "";
+#pragma region /* ReadMapSlices function (AMaps/WMaps) */
+void AMaps::ReadMapSlices(const std::string& SampleName, const std::string& AcceptanceMapsDirectory, const std::string& Particle,
+                          const std::vector<std::vector<double>>& Loaded_particle_limits, std::vector<std::vector<std::vector<int>>>* Loaded_Particle_AMap_Slices,
+                          std::vector<std::vector<std::vector<double>>>* Loaded_Particle_WMap_Slices, const bool Special_maps) {
+    const bool isAMapsMode = (Maps_Mode == "AMaps");
+    const bool isWMapsMode = (Maps_Mode == "WMaps");
+
+    if (!isAMapsMode && !isWMapsMode) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Unsupported Maps_Mode: " + Maps_Mode); }
+    if (isAMapsMode && !Loaded_Particle_AMap_Slices) { bt::ExitWithError(__func__, __FILE__, __LINE__, "AMaps destination container is null"); }
+    if (isWMapsMode && !Loaded_Particle_WMap_Slices) { bt::ExitWithError(__func__, __FILE__, __LINE__, "WMaps destination container is null"); }
+
+    const std::string ParticleShort = isElectron(Particle) ? "e" : (isProton(Particle) ? "p" : (isNeutron(Particle) ? "n" : "nuc"));
+    const std::string ExtendedMaps = (isElectron(Particle) && Special_maps) ? "_extended" : "";
 
     for (int Slice = 0; Slice < Loaded_particle_limits.size(); Slice++) {
-        std::vector<std::vector<int>> Loaded_Particle_AMap_TempSlice;
+        const std::string lowLim = bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(0), 2);
+        const std::string highLim = bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(1), 2);
 
-        std::string TempFileName;
+        if (isAMapsMode) {
+            std::vector<std::vector<int>> Loaded_Particle_AMap_TempSlice;
 
-        if (isNeutron(Particle) && Special_maps) {
-            TempFileName = ParticleShort + "_" + Maps_Mode + "_by_ConstSlice/" + ParticleShort + "_" + Maps_Mode + "_file_from_" +
-                           bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(0), 2) + "_to_" + bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(1), 2) + ".par";
+            std::string TempFileName;
+            if (isNeutron(Particle) && Special_maps) {
+                TempFileName = ParticleShort + "_" + Maps_Mode + "_by_ConstSlice/" + ParticleShort + "_" + Maps_Mode + "_file_from_" + lowLim + "_to_" + highLim + ".par";
+            } else {
+                TempFileName = ParticleShort + ExtendedMaps + "_" + Maps_Mode + "_by_slice/" + ParticleShort + "_" + Maps_Mode + "_file_from_" + lowLim + "_to_" + highLim + ".par";
+            }
+
+            std::cout << "\033[32m"
+                      << "Reading " << Particle << ((Special_maps && particleType == ELECTRON_TYPE) ? " extended" : "") << " map from "
+                      << "\033[0m" << lowLim << "\033[32m"
+                      << " to "
+                      << "\033[0m" << highLim << "\033[32m"
+                      << " [GeV/c]:"
+                      << "\033[0m"
+                      << " " << TempFileName << "\n";
+
+            ReadMap((AcceptanceMapsDirectory + SampleName + "/" + TempFileName).c_str(), &Loaded_Particle_AMap_TempSlice);
+            Loaded_Particle_AMap_Slices->push_back(Loaded_Particle_AMap_TempSlice);
         } else {
-            TempFileName = ParticleShort + ExtendedMaps + "_" + Maps_Mode + "_by_slice/" + ParticleShort + "_" + Maps_Mode + "_file_from_" +
-                           bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(0), 2) + "_to_" + bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(1), 2) + ".par";
+            std::vector<std::vector<double>> Loaded_Particle_WMap_TempSlice;
+
+            const std::string TempFileNamePrimary = ParticleShort + "_" + Maps_Mode + "_by_slice/" + ParticleShort + "_" + Maps_Mode + "_file_from_" + lowLim + "_to_" + highLim + ".par";
+            const std::string TempFileNameLegacy = ParticleShort + "_WMap_by_slice/" + ParticleShort + "_WMap_file_from_" + lowLim + "_to_" + highLim + ".par";
+
+            std::string fileToRead = TempFileNamePrimary;
+            std::ifstream primaryFile((AcceptanceMapsDirectory + SampleName + "/" + TempFileNamePrimary).c_str());
+            if (!primaryFile.good()) { fileToRead = TempFileNameLegacy; }
+
+            ReadMap((AcceptanceMapsDirectory + SampleName + "/" + fileToRead).c_str(), nullptr, &Loaded_Particle_WMap_TempSlice);
+            Loaded_Particle_WMap_Slices->push_back(Loaded_Particle_WMap_TempSlice);
         }
-
-        std::cout << "\033[32m" << "Reading " << Particle << ((Special_maps && particleType == ELECTRON_TYPE) ? " extended" : "") << " map from "
-                  << "\033[0m" << bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(0), 2) << "\033[32m" << " to " << "\033[0m"
-                  << bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(1), 2) << "\033[32m" << " [GeV/c]:"
-                  << "\033[0m" << " " << TempFileName << "\n";
-
-        ReadAMap((AcceptanceMapsDirectory + SampleName + "/" + TempFileName).c_str(), Loaded_Particle_AMap_TempSlice);
-
-        Loaded_Particle_AMap_Slices.push_back(Loaded_Particle_AMap_TempSlice);
     }
 }
 #pragma endregion
 
-// ReadWMapSlices function (WMaps) --------------------------------------------------------------------------------------------------------------------------------------
+// ReadMap function (AMaps/WMaps) ---------------------------------------------------------------------------------------------------------------------------------------
 
-#pragma region /* ReadWMapSlices function (WMaps) */
-void AMaps::ReadWMapSlices(const std::string& SampleName, const std::string& AcceptanceMapsDirectory, const std::string& Particle, const std::vector<std::vector<double>>& Loaded_particle_limits,
-                           std::vector<std::vector<std::vector<double>>>& Loaded_Particle_WMap_Slices) {
-    std::string ParticleShort;
+#pragma region /* ReadMap function (AMaps/WMaps) */
+void AMaps::ReadMap(const char* filename, std::vector<std::vector<int>>* Loaded_particle_AMap, std::vector<std::vector<double>>* Loaded_particle_WMap) {
+    const bool PrintOut = false;
+    const bool isAMapsMode = (Maps_Mode == "AMaps");
+    const bool isWMapsMode = (Maps_Mode == "WMaps");
 
-    if (isElectron(Particle)) {
-        ParticleShort = "e";
-    } else if (isProton(Particle)) {
-        ParticleShort = "p";
-    } else if (isNeutron(Particle)) {
-        ParticleShort = "n";
+    if (!isAMapsMode && !isWMapsMode) { bt::ExitWithError(__func__, __FILE__, __LINE__, "Unsupported Maps_Mode: " + Maps_Mode); }
+    if (isAMapsMode && !Loaded_particle_AMap) { bt::ExitWithError(__func__, __FILE__, __LINE__, "AMaps destination container is null"); }
+    if (isWMapsMode && !Loaded_particle_WMap) { bt::ExitWithError(__func__, __FILE__, __LINE__, "WMaps destination container is null"); }
+
+    std::ifstream infile(filename);
+
+    if (infile.is_open()) {
+        const char* expectedPrefix = isAMapsMode ? "Line" : "Weight";
+        std::string tp;
+        int lineNumber = 0;
+
+        while (getline(infile, tp)) {
+            lineNumber++;
+            stringstream ss(tp);
+            std::string parameter, parameter2;
+            ss >> parameter;
+
+            if (bt::FindSubstring(parameter, expectedPrefix)) {
+                ss >> parameter2;
+                stringstream ss2(parameter2);
+
+                std::string LineEntry;
+
+                if (isAMapsMode) {
+                    std::vector<int> col;
+
+                    if (PrintOut) {
+                        std::cout << "\n\nfilename = " << filename << "\n";
+                        std::cout << "parameter = " << parameter << "\n";
+                        std::cout << "parameter2 = " << parameter2 << "\n";
+                        std::cout << "LineEntry = " << LineEntry << "\n\n";
+                    }
+
+                    while (getline(ss2, LineEntry, ':')) {
+                        if (LineEntry.empty()) {
+                            bt::ExitWithError(__func__, __FILE__, __LINE__, "Error! Empty entry at line " + std::to_string(lineNumber) + " in file:\n" + filename + ":\n   -> " + tp);
+                        }
+
+                        try {
+                            col.push_back(stoi(LineEntry));
+                        } catch (const std::invalid_argument& e) { cerr << "Invalid integer found in file " << filename << ": " << LineEntry << "\n"; } catch (const std::out_of_range& e) {
+                            cerr << "Integer out of range in file " << filename << ": " << LineEntry << "\n";
+                        }
+                    }
+
+                    Loaded_particle_AMap->push_back(col);
+                } else {
+                    std::vector<double> col;
+
+                    if (PrintOut) {
+                        std::cout << "\n\nfilename = " << filename << "\n";
+                        std::cout << "parameter = " << parameter << "\n";
+                        std::cout << "parameter2 = " << parameter2 << "\n";
+                        std::cout << "LineEntry = " << LineEntry << "\n\n";
+                    }
+
+                    while (getline(ss2, LineEntry, ':')) {
+                        if (LineEntry.empty()) {
+                            bt::ExitWithError(__func__, __FILE__, __LINE__, "Error! Empty entry at line " + std::to_string(lineNumber) + " in file:\n" + filename + ":\n   -> " + tp);
+                        }
+
+                        try {
+                            col.push_back(stoi(LineEntry));
+                        } catch (const std::invalid_argument& e) { cerr << "Invalid double found in file " << filename << ": " << LineEntry << "\n"; } catch (const std::out_of_range& e) {
+                            cerr << "Double out of range in file " << filename << ": " << LineEntry << "\n";
+                        }
+                    }
+
+                    Loaded_particle_WMap->push_back(col);
+                }
+            }
+        }
     } else {
-        ParticleShort = "nuc";
+        bt::PrintWarning(__func__, __FILE__, __LINE__, std::string("file:\n") + filename + "\nwas not found!");
     }
-
-    for (int Slice = 0; Slice < Loaded_particle_limits.size(); Slice++) {
-        std::vector<std::vector<double>> Loaded_Particle_WMap_TempSlice;
-
-        std::string TempFileName = ParticleShort + "_" + Maps_Mode + "_by_slice/" + ParticleShort + "_" + Maps_Mode + "_file_from_" +
-                                   bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(0), 2) + "_to_" + bt::ToStringWithPrecision(Loaded_particle_limits.at(Slice).at(1), 2) +
-                                   ".par";
-
-        ReadWMap((AcceptanceMapsDirectory + SampleName + "/" + TempFileName).c_str(), Loaded_Particle_WMap_TempSlice);
-
-        Loaded_Particle_WMap_Slices.push_back(Loaded_Particle_WMap_TempSlice);
-    }
-}
-#pragma endregion
-
-// ReadAMap function (AMaps) --------------------------------------------------------------------------------------------------------------------------------------------
-
-#pragma region /* ReadAMap function (AMaps) */
-/* A function that reads AMaps */
-void AMaps::ReadAMap(const char* filename, std::vector<std::vector<int>>& Loaded_particle_AMap) {
-    bool PrintOut = false;
-
-    ifstream infile;
-    infile.open(filename);
-
-    if (infile.is_open()) {
-        std::string tp;
-        int lineNumber = 0;  // Track line number
-
-        // getline(infile, tp) = read data from file object and put it into string.
-        while (getline(infile, tp)) {
-            lineNumber++;  // Increment line number for each line read
-            stringstream ss(tp);
-            std::string parameter, parameter2;
-            ss >> parameter;  // get cut identifier
-
-            if (bt::FindSubstring(parameter, "Line")) {
-                // get cut values
-                ss >> parameter2;
-                stringstream ss2(parameter2);
-
-                std::string LineEntry;
-                std::vector<int> col;
-
-                if (PrintOut) {
-                    std::cout << "\n\nfilename = " << filename << "\n";
-                    std::cout << "parameter = " << parameter << "\n";
-                    std::cout << "parameter2 = " << parameter2 << "\n";
-                    std::cout << "LineEntry = " << LineEntry << "\n\n";
-                }
-
-                while (getline(ss2, LineEntry, ':')) {
-                    if (LineEntry.empty()) {
-                        cerr << "AMaps::ReadAMap: Error! Empty entry at line " << lineNumber << " in file:\n"
-                             << filename << ":\n"
-                             << "   -> " << tp << "\nAborting...",
-                            exit(1);  // Abort if there are empty entries from "::"
-                    }
-
-                    try {
-                        col.push_back(stoi(LineEntry));  // Convert string to int safely
-                    } catch (const std::invalid_argument& e) { cerr << "Invalid integer found in file " << filename << ": " << LineEntry << "\n"; } catch (const std::out_of_range& e) {
-                        cerr << "Integer out of range in file " << filename << ": " << LineEntry << "\n";
-                    }
-                }
-
-                Loaded_particle_AMap.push_back(col);
-            }
-        }
-    }
-    // else {
-    //     std::cout << "\n\nAMaps::ReadAMap: ERROR! file:\n" << filename << "\nwas not found! Aborting...\n\n", exit(1);
-    // }
-
-    // TODO: remove this after neutron maps have been generated!
-    if (particleType == UNDEFINED_TYPE || particleType == NEUTRON_TYPE) { std::cout << "\033[35m\n\nAMaps::ReadAMap:\033[36m Warning!\033[0m file:\n" << filename << "\nwas not found!\n\n"; }
-}
-#pragma endregion
-
-// ReadWMap function (WMaps) --------------------------------------------------------------------------------------------------------------------------------------------
-
-#pragma region /* ReadWMap function (WMaps) */
-/* A function that reads WMaps */
-void AMaps::ReadWMap(const char* filename, std::vector<std::vector<double>>& Loaded_particle_WMap) {
-    bool PrintOut = false;
-
-    ifstream infile;
-    infile.open(filename);
-
-    if (infile.is_open()) {
-        std::string tp;
-        int lineNumber = 0;  // Track line number
-
-        // getline(infile, tp) = read data from file object and put it into string.
-        while (getline(infile, tp)) {
-            lineNumber++;  // Increment line number for each line read
-            stringstream ss(tp);
-            std::string parameter, parameter2;
-            ss >> parameter;  // get cut identifier
-
-            if (bt::FindSubstring(parameter, "Weight")) {
-                // get cut values
-                ss >> parameter2;
-                stringstream ss2(parameter2);
-
-                std::string LineEntry;
-                std::vector<double> col;
-
-                if (PrintOut) {
-                    std::cout << "\n\nfilename = " << filename << "\n";
-                    std::cout << "parameter = " << parameter << "\n";
-                    std::cout << "parameter2 = " << parameter2 << "\n";
-                    std::cout << "LineEntry = " << LineEntry << "\n\n";
-                }
-
-                while (getline(ss2, LineEntry, ':')) {
-                    if (LineEntry.empty()) {
-                        cerr << "AMaps::ReadWMap: Error! Empty entry at line " << lineNumber << " in file:\n"
-                             << filename << ":\n"
-                             << "   -> " << tp << "\nAborting...",
-                            exit(1);  // Abort if there are empty entries from "::"
-                    }
-
-                    try {
-                        col.push_back(stoi(LineEntry));  // Convert string to int safely
-                    } catch (const std::invalid_argument& e) { cerr << "Invalid double found in file " << filename << ": " << LineEntry << "\n"; } catch (const std::out_of_range& e) {
-                        cerr << "Double out of range in file " << filename << ": " << LineEntry << "\n";
-                    }
-                }
-
-                Loaded_particle_WMap.push_back(col);
-            }
-        }
-    }
-    // else {
-    //     std::cout << "\n\nWMaps::ReadWMap: file:\n" << filename << "\nwas not found! Aborting...\n\n", exit(1);
-    // }
-
-    std::cout << "\033[35m\n\nAMaps::ReadWMap:\033[36m Warning!\033[0m file:\n" << filename << "\nwas not found!\n\n";
 }
 #pragma endregion
 
@@ -3422,12 +2954,10 @@ bool AMaps::MatchAngToHitMap(const std::string& Particle, double Momentum, doubl
                             if ((Phi >= PhiLowerLimTemp) && (Phi < PhiUpperLimTemp)) {
                                 if (NucleonOverlappingFC) {
                                     // Safety checks:
-                                    if (Loaded_nuc_AMap_Slices.size() == 0) {
-                                        std::cout << "\n\nAMaps::MatchAngToHitMap: ERROR! Loaded_nuc_AMap_Slices has size 0! Aborting...\n\n", exit(1);
-                                    }
+                                    if (Loaded_nuc_AMap_Slices.size() == 0) { bt::ExitWithError(__func__, __FILE__, __LINE__, "ERROR! Loaded_nuc_AMap_Slices has size 0!"); }
 
                                     if (Loaded_nuc_AMap_Slices.at(Slice).size() == 0) {
-                                        std::cout << "\n\nAMaps::MatchAngToHitMap: ERROR! Loaded_nuc_AMap_Slices.at(" << Slice << ") has size 0! Aborting...\n\n", exit(1);
+                                        bt::ExitWithError(__func__, __FILE__, __LINE__, "ERROR! Loaded_nuc_AMap_Slices.at(" + std::to_string(Slice) + ") has size 0!");
                                     }
 
                                     if (debugging_settings::AMapsDebuggerMode) {
@@ -3447,13 +2977,11 @@ bool AMaps::MatchAngToHitMap(const std::string& Particle, double Momentum, doubl
                                     // TODO: decide which neutron maps to use here - const or not
 
                                     // Safety check:
-                                    if (Loaded_n_AMap_ConstSlices.size() == 0) {
-                                        std::cout << "\n\nAMaps::MatchAngToHitMap: ERROR! Loaded_n_AMap_Slices has size 0! Aborting...\n\n", exit(1);
-                                    }
+                                    if (Loaded_n_AMap_ConstSlices.size() == 0) { bt::ExitWithError(__func__, __FILE__, __LINE__, "ERROR! Loaded_n_AMap_Slices has size 0!"); }
                                     // if (Loaded_n_AMap_Slices.size() == 0) { std::cout << "\n\nAMaps::MatchAngToHitMap: ERROR! Loaded_n_AMap_Slices has size 0! Aborting...\n\n", exit(1); }
 
                                     if (Loaded_n_AMap_Slices.at(Slice).size() == 0) {
-                                        std::cout << "\n\nAMaps::MatchAngToHitMap: ERROR! Loaded_n_AMap_Slices.at(" << Slice << ") has size 0! Aborting...\n\n", exit(1);
+                                        bt::ExitWithError(__func__, __FILE__, __LINE__, "ERROR! Loaded_n_AMap_Slices.at(" + std::to_string(Slice) + ") has size 0!");
                                     }
                                     // if (Loaded_n_AMap_ConstSlices.at(Slice).size() == 0) {
                                     //     std::cout << "\n\nAMaps::MatchAngToHitMap: ERROR! Loaded_n_AMap_ConstSlices.at(" << Slice << ") has size 0! Aborting...\n\n", exit(1);

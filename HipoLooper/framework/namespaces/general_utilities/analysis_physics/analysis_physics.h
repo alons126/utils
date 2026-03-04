@@ -16,6 +16,19 @@
 #include "../basic_tools.h"
 #include "../constants.h"
 
+/**
+ * @namespace analysis_physics
+ * @brief A namespace for physics calculations used in the analysis, including functions for calculating kinematic quantities such as Q2, xB, W, missing momentum, and missing energy for 1N
+ * and 2N processes.
+ * @details This namespace contains various functions for calculating physics quantities that are relevant for the analysis of electron scattering events. The functions include calculations
+ * for Q2, xB, W, missing momentum for 1N and 2N processes, and missing energy for 1N and 2N processes. The functions take as input the relevant kinematic variables, such as the beam and
+ * scattered electron four-vectors, the energy transfer, the three-momentum transfer, and the energies of the leading and recoil nucleons. The functions return the calculated physics
+ * quantities, which can be used in the main code for performing various analyses, such as applying cuts based on these quantities or filling histograms with these quantities.
+ * @note The functions in this namespace are designed to be used in the main code for performing various analyses based on the calculated physics quantities. It is important to ensure that
+ * the input variables are in the correct units and that the calculations are performed in the correct coordinate system. For example, the beam and scattered electron four-vectors should be
+ * in the same units (e.g., GeV) and the angles should be calculated in the correct coordinate system (e.g., lab frame). Additionally, the functions assume that the relevant kinematic
+ * variables are defined appropriately for the processes being analyzed (e.g., the energy transfer should be defined as the difference between the beam and scattered electron energies).
+ */
 namespace analysis_physics {
 
 // ======================================================================================================================================================================

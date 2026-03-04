@@ -1,4 +1,5 @@
-# hPlots (Histogram Helper Classes)
+
+# Histogram Helper Classes
 
 **Author:** Alon Sportes  
 **Project:** `2N-Analyzer-e4nu`

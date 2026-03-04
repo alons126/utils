@@ -25,6 +25,7 @@
     #include <cstdlib>
     #include <fstream>
     #include <iomanip>
+    #include <initializer_list>
     #include <iostream>
     #include <map>
     #include <sstream>
@@ -47,6 +48,21 @@ using namespace utilities;
 namespace bt = basic_tools;
 namespace hf = histogram_functions;
 
+/**
+ * @class AMaps
+ * @brief A class for generating and managing acceptance maps for electrons and nucleons, including functions for filling maps, calculating efficiencies, and saving/loading maps.
+ * @details The AMaps class is designed to generate and manage acceptance maps for electrons and nucleons based on the characteristics of the sample being analyzed. The class includes
+ * functions for filling the maps with the appropriate values based on the momentum, theta, phi, and weight of the particles, as well as functions for calculating the acceptance efficiency,
+ * generating filtered maps based on certain cuts, and saving/loading the maps to/from files. The class also includes functions for setting the bins for the maps based on different binning
+ * profiles and for determining the particle type based on the sample name. The AMaps class is used in the main code for generating acceptance maps for electrons and nucleons, which are then
+ * used for calculating efficiencies and applying corrections to the data and simulation samples.
+ * @note The AMaps class is designed to be flexible and adaptable to different samples and analysis configurations. It is important to set the parameters for the class appropriately based on
+ * the characteristics of the sample being analyzed and the goals of the analysis. For example, the binning profiles for electron and nucleon momentum can be set to different options based
+ * on the desired resolution and range for the maps. Additionally, the functions for filling the maps and calculating efficiencies should be used consistently throughout the code to ensure
+ * that the acceptance maps are generated correctly and that the efficiencies are calculated accurately. The saving and loading functions should also be used appropriately to ensure that the
+ * maps are stored and retrieved correctly based on the structure of the files being used. Overall, the AMaps class is a powerful tool for managing acceptance maps in the analysis, and it
+ * should be used with care and attention to detail to ensure that the results of the analysis are accurate and reliable.
+ */
 class AMaps {
    public:
     /**
@@ -177,23 +193,16 @@ class AMaps {
 
     void ReadAMapLimits(const char* filename, std::vector<std::vector<double>>& Loaded_particle_limits);
 
-    // ReadAMapSlices function ------------------------------------------------------------------------------------------------------------------------------------------
+    // ReadMapSlices function -------------------------------------------------------------------------------------------------------------------------------------------
 
-    void ReadAMapSlices(const std::string& SampleName, const std::string& AcceptanceMapsDirectory, const std::string& Particle, const std::vector<std::vector<double>>& Loaded_particle_limits,
-                        std::vector<std::vector<std::vector<int>>>& Loaded_Particle_AMap_Slices, const bool Special_maps = false);
+    void ReadMapSlices(const std::string& SampleName, const std::string& AcceptanceMapsDirectory, const std::string& Particle,
+                       const std::vector<std::vector<double>>& Loaded_particle_limits, std::vector<std::vector<std::vector<int>>>* Loaded_Particle_AMap_Slices = nullptr,
+                       std::vector<std::vector<std::vector<double>>>* Loaded_Particle_WMap_Slices = nullptr, const bool Special_maps = false);
 
-    // ReadAMapSlices function ------------------------------------------------------------------------------------------------------------------------------------------
+    // ReadMap function -------------------------------------------------------------------------------------------------------------------------------------------------
 
-    void ReadWMapSlices(const std::string& SampleName, const std::string& AcceptanceMapsDirectory, const std::string& Particle, const std::vector<std::vector<double>>& Loaded_particle_limits,
-                        std::vector<std::vector<std::vector<double>>>& Loaded_Particle_WMap_Slices);
-
-    // ReadAMap function ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    void ReadAMap(const char* filename, std::vector<std::vector<int>>& Loaded_particle_AMap);
-
-    // ReadWMap function ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    void ReadWMap(const char* filename, std::vector<std::vector<double>>& Loaded_particle_WMap);
+    void ReadMap(const char* filename, std::vector<std::vector<int>>* Loaded_particle_AMap = nullptr,
+                 std::vector<std::vector<double>>* Loaded_particle_WMap = nullptr);
 
     // MatchAngToHitMap function ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -321,6 +330,8 @@ class AMaps {
     std::vector<std::vector<double>> GetLoadedNucleonMomSliceLimits() { return Loaded_NucleonMomSliceLimits; }
 
    private:
+    static bool IsOneOf(const std::string& value, std::initializer_list<const char*> allowedValues);
+
     ParticleType particleType;
 
     /* Particle labels */

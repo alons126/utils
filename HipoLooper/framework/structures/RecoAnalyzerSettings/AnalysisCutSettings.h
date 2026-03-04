@@ -25,6 +25,15 @@
 
 namespace pd = path_definitions;
 
+/**
+ * @struct AnalysisCutSettings
+ * @brief Settings related to analysis cuts, including various types of cuts such as preselection cuts, electron quality cuts, chi2 cuts, nucleon cuts, physical cuts, and reaction monitoring
+ * cuts.
+ * @details These settings are used in the main code to control the application of various cuts during the analysis. The settings include master switches for applying cuts and specific types
+ * of cuts, as well as options for custom naming of cuts. The constructor initializes the settings with default values, which can be modified as needed for different runs or analyses.
+ * @note The apply_cuts setting is a master switch for applying any cuts, while the other settings control specific types of cuts. It is important to set these settings appropriately based
+ * on the goals of the analysis and the characteristics of the data being analyzed.
+ */
 struct AnalysisCutSettings {
     // Cuts setup
     /* Settings that allow to disable/enable every cut individually */
@@ -86,7 +95,7 @@ struct AnalysisCutSettings {
     // Constructor with default values
     AnalysisCutSettings()
         // Cuts setup:
-        : apply_cuts(false),
+        : apply_cuts(true),
           clas12ana_particles(true),
           only_preselection_cuts(false),
           only_electron_quality_cuts(false),
@@ -111,10 +120,10 @@ struct AnalysisCutSettings {
           apply_chi2_cuts_1e_cut(true),
 
           // Nucleon cuts:
-          apply_nucleon_cuts(true),
+          apply_nucleon_cuts(false),
 
           // Physical cuts:
-          apply_nucleon_physical_cuts(true),
+          apply_nucleon_physical_cuts(false),
           apply_CDEdgeCuts(true),
           apply_CDRegionCuts(true),
           apply_ProtonPIDCuts(true),

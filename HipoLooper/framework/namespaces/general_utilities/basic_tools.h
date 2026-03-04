@@ -268,6 +268,17 @@ void LogSkippedHipoFiles(std::vector<TString> SkippedHipoChainFiles, const int& 
     std::exit(1);
 }
 
+// PrintWarning function ------------------------------------------------------------------------------------------------------------------------------------------------
+
+inline void PrintWarning(const std::string& functionName, const std::string& fileName, int lineNumber, const std::string& warningMessage) {
+    std::cout << "\n" << std::endl;
+    std::cout << env::SYSTEM_COLOR << functionName << ": " << env::WARNING_COLOR << "Warning!" << env::RESET_COLOR << std::endl;
+    std::cout << env::SYSTEM_COLOR << "In file: " << env::RESET_COLOR << fileName << std::endl;
+    std::cout << env::SYSTEM_COLOR << "In line: " << env::RESET_COLOR << lineNumber << std::endl;
+    std::cout << env::SYSTEM_COLOR << "--> " << env::RESET_COLOR << warningMessage << std::endl;
+    std::cout << std::endl;
+}
+
 };  // namespace basic_tools
 
 #endif  // BASIC_TOOLS_H

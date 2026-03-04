@@ -4,6 +4,19 @@
 
 #include "../../classes/DSCuts/DSCuts.h"
 
+/**
+ * @namespace constants
+ * @brief A namespace for various constants used in the analysis, including physical constants, particle masses, PDG codes, and CLAS12-specific constants such as theta ranges for the forward
+ * and central detectors.
+ * @details This namespace contains various constants that are used throughout the analysis code. The physical constants include particle masses (in GeV) for neutrons, protons, kaons, pions,
+ * and electrons, as well as the speed of light in vacuum (in cm/ns). The particle PDG codes are also defined for neutrons, protons, kaons, pions, electrons, neutrinos, and photons.
+ * Additionally, the namespace includes CLAS12-specific constants such as the theta ranges for the forward detector (FD) and central detector (CD), which are defined as DSCuts objects. These
+ * constants are used in the main code for performing various calculations and applying cuts based on the characteristics of the particles and the detector geometry.
+ * @note The constants defined in this namespace should be used consistently throughout the code to ensure that calculations are performed correctly and that the results are consistent
+ * across different parts of the analysis. For example, the particle masses should be used in calculations of kinematic quantities, while the PDG codes should be used for identifying
+ * particles in the analysis. The CLAS12-specific constants such as the theta ranges should be used when applying cuts based on the detector geometry, ensuring that the cuts are applied
+ * correctly for particles detected in the forward or central detectors.
+ */
 namespace constants {
 // Physical constants ---------------------------------------------------------------------------------------------------------------------------------------------------
 

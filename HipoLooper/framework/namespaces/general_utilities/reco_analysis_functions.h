@@ -33,6 +33,22 @@
 // using namespace clas12;
 namespace am = analysis_math;
 
+/**
+ * @namespace reco_analysis_functions
+ * @brief A namespace for general utilities and functions used in reconstruction-level analysis, including functions for calculating neutron momentum, checking for hits in the calorimeters,
+ * and other utilities related to the analysis of reconstructed events.
+ * @details This namespace contains various functions that are used throughout the reconstruction-level analysis code. The functions include calculations for neutron momentum based on
+ * whether certain cuts are applied, checks for hits in the calorimeters (PCAL, ECIN, ECOUT), and other utilities that are relevant for analyzing reconstructed events. These functions are
+ * designed to be used in the main code for performing various analyses based on the reconstructed data, such as applying cuts, filling histograms, and calculating physics quantities. It is
+ * important to ensure that the functions in this namespace are used appropriately based on the characteristics of the reconstructed data and the goals of the analysis. For example, the
+ * GetFDNeutronP function should be used with the appropriate settings for whether to apply nucleon cuts, and the CheckForECALHits function should be used to determine where a particle hit
+ * in the calorimeters based on the reconstructed data.
+ * @note The functions in this namespace are designed to be used in the main code for performing various analyses based on the reconstructed data. It is important to ensure that the input
+ * variables for these functions are in the correct format and that the functions are used appropriately based on the characteristics of the reconstructed data and the goals of the analysis.
+ * For example, the GetFDNeutronP function should be used with the appropriate settings for whether to apply nucleon cuts, and the CheckForECALHits function should be used to determine where
+ * a particle hit in the calorimeters based on the reconstructed data. Additionally, it is important to ensure that the functions in this namespace are used consistently throughout the code
+ * to maintain clarity and consistency in the analysis.
+ */
 namespace reco_analysis_functions {
 
 // ======================================================================================================================================================================
@@ -458,7 +474,8 @@ TVector3 Get_shifted_e_unit_v_NeutVeto(const std::vector<clas12::region_part_ptr
  * @param veto_cut Maximum allowed 3D separation between the neutral hit and any charged hit/projection.
  * @return True if the neutral passes all criteria and survives the charged proximity veto; false otherwise.
  */
-bool NeutronECAL_Cut_Veto(std::vector<clas12::region_part_ptr>& allParticles, std::vector<clas12::region_part_ptr>& electrons, const double& beamE, const int& index, const double& veto_cut) {
+bool NeutronECAL_Cut_Veto(std::vector<clas12::region_part_ptr>& allParticles, std::vector<clas12::region_part_ptr>& electrons, const double& beamE, const int& index,
+                          const double& veto_cut) {
     TVector3 p_b(0, 0, beamE); /* Beam 3-vector: (0,0,Ebeam) in GeV/c */
 
     // Reconstructed electron 3-momentum (magnitude + angles from the reconstruction banks)
@@ -738,7 +755,8 @@ bool ChargedECALveto(std::vector<clas12::region_part_ptr>& allParticles, clas12:
  *        and the shifted electron reference before vetoing.
  * @return True if the neutral survives the neutral proximity veto; false if vetoed.
  */
-bool NeutralECALveto(std::vector<clas12::region_part_ptr>& allParticles, std::vector<clas12::region_part_ptr>& electrons, const double& beamE, clas12::region_part_ptr neut, const double& veto_cut) {
+bool NeutralECALveto(std::vector<clas12::region_part_ptr>& allParticles, std::vector<clas12::region_part_ptr>& electrons, const double& beamE, clas12::region_part_ptr neut,
+                     const double& veto_cut) {
     /* The veto flag */
     bool Veto = false;
 

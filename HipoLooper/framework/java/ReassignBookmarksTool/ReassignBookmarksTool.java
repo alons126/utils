@@ -7,6 +7,20 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.*;
 
+/**
+ * ReassignBookmarksTool is a utility for extracting bookmarks from a PDF file, optionally modifying them, and reassigning them to a new PDF file. It supports both flat and hierarchical
+ * bookmark structures. The tool can be used to strip bookmarks from a PDF, extract bookmarks to a JSON file, and reassign bookmarks from a JSON file to a PDF. The tool uses the Apache
+ * PDFBox library for PDF manipulation and the Jackson library for JSON processing.
+ *
+ * Usage:
+ *   java -jar ReassignBookmarksTool.jar input.pdf bookmarks.json output.pdf
+ *   java -jar ReassignBookmarksTool.jar extract input.pdf output.json
+ *   java -jar ReassignBookmarksTool.jar reassign input.pdf bookmarks.json output.pdf [hierarchical]
+ *
+ * Note: When reassigning bookmarks, the tool will remove any existing bookmarks from the input PDF before adding the new bookmarks defined in the JSON file. The JSON file should contain an
+ * array of bookmark entries, where each entry has a title, page number, optional parent title (for hierarchy), and an array of child entries (if hierarchical). The tool will handle both
+ * flat and hierarchical bookmark structures based on the presence of " > " in the titles or the hierarchical flag.
+ */
 public class ReassignBookmarksTool {
     // ANSI color codes for output
     public static final String RESET = "\u001B[0m";

@@ -49,6 +49,18 @@
 
 namespace bt = basic_tools;
 
+/**
+ * @namespace histogram_functions
+ * @brief A namespace for functions related to filling histograms based on interaction types and hsPlots objects.
+ * @details This namespace contains functions for filling histograms based on integer-based bin indexing and for filling hsPlots objects based on interaction type flags. The functions are
+ * designed to be used in the main code for filling histograms with the appropriate values based on the characteristics of the events being analyzed, such as whether they are QEL, MEC, RES,
+ * or DIS interactions. The FillByInt1D and FillByInt2D functions fill TH1D and TH2D histograms, respectively, while the FillByInthsPlots function fills hsPlots objects based on the
+ * specified histogram type (TH1D_TYPE or TH2D_TYPE). The functions take as input the relevant histograms or hsPlots objects, the interaction type flags, the variable(s) to fill, and an
+ * optional weight for the bin content.
+ * @note It is important to ensure that the histograms and hsPlots objects being filled are properly initialized and that the input variables are in the correct units and ranges for the
+ * histograms being filled. Additionally, it is important to set the interaction type flags appropriately based on the characteristics of the events being analyzed to ensure that the correct
+ * histograms are filled with the correct values.
+ */
 namespace histogram_functions {
 
 // FillByInt1D function -------------------------------------------------------------------------------------------------------------------------------------------------

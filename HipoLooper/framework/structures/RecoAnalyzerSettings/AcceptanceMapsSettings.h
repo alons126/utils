@@ -14,6 +14,17 @@
 #include "EventSelectionSettings.h"
 #include "RunParameters.h"
 
+/**
+ * @struct AcceptanceMapsSettings
+ * @brief Settings related to acceptance maps, including whether to generate electron and nucleon acceptance maps, the binning profiles for electron and nucleon momentum, and settings for
+ * single slice tests.
+ * @details These settings are used in the main code to control the generation of acceptance maps for electrons and nucleons, as well as the generation of efficiency maps (WMaps). The
+ * settings also include options for single slice tests, which can be used to test the acceptance maps in specific momentum slices. The RefreshSettingsByParameters function is used to update
+ * the settings based on the run parameters, while the RefreshSettingsByEventSelection function is used to update the settings based on the event selection settings.
+ * @note The Generate_Electron_AMaps and Generate_Nucleon_AMaps settings are mutually exclusive, meaning that both cannot be true at the same time. The binning profiles for electron and
+ * nucleon momentum can be set to different options, such as uniform or varying bins. The single slice test settings should be set to false for normal runs, and can be used for testing
+ * purposes.
+ */
 struct AcceptanceMapsSettings {
     bool Generate_Electron_AMaps;  // Generate electron acceptance maps
     bool Generate_Nucleon_AMaps;   // Generate nucleon acceptance maps
@@ -30,14 +41,14 @@ struct AcceptanceMapsSettings {
     /* Set Bins by case */
     // int NumberNucOfMomSlices = 25, NumberElecOfMomSlices = 60, HistElectronSliceNumOfXBins = 120, HistNucSliceNumOfXBins = 150;
     // int NumberNucOfMomSlices = 20, NumberElecOfMomSlices = 60, HistElectronSliceNumOfXBins = 120, HistNucSliceNumOfXBins = 100; // 2 GeV nucleons
-    int NumberNucOfMomSlices = 25, NumberElecOfMomSlices = 60, HistElectronSliceNumOfXBins = 120, HistNucSliceNumOfXBins = 100; // 4 and 6 GeV
+    int NumberNucOfMomSlices = 25, NumberElecOfMomSlices = 60, HistElectronSliceNumOfXBins = 120, HistNucSliceNumOfXBins = 100;  // 4 and 6 GeV
     // int NumberNucOfMomSlices = 15, NumberElecOfMomSlices = 15, HistElectronSliceNumOfXBins = 100, HistNucSliceNumOfXBins = 100;
 
     AcceptanceMapsSettings()
         : Generate_Electron_AMaps(false),  // Will remain true if the sample is Uniform_1e_[...]
           Generate_Nucleon_AMaps(false),   // Will remain true if the sample is Uniform_ep/en_[...]
           Generate_WMaps(false),           // Generated with both Uniform_1e_[...] and Uniform_ep/en_[...], for now
-          
+
           AMaps_calc_with_one_reco_electron(true),
 
           P_e_bin_profile("uniform_P_e_bins"),

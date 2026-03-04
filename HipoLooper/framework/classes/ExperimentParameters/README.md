@@ -1,3 +1,4 @@
+
 # The `ExperimentParameters` class
 
 **Author:** Alon Sportes  
@@ -28,22 +29,24 @@ If directory naming conventions change, the intent is to update parsing rules he
 Constructor signature:
 
 ```cpp
-ExperimentParameters(const std::string& RecoSamplePath, const std::string& ReconHipoDir);
+ExperimentParameters(const std::string& RecoSamplePath,
+                     const std::string& ReconHipoDir,
+                     const std::string& HipoFilesPrefix = pd::HipoFilesPrefix);
 ```
 
 The constructor configures the object by calling a sequence of mutator methods:
 
-1. `ConfigSampleTarget(RecoSamplePath)`
-2. `ConfigSampleType(RecoSamplePath)`
-3. `ConfigGENIETune(RecoSamplePath)`
-4. `ConfigBeamEnergy(RecoSamplePath)`
-5. `ConfigQ2Cut(RecoSamplePath)`
-6. `ConfigSampleName(RecoSamplePath, ReconHipoDir)`
-7. `ConfigureVaryingSampleName(SampleName)`
-8. `ConfigureVz_cuts(SampleName)`
-9. `ConfiguredVz_cuts(SampleName)`
+1. `ConfigSampleTarget()`
+2. `ConfigSampleType()`
+3. `ConfigGENIETune()`
+4. `ConfigBeamEnergy()`
+5. `ConfigQ2Cut()`
+6. `ConfigSampleName()`
+7. `ConfigureVaryingSampleName()`
+8. `ConfigureVz_cuts()`
+9. `ConfiguredVz_cuts()`
 
-It also classifies whether the sample is considered **local** or **on ifarm** using a path heuristic.
+It also classifies whether the sample is considered **local** or **on ifarm** using a simple path heuristic (checks for "volatile" or "clas12/rg-m/production").
 
 ## How path parsing works
 
@@ -97,7 +100,7 @@ Matched tokens (bucket and value):
 
 Configured by `ConfigQ2Cut`.
 
-The Q² label is inferred from the beam-energy bucket:
+The Q² label is inferred from the beam-energy bucket (GENIE simulation samples only):
 
 - 2 GeV → `GENIE_DEF_CUT` → `Q2_0_02`
 - 4 GeV → `Q2_0_25_CUT` → `Q2_0_25`
@@ -161,8 +164,8 @@ Uniform_en_sample_2070MeV
 
 Configured by:
 
-- `ConfigureVz_cuts(SampleName)`
-- `ConfiguredVz_cuts(SampleName)`
+- `ConfigureVz_cuts()`
+- `ConfiguredVz_cuts()`
 
 The class stores separate cut windows for:
 
@@ -181,7 +184,7 @@ Cut windows are keyed primarily off `SampleName` and differ between:
 
 ## VaryingSampleName
 
-Configured by `ConfigureVaryingSampleName(SampleName)`.
+Configured by `ConfigureVaryingSampleName()`.
 
 This string is intended to select sample-dependent inputs such as:
 

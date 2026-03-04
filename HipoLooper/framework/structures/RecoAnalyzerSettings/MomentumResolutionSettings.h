@@ -7,6 +7,18 @@
 
 #include <iostream>
 
+/**
+ * @struct MomentumResolutionSettings
+ * @brief Settings related to momentum resolution, including options for plotting and fitting momentum resolution, calculating momentum resolution variables, and settings for smearing and
+ * correcting momentum.
+ * @details These settings are used in the main code to control various aspects of momentum resolution analysis, such as whether to generate momentum resolution plots, whether to calculate
+ * specific momentum resolution variables (momResS2), the settings for smearing and correcting momentum, and whether to run with momResS2. The RefreshSettings function is used to update the
+ * settings based on other settings, such as whether to force small momentum resolution limits based on the combination of plot_and_fit_MomRes, Calculate_momResS2, and Run_with_momResS2.
+ * @note The settings for momentum resolution can have a significant impact on the analysis, so it is important to set these settings appropriately based on the goals of the analysis and the
+ * characteristics of the data being analyzed. For example, enabling the calculation of momResS2 variables can provide additional insights into the momentum resolution, but may also increase
+ * the complexity of the analysis, so it is important to consider these trade-offs when setting these options. Additionally, the settings for smearing and correcting momentum can affect the
+ * results of the analysis, so it is important to choose appropriate smearing and correction modes based on the characteristics of the data and the goals of the analysis.
+ */
 struct MomentumResolutionSettings {
     // TODO: align neutron and proton momRes calculations!
     bool plot_and_fit_MomRes;  // Generate nRes plots
